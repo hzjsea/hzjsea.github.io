@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="hzjsea">
+
+
+
+
+
+
+<title>golang并发 | hzjsea</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+    <script src="/js/jquery.min.js"></script>
+    
+
+
+
+    
+    
+        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+    
+
+
+
+
+    <script>
+    function searchToggle() {
+        const width = $(document.body).width()
+        if(width > 479) {
+            return;
+        }
+        const search = $('.search');
+        const searchForm = $('.form-search')
+
+        if(!search.hasClass("mobile-search")) {
+            search.addClass("mobile-search");
+        } else {
+            search.removeClass("mobile-search");
+        } 
+    }
+
+    function search(searchInputEl, formEl, flag) {
+        const path = "/" + "search.json"; // 可以在public 下查看这个search.json
+        $(formEl).submit(function(e){
+            e.preventDefault();
+            let target = null
+            if(searchInputEl == null) {
+                const screenWidth = $(document.body).width();
+                target = screenWidth > 479 ? $('#pc-search-input') : $('#mobile-search-input');
+                console.log(target);
+            } else {
+                target = $(searchInputEl)
+            }
+
+            if(!flag && target.val() === '') {
+                return ;
+            }
+
+            $("#u-search").fadeIn(500, function() {
+                $("body > .wrapper").addClass("modal-active");
+
+                $.ajax({
+                    url: path,
+                    dataType: "json",
+                    beforeSend: function (xhr) {
+                        $input = target.val();
+                        $(".form-input").val($input);
+                        const loadingBar = $('.search-loading-bar') 
+                        loadingBar.css({
+                            width:'100%',
+                            display: 'block'
+                        });
+                    },
+                    success: function( datas ) {
+                        console.log(datas);
+                        const $resultPanel = $(".modal-body")[0];
+                        let str = `<ul class="modal-results">`;
+                        var keywords = $(".form-input").val().trim().toLowerCase().split(/[\s\-]+/);
+                        $resultPanel.innerHTML = "";
+                        let hasResult = false
+                        let text = `<div class="no-result">找不到与关键词相关的内容....</div>`;
+
+                        if ($(".form-input").val().trim().length <= 0) {
+                            // 没有结果
+                            $resultPanel.innerHTML = text;
+                            return;
+                        }
+                        datas.forEach(function (data, index) {
+                            var isMatch = true;
+                            if (!data.title || data.title.trim() === '') {
+                                data.title = "Untitled";
+                            }
+                            var data_title = data.title.trim().toLowerCase();
+                            var data_content = data.content && data.content.trim().replace(/<[^>]+>/g, "").toLowerCase() || '';
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            // only match artiles with not empty contents
+                            if (data_content !== '') {
+                                keywords.forEach(function (keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        hasResult = true
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            } else {
+                                isMatch = false;
+                            }
+                            // show search results
+                            if (isMatch) {
+                                str += `<li class='result-item'><a href='${data_url}' class='result-item-detail'> <span class="title">${data_title}</span>`;
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 200 characters
+                                    var start = first_occur - 40;
+                                    var end = first_occur + 160;
+
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+
+                                    if (start == 0) {
+                                        end = 200;
+                                    }
+
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+
+                                    var match_content = content.substring(start, end);
+
+                                    // highlight all keywords
+                                    keywords.forEach(function (keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, `<em class="search-keyword">${keyword}</em>`);
+                                    });
+
+                                    str += `<span class="content"> ${match_content} ...</span></a>`;
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        if(hasResult) {
+                            $resultPanel.innerHTML = str;
+                        } else {
+                            $resultPanel.innerHTML = text;
+                        }
+
+                    },
+                    complete: function() {
+                        setTimeout(() => {
+                                const loadingBar = $('.search-loading-bar') 
+                                loadingBar.css({
+                                    width:'0%',
+                                    display: 'none'
+                                });
+                        }, 300)
+                    }
+                });
+            })
+
+        });
+    }
+
+    $(document).ready(function() {
+        $('.modal-close').click(function () { 
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+
+        $('.modal-overlay').click(function() {
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+        search(null, ".form-search", false)
+        search("#u-search-modal-form .form-input", ".u-search-modal-form", true)
+    })
+</script>
+
+
+
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo"><a href="/">hzjsea</a></div>
+        <div class="menu navbar-right">
+            
+            
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="pc-search-input"/>
+        </form>
+    </div>
+
+
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+            <input id="switch_default" type="checkbox" class="switch_default">
+            <label for="switch_default" class="toggleBtn"></label>
+        </div>
+    </div>
+</nav>
+
+
+<nav class="navbar-mobile" id="nav-mobile">
+    <div class="container">
+        <div class="navbar-header">
+            <div>
+                <a href="/">hzjsea</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+            </div>
+            <div class="navbar-mobile-right">
+                
+                
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="mobile-search-input"/>
+        </form>
+    </div>
+
+
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; 目录</div>
+            </div>
+            
+        </div>
+        <div class="menu" id="mobile-menu">
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+        </div>
+    </div>
+</nav>
+
+        <div class="main">
+			<!-- Chic/layout.ejs -->
+ <div id="u-search">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="container">
+                    <form id="u-search-modal-form" class="u-search-modal-form">
+                        <button type="submit" class="form-submit-btn">
+                            <img src="/image/search.png" class="search-btn-img" />
+                        </button>
+                        <input placeholder="搜索文章。。。" class="form-input" id="modal-form-input">
+                    </form>
+                    <a class="modal-close">x</a>
+                </div>
+                <div class="search-loading">
+                    <div class="search-loading-bar"></div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <!-- ul 格式如下 -->
+                <!-- <ul class="modal-results">
+                    <li class="result-item">
+                        <a class="result-item-detail">
+                            <span class="title">页面配置</span>
+                            <span class="content">
+                                content
+                            </span>
+                        </a>
+                    </li>
+                </ul> -->
+            </div>
+        </div>
+        <div class="modal-overlay"></div>
+    </div>
+            <div class="container">
+    
+    
+    <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">全部展开</a>
+        <a onclick="go_top()">回到顶部</a>
+        <a onclick="go_bottom()">回到底部</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "全部折叠"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "全部展开"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">golang并发</h1>
+            
+            <div class="post-meta">
+                
+                作者： <a itemprop="author" rel="author" href="/">hzjsea</a>&nbsp;
+                
+
+                
+                <span class="post-time">
+                    创建日期： <a
+                        href="#">September 14, 2020&nbsp;&nbsp;12:07:47</a>
+                </span>&nbsp;
+                
+                
+                <span class="post-category">
+                    分类：
+                    
+                    <a href="/categories/golang/">golang</a>&nbsp;
+                    
+                </span>
+                
+                
+                状态：<a href="#">SNAPSHOT</a>
+                
+            </div>
+            
+        </header>
+
+        <div class="post-content">
+            <a id="more"></a>
+
+<h1 id="golang并发"><a href="#golang并发" class="headerlink" title="golang并发"></a>golang并发</h1><h2 id="golang并发的简单实例"><a href="#golang并发的简单实例" class="headerlink" title="golang并发的简单实例"></a>golang并发的简单实例</h2><pre class=" language-go"><code class="language-go"><span class="token keyword">package</span> main
+
+<span class="token keyword">import</span> <span class="token punctuation">(</span>
+    <span class="token string">"fmt"</span>
+<span class="token punctuation">)</span>
+
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token keyword">go</span> <span class="token function">helloworld</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token comment" spellcheck="true">//time.Sleep(2*time.Second)</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+
+<span class="token keyword">func</span> <span class="token function">helloworld</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"helloworld"</span><span class="token punctuation">)</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span></code></pre>
+<p>如上如果我们把延时注释掉执行程序的话，是不会有任何内容输出的，但是加上延时后，会输出”helloworld”<br>这是因为go会使用线程池来调用一个子程序来完成helloworld 也就是go后面程序。而延时主要是保证主程序还在，这样子程序才能正常运行</p>
+<h2 id="双向channel"><a href="#双向channel" class="headerlink" title="双向channel"></a>双向channel</h2><ul>
+<li>Channel 是 goroutine 沟通的桥梁，大都是阻塞同步的</li>
+<li>它是通过 make 创建，close 关闭</li>
+<li>Channel 是引用类型</li>
+<li>可以使用 for range 来迭代，不断操作 channel</li>
+<li>可以设置单向 或 双向通道</li>
+<li>可以设置缓存大小，在未被填满前不会发生阻塞，即它是异步的</li>
+<li>那么针对上溯代码我们不使用休眠，而使用 Channel 来实现我们想要的效果：<br>channel的意思用白话可以这么理解：主线程告诉大家你开goroutine可以，但是我在我的主线程开了一个管道，你做完了你要做的事情之后，往管道里面塞个东西告诉我你已经完成了</li>
+</ul>
+<pre class=" language-go"><code class="language-go"><span class="token keyword">package</span> main
+
+<span class="token keyword">import</span> <span class="token punctuation">(</span>
+    <span class="token string">"fmt"</span>
+<span class="token punctuation">)</span>
+
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">//声明创建一个通道，存储类型为bool型 这个通道是双向通道，可以存取</span>
+    <span class="token comment" spellcheck="true">//注意channel 是一个引用类型 和 slice map 类似</span>
+    c <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token builtin">bool</span><span class="token punctuation">)</span>
+    <span class="token comment" spellcheck="true">//启用一个goroutine,使用的是匿名方法方式</span>
+    <span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"Go Go Go!!!"</span><span class="token punctuation">)</span>
+        c <span class="token operator">&lt;-</span> <span class="token boolean">true</span>  <span class="token comment" spellcheck="true">//向 channel 中存入一个值</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+    <span class="token comment" spellcheck="true">// &lt;- c // 释放值 表示线程结束</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token operator">&lt;-</span> c<span class="token punctuation">)</span>
+    <span class="token comment" spellcheck="true">/**
+      主线程启动了一个匿名子线程后就执行到了：&lt;-c , 到达这里主线程就被阻塞了。只有当子线程向通道放入值后主线程阻塞才会被释放
+      其实这个就是完成了消息的发送
+    */</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span></code></pre>
+<pre class=" language-go"><code class="language-go"><span class="token keyword">package</span> main
+
+<span class="token keyword">import</span> <span class="token punctuation">(</span>
+    <span class="token string">"fmt"</span>
+<span class="token punctuation">)</span>
+
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">//声明创建一个通道，存储类型为bool型</span>
+    <span class="token comment" spellcheck="true">//注意channel 是一个引用类型 和 slice map 类似</span>
+    c <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token builtin">bool</span><span class="token punctuation">)</span>
+    <span class="token comment" spellcheck="true">//启用一个goroutine,使用的是匿名方法方式</span>
+    <span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"Go Go Go!!!"</span><span class="token punctuation">)</span>
+        c <span class="token operator">&lt;-</span> <span class="token boolean">true</span>  <span class="token comment" spellcheck="true">//向 channel 中存入一个值</span>
+        <span class="token function">close</span><span class="token punctuation">(</span>c<span class="token punctuation">)</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+     <span class="token keyword">for</span> value<span class="token operator">:=</span> <span class="token keyword">range</span> c <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+         fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>value<span class="token punctuation">)</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span></code></pre>
+<p>如上使用如果我们使用  <code>&lt;- c</code> 表示子程序也释放结束了，但是我们可以使用 <code>close(c)</code>来关闭子程序，保证主程序还在运行，并使用<code>rang</code>获取内容</p>
+<h2 id="channel缓存"><a href="#channel缓存" class="headerlink" title="channel缓存"></a>channel缓存</h2><ul>
+<li><code>make(chan bool, 1)</code> 表示带有一个缓存大小的缓存channel</li>
+<li><code>make(chan bool)</code> 或 <code>make(chan bool, 0)</code> 表示一个无缓存的channel</li>
+<li>无缓存channel是阻塞的即同步的，而有缓存channel是异步的。</li>
+</ul>
+<p>如下</p>
+<pre class=" language-go"><code class="language-go"><span class="token keyword">package</span> main
+
+<span class="token keyword">import</span> <span class="token string">"time"</span>
+
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    c <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token builtin">bool</span><span class="token punctuation">)</span>
+    c <span class="token operator">&lt;-</span> <span class="token boolean">true</span>
+    time<span class="token punctuation">.</span><span class="token function">Sleep</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token operator">*</span>time<span class="token punctuation">.</span>Second<span class="token punctuation">)</span>
+    <span class="token operator">&lt;-</span> c
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span></code></pre>
+<p>这样执行是错误的，因为他是无缓存的channel 也就是说当执行<code>c &lt;- true</code>的时候，一定要有别的线程 <code>&lt;- true</code> 接手了这个参数 那么 <code>c &lt;- true</code> 才会执行下去<br>而上面整段都在main程序里面，也就是都在主程序里面，这样就无法执行下去，会报错</p>
+<pre class=" language-go"><code class="language-go"><span class="token keyword">package</span> main
+
+<span class="token keyword">import</span> <span class="token string">"time"</span>
+
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    c <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token builtin">bool</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">)</span>
+    <span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        c <span class="token operator">&lt;-</span> <span class="token boolean">true</span>
+        time<span class="token punctuation">.</span><span class="token function">Sleep</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token operator">*</span>time<span class="token punctuation">.</span>Second<span class="token punctuation">)</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token operator">&lt;-</span> c
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span></code></pre>
+<p>这样就可以执行，因为main接管了子程序的 <code>&lt;-c</code> </p>
+<p>有缓存的channel，如下</p>
+<pre class=" language-go"><code class="language-go"><span class="token keyword">package</span> main
+
+<span class="token keyword">import</span> <span class="token string">"time"</span>
+
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    c <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token builtin">bool</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">)</span>
+    c <span class="token operator">&lt;-</span> <span class="token boolean">true</span>
+    time<span class="token punctuation">.</span><span class="token function">Sleep</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token operator">*</span>time<span class="token punctuation">.</span>Second<span class="token punctuation">)</span>
+    <span class="token operator">&lt;-</span> c
+
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span></code></pre>
+<p>可以正常运行</p>
+<h2 id="多线程抢占执行"><a href="#多线程抢占执行" class="headerlink" title="多线程抢占执行"></a>多线程抢占执行</h2><p>在多线程环境下，多个线程并发抢占会使得打印不是按照顺序来，那么我们如何确保子线程全部结束完之后主线程再停止呢？主要有两种方式</p>
+<h3 id="一使用阻塞channel"><a href="#一使用阻塞channel" class="headerlink" title="一使用阻塞channel"></a>一使用阻塞channel</h3><pre class=" language-go"><code class="language-go"><span class="token keyword">package</span> main
+
+<span class="token keyword">import</span> <span class="token punctuation">(</span>
+    <span class="token string">"fmt"</span>
+    <span class="token string">"runtime"</span>
+<span class="token punctuation">)</span>
+
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">// 输出当前系统的CPU数量</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>runtime<span class="token punctuation">.</span><span class="token function">NumCPU</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token comment" spellcheck="true">// 设置当前程序执行使用的CPU数量</span>
+    runtime<span class="token punctuation">.</span><span class="token function">GOMAXPROCS</span><span class="token punctuation">(</span>runtime<span class="token punctuation">.</span><span class="token function">NumCPU</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">/</span><span class="token number">2</span><span class="token punctuation">)</span>
+
+    <span class="token comment" spellcheck="true">// 创建一个channel</span>
+    c1 <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span>  <span class="token builtin">bool</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">for</span> i<span class="token operator">:=</span><span class="token number">0</span><span class="token punctuation">;</span>i<span class="token operator">&lt;</span><span class="token number">10</span><span class="token punctuation">;</span>i<span class="token operator">++</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token keyword">go</span> <span class="token function">goRun</span><span class="token punctuation">(</span>c1<span class="token punctuation">,</span>i<span class="token punctuation">)</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token keyword">for</span> i <span class="token operator">:=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">10</span><span class="token punctuation">;</span> i<span class="token operator">++</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token operator">&lt;-</span> c1
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+
+
+<span class="token keyword">func</span> <span class="token function">goRun</span><span class="token punctuation">(</span>c <span class="token keyword">chan</span> <span class="token builtin">bool</span><span class="token punctuation">,</span>index <span class="token builtin">int</span> <span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    sum <span class="token operator">:=</span> <span class="token number">0</span>
+    <span class="token keyword">for</span> i<span class="token operator">:=</span><span class="token number">0</span><span class="token punctuation">;</span>i<span class="token operator">&lt;</span><span class="token number">100000000</span><span class="token punctuation">;</span>i<span class="token operator">++</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        sum<span class="token operator">+=</span>i
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"线程序号:"</span><span class="token punctuation">,</span> index<span class="token punctuation">,</span> sum<span class="token punctuation">)</span>
+    c <span class="token operator">&lt;-</span> <span class="token boolean">true</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+</code></pre>
+<p>输出结果</p>
+<pre><code>8
+线程序号: 1 4999999950000000
+线程序号: 4 4999999950000000
+线程序号: 0 4999999950000000
+线程序号: 9 4999999950000000
+线程序号: 6 4999999950000000
+线程序号: 2 4999999950000000
+线程序号: 5 4999999950000000
+线程序号: 7 4999999950000000
+线程序号: 3 4999999950000000
+线程序号: 8 4999999950000000</code></pre>
+<p>从打印结果可以看出，多线程环境下运行代码打印和顺序没有关系，由 CPU 调度自己决定，多运行几次打印结果一定不会一样，就是这个道理。</p>
+<h3 id="二使用同步机制"><a href="#二使用同步机制" class="headerlink" title="二使用同步机制"></a>二使用同步机制</h3><pre class=" language-go"><code class="language-go"><span class="token keyword">package</span> main
+
+<span class="token keyword">import</span> <span class="token punctuation">(</span>
+    <span class="token string">"fmt"</span>
+    <span class="token string">"runtime"</span>
+    <span class="token string">"sync"</span>
+<span class="token punctuation">)</span>
+
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"当前系统核数："</span><span class="token punctuation">,</span> runtime<span class="token punctuation">.</span><span class="token function">NumCPU</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    runtime<span class="token punctuation">.</span><span class="token function">GOMAXPROCS</span><span class="token punctuation">(</span>runtime<span class="token punctuation">.</span><span class="token function">NumCPU</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">//设置当前程序执行使用的并发数</span>
+    <span class="token comment" spellcheck="true">/**
+      waitGroup即任务组，它的最要作用就是用来添加需要工作的任务，没完成一次任务就标记一次Done，这样任务组的待完成量会随之减1
+      那么主线程就是来判断任务组内是否还有未完成任务，当没有未完成当任务之后主线程就可以结束运行，从而实现了与阻塞队列类似的同步功能
+      这里创建了一个空的waitGroup(任务组)
+    */</span>
+    wg <span class="token operator">:=</span> sync<span class="token punctuation">.</span>WaitGroup<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span><span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    wg<span class="token punctuation">.</span><span class="token function">Add</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">)</span>  <span class="token comment" spellcheck="true">//添加10个任务到任务组中</span>
+    <span class="token comment" spellcheck="true">//这里启动10个线程运行</span>
+    <span class="token keyword">for</span> i <span class="token operator">:=</span><span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">10</span><span class="token punctuation">;</span> i<span class="token operator">++</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token keyword">go</span> <span class="token function">goRun</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>wg<span class="token punctuation">,</span> i<span class="token punctuation">)</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    wg<span class="token punctuation">.</span><span class="token function">Wait</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+
+<span class="token comment" spellcheck="true">/**
+这里需要传入引用类型不能传入值拷贝，因为在子线程中是需要执行Done操作，类似与我们修改结构体中的int变量主词递减，如果是只拷贝的话是不会影响原类型内的数据
+这样就会发生死循环导致死锁程序奔溃，报错异常为：fatal error: all goroutines are asleep - deadlock!
+*/</span>
+<span class="token keyword">func</span> <span class="token function">goRun</span><span class="token punctuation">(</span>wg <span class="token operator">*</span>sync<span class="token punctuation">.</span>WaitGroup<span class="token punctuation">,</span> index <span class="token builtin">int</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    a <span class="token operator">:=</span> <span class="token number">1</span>
+    <span class="token comment" spellcheck="true">//循环叠加1千万次并返回最终结果</span>
+    <span class="token keyword">for</span> i <span class="token operator">:=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">10000000</span><span class="token punctuation">;</span> i<span class="token operator">++</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        a <span class="token operator">+=</span> i
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"线程序号:"</span><span class="token punctuation">,</span> index<span class="token punctuation">,</span> a<span class="token punctuation">)</span>
+
+    wg<span class="token punctuation">.</span><span class="token function">Done</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span></code></pre>
+<h2 id="使用Select处理多个channel"><a href="#使用Select处理多个channel" class="headerlink" title="使用Select处理多个channel"></a>使用Select处理多个channel</h2><pre class=" language-go"><code class="language-go"><span class="token keyword">package</span> main
+
+<span class="token keyword">import</span> <span class="token string">"fmt"</span>
+
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">// 创建多个channel</span>
+    c1<span class="token punctuation">,</span>c2 <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token builtin">int</span><span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span>  <span class="token builtin">string</span><span class="token punctuation">)</span>
+    <span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">/**
+          创建一个无限循环语句,使用select进行处理
+          我们一般都是使用这种方式来处理不断的消息发送和处理
+        */</span>
+        <span class="token keyword">for</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+            <span class="token keyword">select</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+            <span class="token keyword">case</span> v<span class="token punctuation">,</span> ok <span class="token operator">:=</span> <span class="token operator">&lt;-</span> c1<span class="token punctuation">:</span>
+                <span class="token keyword">if</span> <span class="token operator">!</span>ok <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+                    <span class="token keyword">break</span>
+                <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+                fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"c1:"</span><span class="token punctuation">,</span> v<span class="token punctuation">)</span>
+            <span class="token keyword">case</span> v<span class="token punctuation">,</span> ok <span class="token operator">:=</span> <span class="token operator">&lt;-</span> c2<span class="token punctuation">:</span>
+                <span class="token keyword">if</span> <span class="token operator">!</span>ok <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+                    <span class="token keyword">break</span>
+                <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+                fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"c2:"</span><span class="token punctuation">,</span> v<span class="token punctuation">)</span>
+            <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+    c1 <span class="token operator">&lt;-</span> <span class="token number">1</span>
+    c2 <span class="token operator">&lt;-</span> <span class="token string">"liang"</span>
+    c1 <span class="token operator">&lt;-</span> <span class="token number">2</span>
+    c2 <span class="token operator">&lt;-</span> <span class="token string">"xuli"</span>
+
+    <span class="token comment" spellcheck="true">//关闭channel</span>
+    <span class="token function">close</span><span class="token punctuation">(</span>c1<span class="token punctuation">)</span>
+    <span class="token function">close</span><span class="token punctuation">(</span>c2<span class="token punctuation">)</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span></code></pre>
+<h2 id="单向channel"><a href="#单向channel" class="headerlink" title="单向channel"></a>单向channel</h2><p>单向channel也就是只能取或者只能存的channel</p>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>标签：</span>
+                <span class="tag">
+                    
+                    
+                    <a href="/tags/golang/"># golang</a>
+                    
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript：window.history.back();">后退</a>
+                <span>· </span>
+                <a href="/">主页</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            <a class="prev" rel="prev" href="/2020/09/14/blog_back_new/golang/golang%E5%B8%B8%E7%94%A8%E5%8A%9F%E8%83%BD%E4%BB%A5%E5%8F%8A%E8%BD%AC%E6%8D%A2/">golang常用功能以及转换</a>
+            
+            
+            <a class="next" rel="next" href="/2020/09/10/blog_back_new/leetcode/Strings/28-%E5%AE%9E%E7%8E%B0strStr/">实现strStr</a>
+            
+        </section>
+    </article>
+</div>
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+    </div>
+</footer>
+
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

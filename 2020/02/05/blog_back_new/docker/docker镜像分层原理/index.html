@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="hzjsea">
+
+
+
+
+
+
+<title>docker镜像分层原理 | hzjsea</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+    <script src="/js/jquery.min.js"></script>
+    
+
+
+
+    
+    
+        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+    
+
+
+
+
+    <script>
+    function searchToggle() {
+        const width = $(document.body).width()
+        if(width > 479) {
+            return;
+        }
+        const search = $('.search');
+        const searchForm = $('.form-search')
+
+        if(!search.hasClass("mobile-search")) {
+            search.addClass("mobile-search");
+        } else {
+            search.removeClass("mobile-search");
+        } 
+    }
+
+    function search(searchInputEl, formEl, flag) {
+        const path = "/" + "search.json"; // 可以在public 下查看这个search.json
+        $(formEl).submit(function(e){
+            e.preventDefault();
+            let target = null
+            if(searchInputEl == null) {
+                const screenWidth = $(document.body).width();
+                target = screenWidth > 479 ? $('#pc-search-input') : $('#mobile-search-input');
+                console.log(target);
+            } else {
+                target = $(searchInputEl)
+            }
+
+            if(!flag && target.val() === '') {
+                return ;
+            }
+
+            $("#u-search").fadeIn(500, function() {
+                $("body > .wrapper").addClass("modal-active");
+
+                $.ajax({
+                    url: path,
+                    dataType: "json",
+                    beforeSend: function (xhr) {
+                        $input = target.val();
+                        $(".form-input").val($input);
+                        const loadingBar = $('.search-loading-bar') 
+                        loadingBar.css({
+                            width:'100%',
+                            display: 'block'
+                        });
+                    },
+                    success: function( datas ) {
+                        console.log(datas);
+                        const $resultPanel = $(".modal-body")[0];
+                        let str = `<ul class="modal-results">`;
+                        var keywords = $(".form-input").val().trim().toLowerCase().split(/[\s\-]+/);
+                        $resultPanel.innerHTML = "";
+                        let hasResult = false
+                        let text = `<div class="no-result">找不到与关键词相关的内容....</div>`;
+
+                        if ($(".form-input").val().trim().length <= 0) {
+                            // 没有结果
+                            $resultPanel.innerHTML = text;
+                            return;
+                        }
+                        datas.forEach(function (data, index) {
+                            var isMatch = true;
+                            if (!data.title || data.title.trim() === '') {
+                                data.title = "Untitled";
+                            }
+                            var data_title = data.title.trim().toLowerCase();
+                            var data_content = data.content && data.content.trim().replace(/<[^>]+>/g, "").toLowerCase() || '';
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            // only match artiles with not empty contents
+                            if (data_content !== '') {
+                                keywords.forEach(function (keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        hasResult = true
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            } else {
+                                isMatch = false;
+                            }
+                            // show search results
+                            if (isMatch) {
+                                str += `<li class='result-item'><a href='${data_url}' class='result-item-detail'> <span class="title">${data_title}</span>`;
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 200 characters
+                                    var start = first_occur - 40;
+                                    var end = first_occur + 160;
+
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+
+                                    if (start == 0) {
+                                        end = 200;
+                                    }
+
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+
+                                    var match_content = content.substring(start, end);
+
+                                    // highlight all keywords
+                                    keywords.forEach(function (keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, `<em class="search-keyword">${keyword}</em>`);
+                                    });
+
+                                    str += `<span class="content"> ${match_content} ...</span></a>`;
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        if(hasResult) {
+                            $resultPanel.innerHTML = str;
+                        } else {
+                            $resultPanel.innerHTML = text;
+                        }
+
+                    },
+                    complete: function() {
+                        setTimeout(() => {
+                                const loadingBar = $('.search-loading-bar') 
+                                loadingBar.css({
+                                    width:'0%',
+                                    display: 'none'
+                                });
+                        }, 300)
+                    }
+                });
+            })
+
+        });
+    }
+
+    $(document).ready(function() {
+        $('.modal-close').click(function () { 
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+
+        $('.modal-overlay').click(function() {
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+        search(null, ".form-search", false)
+        search("#u-search-modal-form .form-input", ".u-search-modal-form", true)
+    })
+</script>
+
+
+
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo"><a href="/">hzjsea</a></div>
+        <div class="menu navbar-right">
+            
+            
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="pc-search-input"/>
+        </form>
+    </div>
+
+
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+            <input id="switch_default" type="checkbox" class="switch_default">
+            <label for="switch_default" class="toggleBtn"></label>
+        </div>
+    </div>
+</nav>
+
+
+<nav class="navbar-mobile" id="nav-mobile">
+    <div class="container">
+        <div class="navbar-header">
+            <div>
+                <a href="/">hzjsea</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+            </div>
+            <div class="navbar-mobile-right">
+                
+                
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="mobile-search-input"/>
+        </form>
+    </div>
+
+
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; 目录</div>
+            </div>
+            
+        </div>
+        <div class="menu" id="mobile-menu">
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+        </div>
+    </div>
+</nav>
+
+        <div class="main">
+			<!-- Chic/layout.ejs -->
+ <div id="u-search">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="container">
+                    <form id="u-search-modal-form" class="u-search-modal-form">
+                        <button type="submit" class="form-submit-btn">
+                            <img src="/image/search.png" class="search-btn-img" />
+                        </button>
+                        <input placeholder="搜索文章。。。" class="form-input" id="modal-form-input">
+                    </form>
+                    <a class="modal-close">x</a>
+                </div>
+                <div class="search-loading">
+                    <div class="search-loading-bar"></div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <!-- ul 格式如下 -->
+                <!-- <ul class="modal-results">
+                    <li class="result-item">
+                        <a class="result-item-detail">
+                            <span class="title">页面配置</span>
+                            <span class="content">
+                                content
+                            </span>
+                        </a>
+                    </li>
+                </ul> -->
+            </div>
+        </div>
+        <div class="modal-overlay"></div>
+    </div>
+            <div class="container">
+    
+    
+    <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">全部展开</a>
+        <a onclick="go_top()">回到顶部</a>
+        <a onclick="go_bottom()">回到底部</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "全部折叠"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "全部展开"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">docker镜像分层原理</h1>
+            
+            <div class="post-meta">
+                
+                作者： <a itemprop="author" rel="author" href="/">hzjsea</a>&nbsp;
+                
+
+                
+                <span class="post-time">
+                    创建日期： <a
+                        href="#">February 5, 2020&nbsp;&nbsp;11:09:43</a>
+                </span>&nbsp;
+                
+                
+                <span class="post-category">
+                    分类：
+                    
+                    <a href="/categories/docker/">docker</a>&nbsp;
+                    
+                </span>
+                
+                
+                状态：<a href="#">SNAPSHOT</a>
+                
+            </div>
+            
+        </header>
+
+        <div class="post-content">
+            <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+<ul>
+<li><a href="#docker%E9%95%9C%E5%83%8F%E5%88%86%E6%88%90%E5%8E%9F%E7%90%86">docker镜像分成原理</a><ul>
+<li><a href="#base%E9%95%9C%E5%83%8F">base镜像</a></li>
+<li><a href="#%E5%8E%9F%E7%90%86%E8%A7%A3%E6%9E%90">原理解析</a></li>
+<li><a href="#docker%E9%95%9C%E5%83%8F%E7%BB%84%E6%88%90">docker镜像组成</a></li>
+<li><a href="#docker%E9%95%9C%E5%83%8F%E5%8A%A0%E8%BD%BD">docker镜像加载</a></li>
+<li><a href="#%E9%95%9C%E5%83%8F%E5%A4%A7%E5%B0%8F%E7%9A%84%E9%97%AE%E9%A2%98">镜像大小的问题</a></li>
+<li><a href="#%E9%95%9C%E5%83%8F%E5%88%86%E5%B1%82%E7%9A%84%E5%A5%BD%E5%A4%84">镜像分层的好处</a></li>
+<li><a href="#%E5%88%9B%E5%BB%BA%E9%95%9C%E5%83%8F">创建镜像</a></li>
+</ul>
+</li>
+</ul>
+<!-- /code_chunk_output -->
+<a id="more"></a>
+
+<h1 id="docker镜像分成原理"><a href="#docker镜像分成原理" class="headerlink" title="docker镜像分成原理"></a>docker镜像分成原理</h1><h2 id="base镜像"><a href="#base镜像" class="headerlink" title="base镜像"></a>base镜像</h2><p>base 镜像有两层含义：</p>
+<ul>
+<li>不依赖其他镜像，从 scratch 构建。</li>
+<li>其他镜像可以之为基础进行扩展。<br>如centos镜像</li>
+</ul>
+<h2 id="原理解析"><a href="#原理解析" class="headerlink" title="原理解析"></a>原理解析</h2><p>了解几个概念</p>
+<ul>
+<li>联合文件系统(Union File System):是一种把其它文件系统联合到一个联合挂载点的文件系统服务，它使用 branch 把不同文件系统的文件和目录”透明地”覆盖，形成一个单一一致的文件系统。这些 branch 或者是 read-only 的，或者是 read-write 的，所以当对这个虚拟后的联合文件系统进行写操作的时候，系统是真正写到了一个新的文件中。看起来这个虚拟后的联合文件系统是可以对任何文件进行操作的，但是其实它并没有改变原来的文件。这是因为 Union File System 用到了一个重要的资源管理技术：写时复制。</li>
+<li>写时复制(copy-on-write，常被简写为 CoW)，也叫隐式共享，是一种提高资源使用效率的资源管理技术。它的思想是：如果一个资源是重复的，在没有对资源做出修改前，并不需要立即复制出一个新的资源实例，这个资源被不同的所有者共享使用。当任何一个所有者要对该资源做出修改时，复制出一个新的资源实例给该所有者进行修改，修改后的资源成为其所有者的私有资源。通过这种资源共享的方式，可以显著地减少复制相同资源带来的消耗，但是这样做也会在进行资源的修改时增加一部分开销。</li>
+</ul>
+<p><font color='red'>AUFS文件系统实例</font><br><a target="_blank" rel="noopener" href="https://www.cnblogs.com/sparkdev/p/11237347.html">https://www.cnblogs.com/sparkdev/p/11237347.html</a></p>
+<h2 id="docker镜像组成"><a href="#docker镜像组成" class="headerlink" title="docker镜像组成"></a>docker镜像组成</h2><p>在docker的image中,他其实是由一层一层的基础文件系统所叠加起来的，联合文件系统(UnionFS)他可以将几层目录挂载到一起，形成一个虚拟文件系统,docker 通过这些文件再加上宿主机的内核提供了一个 linux 的虚拟环境。每一层文件系统我们叫做一层 layer，联合文件系统可以对每一层文件系统设置三种权限，只读（readonly）、读写（readwrite）和写出（whiteout-able）</p>
+<p>但是在docker的镜像中的每一层的基础文件系统都是只读的，我们可以把他们叫做base 最基础的。构建镜像的时候，从一个最基本的操作系统开始，每个构建的操作都相当于做一层的修改，增加了一层文件系统。一层层往上叠加，上层的修改会覆盖底层该位置的可见性，这也很容易理解，就像上层把底层遮住了一样。当你使用的时候，你只会看到一个完全的整体，你不知道里面有几层，也不清楚每一层所做的修改是什么。结构类似这样：<br><img src="http://img.noback.top/2020-02-05-11-18-03.png" alt="2020-02-05-11-18-03"></p>
+<p>当我们在从官方拉去镜像的时候，他的操作也会实现这一步叠加的过程，记住 像我们平时使用的ubuntu centos nginx这样的docker镜像都不是最原始的镜像，他们也都是一层一层的文件系统base叠加起来的,比如拉去ubuntu镜像<br><img src="http://img.noback.top/2020-02-05-11-22-23.png" alt="2020-02-05-11-22-23"><br>他一共会拉去四层文件系统来完成整个ubuntu镜像的搭建，最后生成一个ubuntu的镜像，因此在外部看来他是单独的镜像文件，但其实他是由多个基础的文件系统通过联合文件系统叠加产生的。</p>
+<h2 id="docker镜像加载"><a href="#docker镜像加载" class="headerlink" title="docker镜像加载"></a>docker镜像加载</h2><p><img src="http://img.noback.top/2020-02-05-11-35-32.png" alt="2020-02-05-11-35-32"></p>
+<ul>
+<li>bootfs 在linux的开机过程中会用到bootfs,主要包含bootloader 和 kernel，bootloader 主要用于引导加载 kernel，当 kernel 被加载到内存中后kernel后，bootfs就会被umount掉。</li>
+<li>rootfs  rootfs (root file system) 包含的就是典型 Linux 系统中的/dev，/proc，/bin，/etc 等标准目录和文件,不同的linux发行版本，rootfs文件系统可能不通</li>
+</ul>
+<p><img src="http://img.noback.top/2020-02-05-12-04-07.png" alt="2020-02-05-12-04-07"><br>控制读写权限,传统的 Linux 加载 bootfs 时会先将 rootfs 设为 read-only，然后在系统自检之后将 rootfs 从 read-only 改为 read-write，然后我们就可以在 rootfs 上进行读写操作了。但 Docker 在 bootfs 自检完毕之后并不会把 rootfs 的 read-only 改为 read-write，而是利用 union mount（UnionFS 的一种挂载机制）将 image 中的其他的 layer 加载到之前的 read-only 的 rootfs层之上，每一层 layer 都是 rootfs 的结构，并且是read-only 的。所以，我们是无法修改一个已有镜像里面的 layer 的！只有当我们创建一个容器，也就是将 Docker 镜像进行实例化，系统会分配一层空的 read-write 的 rootfs ，用于保存我们做的修改。</p>
+<h2 id="镜像大小的问题"><a href="#镜像大小的问题" class="headerlink" title="镜像大小的问题"></a>镜像大小的问题</h2><p>为什么tomcat镜像大小大于centos镜像大小?<br><img src="http://img.noback.top/2020-02-05-12-13-04.png" alt="2020-02-05-12-13-04"><br>可以通过上面docker镜像的组成、加载两方面来解释<br>同样以kernel作为最底层文件系统，在centos镜像中，上层只放了一个centos的rootfs，而tomcat需要写入多层base文件系统，比如jdk8 tomcat 等等，因此tomcat的镜像大小大于centos的镜像大小</p>
+<h2 id="镜像分层的好处"><a href="#镜像分层的好处" class="headerlink" title="镜像分层的好处"></a>镜像分层的好处</h2><p><font color='red'>共享资源</font><br>有多个镜像都从相同的base镜像构建而来，那么宿主机只需在磁盘上保存一份base镜像，同时内存中也只需加载一份base镜像，就可以为所有容器服务了，饿而且镜像的每一层都可以被共享</p>
+<h2 id="创建镜像"><a href="#创建镜像" class="headerlink" title="创建镜像"></a>创建镜像</h2><ul>
+<li>基于已有镜像的容器创建<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 提交一个容器成为一个新的镜像</span>
+docker commit <span class="token punctuation">[</span>OPTIONS<span class="token punctuation">]</span> CONTAINER <span class="token punctuation">[</span>RSPOSITORY<span class="token punctuation">[</span>:TAG<span class="token punctuation">]</span><span class="token punctuation">]</span>
+<span class="token comment" spellcheck="true"># -a; --author="" 作者信息</span>
+<span class="token comment" spellcheck="true"># -m; --message="" 提交信息</span>
+<span class="token comment" spellcheck="true"># -p; --pause=true 提交时暂停容器运行</span></code></pre>
+创建流程<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># pull 一个新的image </span>
+docker pull ubuntu
+<span class="token comment" spellcheck="true"># 改变ubuntu 使其与原来image不同</span>
+docker run -it ccc6e87d482b /bin/bash
+<span class="token keyword">echo</span> <span class="token string">"update file "</span> <span class="token operator">></span> <span class="token function">test</span>
+<span class="token keyword">exit</span>
+<span class="token comment" spellcheck="true"># 返回前记住当前容器的名字，一般都是主机名</span>
+<span class="token comment" spellcheck="true"># 提交当前容器为新的镜像文件</span>
+docker commit -m <span class="token string">"update - add a file in ubuntu "</span> -a <span class="token string">"hzj"</span> dc758c368fda <span class="token function">test</span>
+<span class="token comment" spellcheck="true"># 查看当前镜像列表</span>
+root:~<span class="token comment" spellcheck="true"># docker images</span>
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+<span class="token function">test</span>                latest              41f1d7eba8f3        10 seconds ago      64.2 MB
+docker.io/ubuntu    latest              ccc6e87d482b        6 days ago          64.2 MB</code></pre>
+</li>
+<li>基于本地模版导入<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 下载模版压缩包</span>
+<span class="token function">wget</span> xx
+<span class="token comment" spellcheck="true"># 根据压缩包导入成镜像</span>
+<span class="token function">cat</span> ubuntu-14.04.tar.gz <span class="token operator">|</span> docker <span class="token function">import</span> - ubuntu:14.04 
+</code></pre>
+</li>
+</ul>
+<h1 id="保存镜像到本地文件"><a href="#保存镜像到本地文件" class="headerlink" title="保存镜像到本地文件"></a>保存镜像到本地文件</h1><p>docker save -o ubuntu_latest.tar ubuntu:latest</p>
+<h1 id="载入镜像"><a href="#载入镜像" class="headerlink" title="载入镜像"></a>载入镜像</h1><p>docker load –input ubuntu_latest.tar<br>docker load &lt; ubuntu_latest.tar</p>
+<pre><code>- 基于Dockerfile创建
+
+&lt;font color=&#39;red&#39;&gt;如何创建一个hello-world的docker镜像&lt;/font&gt; 
+1. 创建一个输出hello world的c文件
+```c
+#include&lt;stdio.h&gt;
+
+int main()
+&#123;
+  printf(&quot;hello world\n&quot;);
+&#125;</code></pre>
+<ol start="2">
+<li>编译c文件<pre class=" language-bash"><code class="language-bash">gcc -static hello.c -o hello </code></pre>
+</li>
+<li>编写dockerfile<pre class=" language-bash"><code class="language-bash">FROM scratch
+ADD hello /
+CMD <span class="token punctuation">[</span><span class="token string">'/hello'</span><span class="token punctuation">]</span></code></pre>
+</li>
+<li>新建helloworld镜像<pre class=" language-bash"><code class="language-bash">docker -f /tmp/dockerfile -t helloworld <span class="token keyword">.</span> </code></pre>
+</li>
+</ol>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>标签：</span>
+                <span class="tag">
+                    
+                    
+                    <a href="/tags/docker/"># docker</a>
+                    
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript：window.history.back();">后退</a>
+                <span>· </span>
+                <a href="/">主页</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            <a class="prev" rel="prev" href="/2020/02/05/blog_back_new/docker/docker%E5%AE%B9%E5%99%A8%E6%95%B0%E6%8D%AE%E5%8D%B7/">docker容器数据卷</a>
+            
+            
+            <a class="next" rel="next" href="/2020/02/04/blog_back_new/docker/docker%E5%9F%BA%E7%A1%80/">docker基础</a>
+            
+        </section>
+    </article>
+</div>
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+    </div>
+</footer>
+
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

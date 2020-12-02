@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="hzjsea">
+
+
+
+
+
+
+<title>小玩意 | hzjsea</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+    <script src="/js/jquery.min.js"></script>
+    
+
+
+
+    
+    
+        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+    
+
+
+
+
+    <script>
+    function searchToggle() {
+        const width = $(document.body).width()
+        if(width > 479) {
+            return;
+        }
+        const search = $('.search');
+        const searchForm = $('.form-search')
+
+        if(!search.hasClass("mobile-search")) {
+            search.addClass("mobile-search");
+        } else {
+            search.removeClass("mobile-search");
+        } 
+    }
+
+    function search(searchInputEl, formEl, flag) {
+        const path = "/" + "search.json"; // 可以在public 下查看这个search.json
+        $(formEl).submit(function(e){
+            e.preventDefault();
+            let target = null
+            if(searchInputEl == null) {
+                const screenWidth = $(document.body).width();
+                target = screenWidth > 479 ? $('#pc-search-input') : $('#mobile-search-input');
+                console.log(target);
+            } else {
+                target = $(searchInputEl)
+            }
+
+            if(!flag && target.val() === '') {
+                return ;
+            }
+
+            $("#u-search").fadeIn(500, function() {
+                $("body > .wrapper").addClass("modal-active");
+
+                $.ajax({
+                    url: path,
+                    dataType: "json",
+                    beforeSend: function (xhr) {
+                        $input = target.val();
+                        $(".form-input").val($input);
+                        const loadingBar = $('.search-loading-bar') 
+                        loadingBar.css({
+                            width:'100%',
+                            display: 'block'
+                        });
+                    },
+                    success: function( datas ) {
+                        console.log(datas);
+                        const $resultPanel = $(".modal-body")[0];
+                        let str = `<ul class="modal-results">`;
+                        var keywords = $(".form-input").val().trim().toLowerCase().split(/[\s\-]+/);
+                        $resultPanel.innerHTML = "";
+                        let hasResult = false
+                        let text = `<div class="no-result">找不到与关键词相关的内容....</div>`;
+
+                        if ($(".form-input").val().trim().length <= 0) {
+                            // 没有结果
+                            $resultPanel.innerHTML = text;
+                            return;
+                        }
+                        datas.forEach(function (data, index) {
+                            var isMatch = true;
+                            if (!data.title || data.title.trim() === '') {
+                                data.title = "Untitled";
+                            }
+                            var data_title = data.title.trim().toLowerCase();
+                            var data_content = data.content && data.content.trim().replace(/<[^>]+>/g, "").toLowerCase() || '';
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            // only match artiles with not empty contents
+                            if (data_content !== '') {
+                                keywords.forEach(function (keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        hasResult = true
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            } else {
+                                isMatch = false;
+                            }
+                            // show search results
+                            if (isMatch) {
+                                str += `<li class='result-item'><a href='${data_url}' class='result-item-detail'> <span class="title">${data_title}</span>`;
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 200 characters
+                                    var start = first_occur - 40;
+                                    var end = first_occur + 160;
+
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+
+                                    if (start == 0) {
+                                        end = 200;
+                                    }
+
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+
+                                    var match_content = content.substring(start, end);
+
+                                    // highlight all keywords
+                                    keywords.forEach(function (keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, `<em class="search-keyword">${keyword}</em>`);
+                                    });
+
+                                    str += `<span class="content"> ${match_content} ...</span></a>`;
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        if(hasResult) {
+                            $resultPanel.innerHTML = str;
+                        } else {
+                            $resultPanel.innerHTML = text;
+                        }
+
+                    },
+                    complete: function() {
+                        setTimeout(() => {
+                                const loadingBar = $('.search-loading-bar') 
+                                loadingBar.css({
+                                    width:'0%',
+                                    display: 'none'
+                                });
+                        }, 300)
+                    }
+                });
+            })
+
+        });
+    }
+
+    $(document).ready(function() {
+        $('.modal-close').click(function () { 
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+
+        $('.modal-overlay').click(function() {
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+        search(null, ".form-search", false)
+        search("#u-search-modal-form .form-input", ".u-search-modal-form", true)
+    })
+</script>
+
+
+
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo"><a href="/">hzjsea</a></div>
+        <div class="menu navbar-right">
+            
+            
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="pc-search-input"/>
+        </form>
+    </div>
+
+
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+            <input id="switch_default" type="checkbox" class="switch_default">
+            <label for="switch_default" class="toggleBtn"></label>
+        </div>
+    </div>
+</nav>
+
+
+<nav class="navbar-mobile" id="nav-mobile">
+    <div class="container">
+        <div class="navbar-header">
+            <div>
+                <a href="/">hzjsea</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+            </div>
+            <div class="navbar-mobile-right">
+                
+                
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="mobile-search-input"/>
+        </form>
+    </div>
+
+
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; 目录</div>
+            </div>
+            
+        </div>
+        <div class="menu" id="mobile-menu">
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+        </div>
+    </div>
+</nav>
+
+        <div class="main">
+			<!-- Chic/layout.ejs -->
+ <div id="u-search">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="container">
+                    <form id="u-search-modal-form" class="u-search-modal-form">
+                        <button type="submit" class="form-submit-btn">
+                            <img src="/image/search.png" class="search-btn-img" />
+                        </button>
+                        <input placeholder="搜索文章。。。" class="form-input" id="modal-form-input">
+                    </form>
+                    <a class="modal-close">x</a>
+                </div>
+                <div class="search-loading">
+                    <div class="search-loading-bar"></div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <!-- ul 格式如下 -->
+                <!-- <ul class="modal-results">
+                    <li class="result-item">
+                        <a class="result-item-detail">
+                            <span class="title">页面配置</span>
+                            <span class="content">
+                                content
+                            </span>
+                        </a>
+                    </li>
+                </ul> -->
+            </div>
+        </div>
+        <div class="modal-overlay"></div>
+    </div>
+            <div class="container">
+    
+    
+    <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">全部展开</a>
+        <a onclick="go_top()">回到顶部</a>
+        <a onclick="go_bottom()">回到底部</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "全部折叠"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "全部展开"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">小玩意</h1>
+            
+            <div class="post-meta">
+                
+                作者： <a itemprop="author" rel="author" href="/">hzjsea</a>&nbsp;
+                
+
+                
+                <span class="post-time">
+                    创建日期： <a
+                        href="#">February 14, 2020&nbsp;&nbsp;15:35:13</a>
+                </span>&nbsp;
+                
+                
+                <span class="post-category">
+                    分类：
+                    
+                    <a href="/categories/machine/">machine</a>&nbsp;
+                    
+                </span>
+                
+                
+                状态：<a href="#">SNAPSHOT</a>
+                
+            </div>
+            
+        </header>
+
+        <div class="post-content">
+            <p>hello,new-world 👨</p>
+<a id="more"></a>
+
+
+<h1 id="hello-new-world"><a href="#hello-new-world" class="headerlink" title="hello,new-world"></a>hello,new-world</h1><p>cmd.fm<br>命令行的fm电台<br><a target="_blank" rel="noopener" href="https://cmd.to/fm">https://cmd.to/fm</a></p>
+<p><img src="http://img.noback.top/2020-02-14-15-38-42.png" alt="2020-02-14-15-38-42"></p>
+<h1 id="ffmpeg"><a href="#ffmpeg" class="headerlink" title="ffmpeg"></a>ffmpeg</h1><p>视频流下载器，可以使用他+chrome的猴油脚本，批量下载B站的视频<br><a target="_blank" rel="noopener" href="https://ffmpeg.org/ffmpeg.html#Description">https://ffmpeg.org/ffmpeg.html#Description</a><br><a target="_blank" rel="noopener" href="https://blog.fat-nerds.com/dot-nerd/install-ffmpeg-mac-os-in-chinese/">https://blog.fat-nerds.com/dot-nerd/install-ffmpeg-mac-os-in-chinese/</a></p>
+<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 安装</span>
+brew <span class="token function">install</span> ffmpeg --force
+<span class="token comment" spellcheck="true"># 查看版本</span>
+brew <span class="token function">link</span> ffmpeg
+<span class="token comment" spellcheck="true"># 写在</span>
+brew uninstall ffmpeg</code></pre>
+<h1 id="youtobe-dl"><a href="#youtobe-dl" class="headerlink" title="youtobe-dl"></a>youtobe-dl</h1><p>视频下载器，和you-get类似，但是比you-get强大<br>下载B站视频的时候，明显可以感觉到两者下载速度上面的差别</p>
+<h1 id="将-Amazon-Kindle-的格式转换成为你想要的格式"><a href="#将-Amazon-Kindle-的格式转换成为你想要的格式" class="headerlink" title="将 Amazon Kindle 的格式转换成为你想要的格式"></a>将 Amazon Kindle 的格式转换成为你想要的格式</h1><p><a target="_blank" rel="noopener" href="https://yamdestiny.xyz/2019/05/08/how-to-convert-amazon-kindle-format-to-epub-format/">https://yamdestiny.xyz/2019/05/08/how-to-convert-amazon-kindle-format-to-epub-format/</a><br><a target="_blank" rel="noopener" href="https://maajiaa.wordpress.com/2018/07/19/kindle-to-calibre/">https://maajiaa.wordpress.com/2018/07/19/kindle-to-calibre/</a></p>
+<p>Kindle for Mac 的电子书存放路径为：/Users/你的用户名/Library/Application Support/Kindle/My Kindle Content。<br>Kindle for Windows 的电子书存放路径为：C:\Users\你的用户名\Documents\My Kindle Content。</p>
+<h2 id="软件合集"><a href="#软件合集" class="headerlink" title="软件合集"></a>软件合集</h2><ul>
+<li>calibre  强大的电子书管理工具</li>
+<li>DeDRM 插件，calibre 适用的去除 DRM 的插件工具</li>
+<li>Amazon Kindle 获取的待转换的电子书，格式如：.azw</li>
+</ul>
+<p>之前一直在用kindle在pad上看书，后面想要转换到mac上来看，但是mac上的kindle真的是差的想吐血，卡顿十分严重。<br>为了方便在多个平台内部浏览看书，也不想放弃买电子书的这个念头，所以打算做个格式转换，并且使用calibe来保存</p>
+<p><code>2020-05-19 14:05:43</code><br>首先的话是<code>kindle for mac</code>这个软件在新版本之后 出现了一个叫<code>.kcr</code>的后缀名,这个是kindle新的一种书籍加密方式，现在还没有什么破解的办法，<br>因此我们要下载老版本的<code>kindle for mac</code> 来生成<code>.azw</code>后缀名的文件</p>
+<h2 id="安装calibre"><a href="#安装calibre" class="headerlink" title="安装calibre"></a>安装calibre</h2><ul>
+<li>官网下载<br><a target="_blank" rel="noopener" href="https://calibre-ebook.com/">https://calibre-ebook.com/</a></li>
+<li>homebrew安装<br><code>$ brew cask install calibre</code></li>
+</ul>
+<p><img src="http://img.noback.top/2020-05-19-14-11-13.png" alt="2020-05-19-14-11-13"><br>尽量用下面那个备用地址下载，上面那个经常会出现网络错误</p>
+<h2 id="安装DeDRM"><a href="#安装DeDRM" class="headerlink" title="安装DeDRM"></a>安装DeDRM</h2><p>下载地址<a target="_blank" rel="noopener" href="https://github.com/apprenticeharper/DeDRM_tools/releases">https://github.com/apprenticeharper/DeDRM_tools/releases</a></p>
+<pre class=" language-bash"><code class="language-bash">1. 打开 calibre，查看选项或偏好选项（Preferences）
+2. 点击最下面的高级选项的插件（Plugins）选项，打开插件管理
+3. 点击右下角的从文件加载插件（Load plugin from file），在弹出窗口中，选到刚才解压出来的文件夹中的 DeDRM_calibre_plugin/DeDRM_plugin.zip 文件此时会提示有风险问是否继续安装，选择 是（Yes） 即可
+4. 然后会提醒需要重启才能生效，点击 确定（Confirm）就可以在文件类型插件（File <span class="token function">type</span> plugins）分类中看到 DeDRM，点击左下角的 应用（Apply）
+5. 重启 calibre</code></pre>
+<p>配置DeDRM</p>
+<pre class=" language-bash"><code class="language-bash">在文件类型插件（File <span class="token function">type</span> plugins）分类中看到的 DeDRM，可以选中双击，打开配置窗口。
+根据电子书的来源不同，都需要单独配置。比如常用的 elnk Kindle ebooks 和 Kindle <span class="token keyword">for</span> Mac/PC ebooks 选项
+elnk Kindle ebooks，单击后会打开一个小窗口，点击 +，添加 Kindle 设备的串号（针对 Kindle 设备，从 Amazon 网站上点击通过 USB 传输，下载的电子书）
+Kindle <span class="token keyword">for</span> Mac/PC ebooks，单击后会打开一个小窗口，点击 +，添加默认 key（针对 Mac/PC App 下载的电子书）</code></pre>
+<h2 id="下载kindle-for-mac"><a href="#下载kindle-for-mac" class="headerlink" title="下载kindle for mac"></a>下载kindle for mac</h2><p><code>brew cask install https://raw.githubusercontent.com/Homebrew/homebrew-cask/dd6783ffac00f0fc652c2c4266aa14a4041e1b2b/Casks/kindle.rb</code><br>上面这个是旧版本的kindle 上去以后把自动更新关了</p>
+<h2 id="转换电子书"><a href="#转换电子书" class="headerlink" title="转换电子书"></a>转换电子书</h2><pre class=" language-bash"><code class="language-bash">打开 calibre，将 My Kindle Content 中的 .azw 或从 Amazon 网站上下载的文件拖到 calibre 中
+在书籍列表中，双击导入的书，如果能够阅读，说明已完成 DeDRM
+在书籍列表中，右键该书，选择转换书籍（Convert books -<span class="token operator">></span> Convert individually），在弹出窗口中，右上角选择输出格式，点击右下角确认，完成转换
+在书籍列表中，右键该书，选择打开所在目录（Open Containing folder），转换后的文件，就在该文件夹中</code></pre>
+<h1 id="流程图基本语法"><a href="#流程图基本语法" class="headerlink" title="流程图基本语法"></a>流程图基本语法</h1><h3 id="排列布局"><a href="#排列布局" class="headerlink" title="排列布局"></a>排列布局</h3><p>排列布局分为从上到下(TB or TD) 从下到上(BT) 从左到右(LR) 从右到左(RL)</p>
+<ul>
+<li>TB  top bottom</li>
+<li>TD  top default;like TB</li>
+<li>BT  bottom top</li>
+<li>LR  left right</li>
+<li>RL  right left</li>
+</ul>
+<pre class=" language-mermaid"><code class="language-mermaid">graph TD;
+    A --> B</code></pre>
+<h3 id="节点样式"><a href="#节点样式" class="headerlink" title="节点样式"></a>节点样式</h3><pre class=" language-bash"><code class="language-bash">graph LR
+    <span class="token function">id</span>   <span class="token comment" spellcheck="true"># 这个id是节点名字，在没有内容的情况下 节点默认显示id</span>
+    id1<span class="token punctuation">[</span>this is the text <span class="token keyword">in</span> the box <span class="token punctuation">]</span>   <span class="token comment" spellcheck="true"># 设置节点文本 方框</span>
+    id1<span class="token punctuation">(</span>this is the text <span class="token keyword">in</span> the box <span class="token punctuation">)</span>   <span class="token comment" spellcheck="true"># 设置节点文本 圆角框</span>
+    id1<span class="token punctuation">(</span><span class="token punctuation">[</span>this is the text <span class="token keyword">in</span> the box<span class="token punctuation">]</span><span class="token punctuation">)</span>  <span class="token comment" spellcheck="true"># 设置节点文本 椭圆框</span>
+    id1<span class="token punctuation">[</span><span class="token punctuation">[</span>this is the text <span class="token keyword">in</span> the box<span class="token punctuation">]</span><span class="token punctuation">]</span>  <span class="token comment" spellcheck="true"># 设置节点文本 子例程</span>
+    id1<span class="token punctuation">[</span><span class="token punctuation">(</span>this is the text <span class="token keyword">in</span> the box<span class="token punctuation">)</span><span class="token punctuation">]</span>  <span class="token comment" spellcheck="true"># 设置节点文本 圆柱状</span>
+    id1<span class="token variable"><span class="token punctuation">((</span>this is the text in the box<span class="token punctuation">))</span></span>  <span class="token comment" spellcheck="true"># 设置节点文本 圆形</span>
+    id1<span class="token operator">></span>this is the text <span class="token keyword">in</span> the box<span class="token punctuation">]</span>    <span class="token comment" spellcheck="true"># 设置节点文本 非对称形状</span>
+    id1<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;this is the text in the box&amp;#125;    # 设置节点文本 菱形</span>
+    id1<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;&amp;#123;this is the text in the box&amp;#125;&amp;#125;  # 设置节点文本 六角形</span>
+    id1<span class="token punctuation">[</span>/this is the text <span class="token keyword">in</span> the box/<span class="token punctuation">]</span>  <span class="token comment" spellcheck="true"># 设置节点文本 平行四边形</span>
+    id1<span class="token punctuation">[</span>/this is the text <span class="token keyword">in</span> the box\<span class="token punctuation">]</span>  <span class="token comment" spellcheck="true"># 梯形</span>
+    id1<span class="token punctuation">[</span>\this is the text <span class="token keyword">in</span> the box/<span class="token punctuation">]</span>  <span class="token comment" spellcheck="true"># 倒角梯形  </span></code></pre>
+<pre class=" language-mermaid"><code class="language-mermaid">graph LR
+    id
+    id1[this is the text in the box ]
+    id2(this is the text in the box ) 
+    id3([this is the text in the box])
+    id4[[this is the text in the box]]
+    id5[(this is the text in the box)]
+    id6((this is the text in the box))
+    id7>this is the text in the box]    
+    id8&#123;this is the text in the box&#125; 
+    id10[/this is the text in the box/]  
+    id11[/this is the text in the box\]</code></pre>
+<h3 id="链接样式"><a href="#链接样式" class="headerlink" title="链接样式"></a>链接样式</h3><pre class=" language-bash"><code class="language-bash">graph LR
+    A --<span class="token operator">></span> B <span class="token comment" spellcheck="true"># 箭头链接</span>
+    C --- D <span class="token comment" spellcheck="true"># 虚连接 </span>
+    E -- this is text --- F <span class="token comment" spellcheck="true"># 链接上的文字</span>
+    G ---<span class="token operator">|</span>this is text<span class="token operator">|</span>H  <span class="token comment" spellcheck="true">#链接上的文字</span>
+    I --<span class="token operator">></span><span class="token operator">|</span>this is text<span class="token operator">|</span>J  <span class="token comment" spellcheck="true">#箭头和文字的连接</span>
+    K -- this is text ---<span class="token operator">></span> M 
+    A -.-<span class="token operator">></span> B  <span class="token comment" spellcheck="true"># 虚线连接</span>
+    A -. text <span class="token keyword">.</span> -<span class="token operator">></span> B <span class="token comment" spellcheck="true"># 带有文字的虚线连接</span>
+    A <span class="token operator">==</span><span class="token operator">></span> B  <span class="token comment" spellcheck="true"># 粗连接</span>
+
+</code></pre>
+<pre class=" language-mermaid"><code class="language-mermaid">graph LR
+    A --syn=1,client_id--> B
+    E -- this is text --- F
+    A --syn=1,client_id+1,service_id--> B
+    B --syn=0,client_id+1,service_id+1--> A</code></pre>
+<h3 id="官网"><a href="#官网" class="headerlink" title="官网"></a>官网</h3><p><a target="_blank" rel="noopener" href="https://mermaid-js.github.io/mermaid/#/flowchart">https://mermaid-js.github.io/mermaid/#/flowchart</a></p>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>标签：</span>
+                <span class="tag">
+                    
+                    
+                    <a href="/tags/machine/"># machine</a>
+                    
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript：window.history.back();">后退</a>
+                <span>· </span>
+                <a href="/">主页</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            <a class="prev" rel="prev" href="/2020/02/23/blog_back_new/mysql/mysql%E4%BD%BF%E7%94%A8/">mysql基础</a>
+            
+            
+            <a class="next" rel="next" href="/2020/02/14/blog_back_new/docker/CI-CD%E5%AE%9E%E8%B7%B5/">CI-CD实践</a>
+            
+        </section>
+    </article>
+</div>
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+    </div>
+</footer>
+
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

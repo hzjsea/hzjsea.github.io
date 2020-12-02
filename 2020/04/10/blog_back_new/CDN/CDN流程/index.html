@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="hzjsea">
+
+
+
+
+
+
+<title>CDN流程 | hzjsea</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+    <script src="/js/jquery.min.js"></script>
+    
+
+
+
+    
+    
+        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+    
+
+
+
+
+    <script>
+    function searchToggle() {
+        const width = $(document.body).width()
+        if(width > 479) {
+            return;
+        }
+        const search = $('.search');
+        const searchForm = $('.form-search')
+
+        if(!search.hasClass("mobile-search")) {
+            search.addClass("mobile-search");
+        } else {
+            search.removeClass("mobile-search");
+        } 
+    }
+
+    function search(searchInputEl, formEl, flag) {
+        const path = "/" + "search.json"; // 可以在public 下查看这个search.json
+        $(formEl).submit(function(e){
+            e.preventDefault();
+            let target = null
+            if(searchInputEl == null) {
+                const screenWidth = $(document.body).width();
+                target = screenWidth > 479 ? $('#pc-search-input') : $('#mobile-search-input');
+                console.log(target);
+            } else {
+                target = $(searchInputEl)
+            }
+
+            if(!flag && target.val() === '') {
+                return ;
+            }
+
+            $("#u-search").fadeIn(500, function() {
+                $("body > .wrapper").addClass("modal-active");
+
+                $.ajax({
+                    url: path,
+                    dataType: "json",
+                    beforeSend: function (xhr) {
+                        $input = target.val();
+                        $(".form-input").val($input);
+                        const loadingBar = $('.search-loading-bar') 
+                        loadingBar.css({
+                            width:'100%',
+                            display: 'block'
+                        });
+                    },
+                    success: function( datas ) {
+                        console.log(datas);
+                        const $resultPanel = $(".modal-body")[0];
+                        let str = `<ul class="modal-results">`;
+                        var keywords = $(".form-input").val().trim().toLowerCase().split(/[\s\-]+/);
+                        $resultPanel.innerHTML = "";
+                        let hasResult = false
+                        let text = `<div class="no-result">找不到与关键词相关的内容....</div>`;
+
+                        if ($(".form-input").val().trim().length <= 0) {
+                            // 没有结果
+                            $resultPanel.innerHTML = text;
+                            return;
+                        }
+                        datas.forEach(function (data, index) {
+                            var isMatch = true;
+                            if (!data.title || data.title.trim() === '') {
+                                data.title = "Untitled";
+                            }
+                            var data_title = data.title.trim().toLowerCase();
+                            var data_content = data.content && data.content.trim().replace(/<[^>]+>/g, "").toLowerCase() || '';
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            // only match artiles with not empty contents
+                            if (data_content !== '') {
+                                keywords.forEach(function (keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        hasResult = true
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            } else {
+                                isMatch = false;
+                            }
+                            // show search results
+                            if (isMatch) {
+                                str += `<li class='result-item'><a href='${data_url}' class='result-item-detail'> <span class="title">${data_title}</span>`;
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 200 characters
+                                    var start = first_occur - 40;
+                                    var end = first_occur + 160;
+
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+
+                                    if (start == 0) {
+                                        end = 200;
+                                    }
+
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+
+                                    var match_content = content.substring(start, end);
+
+                                    // highlight all keywords
+                                    keywords.forEach(function (keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, `<em class="search-keyword">${keyword}</em>`);
+                                    });
+
+                                    str += `<span class="content"> ${match_content} ...</span></a>`;
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        if(hasResult) {
+                            $resultPanel.innerHTML = str;
+                        } else {
+                            $resultPanel.innerHTML = text;
+                        }
+
+                    },
+                    complete: function() {
+                        setTimeout(() => {
+                                const loadingBar = $('.search-loading-bar') 
+                                loadingBar.css({
+                                    width:'0%',
+                                    display: 'none'
+                                });
+                        }, 300)
+                    }
+                });
+            })
+
+        });
+    }
+
+    $(document).ready(function() {
+        $('.modal-close').click(function () { 
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+
+        $('.modal-overlay').click(function() {
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+        search(null, ".form-search", false)
+        search("#u-search-modal-form .form-input", ".u-search-modal-form", true)
+    })
+</script>
+
+
+
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo"><a href="/">hzjsea</a></div>
+        <div class="menu navbar-right">
+            
+            
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="pc-search-input"/>
+        </form>
+    </div>
+
+
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+            <input id="switch_default" type="checkbox" class="switch_default">
+            <label for="switch_default" class="toggleBtn"></label>
+        </div>
+    </div>
+</nav>
+
+
+<nav class="navbar-mobile" id="nav-mobile">
+    <div class="container">
+        <div class="navbar-header">
+            <div>
+                <a href="/">hzjsea</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+            </div>
+            <div class="navbar-mobile-right">
+                
+                
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="mobile-search-input"/>
+        </form>
+    </div>
+
+
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; 目录</div>
+            </div>
+            
+        </div>
+        <div class="menu" id="mobile-menu">
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+        </div>
+    </div>
+</nav>
+
+        <div class="main">
+			<!-- Chic/layout.ejs -->
+ <div id="u-search">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="container">
+                    <form id="u-search-modal-form" class="u-search-modal-form">
+                        <button type="submit" class="form-submit-btn">
+                            <img src="/image/search.png" class="search-btn-img" />
+                        </button>
+                        <input placeholder="搜索文章。。。" class="form-input" id="modal-form-input">
+                    </form>
+                    <a class="modal-close">x</a>
+                </div>
+                <div class="search-loading">
+                    <div class="search-loading-bar"></div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <!-- ul 格式如下 -->
+                <!-- <ul class="modal-results">
+                    <li class="result-item">
+                        <a class="result-item-detail">
+                            <span class="title">页面配置</span>
+                            <span class="content">
+                                content
+                            </span>
+                        </a>
+                    </li>
+                </ul> -->
+            </div>
+        </div>
+        <div class="modal-overlay"></div>
+    </div>
+            <div class="container">
+    
+    
+    <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">全部展开</a>
+        <a onclick="go_top()">回到顶部</a>
+        <a onclick="go_bottom()">回到底部</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "全部折叠"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "全部展开"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">CDN流程</h1>
+            
+            <div class="post-meta">
+                
+                作者： <a itemprop="author" rel="author" href="/">hzjsea</a>&nbsp;
+                
+
+                
+                <span class="post-time">
+                    创建日期： <a
+                        href="#">April 10, 2020&nbsp;&nbsp;10:56:04</a>
+                </span>&nbsp;
+                
+                
+                <span class="post-category">
+                    分类：
+                    
+                    <a href="/categories/%E5%85%A8%E6%A0%88/">全栈</a>&nbsp;
+                    
+                </span>
+                
+                
+                状态：<a href="#">SNAPSHOT</a>
+                
+            </div>
+            
+        </header>
+
+        <div class="post-content">
+            <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+<ul>
+<li><a href="#cdn%E6%B5%81%E7%A8%8B">CDN流程</a><ul>
+<li><a href="#cname%E4%B8%8Ea%E8%AE%B0%E5%BD%95">CNAME与A记录</a><ul>
+<li><a href="#a%E8%AE%B0%E5%BD%95">A记录</a></li>
+<li><a href="#cname%E8%AE%B0%E5%BD%95">CNAME记录</a></li>
+</ul>
+</li>
+<li><a href="#%E6%AD%A3%E5%90%91%E4%BB%A3%E7%90%86%E4%B8%8E%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86">正向代理与反向代理</a><ul>
+<li><a href="#%E6%AD%A3%E5%90%91%E4%BB%A3%E7%90%86">正向代理</a></li>
+<li><a href="#%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86">反向代理</a></li>
+<li><a href="#%E7%BC%93%E5%AD%98%E6%A3%80%E6%B5%8B">缓存检测</a></li>
+</ul>
+</li>
+<li><a href="#cdn%E5%9F%BA%E7%A1%80%E6%B5%81%E7%A8%8B">CDN基础流程</a><ul>
+<li><a href="#cdn%E5%9B%9E%E6%BA%90%E6%8B%89%E5%8F%96%E8%B5%84%E6%BA%90%E7%9A%84%E5%9C%BA%E6%99%AF">CDN回源拉取资源的场景</a></li>
+<li><a href="#%E6%9F%A5%E7%9C%8B%E8%87%AA%E5%B7%B1cname%E7%9A%84%E8%A7%A3%E6%9E%90%E6%B5%81%E7%A8%8B">查看自己CNAME的解析流程</a></li>
+</ul>
+</li>
+<li><a href="#%E5%88%AB%E4%BA%BA%E7%9A%84%E8%A7%A3%E9%87%8A">别人的解释</a></li>
+</ul>
+</li>
+</ul>
+<!-- /code_chunk_output -->
+
+<p>learn</p>
+<a id="more"></a>
+<h1 id="CDN流程"><a href="#CDN流程" class="headerlink" title="CDN流程"></a>CDN流程</h1><p><a target="_blank" rel="noopener" href="https://tool.chinaz.com/dns/?type=5&amp;host=image.noback.top&amp;ip=">https://tool.chinaz.com/dns/?type=5&amp;host=image.noback.top&amp;ip=</a></p>
+<h2 id="CNAME与A记录"><a href="#CNAME与A记录" class="headerlink" title="CNAME与A记录"></a>CNAME与A记录</h2><p>了解一下域名解析中的A记录与CNAME记录<br>域名解析就是国际域名或者国内域名以及中文域名等域名申请后做的到IP地址的转换过程。IP地址是网路上标识您站点的数字地址，为了简单好记，采用域名来代替ip地址标识站点地址。<br><font color='red'>域名的解析工作由DNS服务器完成</font><br><img src="http://img.noback.top/2020-04-10-10-57-57.png" alt="2020-04-10-10-57-57"></p>
+<h3 id="A记录"><a href="#A记录" class="headerlink" title="A记录"></a>A记录</h3><p>别名的一种用来记录域名到IP的过程，你可以有多个A记录，也就是多个二级域名记录来指定一个IP<br><img src="http://img.noback.top/2020-04-10-11-02-26.png" alt="2020-04-10-11-02-26"><br>这是一个我的github-page的地址，做了A记录</p>
+<h3 id="CNAME记录"><a href="#CNAME记录" class="headerlink" title="CNAME记录"></a>CNAME记录</h3><p>别名的一种用来记录域名到域名的过程<br><img src="http://img.noback.top/2020-04-10-11-03-52.png" alt="2020-04-10-11-03-52"><br>这里我用作了CNAME到我上一个A记录那里,我这里作为博客记录所以用了blog.noback.top作为记录<br>如果是作为图片服务器，你可以CNAME成Image.noback.top作为记录</p>
+<h2 id="正向代理与反向代理"><a href="#正向代理与反向代理" class="headerlink" title="正向代理与反向代理"></a>正向代理与反向代理</h2><p><a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000018262215">https://segmentfault.com/a/1190000018262215</a></p>
+<font color='red'>
+正向代理代理的对象是客户端，比如翻墙
+反向代理代理的对象是服务端，比如内网穿透
+
+</font>
+
+
+
+<p>出现这个概念，基本和Nginx跑不掉了<br>Nginx的功能 </p>
+<ol>
+<li>代理服务器缓存</li>
+<li>正反向代理</li>
+<li>http服务器</li>
+<li>负载均衡</li>
+</ol>
+<h3 id="正向代理"><a href="#正向代理" class="headerlink" title="正向代理"></a>正向代理</h3><p>类似于翻墙，客户和代理服务器在在一端，当客户向后端服务器发送信息的时候，会先交由代理服务器后转发至互联网，并将内容传递给后端服务器，后端服务器接收后响应内容再交由代理服务器转发给客户。客户端必须要进行一些特别的设置才能使用正向代理。<br><img src="http://img.noback.top/2020-04-10-11-13-35.png" alt="2020-04-10-11-13-35"><br>你可以理解为客户本身无法访问客户端，无论是墙内墙外还是内网外网，本身是无法访问的，但是通过代理服务器就可以做到。</p>
+<h3 id="反向代理"><a href="#反向代理" class="headerlink" title="反向代理"></a>反向代理</h3><p>反向代理是透明的，他不会向用户展示后端真实的服务器，而是想用户展示了一个反向代理服务器，当用户需要获取数据的时候，他只能向反向代理服务器发送一个请求，代理服务器手动请求后，负载均衡，缓存检测等等操作，反应到真实服务器上去，后端服务器再返回内容通过代理服务器转发到用户身上<br><img src="http://img.noback.top/2020-04-10-11-20-42.png" alt="2020-04-10-11-20-42"><br>一般用反向代理做负载均衡的时候，都会暴露两台机器做NGINX+keepalive+lvs做公网机器，同时也有内网的IP  用户访问公网，代理服务器转发流量到只有内网IP的服务器集群 再到内网机器做响应这样很大程度上的保护了内网机器的安全性</p>
+<h3 id="缓存检测"><a href="#缓存检测" class="headerlink" title="缓存检测"></a>缓存检测</h3><p>只要是代理服务器都有缓存检测这个内容，也就是无论是正向代理(直接请求真实服务器)还是反向代理(请求代理服务器，间接请求真实服务器)都要经过代理服务器，这个时候第一次请求会在代理服务上做一些缓存，当第二次再次请求的时候 回去查看这些内容，如果请求的有缓存在则直接返回，不请求真实服务器，如果没有缓存，则需要 <font color='red'>回源</font> 回到源点(真实服务器)上拿数据</p>
+<h2 id="CDN基础流程"><a href="#CDN基础流程" class="headerlink" title="CDN基础流程"></a>CDN基础流程</h2><p><img src="http://img.noback.top/2020-04-10-11-36-24.png" alt="2020-04-10-11-36-24"><br><img src="http://img.noback.top/2020-04-10-11-39-53.png" alt="2020-04-10-11-39-53"></p>
+<h3 id="CDN回源拉取资源的场景"><a href="#CDN回源拉取资源的场景" class="headerlink" title="CDN回源拉取资源的场景"></a>CDN回源拉取资源的场景</h3><p>当CDN节点没有缓存用户请求的内容时，会回源拉取资源。<br>当CDN节点上缓存的内容已过期时，会回源拉取资源。</p>
+<h3 id="查看自己CNAME的解析流程"><a href="#查看自己CNAME的解析流程" class="headerlink" title="查看自己CNAME的解析流程"></a>查看自己CNAME的解析流程</h3><p>dig 如下</p>
+<pre class=" language-bash"><code class="language-bash">➜  linux git:<span class="token punctuation">(</span>master<span class="token punctuation">)</span> ✗ <span class="token function">dig</span> image.noback.top
+
+<span class="token punctuation">;</span> <span class="token operator">&lt;&lt;</span><span class="token operator">>></span> DiG 9.10.6 <span class="token operator">&lt;&lt;</span><span class="token operator">>></span> image.noback.top
+<span class="token punctuation">;</span><span class="token punctuation">;</span> global options: +cmd
+<span class="token punctuation">;</span><span class="token punctuation">;</span> Got answer:
+<span class="token punctuation">;</span><span class="token punctuation">;</span> -<span class="token operator">>></span>HEADER<span class="token operator">&lt;&lt;</span>- opcode: QUERY, status: NOERROR, id: 62829
+<span class="token punctuation">;</span><span class="token punctuation">;</span> flags: qr rd ra<span class="token punctuation">;</span> QUERY: 1, ANSWER: 11, AUTHORITY: 0, ADDITIONAL: 1
+
+<span class="token punctuation">;</span><span class="token punctuation">;</span> OPT PSEUDOSECTION:
+<span class="token punctuation">;</span> EDNS: version: 0, flags:<span class="token punctuation">;</span> udp: 4096
+<span class="token punctuation">;</span><span class="token punctuation">;</span> QUESTION SECTION:
+<span class="token punctuation">;</span>image.noback.top.              IN      A
+
+<span class="token punctuation">;</span><span class="token punctuation">;</span> ANSWER SECTION:
+image.noback.top.       600     IN      CNAME   hzjblog.b0.aicdn.com.
+hzjblog.b0.aicdn.com.   300     IN      CNAME   nm.aicdn.com.
+nm.aicdn.com.           72      IN      A       183.131.200.61
+nm.aicdn.com.           72      IN      A       183.131.200.68
+nm.aicdn.com.           72      IN      A       183.131.200.69
+nm.aicdn.com.           72      IN      A       183.131.200.72
+nm.aicdn.com.           72      IN      A       183.131.200.74
+nm.aicdn.com.           72      IN      A       1.81.5.176
+nm.aicdn.com.           72      IN      A       1.81.5.188
+nm.aicdn.com.           72      IN      A       1.81.5.189
+nm.aicdn.com.           72      IN      A       1.81.5.190</code></pre>
+<p>nslookup如下</p>
+<pre class=" language-bash"><code class="language-bash">➜  linux git:<span class="token punctuation">(</span>master<span class="token punctuation">)</span> ✗ <span class="token function">nslookup</span> image.noback.top
+Server:         10.0.5.201
+Address:        10.0.5.201<span class="token comment" spellcheck="true">#53</span>
+
+Non-authoritative answer:
+image.noback.top        canonical name <span class="token operator">=</span> hzjblog.b0.aicdn.com.
+hzjblog.b0.aicdn.com    canonical name <span class="token operator">=</span> nm.aicdn.com.
+Name:   nm.aicdn.com
+Address: 183.131.200.61
+Name:   nm.aicdn.com
+Address: 183.131.200.68
+Name:   nm.aicdn.com
+Address: 183.131.200.69
+Name:   nm.aicdn.com
+Address: 183.131.200.72
+Name:   nm.aicdn.com
+Address: 183.131.200.74
+Name:   nm.aicdn.com
+Address: 1.81.5.176
+Name:   nm.aicdn.com
+Address: 1.81.5.188
+Name:   nm.aicdn.com
+Address: 1.81.5.189
+Name:   nm.aicdn.com
+Address: 1.81.5.190</code></pre>
+<h2 id="别人的解释"><a href="#别人的解释" class="headerlink" title="别人的解释"></a>别人的解释</h2><p><a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000010631404">https://segmentfault.com/a/1190000010631404</a><br><img src="http://img.noback.top/2020-04-10-11-43-58.png" alt="2020-04-10-11-43-58"></p>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>标签：</span>
+                <span class="tag">
+                    
+                    
+                    <a href="/tags/CDN/"># CDN</a>
+                    
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript：window.history.back();">后退</a>
+                <span>· </span>
+                <a href="/">主页</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            <a class="prev" rel="prev" href="/2020/04/12/blog_back_new/shell/shell%E8%84%9A%E6%9C%AC/">一些额外的笔记</a>
+            
+            
+            <a class="next" rel="next" href="/2020/04/02/blog_back_new/backup/fastapi%E5%AE%8C%E6%95%B4%E7%A4%BA%E4%BE%8B/">fastapi完整示例</a>
+            
+        </section>
+    </article>
+</div>
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+    </div>
+</footer>
+
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

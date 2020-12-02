@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="hzjsea">
+
+
+
+
+
+
+<title>redis基础 | hzjsea</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+    <script src="/js/jquery.min.js"></script>
+    
+
+
+
+    
+    
+        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+    
+
+
+
+
+    <script>
+    function searchToggle() {
+        const width = $(document.body).width()
+        if(width > 479) {
+            return;
+        }
+        const search = $('.search');
+        const searchForm = $('.form-search')
+
+        if(!search.hasClass("mobile-search")) {
+            search.addClass("mobile-search");
+        } else {
+            search.removeClass("mobile-search");
+        } 
+    }
+
+    function search(searchInputEl, formEl, flag) {
+        const path = "/" + "search.json"; // 可以在public 下查看这个search.json
+        $(formEl).submit(function(e){
+            e.preventDefault();
+            let target = null
+            if(searchInputEl == null) {
+                const screenWidth = $(document.body).width();
+                target = screenWidth > 479 ? $('#pc-search-input') : $('#mobile-search-input');
+                console.log(target);
+            } else {
+                target = $(searchInputEl)
+            }
+
+            if(!flag && target.val() === '') {
+                return ;
+            }
+
+            $("#u-search").fadeIn(500, function() {
+                $("body > .wrapper").addClass("modal-active");
+
+                $.ajax({
+                    url: path,
+                    dataType: "json",
+                    beforeSend: function (xhr) {
+                        $input = target.val();
+                        $(".form-input").val($input);
+                        const loadingBar = $('.search-loading-bar') 
+                        loadingBar.css({
+                            width:'100%',
+                            display: 'block'
+                        });
+                    },
+                    success: function( datas ) {
+                        console.log(datas);
+                        const $resultPanel = $(".modal-body")[0];
+                        let str = `<ul class="modal-results">`;
+                        var keywords = $(".form-input").val().trim().toLowerCase().split(/[\s\-]+/);
+                        $resultPanel.innerHTML = "";
+                        let hasResult = false
+                        let text = `<div class="no-result">找不到与关键词相关的内容....</div>`;
+
+                        if ($(".form-input").val().trim().length <= 0) {
+                            // 没有结果
+                            $resultPanel.innerHTML = text;
+                            return;
+                        }
+                        datas.forEach(function (data, index) {
+                            var isMatch = true;
+                            if (!data.title || data.title.trim() === '') {
+                                data.title = "Untitled";
+                            }
+                            var data_title = data.title.trim().toLowerCase();
+                            var data_content = data.content && data.content.trim().replace(/<[^>]+>/g, "").toLowerCase() || '';
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            // only match artiles with not empty contents
+                            if (data_content !== '') {
+                                keywords.forEach(function (keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        hasResult = true
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            } else {
+                                isMatch = false;
+                            }
+                            // show search results
+                            if (isMatch) {
+                                str += `<li class='result-item'><a href='${data_url}' class='result-item-detail'> <span class="title">${data_title}</span>`;
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 200 characters
+                                    var start = first_occur - 40;
+                                    var end = first_occur + 160;
+
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+
+                                    if (start == 0) {
+                                        end = 200;
+                                    }
+
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+
+                                    var match_content = content.substring(start, end);
+
+                                    // highlight all keywords
+                                    keywords.forEach(function (keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, `<em class="search-keyword">${keyword}</em>`);
+                                    });
+
+                                    str += `<span class="content"> ${match_content} ...</span></a>`;
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        if(hasResult) {
+                            $resultPanel.innerHTML = str;
+                        } else {
+                            $resultPanel.innerHTML = text;
+                        }
+
+                    },
+                    complete: function() {
+                        setTimeout(() => {
+                                const loadingBar = $('.search-loading-bar') 
+                                loadingBar.css({
+                                    width:'0%',
+                                    display: 'none'
+                                });
+                        }, 300)
+                    }
+                });
+            })
+
+        });
+    }
+
+    $(document).ready(function() {
+        $('.modal-close').click(function () { 
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+
+        $('.modal-overlay').click(function() {
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+        search(null, ".form-search", false)
+        search("#u-search-modal-form .form-input", ".u-search-modal-form", true)
+    })
+</script>
+
+
+
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo"><a href="/">hzjsea</a></div>
+        <div class="menu navbar-right">
+            
+            
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="pc-search-input"/>
+        </form>
+    </div>
+
+
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+            <input id="switch_default" type="checkbox" class="switch_default">
+            <label for="switch_default" class="toggleBtn"></label>
+        </div>
+    </div>
+</nav>
+
+
+<nav class="navbar-mobile" id="nav-mobile">
+    <div class="container">
+        <div class="navbar-header">
+            <div>
+                <a href="/">hzjsea</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+            </div>
+            <div class="navbar-mobile-right">
+                
+                
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="mobile-search-input"/>
+        </form>
+    </div>
+
+
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; 目录</div>
+            </div>
+            
+        </div>
+        <div class="menu" id="mobile-menu">
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+        </div>
+    </div>
+</nav>
+
+        <div class="main">
+			<!-- Chic/layout.ejs -->
+ <div id="u-search">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="container">
+                    <form id="u-search-modal-form" class="u-search-modal-form">
+                        <button type="submit" class="form-submit-btn">
+                            <img src="/image/search.png" class="search-btn-img" />
+                        </button>
+                        <input placeholder="搜索文章。。。" class="form-input" id="modal-form-input">
+                    </form>
+                    <a class="modal-close">x</a>
+                </div>
+                <div class="search-loading">
+                    <div class="search-loading-bar"></div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <!-- ul 格式如下 -->
+                <!-- <ul class="modal-results">
+                    <li class="result-item">
+                        <a class="result-item-detail">
+                            <span class="title">页面配置</span>
+                            <span class="content">
+                                content
+                            </span>
+                        </a>
+                    </li>
+                </ul> -->
+            </div>
+        </div>
+        <div class="modal-overlay"></div>
+    </div>
+            <div class="container">
+    
+    
+    <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">全部展开</a>
+        <a onclick="go_top()">回到顶部</a>
+        <a onclick="go_bottom()">回到底部</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "全部折叠"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "全部展开"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">redis基础</h1>
+            
+            <div class="post-meta">
+                
+                作者： <a itemprop="author" rel="author" href="/">hzjsea</a>&nbsp;
+                
+
+                
+                <span class="post-time">
+                    创建日期： <a
+                        href="#">November 2, 2020&nbsp;&nbsp;10:24:45</a>
+                </span>&nbsp;
+                
+                
+                <span class="post-category">
+                    分类：
+                    
+                    <a href="/categories/redis/">redis</a>&nbsp;
+                    
+                </span>
+                
+                
+                状态：<a href="#">SNAPSHOT</a>
+                
+            </div>
+            
+        </header>
+
+        <div class="post-content">
+            <p><img src="http://img.noback.top/2020-10-28-17-47-35.png" alt="2020-10-28-17-47-35"></p>
+<a id="more"></a>
+
+<h1 id="redis基础"><a href="#redis基础" class="headerlink" title="redis基础"></a>redis基础</h1><h2 id="Redis通用指令"><a href="#Redis通用指令" class="headerlink" title="Redis通用指令"></a>Redis通用指令</h2><pre class=" language-r"><code class="language-r"><span class="token comment" spellcheck="true"># keys* 查看所有的键</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> lpush mylist h e ll o
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> <span class="token number">4</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> lpush yourlist x x x x
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> <span class="token number">4</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> set hello world
+OK
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> set name hzj
+OK 
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> set age hzj
+OK
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> sadd mydict name hzj object value
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> <span class="token number">4</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> smembers mydict
+<span class="token number">1</span><span class="token punctuation">)</span> <span class="token string">"value"</span>
+<span class="token number">2</span><span class="token punctuation">)</span> <span class="token string">"name"</span>
+<span class="token number">3</span><span class="token punctuation">)</span> <span class="token string">"hzj"</span>
+<span class="token number">4</span><span class="token punctuation">)</span> <span class="token string">"object"</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> keys <span class="token operator">*</span>
+KEYS will hang redis server<span class="token punctuation">,</span> use SCAN instead.
+Do you want to proceed? <span class="token punctuation">(</span>y<span class="token operator">/</span>n<span class="token punctuation">)</span><span class="token operator">:</span> y
+Your Call<span class="token operator">!</span><span class="token operator">!</span>
+<span class="token number">1</span><span class="token punctuation">)</span> <span class="token string">"mylist"</span>
+<span class="token number">2</span><span class="token punctuation">)</span> <span class="token string">"name"</span>
+<span class="token number">3</span><span class="token punctuation">)</span> <span class="token string">"myset"</span>
+<span class="token number">4</span><span class="token punctuation">)</span> <span class="token string">"yourlist"</span>
+<span class="token number">5</span><span class="token punctuation">)</span> <span class="token string">"hello"</span>
+<span class="token number">6</span><span class="token punctuation">)</span> <span class="token string">"mydict"</span>
+<span class="token number">7</span><span class="token punctuation">)</span> <span class="token string">"age"</span>
+
+<span class="token comment" spellcheck="true"># 查看键总数</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> dbsize
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> <span class="token number">7</span>
+<span class="token comment" spellcheck="true"># 查看键是否存在</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> exists mydict
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> <span class="token number">1</span>
+<span class="token comment" spellcheck="true"># 删除键</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> del mydict mylist name myset
+DEL will delete keys<span class="token punctuation">,</span> it may cause high latency when the value is big.
+Do you want to proceed? <span class="token punctuation">(</span>y<span class="token operator">/</span>n<span class="token punctuation">)</span><span class="token operator">:</span> y
+Your Call<span class="token operator">!</span><span class="token operator">!</span>
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> <span class="token number">4</span>
+<span class="token comment" spellcheck="true"># 键过期</span>
+expire keys seconds
+<span class="token comment" spellcheck="true"># 查看键的数据类型结构</span>
+type key
+</code></pre>
+<p>dbsize命令会在计算键总数的时候不会遍历所有键，而是直接获取redis内置的键总数的变量，所以dbsize命令的时间复杂度是O(1)<br>而keys命令会遍历所有键，所以他的时间复杂度是O(n) 当Redis保存了大量键的时候，线上环境精禁止的时候，他会产生大量的消耗</p>
+<h2 id="redis单线程结构"><a href="#redis单线程结构" class="headerlink" title="redis单线程结构"></a>redis单线程结构</h2><p>redis的单线程架构，就好比一根水管，这个水管类似于一个队列，redis使用单线程来处理命令，一条命令从客户端达到服务端不会立刻被执行，所有命令都会进入一个队列中，然后逐个被执行<br>也就是可以被理解用 多个客户端，多个用户像redis发送命令的时候，这些命令都被塞进了一个管道里面，但是这个管道只允许每次出去一个命令到redis内部被执行，也就是说其他的命令需要被等待，知道上一个命令执行结束之后，才被允许进入到redis内部</p>
+<p><font color='red'>单线程运行速度快的原因?</font></p>
+<ul>
+<li>纯内存访问，redis将所有数据都放在内存当中，内存的响应时间大概为100ns 不管担心内存被撑爆，一来是数据量没有这么大，他也无法作为持久化存储的数据库 二来是redis3.0后面加入了集群的概念，物理机多的是，内存大小在大多是情况下，不是一个问题</li>
+<li>非阻塞I/O redis使用epoll作为I/Od多路妇幼技术的实现，再加上Redis自身的时间处理模型将epoll中的连接 读写 关闭都转换为时间，不在网络I/O上浪费过多的时间</li>
+<li>单线程避免了线程切换和竞态产生的消耗</li>
+</ul>
+<h2 id="String键值对存储"><a href="#String键值对存储" class="headerlink" title="String键值对存储"></a>String键值对存储</h2><p>字符串类型的值实际可以使字符串 数字 甚至是二进制数据，但是值不能超过512MB</p>
+<h3 id="创建和获取键值对"><a href="#创建和获取键值对" class="headerlink" title="创建和获取键值对"></a>创建和获取键值对</h3><pre class=" language-bash"><code class="language-bash">10.0.43.102:6379<span class="token operator">></span> <span class="token keyword">set</span> age 12
+OK
+10.0.43.102:6379<span class="token operator">></span> get age   <span class="token comment" spellcheck="true"># 这里拿到的就是string</span>
+<span class="token string">"12"</span>
+10.0.43.102:6379<span class="token operator">></span> get a <span class="token comment" spellcheck="true"># 这里如果没有a这个key的话，返回的就是nil 即空</span>
+<span class="token punctuation">(</span>nil<span class="token punctuation">)</span>
+10.0.43.102:6379<span class="token operator">></span> getset age 100 <span class="token comment" spellcheck="true"># getset 修改新的值，并且返回旧值</span>
+<span class="token string">"12"</span>
+10.0.43.102:6379<span class="token operator">></span> <span class="token keyword">set</span> age 12  <span class="token comment" spellcheck="true"># set 赋值或者修改新的值，返回状态</span>
+OK
+10.0.43.102:6379<span class="token operator">></span> mset a 100 b 200 c 300
+OK
+10.0.43.102:6379<span class="token operator">></span> mget a b c  <span class="token comment" spellcheck="true"># mget 返回的是一组数组</span>
+1<span class="token punctuation">)</span> <span class="token string">"100"</span>
+2<span class="token punctuation">)</span> <span class="token string">"200"</span>
+3<span class="token punctuation">)</span> <span class="token string">"300"</span>
+</code></pre>
+<p><img src="http://img.noback.top/2020-05-18-11-35-48.png" alt="2020-05-18-11-35-48"></p>
+<p>批量获取可以加快返回速度，多次get+网络时间 = 单次mget</p>
+<h4 id="键值对的中的类型转换"><a href="#键值对的中的类型转换" class="headerlink" title="键值对的中的类型转换"></a>键值对的中的类型转换</h4><p>上面可以看到，我们存进去的<code>&#123;&quot;age&quot;:&quot;12&quot;&#125;</code>中12是一个string类型，也就是一个字符串类型，但是在redis中可以进行原子增量，在执行的过程中，12会被转换成int 类型，并添加后转换成字符串类型</p>
+<pre class=" language-bash"><code class="language-bash">10.0.43.102:6379<span class="token operator">></span> incr age <span class="token comment" spellcheck="true"># 这里进行原子递增，redis内部进行变量类型转换</span>
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> 13
+10.0.43.102:6379<span class="token operator">></span> get age <span class="token comment" spellcheck="true"># 再去看value值得时候，他依旧是字符串类型</span>
+<span class="token string">"13"</span>
+10.0.43.102:6379<span class="token operator">></span> incrby age 100 <span class="token comment" spellcheck="true"># 这里可以根据不同的增量值来增加</span>
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> 113
+10.0.43.102:6379<span class="token operator">></span> decr age <span class="token comment" spellcheck="true"># 减少</span>
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> 112
+10.0.43.102:6379<span class="token operator">></span> decrby age 100 <span class="token comment" spellcheck="true"># 按量减少</span>
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> 12</code></pre>
+<h3 id="判断key是否存在"><a href="#判断key是否存在" class="headerlink" title="判断key是否存在"></a>判断key是否存在</h3><p><code>exists</code> 可以用来判断是否存在一个key, 存在则返回1 不存在则返回0</p>
+<pre class=" language-bash"><code class="language-bash">10.0.43.102:6379<span class="token operator">></span> get xx
+<span class="token punctuation">(</span>nil<span class="token punctuation">)</span>
+10.0.43.102:6379<span class="token operator">></span> exists xx
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> 0
+10.0.43.102:6379<span class="token operator">></span> get age
+<span class="token string">"12"</span>
+10.0.43.102:6379<span class="token operator">></span> exists age
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> 1</code></pre>
+<h3 id="根据key删除对应键值对"><a href="#根据key删除对应键值对" class="headerlink" title="根据key删除对应键值对"></a>根据key删除对应键值对</h3><p><code>del</code> 可以根据key来删除键值对，并且在删除之前会发生交互保证安全，存在删除则返回1 不存在删除则返回0</p>
+<pre class=" language-bash"><code class="language-bash">10.0.43.102:6379<span class="token operator">></span> get age
+<span class="token string">"12"</span>
+10.0.43.102:6379<span class="token operator">></span> del age
+DEL will delete keys, it may cause high latency when the value is big.
+Do you want to proceed? <span class="token punctuation">(</span>y/n<span class="token punctuation">)</span>: y
+Your Call<span class="token operator">!</span><span class="token operator">!</span>
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> 1
+10.0.43.102:6379<span class="token operator">></span> get xx
+<span class="token punctuation">(</span>nil<span class="token punctuation">)</span>
+10.0.43.102:6379<span class="token operator">></span> del xx
+DEL will delete keys, it may cause high latency when the value is big.
+Do you want to proceed? <span class="token punctuation">(</span>y/n<span class="token punctuation">)</span>: y
+Your Call<span class="token operator">!</span><span class="token operator">!</span>
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> 0
+10.0.43.102:6379<span class="token operator">></span> get gg
+<span class="token punctuation">(</span>nil<span class="token punctuation">)</span>
+10.0.43.102:6379<span class="token operator">></span> del gg
+DEL will delete keys, it may cause high latency when the value is big.
+Do you want to proceed? <span class="token punctuation">(</span>y/n<span class="token punctuation">)</span>: n
+Canceled<span class="token operator">!</span></code></pre>
+<h3 id="返回键值对中的value类型"><a href="#返回键值对中的value类型" class="headerlink" title="返回键值对中的value类型"></a>返回键值对中的value类型</h3><p>TYPE命令返回存储在指定密钥处的值的类型</p>
+<pre class=" language-bash"><code class="language-bash">10.0.43.102:6379<span class="token operator">></span> <span class="token keyword">set</span> age 12
+OK
+10.0.43.102:6379<span class="token operator">></span> <span class="token function">type</span> ag
+<span class="token string">"none"</span>
+10.0.43.102:6379<span class="token operator">></span> <span class="token function">type</span> age
+<span class="token string">"string"</span>
+10.0.43.102:6379<span class="token operator">></span> incrby age 100
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> 112
+10.0.43.102:6379<span class="token operator">></span> <span class="token function">type</span> age
+<span class="token string">"string"</span></code></pre>
+<h3 id="设置秘钥生成时间"><a href="#设置秘钥生成时间" class="headerlink" title="设置秘钥生成时间"></a>设置秘钥生成时间</h3><p>redis支持对某一个key-value创建生成时间，并且使用<code>ttl</code>获取该剩下的生存时间</p>
+<pre class=" language-r"><code class="language-r"><span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> set name hzj
+OK
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> expire name <span class="token number">200</span>  <span class="token comment" spellcheck="true"># 创建ttl时间</span>
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> <span class="token number">1</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> ttl name <span class="token comment" spellcheck="true"># 获取当前ttl值</span>
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> <span class="token number">195</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> set hello world
+OK
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> expire hello <span class="token number">1</span>
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> <span class="token number">1</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> get hello
+<span class="token punctuation">(</span>nil<span class="token punctuation">)</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> ttl hello
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> <span class="token operator">-</span><span class="token number">2</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> ttl age
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> <span class="token operator">-</span><span class="token number">1</span>
+<span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> set age <span class="token number">20</span> ex <span class="token number">100</span>  <span class="token comment" spellcheck="true"># 在创建的时候就设置计数器 秒级</span>
+OK
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> ttl age
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> <span class="token number">98</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> set age <span class="token number">1</span> px <span class="token number">1</span>  <span class="token comment" spellcheck="true"># 毫秒级别计时器</span>
+OK
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> get age
+<span class="token punctuation">(</span>nil<span class="token punctuation">)</span>
+
+<span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span> <span class="token comment" spellcheck="true"># 删除计数器，并且使得数据持久化 -1</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> set age <span class="token number">200</span> ex <span class="token number">100</span>
+OK
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> ttl age
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> <span class="token number">97</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> get age
+<span class="token string">"200"</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> persist age
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> <span class="token number">1</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> ttl age
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> <span class="token operator">-</span><span class="token number">1</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> get age
+<span class="token string">"200"</span></code></pre>
+<p>使用ttl可以查看时间,<br>不存在的键 ttl值为-2<br>存在的值但是没有计时的 ttl值为-1<br>存在的值但是计时了的 ttl值为设置值<br><img src="http://img.noback.top/2020-05-18-14-17-45.png" alt="2020-05-18-14-17-45"></p>
+<h3 id="根据键的状态更新和添加"><a href="#根据键的状态更新和添加" class="headerlink" title="根据键的状态更新和添加"></a>根据键的状态更新和添加</h3><p>xx 键必须存在，才可以设置成功<br>nx 键必须不存在，才可以设置成功</p>
+<pre class=" language-r"><code class="language-r"><span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> get xx
+<span class="token punctuation">(</span>nil<span class="token punctuation">)</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> set xx <span class="token number">1</span> xx  
+<span class="token punctuation">(</span>nil<span class="token punctuation">)</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> set xx <span class="token number">1</span>
+OK
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> get xx
+<span class="token string">"1"</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> set xx <span class="token number">1</span> xx
+OK
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> del xx
+DEL will delete keys<span class="token punctuation">,</span> it may cause high latency when the value is big.
+Do you want to proceed? <span class="token punctuation">(</span>y<span class="token operator">/</span>n<span class="token punctuation">)</span><span class="token operator">:</span> y
+Your Call<span class="token operator">!</span><span class="token operator">!</span>
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> <span class="token number">1</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> get xx
+<span class="token punctuation">(</span>nil<span class="token punctuation">)</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> set xx <span class="token number">1</span> nx
+OK</code></pre>
+<h3 id="不常用合集"><a href="#不常用合集" class="headerlink" title="不常用合集"></a>不常用合集</h3><ol>
+<li>vlaue尾部追加值<br>```r</li>
+<li>0.43.102:6379&gt; get key<br>“value”</li>
+<li>0.43.102:6379&gt; append key hello<br>(integer) 10</li>
+<li>0.43.102:6379&gt; get key<br>“valuehello”<br>```</li>
+<li>获取value长度<br>```r</li>
+<li>0.43.102:6379&gt; strlen key<br>(integer) 10</li>
+<li>0.43.102:6379&gt; set chinese-word “你好世界”<br>OK</li>
+<li>0.43.102:6379&gt; strlen chinese-word<br>(integer) 12<br>```<br>每个中文字符占3个字节</li>
+<li>设置并返回原值<br>```r</li>
+<li>0.43.102:6379&gt; get key<br>“valuehello”</li>
+<li>0.43.102:6379&gt; getset key newkey<br>“valuehello”</li>
+<li>0.43.102:6379&gt; get key<br>“newkey”<br>4<br>```</li>
+<li>设定指定位置的字符<br>```r</li>
+<li>0.43.102:6379&gt; set redis pest<br>OK</li>
+<li>0.43.102:6379&gt; get redis<br>“pest”</li>
+<li>0.43.102:6379&gt; setrange redis 0 b<br>(integer) 4</li>
+<li>0.43.102:6379&gt; get redis<br>“best”<br>```</li>
+<li>获取部分字符串<br>```r</li>
+<li>0.43.102:6379&gt; get redis<br>“best”</li>
+<li>0.43.102:6379&gt; getrange redis 0 1<br>“be”<pre><code></code></pre>
+</li>
+</ol>
+<h2 id="Redis列表"><a href="#Redis列表" class="headerlink" title="Redis列表"></a>Redis列表</h2><p>Redis官方文档中有说道 列表在不同的语言中呈现了不同的展现形式，比如在python中列表是以<code>Linked List</code>的形式存在的 而array并不是以link的形式存在的<br>列表（list）类型是用来存储多个有序的字符串<br>array存储的就是存储的时候 每个元素都会带上一个index 以及一个value 插入的时候，读index就ok了<br>Redis列表是通过链接列表实现的。这意味着即使您在列表中有数百万个元素，在列表的开头或结尾添加新元素的操作也会在固定时间内执行<br>也就是说插入的时间肯定大于头部与尾部添加新元素的时间<br>使用LPUSH命令将新元素添加到具有10个元素的列表的开头的速度与将元素添加到具有1000万个元素的列表的开头的速度相同<br>当快速访问大量元素的中间很重要时，可以使用另一种称为排序集的数据结构</p>
+<p><font color='red'>另外 redis中的列表也是有列表名的  列表名与value 成键值对</font></p>
+<h3 id="左右互搏-列表添加元素"><a href="#左右互搏-列表添加元素" class="headerlink" title="左右互搏,列表添加元素"></a>左右互搏,列表添加元素</h3><pre class=" language-r"><code class="language-r"><span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> rpush hellolist A  <span class="token comment" spellcheck="true"># 第一次添加的时候会创建一个空列表</span>
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> <span class="token number">1</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> rpush hellolist B <span class="token comment" spellcheck="true"># 在列表的右边添加一个B元素</span>
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> <span class="token number">2</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> lpush hellolist C <span class="token comment" spellcheck="true"># 在列表的左边添加一个C元素</span>
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> <span class="token number">3</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> lrange hellolist <span class="token number">0</span> <span class="token operator">-</span><span class="token number">1</span> <span class="token comment" spellcheck="true"># 根据返回获取列表内容</span>
+<span class="token number">1</span><span class="token punctuation">)</span> <span class="token string">"C"</span>
+<span class="token number">2</span><span class="token punctuation">)</span> <span class="token string">"A"</span>
+<span class="token number">3</span><span class="token punctuation">)</span> <span class="token string">"B"</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> lrange hellolist <span class="token number">0</span> <span class="token number">0</span>
+<span class="token number">1</span><span class="token punctuation">)</span> <span class="token string">"C"</span></code></pre>
+<p><code>lrange</code>可以根据范围来获取列表中的内容，需要提供两个数据作为范围的边界，第一个表示起始位置，第二个表示结束的位置<br>其中第一个位置可以表示为<br><code>lrange hellolist 0 0</code><br>最后一个位置为列表长度-1  -1<br><code>lrange hellolist 2 -1</code><br><img src="http://img.noback.top/2020-05-18-23-26-24.png" alt="2020-05-18-23-26-24"></p>
+<h3 id="批量添加元素"><a href="#批量添加元素" class="headerlink" title="批量添加元素"></a>批量添加元素</h3><pre class=" language-r"><code class="language-r"><span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> rpush hellolist   <span class="token number">6</span> <span class="token number">5</span> <span class="token string">"foo bar"</span>
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> <span class="token number">10</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> lrange hellolist <span class="token number">0</span> <span class="token operator">-</span><span class="token number">1</span>
+<span class="token number">1</span><span class="token punctuation">)</span> <span class="token string">"6"</span>
+<span class="token number">2</span><span class="token punctuation">)</span> <span class="token string">"5"</span>
+<span class="token number">3</span><span class="token punctuation">)</span> <span class="token string">"foo bar"</span>
+<span class="token comment" spellcheck="true"># 插入</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> rpush hellolist   <span class="token number">6</span> <span class="token number">5</span> <span class="token string">"foo bar"</span>
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> <span class="token number">3</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> lrange hellolist <span class="token number">0</span> <span class="token operator">-</span><span class="token number">1</span>
+<span class="token number">1</span><span class="token punctuation">)</span> <span class="token string">"6"</span>
+<span class="token number">2</span><span class="token punctuation">)</span> <span class="token string">"5"</span>
+<span class="token number">3</span><span class="token punctuation">)</span> <span class="token string">"foo bar"</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> linsert hellolist BEFORE <span class="token number">5</span> <span class="token number">500</span> <span class="token comment" spellcheck="true"># 找到5这个元素之后，在他的前面插入500</span>
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> <span class="token number">4</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> lrange hellolist <span class="token number">0</span> <span class="token operator">-</span><span class="token number">1</span>
+<span class="token number">1</span><span class="token punctuation">)</span> <span class="token string">"6"</span>
+<span class="token number">2</span><span class="token punctuation">)</span> <span class="token string">"500"</span>
+<span class="token number">3</span><span class="token punctuation">)</span> <span class="token string">"5"</span>
+<span class="token number">4</span><span class="token punctuation">)</span> <span class="token string">"foo bar"</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> linsert hellolist AFTER <span class="token number">5</span> <span class="token number">500</span> <span class="token comment" spellcheck="true"># 找到5这个元素之后，在他的后面插入500</span>
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> <span class="token number">5</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> lrange hellolist <span class="token number">0</span> <span class="token operator">-</span><span class="token number">1</span>
+<span class="token number">1</span><span class="token punctuation">)</span> <span class="token string">"6"</span>
+<span class="token number">2</span><span class="token punctuation">)</span> <span class="token string">"500"</span>
+<span class="token number">3</span><span class="token punctuation">)</span> <span class="token string">"5"</span>
+<span class="token number">4</span><span class="token punctuation">)</span> <span class="token string">"500"</span>
+<span class="token number">5</span><span class="token punctuation">)</span> <span class="token string">"foo bar"</span>
+
+<span class="token comment" spellcheck="true"># 查询获取列表指定索引下标的元素</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> lindex hellolist <span class="token operator">-</span><span class="token number">1</span>
+<span class="token string">"foo bar"</span>
+<span class="token comment" spellcheck="true"># 获取列表长度</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> llen hellolist
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> <span class="token number">5</span>
+
+<span class="token comment" spellcheck="true"># 修改指定索引下标的元素:</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> lrange hellolist <span class="token number">0</span> <span class="token operator">-</span><span class="token number">1</span>
+<span class="token number">1</span><span class="token punctuation">)</span> <span class="token string">"6"</span>
+<span class="token number">2</span><span class="token punctuation">)</span> <span class="token string">"500"</span>
+<span class="token number">3</span><span class="token punctuation">)</span> <span class="token string">"5"</span>
+<span class="token number">4</span><span class="token punctuation">)</span> <span class="token string">"500"</span>
+<span class="token number">5</span><span class="token punctuation">)</span> <span class="token string">"foo bar"</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> lset hellolist <span class="token number">0</span> newvalue
+OK
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> lrange hellolist <span class="token number">0</span> <span class="token operator">-</span><span class="token number">1</span>
+<span class="token number">1</span><span class="token punctuation">)</span> <span class="token string">"newvalue"</span>
+<span class="token number">2</span><span class="token punctuation">)</span> <span class="token string">"500"</span>
+<span class="token number">3</span><span class="token punctuation">)</span> <span class="token string">"5"</span>
+<span class="token number">4</span><span class="token punctuation">)</span> <span class="token string">"500"</span>
+<span class="token number">5</span><span class="token punctuation">)</span> <span class="token string">"foo bar"</span>
+</code></pre>
+<h3 id="列表删除元素并且显示删除的元素信息"><a href="#列表删除元素并且显示删除的元素信息" class="headerlink" title="列表删除元素并且显示删除的元素信息"></a>列表删除元素并且显示删除的元素信息</h3><pre class=" language-r"><code class="language-r"><span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> rpush hello  a b c d e f g
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> <span class="token number">7</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> lrange hello <span class="token number">0</span> <span class="token operator">-</span><span class="token number">1</span>
+<span class="token number">1</span><span class="token punctuation">)</span> <span class="token string">"a"</span>
+<span class="token number">2</span><span class="token punctuation">)</span> <span class="token string">"b"</span>
+<span class="token number">3</span><span class="token punctuation">)</span> <span class="token string">"c"</span>
+<span class="token number">4</span><span class="token punctuation">)</span> <span class="token string">"d"</span>
+<span class="token number">5</span><span class="token punctuation">)</span> <span class="token string">"e"</span>
+<span class="token number">6</span><span class="token punctuation">)</span> <span class="token string">"f"</span>
+<span class="token number">7</span><span class="token punctuation">)</span> <span class="token string">"g"</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> rpop hello
+<span class="token string">"g"</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> lpop hello
+<span class="token string">"a"</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> lrange hello <span class="token number">0</span> <span class="token operator">-</span><span class="token number">1</span>
+<span class="token number">1</span><span class="token punctuation">)</span> <span class="token string">"b"</span>
+<span class="token number">2</span><span class="token punctuation">)</span> <span class="token string">"c"</span>
+<span class="token number">3</span><span class="token punctuation">)</span> <span class="token string">"d"</span>
+<span class="token number">4</span><span class="token punctuation">)</span> <span class="token string">"e"</span>
+<span class="token number">5</span><span class="token punctuation">)</span> <span class="token string">"f"</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> rpop helloworld  <span class="token comment" spellcheck="true"># 当没有元素弹出的时候，就会返回nil</span>
+<span class="token punctuation">(</span>nil<span class="token punctuation">)</span>
+
+<span class="token comment" spellcheck="true"># 删除指定个数的元素</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> lpush alist a a a a a a a
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> <span class="token number">7</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> lrem alist <span class="token number">5</span> a
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> <span class="token number">5</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> lrange alist <span class="token number">0</span> <span class="token operator">-</span><span class="token number">1</span>
+<span class="token number">1</span><span class="token punctuation">)</span> <span class="token string">"a"</span>
+<span class="token number">2</span><span class="token punctuation">)</span> <span class="token string">"a"</span>
+<span class="token comment" spellcheck="true"># 按照索引</span></code></pre>
+<h3 id="列表限制"><a href="#列表限制" class="headerlink" title="列表限制"></a>列表限制</h3><p>redis支持对列表做数量上的限制，也就是封顶列表。仅使用LTRIM命令记住最近的N个项目并丢弃所有最旧的项目。<br>的LTRIM命令类似于LRANGE，但是，而不是显示元件的规定的范围内将其设置在该范围作为新的列表值。给定范围之外的所有元素都将被删除。</p>
+<pre class=" language-r"><code class="language-r"><span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> lpush mylist h e ll o
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> <span class="token number">4</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> lrange mylist <span class="token number">0</span> <span class="token operator">-</span><span class="token number">1</span>
+<span class="token number">1</span><span class="token punctuation">)</span> <span class="token string">"o"</span>
+<span class="token number">2</span><span class="token punctuation">)</span> <span class="token string">"ll"</span>
+<span class="token number">3</span><span class="token punctuation">)</span> <span class="token string">"e"</span>
+<span class="token number">4</span><span class="token punctuation">)</span> <span class="token string">"h"</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> ltrim mylist <span class="token number">0</span> <span class="token number">2</span>
+OK
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> lrange mylist <span class="token number">0</span> <span class="token operator">-</span><span class="token number">1</span>
+<span class="token number">1</span><span class="token punctuation">)</span> <span class="token string">"o"</span>
+<span class="token number">2</span><span class="token punctuation">)</span> <span class="token string">"ll"</span>
+<span class="token number">3</span><span class="token punctuation">)</span> <span class="token string">"e"</span></code></pre>
+<h3 id="列表等待"><a href="#列表等待" class="headerlink" title="列表等待"></a>列表等待</h3><p>列表类型中，如果我们请求一个空的列表，如果没有元素，则redis会返回一个<code>(nil)</code>的元素，但是在某些场景下并不适合这样的操作，<br>假设用户想要获取到一个固定的值，但是返回的是一个nil的值，需要等待其他的操作往redis中push值，如果这种需求是及时的，那么该用户则需要不间断的快速的<code>lrange mylist 0 0</code>来获取元素，很明显这样的设计会增加两边的压力<br>于是redis提供一个列表等待的功能，也就是用户可以对列表的请求中加一个计时器，在计时器结束前，一旦有值被push进来就直接将他pop出去<br><img src="http://img.noback.top/2020-05-18-23-54-05.png" alt="2020-05-18-23-54-05"><br>如图使用blpop 或者brpop这里如果只是添加一个元素的话，没啥效果，但是如果一次性push多个内容的话，就有效果了<br>另外如果需要表明永久等待的话,时间可以设置为0<br>格式: <code>blpop key [key ...] timeout</code> <code>brpop key [key ...] timeout</code></p>
+<pre class=" language-bash"><code class="language-bash">·lpush+lpop<span class="token operator">=</span>Stack（栈）
+
+·lpush+rpop<span class="token operator">=</span>Queue（队列）
+
+·lpsh+ltrim<span class="token operator">=</span>Capped Collection（有限集合）
+
+·lpush+brpop<span class="token operator">=</span>Message Queue（消息队列）</code></pre>
+<h2 id="Redis哈希"><a href="#Redis哈希" class="headerlink" title="Redis哈希"></a>Redis哈希</h2><p>创建字典，key值映射一个字典</p>
+<pre class=" language-r"><code class="language-r"><span class="token comment" spellcheck="true"># 创建一个redis哈希</span>
+hmset key field value
+<span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span><span class="token operator">-</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> hmset user<span class="token operator">:</span><span class="token number">1000</span> username antirez birthyear <span class="token number">1977</span> verified <span class="token number">1</span>
+<span class="token string">"OK"</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> hget user<span class="token operator">:</span><span class="token number">1000</span> username
+<span class="token string">"antirez"</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> hgetall user<span class="token operator">:</span><span class="token number">1000</span>
+<span class="token number">1</span><span class="token punctuation">)</span> <span class="token string">"username"</span>
+   <span class="token string">"antirez"</span>
+<span class="token number">2</span><span class="token punctuation">)</span> <span class="token string">"birthyear"</span>
+   <span class="token string">"1977"</span>
+<span class="token number">3</span><span class="token punctuation">)</span> <span class="token string">"verified"</span>
+   <span class="token string">"1"</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> hincrby user<span class="token operator">:</span><span class="token number">1000</span> birthyear <span class="token number">100</span>
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> <span class="token number">2077</span>
+
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> hmset user username jzk
+<span class="token string">"OK"</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> hmset info name hzj
+<span class="token string">"OK"</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> hget info name
+<span class="token string">"hzj"</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> hdel info name  <span class="token comment" spellcheck="true"># 删除某一对键值对值如果要删除info这个key 的话 直接用del info</span>
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> <span class="token number">1</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> hgetall info
+<span class="token punctuation">(</span>empty list or set<span class="token punctuation">)</span>
+
+<span class="token comment" spellcheck="true"># 计算fiel的个数</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span>  hmset user<span class="token operator">:</span><span class="token number">1000</span> username antirez birthyear <span class="token number">1977</span> verified <span class="token number">1</span>
+<span class="token string">"OK"</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> hlen user<span class="token operator">:</span><span class="token number">1000</span>
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> <span class="token number">3</span>
+<span class="token comment" spellcheck="true"># 判断field是否存在</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> hexists user<span class="token operator">:</span><span class="token number">1000</span> username
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> <span class="token number">1</span>
+<span class="token comment" spellcheck="true"># 获取所有field值</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> hkeys user<span class="token operator">:</span><span class="token number">1000</span>
+<span class="token number">1</span><span class="token punctuation">)</span> <span class="token string">"username"</span>
+<span class="token number">2</span><span class="token punctuation">)</span> <span class="token string">"birthyear"</span>
+<span class="token number">3</span><span class="token punctuation">)</span> <span class="token string">"verified"</span>
+
+<span class="token comment" spellcheck="true"># 计算vlaue的字符串长度</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> hstrlen user<span class="token operator">:</span><span class="token number">1000</span> username
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> <span class="token number">7</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> hget user<span class="token operator">:</span><span class="token number">1000</span> username
+<span class="token string">"antirez"</span>
+
+
+<span class="token comment" spellcheck="true"># 获取key下面所有的valuse值</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> hmset user<span class="token operator">:</span><span class="token number">1000</span> username antirez birthyear <span class="token number">1977</span> verified <span class="token number">1</span>
+<span class="token string">"OK"</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> hvals user<span class="token operator">:</span><span class="token number">1000</span>
+<span class="token number">1</span><span class="token punctuation">)</span> <span class="token string">"antirez"</span>
+<span class="token number">2</span><span class="token punctuation">)</span> <span class="token string">"1977"</span>
+<span class="token number">3</span><span class="token punctuation">)</span> <span class="token string">"1"</span>
+
+<span class="token comment" spellcheck="true"># 获取所有的field-value</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> hgetall user<span class="token operator">:</span><span class="token number">1000</span>
+<span class="token number">1</span><span class="token punctuation">)</span> <span class="token string">"username"</span>
+   <span class="token string">"antirez"</span>
+<span class="token number">2</span><span class="token punctuation">)</span> <span class="token string">"birthyear"</span>
+   <span class="token string">"1977"</span>
+<span class="token number">3</span><span class="token punctuation">)</span> <span class="token string">"verified"</span>
+   <span class="token string">"1"</span>
+
+<span class="token comment" spellcheck="true"># 计算key对应的field长度</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> hgetall user<span class="token operator">:</span><span class="token number">1000</span>
+<span class="token number">1</span><span class="token punctuation">)</span> <span class="token string">"username"</span>
+   <span class="token string">"antirez"</span>
+<span class="token number">2</span><span class="token punctuation">)</span> <span class="token string">"birthyear"</span>
+   <span class="token string">"1977"</span>
+<span class="token number">3</span><span class="token punctuation">)</span> <span class="token string">"verified"</span>
+   <span class="token string">"1"</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> hstrlen user<span class="token operator">:</span><span class="token number">1000</span> username
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> <span class="token number">7</span>
+</code></pre>
+<p><img src="http://img.noback.top/2020-05-19-00-05-08.png" alt="2020-05-19-00-05-08"><br><img src="http://img.noback.top/2020-05-20-22-33-36.png" alt="2020-05-20-22-33-36"><br><img src="http://img.noback.top/2020-05-20-22-35-08.png" alt="2020-05-20-22-35-08"></p>
+<p><font color='red'>序列化类型数据库与redis行存储的区别 序列化数据库需要在加入计入每条数据之前需要规定好字段，并且当介入值得时候，如果有一个字段为空，则必须设置为null 但是在redis中则无需这样的操作</font></p>
+<h2 id="Redis集合"><a href="#Redis集合" class="headerlink" title="Redis集合"></a>Redis集合</h2><p>Redis集是字符串的无序集合，Redis可以在每次调用时自由以任何顺序返回元素，因为与用户之间没有关于元素顺序的约定。<br>集合（set）类型也是用来保存多个的字符串元素，但和列表类型不一样的是，集合中不允许有重复元素，并且集合中的元素是无序的，不能通过索引下标获取元素。</p>
+<pre class=" language-r"><code class="language-r"><span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> sadd myset <span class="token number">1</span> <span class="token number">2</span> <span class="token number">3</span>  <span class="token comment" spellcheck="true"># 就是一个集合就行了</span>
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> <span class="token number">3</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> smembers myset  <span class="token comment" spellcheck="true"># 输出集合中的成员</span>
+<span class="token number">1</span><span class="token punctuation">)</span> <span class="token string">"1"</span>
+<span class="token number">2</span><span class="token punctuation">)</span> <span class="token string">"2"</span>
+<span class="token number">3</span><span class="token punctuation">)</span> <span class="token string">"3"</span>
+<span class="token number">3</span><span class="token punctuation">)</span> <span class="token string">"3"</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> srem myset <span class="token number">3</span>  <span class="token comment" spellcheck="true"># 删除集合中的成员</span>
+SREM will delete items.
+Do you want to proceed? <span class="token punctuation">(</span>y<span class="token operator">/</span>n<span class="token punctuation">)</span><span class="token operator">:</span> y
+Your Call<span class="token operator">!</span><span class="token operator">!</span>
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> <span class="token number">1</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> scard myset <span class="token comment" spellcheck="true"># 计算集合中成员的个数</span>
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> <span class="token number">2</span>
+<span class="token comment" spellcheck="true"># scard的时间复杂度为O（1），它不会遍历集合所有元素，而是直接用Redis内部的变量</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> sismember myset <span class="token number">2</span> <span class="token comment" spellcheck="true"># 判断集合中是否存在某一个元素，存在则返回1 不存在则返回0</span>
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> <span class="token number">1</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> sismember myset dsds 
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> <span class="token number">0</span>
+
+
+<span class="token comment" spellcheck="true"># set集合中的内容是不重复的</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> sadd myset <span class="token number">1</span> <span class="token number">2</span> <span class="token number">3</span> <span class="token number">4</span> <span class="token number">5</span> <span class="token number">6</span> <span class="token number">7</span> <span class="token number">8</span> <span class="token number">9</span> <span class="token number">0</span> <span class="token number">1</span>
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> <span class="token number">8</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> smembers myset  <span class="token comment" spellcheck="true"># 获取集合myset所有元素，并且返回结果是无序的</span>
+ <span class="token number">1</span><span class="token punctuation">)</span> <span class="token string">"0"</span>
+ <span class="token number">2</span><span class="token punctuation">)</span> <span class="token string">"1"</span>
+ <span class="token number">3</span><span class="token punctuation">)</span> <span class="token string">"2"</span>
+ <span class="token number">4</span><span class="token punctuation">)</span> <span class="token string">"3"</span>
+ <span class="token number">5</span><span class="token punctuation">)</span> <span class="token string">"4"</span>
+ <span class="token number">6</span><span class="token punctuation">)</span> <span class="token string">"5"</span>
+ <span class="token number">7</span><span class="token punctuation">)</span> <span class="token string">"6"</span>
+ <span class="token number">8</span><span class="token punctuation">)</span> <span class="token string">"7"</span>
+ <span class="token number">9</span><span class="token punctuation">)</span> <span class="token string">"8"</span>
+<span class="token number">10</span><span class="token punctuation">)</span> <span class="token string">"9"</span>
+
+<span class="token comment" spellcheck="true"># 随机从集合中返回指定个数的元素</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> smembers myset  
+<span class="token number">1</span><span class="token punctuation">)</span> <span class="token string">"0"</span>
+<span class="token number">2</span><span class="token punctuation">)</span> <span class="token string">"1"</span>
+<span class="token number">3</span><span class="token punctuation">)</span> <span class="token string">"2"</span>
+<span class="token number">4</span><span class="token punctuation">)</span> <span class="token string">"3"</span>
+<span class="token number">5</span><span class="token punctuation">)</span> <span class="token string">"4"</span>
+<span class="token number">6</span><span class="token punctuation">)</span> <span class="token string">"5"</span>
+<span class="token number">7</span><span class="token punctuation">)</span> <span class="token string">"6"</span>
+<span class="token number">8</span><span class="token punctuation">)</span> <span class="token string">"7"</span>
+<span class="token number">9</span><span class="token punctuation">)</span> <span class="token string">"8"</span>
+<span class="token number">10</span><span class="token punctuation">)</span> <span class="token string">"9"</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> srandmember myset <span class="token number">2</span>
+<span class="token number">1</span><span class="token punctuation">)</span> <span class="token string">"9"</span>
+<span class="token number">2</span><span class="token punctuation">)</span> <span class="token string">"4"</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> srandmember myset <span class="token number">3</span>
+<span class="token number">1</span><span class="token punctuation">)</span> <span class="token string">"4"</span>
+<span class="token number">2</span><span class="token punctuation">)</span> <span class="token string">"3"</span>
+<span class="token number">3</span><span class="token punctuation">)</span> <span class="token string">"0"</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> srandmember myset  <span class="token comment" spellcheck="true"># 默认输出1个</span>
+<span class="token string">"3"</span>
+
+<span class="token comment" spellcheck="true"># 随机从集合中弹出一个元素  删除~</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> sadd mymyset <span class="token number">1</span> <span class="token number">2</span> <span class="token number">3</span>
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> <span class="token number">3</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> smembers mymyset
+<span class="token number">1</span><span class="token punctuation">)</span> <span class="token string">"1"</span>
+<span class="token number">2</span><span class="token punctuation">)</span> <span class="token string">"2"</span>
+<span class="token number">3</span><span class="token punctuation">)</span> <span class="token string">"3"</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> spop mymyset
+SPOP will delete items.
+Do you want to proceed? <span class="token punctuation">(</span>y<span class="token operator">/</span>n<span class="token punctuation">)</span><span class="token operator">:</span> y
+Your Call<span class="token operator">!</span><span class="token operator">!</span>
+<span class="token string">"1"</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> smembers mymyset <span class="token comment" spellcheck="true"># 默认弹出一个</span>
+<span class="token number">1</span><span class="token punctuation">)</span> <span class="token string">"2"</span>
+<span class="token number">2</span><span class="token punctuation">)</span> <span class="token string">"3"</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> spop mymyset <span class="token number">2</span>  <span class="token comment" spellcheck="true"># 可以指定个数</span>
+SPOP will delete items.
+Do you want to proceed? <span class="token punctuation">(</span>y<span class="token operator">/</span>n<span class="token punctuation">)</span><span class="token operator">:</span> y
+Your Call<span class="token operator">!</span><span class="token operator">!</span>
+<span class="token number">1</span><span class="token punctuation">)</span> <span class="token string">"2"</span>
+<span class="token number">2</span><span class="token punctuation">)</span> <span class="token string">"3"</span>
+<span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> smembers mymyset
+<span class="token punctuation">(</span>empty list or set<span class="token punctuation">)</span></code></pre>
+<h3 id="集合间的操作"><a href="#集合间的操作" class="headerlink" title="集合间的操作"></a>集合间的操作</h3><p>redis中的集合之间可以做交集补集这些操作</p>
+<pre class=" language-bash"><code class="language-bash">10.0.43.102:6379<span class="token operator">></span> sadd set1 it is dangerous dont <span class="token function">touch</span> it
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> 5
+10.0.43.102:6379<span class="token operator">></span> sadd set2 it is safe , you can play it
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> 7</code></pre>
+<p><img src="http://img.noback.top/2020-05-20-23-02-05.png" alt="2020-05-20-23-02-05"></p>
+<p><font color='red'>多个集合都适用，并不是只适用于两个集合</font></p>
+<p>求两个集合的交集</p>
+<pre class=" language-bash"><code class="language-bash">10.0.43.102:6379<span class="token operator">></span> sinter set2 set1
+1<span class="token punctuation">)</span> <span class="token string">"is"</span>
+2<span class="token punctuation">)</span> <span class="token string">"it"</span></code></pre>
+<p>求两个集合的合集</p>
+<pre class=" language-bash"><code class="language-bash">10.0.43.102:6379<span class="token operator">></span> sunion set1 set2
+ 1<span class="token punctuation">)</span> <span class="token string">"is"</span>
+ 2<span class="token punctuation">)</span> <span class="token string">"safe"</span>
+ 3<span class="token punctuation">)</span> <span class="token string">"dont"</span>
+ 4<span class="token punctuation">)</span> <span class="token string">"dangerous"</span>
+ 5<span class="token punctuation">)</span> <span class="token string">"it"</span>
+ 6<span class="token punctuation">)</span> <span class="token string">"can"</span>
+ 7<span class="token punctuation">)</span> <span class="token string">"you"</span>
+ 8<span class="token punctuation">)</span> <span class="token string">"touch"</span>
+ 9<span class="token punctuation">)</span> <span class="token string">","</span>
+10<span class="token punctuation">)</span> <span class="token string">"play"</span></code></pre>
+<p>求两个集合之间的差集</p>
+<pre class=" language-bash"><code class="language-bash">10.0.43.102:6379<span class="token operator">></span> <span class="token function">sdiff</span> set2 set1
+1<span class="token punctuation">)</span> <span class="token string">","</span>
+2<span class="token punctuation">)</span> <span class="token string">"you"</span>
+3<span class="token punctuation">)</span> <span class="token string">"can"</span>
+4<span class="token punctuation">)</span> <span class="token string">"safe"</span>
+5<span class="token punctuation">)</span> <span class="token string">"play"</span></code></pre>
+<p>将集合的求差 求和 交集存储起来</p>
+<pre class=" language-bash"><code class="language-bash">sinterstore destination key <span class="token punctuation">[</span>key <span class="token punctuation">..</span>.<span class="token punctuation">]</span>
+suionstore  destination key <span class="token punctuation">[</span>key <span class="token punctuation">..</span>.<span class="token punctuation">]</span>
+sdiffstore  destination key <span class="token punctuation">[</span>key <span class="token punctuation">..</span>.<span class="token punctuation">]</span>
+
+10.0.43.102:6379<span class="token operator">></span> sdiffstore newset  set1 set2
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> 3
+10.0.43.102:6379<span class="token operator">></span> <span class="token function">type</span> newset
+<span class="token string">"set"</span>
+10.0.43.102:6379<span class="token operator">></span> smembers newset
+1<span class="token punctuation">)</span> <span class="token string">"dangerous"</span>
+2<span class="token punctuation">)</span> <span class="token string">"touch"</span>
+3<span class="token punctuation">)</span> <span class="token string">"dont"</span></code></pre>
+<h2 id="Redis有序集合"><a href="#Redis有序集合" class="headerlink" title="Redis有序集合"></a>Redis有序集合</h2><p>上面的集合是无序的集合,它保留了集合不能有重复成员的特性，但不同的是，有序集合中的元素可以排序。因为是有序集合，就要设置一个序号来进行排序。与之前的无序集合不同的是，有序集合多了一个fileds用来存储index 就像一个班里面的成绩单，不同的人之间是不可以重复的，但是分数是可以重复的</p>
+<p>创建一个有序集合</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># zadd key score member [score member ...]</span>
+10.0.43.102:6379<span class="token operator">></span> zadd user:ranking 220 hzj 220 ccc 210 jjj
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> 3</code></pre>
+<p>可以看一下有序集合和无序集合的差别， <code>set</code>为无序集合， <code>zset</code>为有序集合<br><img src="http://img.noback.top/2020-05-20-23-48-15.png" alt="2020-05-20-23-48-15"><br>有序集合相比集合提供了排序字段，但是也产生了代价，zadd的时间复杂度为O（log（n）），sadd的时间复杂度为O（1）</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 计算成员个数</span>
+10.0.43.102:6379<span class="token operator">></span> zcard user:ranking
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> 3
+
+<span class="token comment" spellcheck="true"># 获取有序集合中某一个集合的score</span>
+10.0.43.102:6379<span class="token operator">></span> zscore user:ranking hzj
+<span class="token string">"220"</span>
+
+<span class="token comment" spellcheck="true"># 有序集合排序 排序的内容是根据score进行排序的</span>
+<span class="token comment" spellcheck="true"># 根据value获取排名id</span>
+10.0.43.102:6379<span class="token operator">></span> zrank user:ranking hzj
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> 2
+<span class="token comment" spellcheck="true"># 反向查询排名id</span>
+10.0.43.102:6379<span class="token operator">></span> zrevrank user:ranking hzj
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> 0
+
+10.0.43.102:6379<span class="token operator">></span> zadd rank 1 xx 2 yy 3 cc 4 <span class="token function">dd</span> 4 qq 5 jj
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> 6
+10.0.43.102:6379<span class="token operator">></span> zrank rank xx   <span class="token comment" spellcheck="true"># 排名第一就是0开始</span>
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> 0
+10.0.43.102:6379<span class="token operator">></span> zrank rank yy
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> 1
+
+<span class="token comment" spellcheck="true"># 删除成员</span>
+10.0.43.102:6379<span class="token operator">></span> zrem rank yy
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> 1
+10.0.43.102:6379<span class="token operator">></span> zrem rank xx cc <span class="token function">dd</span>
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> 3
+
+<span class="token comment" spellcheck="true"># 增加成员的分数</span>
+10.0.43.102:6379<span class="token operator">></span> zincrby rank 10 jj
+<span class="token string">"15"</span>
+
+<span class="token comment" spellcheck="true"># 指定返回获取内容</span>
+10.0.43.102:6379<span class="token operator">></span> zrange rank 0 2 WITHSCORES <span class="token comment" spellcheck="true"># 可以不加scores</span>
+1<span class="token punctuation">)</span> 1 <span class="token string">"xx"</span>
+2<span class="token punctuation">)</span> 2 <span class="token string">"yy"</span>
+3<span class="token punctuation">)</span> 3 <span class="token string">"cc"</span>
+10.0.43.102:6379<span class="token operator">></span> zrange rank 0 2
+1<span class="token punctuation">)</span> <span class="token string">"xx"</span>
+2<span class="token punctuation">)</span> <span class="token string">"yy"</span>
+3<span class="token punctuation">)</span> <span class="token string">"cc"</span>
+
+<span class="token comment" spellcheck="true"># 根据指定分数返回获取内容</span>
+10.0.43.102:6379<span class="token operator">></span> zrangebyscore rank 2 5
+1<span class="token punctuation">)</span> <span class="token string">"yy"</span>
+2<span class="token punctuation">)</span> <span class="token string">"cc"</span>
+3<span class="token punctuation">)</span> <span class="token string">"dd"</span>
+4<span class="token punctuation">)</span> <span class="token string">"qq"</span>
+5<span class="token punctuation">)</span> <span class="token string">"jj"</span>
+10.0.43.102:6379<span class="token operator">></span> zrangebyscore rank 2 5 WITHSCORES
+1<span class="token punctuation">)</span> 2 <span class="token string">"yy"</span>
+2<span class="token punctuation">)</span> 3 <span class="token string">"cc"</span>
+3<span class="token punctuation">)</span> 4 <span class="token string">"dd"</span>
+4<span class="token punctuation">)</span> 4 <span class="token string">"qq"</span>
+5<span class="token punctuation">)</span> 5 <span class="token string">"jj"</span>
+
+<span class="token comment" spellcheck="true"># 获取指定分数的个数</span>
+10.0.43.102:6379<span class="token operator">></span> zcount rank 1 2
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> 2</code></pre>
+<h3 id="集合之间的操作"><a href="#集合之间的操作" class="headerlink" title="集合之间的操作"></a>集合之间的操作</h3><p>创建两个有序集合</p>
+<pre class=" language-bash"><code class="language-bash">10.0.43.102:6379<span class="token operator">></span> zadd user:ranking:1 1 kris 91 mike 200 frank 220 tim 250 martin
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> 5
+10.0.43.102:6379<span class="token operator">></span> zadd user:ranking:2 8 james 77 mike 625 martin 888 tom
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> 4</code></pre>
+<h2 id="键管理"><a href="#键管理" class="headerlink" title="键管理"></a>键管理</h2><pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 对键进行重命名  (需要确认)</span>
+10.0.43.102:6379<span class="token operator">></span> <span class="token keyword">set</span> name hzj
+OK
+10.0.43.102:6379<span class="token operator">></span> get name
+<span class="token string">"hzj"</span>
+10.0.43.102:6379<span class="token operator">></span> <span class="token function">rename</span> name nohzj
+RENAME use DELETE <span class="token function">command</span> to overwrite exist key, it may cause high latency when the value is big.
+Do you want to proceed? <span class="token punctuation">(</span>y/n<span class="token punctuation">)</span>: y
+Your Call<span class="token operator">!</span><span class="token operator">!</span>
+OK
+10.0.43.102:6379<span class="token operator">></span> get name
+<span class="token punctuation">(</span>nil<span class="token punctuation">)</span>
+10.0.43.102:6379<span class="token operator">></span> get nohzj
+<span class="token string">"hzj"</span>
+
+<span class="token comment" spellcheck="true"># 对键进行重命名 (不需要确认)</span>
+10.0.43.102:6379<span class="token operator">></span> <span class="token keyword">set</span> name hzj
+OK
+10.0.43.102:6379<span class="token operator">></span> get name
+<span class="token string">"hzj"</span>
+10.0.43.102:6379<span class="token operator">></span> renamenx name xxhzj
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> 1
+10.0.43.102:6379<span class="token operator">></span> get xxhzj
+<span class="token string">"hzj"</span></code></pre>
+<p>由于重命名键期间会执行del命令删除旧的键，如果键对应的值比较大，会存在阻塞Redis的可能性，这点不要忽视</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 随机返回一个键</span>
+10.0.43.102:6379<span class="token operator">></span> randomkey
+<span class="token string">"nohzj"</span></code></pre>
+<h2 id="Redis集合、有序集合、列表的区别"><a href="#Redis集合、有序集合、列表的区别" class="headerlink" title="Redis集合、有序集合、列表的区别"></a>Redis集合、有序集合、列表的区别</h2><p><img src="http://img.noback.top/2020-05-20-23-13-17.png" alt="2020-05-20-23-13-17"></p>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>标签：</span>
+                <span class="tag">
+                    
+                    
+                    <a href="/tags/redis/"># redis</a>
+                    
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript：window.history.back();">后退</a>
+                <span>· </span>
+                <a href="/">主页</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            <a class="prev" rel="prev" href="/2020/11/05/blog_back_new/redis/redis%E6%8C%81%E4%B9%85%E5%8C%96/">redis持久化</a>
+            
+            
+            <a class="next" rel="next" href="/2020/10/30/blog_back_new/redis/redis%E9%9B%86%E7%BE%A4%E5%AE%9E%E8%B7%B5/">redis集群实践</a>
+            
+        </section>
+    </article>
+</div>
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+    </div>
+</footer>
+
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

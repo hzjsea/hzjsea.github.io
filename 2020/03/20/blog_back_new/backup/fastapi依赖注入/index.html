@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="hzjsea">
+
+
+
+
+
+
+<title>fastapi依赖注入 | hzjsea</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+    <script src="/js/jquery.min.js"></script>
+    
+
+
+
+    
+    
+        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+    
+
+
+
+
+    <script>
+    function searchToggle() {
+        const width = $(document.body).width()
+        if(width > 479) {
+            return;
+        }
+        const search = $('.search');
+        const searchForm = $('.form-search')
+
+        if(!search.hasClass("mobile-search")) {
+            search.addClass("mobile-search");
+        } else {
+            search.removeClass("mobile-search");
+        } 
+    }
+
+    function search(searchInputEl, formEl, flag) {
+        const path = "/" + "search.json"; // 可以在public 下查看这个search.json
+        $(formEl).submit(function(e){
+            e.preventDefault();
+            let target = null
+            if(searchInputEl == null) {
+                const screenWidth = $(document.body).width();
+                target = screenWidth > 479 ? $('#pc-search-input') : $('#mobile-search-input');
+                console.log(target);
+            } else {
+                target = $(searchInputEl)
+            }
+
+            if(!flag && target.val() === '') {
+                return ;
+            }
+
+            $("#u-search").fadeIn(500, function() {
+                $("body > .wrapper").addClass("modal-active");
+
+                $.ajax({
+                    url: path,
+                    dataType: "json",
+                    beforeSend: function (xhr) {
+                        $input = target.val();
+                        $(".form-input").val($input);
+                        const loadingBar = $('.search-loading-bar') 
+                        loadingBar.css({
+                            width:'100%',
+                            display: 'block'
+                        });
+                    },
+                    success: function( datas ) {
+                        console.log(datas);
+                        const $resultPanel = $(".modal-body")[0];
+                        let str = `<ul class="modal-results">`;
+                        var keywords = $(".form-input").val().trim().toLowerCase().split(/[\s\-]+/);
+                        $resultPanel.innerHTML = "";
+                        let hasResult = false
+                        let text = `<div class="no-result">找不到与关键词相关的内容....</div>`;
+
+                        if ($(".form-input").val().trim().length <= 0) {
+                            // 没有结果
+                            $resultPanel.innerHTML = text;
+                            return;
+                        }
+                        datas.forEach(function (data, index) {
+                            var isMatch = true;
+                            if (!data.title || data.title.trim() === '') {
+                                data.title = "Untitled";
+                            }
+                            var data_title = data.title.trim().toLowerCase();
+                            var data_content = data.content && data.content.trim().replace(/<[^>]+>/g, "").toLowerCase() || '';
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            // only match artiles with not empty contents
+                            if (data_content !== '') {
+                                keywords.forEach(function (keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        hasResult = true
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            } else {
+                                isMatch = false;
+                            }
+                            // show search results
+                            if (isMatch) {
+                                str += `<li class='result-item'><a href='${data_url}' class='result-item-detail'> <span class="title">${data_title}</span>`;
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 200 characters
+                                    var start = first_occur - 40;
+                                    var end = first_occur + 160;
+
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+
+                                    if (start == 0) {
+                                        end = 200;
+                                    }
+
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+
+                                    var match_content = content.substring(start, end);
+
+                                    // highlight all keywords
+                                    keywords.forEach(function (keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, `<em class="search-keyword">${keyword}</em>`);
+                                    });
+
+                                    str += `<span class="content"> ${match_content} ...</span></a>`;
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        if(hasResult) {
+                            $resultPanel.innerHTML = str;
+                        } else {
+                            $resultPanel.innerHTML = text;
+                        }
+
+                    },
+                    complete: function() {
+                        setTimeout(() => {
+                                const loadingBar = $('.search-loading-bar') 
+                                loadingBar.css({
+                                    width:'0%',
+                                    display: 'none'
+                                });
+                        }, 300)
+                    }
+                });
+            })
+
+        });
+    }
+
+    $(document).ready(function() {
+        $('.modal-close').click(function () { 
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+
+        $('.modal-overlay').click(function() {
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+        search(null, ".form-search", false)
+        search("#u-search-modal-form .form-input", ".u-search-modal-form", true)
+    })
+</script>
+
+
+
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo"><a href="/">hzjsea</a></div>
+        <div class="menu navbar-right">
+            
+            
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="pc-search-input"/>
+        </form>
+    </div>
+
+
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+            <input id="switch_default" type="checkbox" class="switch_default">
+            <label for="switch_default" class="toggleBtn"></label>
+        </div>
+    </div>
+</nav>
+
+
+<nav class="navbar-mobile" id="nav-mobile">
+    <div class="container">
+        <div class="navbar-header">
+            <div>
+                <a href="/">hzjsea</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+            </div>
+            <div class="navbar-mobile-right">
+                
+                
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="mobile-search-input"/>
+        </form>
+    </div>
+
+
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; 目录</div>
+            </div>
+            
+        </div>
+        <div class="menu" id="mobile-menu">
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+        </div>
+    </div>
+</nav>
+
+        <div class="main">
+			<!-- Chic/layout.ejs -->
+ <div id="u-search">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="container">
+                    <form id="u-search-modal-form" class="u-search-modal-form">
+                        <button type="submit" class="form-submit-btn">
+                            <img src="/image/search.png" class="search-btn-img" />
+                        </button>
+                        <input placeholder="搜索文章。。。" class="form-input" id="modal-form-input">
+                    </form>
+                    <a class="modal-close">x</a>
+                </div>
+                <div class="search-loading">
+                    <div class="search-loading-bar"></div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <!-- ul 格式如下 -->
+                <!-- <ul class="modal-results">
+                    <li class="result-item">
+                        <a class="result-item-detail">
+                            <span class="title">页面配置</span>
+                            <span class="content">
+                                content
+                            </span>
+                        </a>
+                    </li>
+                </ul> -->
+            </div>
+        </div>
+        <div class="modal-overlay"></div>
+    </div>
+            <div class="container">
+    
+    
+    <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">全部展开</a>
+        <a onclick="go_top()">回到顶部</a>
+        <a onclick="go_bottom()">回到底部</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "全部折叠"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "全部展开"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">fastapi依赖注入</h1>
+            
+            <div class="post-meta">
+                
+                作者： <a itemprop="author" rel="author" href="/">hzjsea</a>&nbsp;
+                
+
+                
+                <span class="post-time">
+                    创建日期： <a
+                        href="#">March 20, 2020&nbsp;&nbsp;14:03:58</a>
+                </span>&nbsp;
+                
+                
+                <span class="post-category">
+                    分类：
+                    
+                    <a href="/categories/python/">python</a>&nbsp;
+                    
+                </span>
+                
+                
+                状态：<a href="#">SNAPSHOT</a>
+                
+            </div>
+            
+        </header>
+
+        <div class="post-content">
+            <p>learn python</p>
+<a id="more"></a>
+
+
+<h1 id="fastapi依赖注入"><a href="#fastapi依赖注入" class="headerlink" title="fastapi依赖注入"></a>fastapi依赖注入</h1><p>fastapi中的依赖注入，是为了减少同类型代码的出现，将重复动作归为一类，你可以把它看成简陋的接口实现<br>在fastapi中，他被称之为依赖</p>
+<pre class=" language-python"><code class="language-python"><span class="token keyword">from</span> typing <span class="token keyword">import</span>  List
+<span class="token keyword">from</span> fastapi <span class="token keyword">import</span> FastAPI
+<span class="token keyword">from</span> pydantic <span class="token keyword">import</span> BaseModel
+<span class="token keyword">from</span> fastapi <span class="token keyword">import</span>  Depends
+
+
+
+app <span class="token operator">=</span> FastAPI<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+
+<span class="token comment" spellcheck="true"># 创建模型类</span>
+<span class="token keyword">class</span> <span class="token class-name">Item</span><span class="token punctuation">(</span>BaseModel<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    name<span class="token punctuation">:</span> str <span class="token operator">=</span> None
+    desction<span class="token punctuation">:</span> str <span class="token operator">=</span> None
+    price<span class="token punctuation">:</span> float <span class="token operator">=</span> None
+    tax <span class="token punctuation">:</span> float <span class="token operator">=</span> None
+    tags<span class="token punctuation">:</span> List<span class="token punctuation">[</span>str<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+
+<span class="token triple-quoted-string string">"""
+    依赖注入
+"""</span>
+<span class="token comment" spellcheck="true"># 创建一个需要重复的动作</span>
+<span class="token comment" spellcheck="true"># 定义了一个动作，返回输入的三个参数</span>
+<span class="token keyword">async</span> <span class="token keyword">def</span> <span class="token function">repeat_action</span><span class="token punctuation">(</span>q<span class="token punctuation">:</span> str <span class="token operator">=</span> None<span class="token punctuation">,</span> skip<span class="token punctuation">:</span> int <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">,</span>limit<span class="token punctuation">:</span> int <span class="token operator">=</span> <span class="token number">100</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">return</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;"q":q,"skip":skip,"limit":limit&amp;#125;</span>
+
+
+
+
+<span class="token comment" spellcheck="true"># 传入参数</span>
+@app<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">"/"</span><span class="token punctuation">)</span>
+<span class="token keyword">async</span> <span class="token keyword">def</span> <span class="token function">root</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">return</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;"desc":"hello world"&amp;#125;</span>
+
+<span class="token comment" spellcheck="true"># 执行相同的动作</span>
+@app<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">"/items/"</span><span class="token punctuation">)</span>
+<span class="token keyword">async</span> <span class="token keyword">def</span> <span class="token function">read_item</span><span class="token punctuation">(</span>commons<span class="token punctuation">:</span> dict <span class="token operator">=</span> Depends<span class="token punctuation">(</span>repeat_action<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">return</span> commons
+@app<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">"/uesrs/"</span><span class="token punctuation">)</span>
+<span class="token keyword">async</span> <span class="token keyword">def</span> <span class="token function">read_item</span><span class="token punctuation">(</span>commons<span class="token punctuation">:</span> dict <span class="token operator">=</span> Depends<span class="token punctuation">(</span>repeat_action<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">return</span> commons</code></pre>
+<p>另外 依赖的使用没有强制要求使用async也可以使用普通的def</p>
+<blockquote>
+<p>您可以在常规的 def 路径操作函数中使用 async def 声明依赖关系，或者在 async def 路径操作函数中使用 def 声明依赖关系，等等。</p>
+</blockquote>
+<h2 id="高级的依赖注入"><a href="#高级的依赖注入" class="headerlink" title="高级的依赖注入"></a>高级的依赖注入</h2><p>之前的依赖注入只是返回了一个dict字典，并不能对其中内容做一些处理，高级的依赖注入支持返回一个类，在类中可以完成对参数的操作</p>
+<pre class=" language-python"><code class="language-python">
+<span class="token keyword">from</span> typing <span class="token keyword">import</span>  List
+<span class="token keyword">from</span> fastapi <span class="token keyword">import</span> FastAPI
+<span class="token keyword">from</span> pydantic <span class="token keyword">import</span> BaseModel
+<span class="token keyword">from</span> fastapi <span class="token keyword">import</span>  Depends
+
+app <span class="token operator">=</span> FastAPI<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+
+<span class="token comment" spellcheck="true">## 创建一个类</span>
+<span class="token keyword">class</span> <span class="token class-name">repeat_action</span><span class="token punctuation">(</span>object<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">def</span> <span class="token function">__init__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span>
+                 name<span class="token punctuation">:</span> str<span class="token punctuation">,</span>
+                 age<span class="token punctuation">:</span> int <span class="token operator">=</span> None<span class="token punctuation">,</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+        self<span class="token punctuation">.</span>name <span class="token operator">=</span> name
+        <span class="token keyword">if</span> age <span class="token keyword">is</span> None<span class="token punctuation">:</span>
+            self<span class="token punctuation">.</span>age <span class="token operator">=</span> age
+        <span class="token keyword">else</span><span class="token punctuation">:</span>
+            self<span class="token punctuation">.</span>age <span class="token operator">=</span> age <span class="token operator">+</span> <span class="token number">1</span>
+
+@app<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">"/"</span><span class="token punctuation">)</span>
+<span class="token keyword">async</span> <span class="token keyword">def</span> <span class="token function">root</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">return</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;"hello world":"helloworld"&amp;#125;</span>
+@app<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">"/age/"</span><span class="token punctuation">)</span>
+<span class="token keyword">async</span> <span class="token keyword">def</span> <span class="token function">read_info</span><span class="token punctuation">(</span>commons<span class="token punctuation">:</span> repeat_action<span class="token operator">=</span>Depends<span class="token punctuation">(</span>repeat_action<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+<span class="token comment" spellcheck="true"># async  def read_info(commons: repeat_action=Depends()) 你还可以这样写</span>
+    res <span class="token operator">=</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;&amp;#125;</span>
+    <span class="token keyword">if</span> commons<span class="token punctuation">.</span>age <span class="token keyword">is</span> <span class="token operator">not</span> None<span class="token punctuation">:</span>
+        res <span class="token operator">=</span> None
+        <span class="token keyword">return</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;"is birth":res&amp;#125;</span>
+    <span class="token keyword">else</span><span class="token punctuation">:</span>
+        res <span class="token operator">=</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;"res":"&amp;#123;&amp;#125; is not birth,age is &amp;#123;&amp;#125;".format(commons.name,commons.age)&amp;#125;</span>
+        <span class="token keyword">return</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;"is birth":res&amp;#125;</span></code></pre>
+<h2 id="子级依赖注入"><a href="#子级依赖注入" class="headerlink" title="子级依赖注入"></a>子级依赖注入</h2><p>既然依赖已经可以用类去申明，那他也有子级别依赖注入</p>
+<pre class=" language-python"><code class="language-python"><span class="token keyword">from</span> typing <span class="token keyword">import</span>  List
+<span class="token keyword">from</span> fastapi <span class="token keyword">import</span> FastAPI
+<span class="token keyword">from</span> pydantic <span class="token keyword">import</span> BaseModel
+<span class="token keyword">from</span> fastapi <span class="token keyword">import</span>  Depends
+
+app <span class="token operator">=</span> FastAPI<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment" spellcheck="true">## 创建子级依赖</span>
+<span class="token keyword">async</span>  <span class="token keyword">def</span> <span class="token function">sub_action</span><span class="token punctuation">(</span>q<span class="token punctuation">:</span> str <span class="token operator">=</span>None<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    q <span class="token operator">=</span> <span class="token string">"my type is sub action for &amp;#123;&amp;#125;"</span><span class="token punctuation">.</span>format<span class="token punctuation">(</span>q<span class="token punctuation">)</span>
+    <span class="token keyword">return</span> q
+
+<span class="token comment" spellcheck="true">## 创建一个类</span>
+<span class="token keyword">class</span> <span class="token class-name">repeat_action</span><span class="token punctuation">(</span>object<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">def</span> <span class="token function">__init__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span>
+                 name<span class="token punctuation">:</span> str<span class="token punctuation">,</span>
+                 age<span class="token punctuation">:</span> int <span class="token operator">=</span> None<span class="token punctuation">,</span>
+                 desc<span class="token punctuation">:</span> str <span class="token operator">=</span> None<span class="token punctuation">,</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+        self<span class="token punctuation">.</span>name <span class="token operator">=</span> name
+        <span class="token keyword">if</span> age <span class="token keyword">is</span> None<span class="token punctuation">:</span>
+            self<span class="token punctuation">.</span>age <span class="token operator">=</span> age
+        <span class="token keyword">else</span><span class="token punctuation">:</span>
+            self<span class="token punctuation">.</span>age <span class="token operator">=</span> age <span class="token operator">+</span> <span class="token number">1</span>
+        self<span class="token punctuation">.</span>desc <span class="token operator">=</span> Depends<span class="token punctuation">(</span>sub_action<span class="token punctuation">(</span>desc<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+@app<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">"/age/"</span><span class="token punctuation">)</span>
+<span class="token keyword">async</span> <span class="token keyword">def</span> <span class="token function">read_info</span><span class="token punctuation">(</span>commons<span class="token punctuation">:</span> repeat_action<span class="token operator">=</span>Depends<span class="token punctuation">(</span>repeat_action<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    res <span class="token operator">=</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;&amp;#125;</span>
+    <span class="token keyword">if</span> commons<span class="token punctuation">.</span>age <span class="token keyword">is</span> <span class="token operator">not</span> None<span class="token punctuation">:</span>
+        res <span class="token operator">=</span> None
+        <span class="token keyword">return</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;"is birth":res&amp;#125;</span>
+    <span class="token keyword">else</span><span class="token punctuation">:</span>
+        res <span class="token operator">=</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;"res":"&amp;#123;&amp;#125; is not birth,age is &amp;#123;&amp;#125;".format(commons.name,commons.age)&amp;#125;</span>
+        <span class="token comment" spellcheck="true"># return &amp;#123;"is birth":res&amp;#125;</span>
+        <span class="token keyword">if</span> commons<span class="token punctuation">.</span>desc <span class="token keyword">is</span> <span class="token operator">not</span> None<span class="token punctuation">:</span>
+            res<span class="token punctuation">[</span><span class="token string">'desc'</span><span class="token punctuation">]</span> <span class="token operator">=</span> commons<span class="token punctuation">.</span>desc
+        <span class="token keyword">else</span><span class="token punctuation">:</span>
+            <span class="token keyword">return</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;"is birth ":res&amp;#125;</span>
+</code></pre>
+<blockquote>
+<p>这里官方文档写了一个use_cache=False是什么用作 后面在解决</p>
+</blockquote>
+<p>补充，fastapi中，如果你在一个相同的请求路径中多次使用相同的依赖项，fastapi只会使用一次依赖注入 因为他会把第一次依赖注入的结果放到缓存中，<br>中如果需要使用多次调用，可以在调用的过程中使用<code>use_cache=False</code></p>
+<pre class=" language-python"><code class="language-python"><span class="token keyword">async</span> <span class="token keyword">def</span> <span class="token function">needy_dependency</span><span class="token punctuation">(</span>fresh_value<span class="token punctuation">:</span> str <span class="token operator">=</span> Depends<span class="token punctuation">(</span>get_value<span class="token punctuation">,</span> use_cache<span class="token operator">=</span><span class="token boolean">False</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">return</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;"fresh_value": fresh_value&amp;#125;</span></code></pre>
+<h2 id="依赖注入的其他使用方法"><a href="#依赖注入的其他使用方法" class="headerlink" title="依赖注入的其他使用方法"></a>依赖注入的其他使用方法</h2><p>有时候只需要在Url调用的时候执行以下依赖注入的方法就可以了，不需要返回值，这时候就可以用到<code>Depends</code> 方法与Depends相同，但是不能返回结果<br>传入多个依赖注入</p>
+<pre class=" language-python"><code class="language-python">@app<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">"/items/"</span><span class="token punctuation">,</span> dependencies<span class="token operator">=</span><span class="token punctuation">[</span>Depends<span class="token punctuation">(</span>verify_token<span class="token punctuation">)</span><span class="token punctuation">,</span> Depends<span class="token punctuation">(</span>verify_key<span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+<span class="token keyword">async</span> <span class="token keyword">def</span> <span class="token function">read_items</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">return</span> <span class="token punctuation">[</span><span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;"item": "Foo"&amp;#125;, &amp;#123;"item": "Bar"&amp;#125;]</span></code></pre>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>标签：</span>
+                <span class="tag">
+                    
+                    
+                    <a href="/tags/python/"># python</a>
+                    
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript：window.history.back();">后退</a>
+                <span>· </span>
+                <a href="/">主页</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            <a class="prev" rel="prev" href="/2020/03/21/blog_back_new/Python/pyjwt%E6%A8%A1%E5%9D%97/">python使用pyjwt模块</a>
+            
+            
+            <a class="next" rel="next" href="/2020/03/20/blog_back_new/backup/fastapi%E4%B8%AD%E6%9B%B4%E6%96%B0%E6%95%B0%E6%8D%AE/">fastapi中更新数据</a>
+            
+        </section>
+    </article>
+</div>
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+    </div>
+</footer>
+
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

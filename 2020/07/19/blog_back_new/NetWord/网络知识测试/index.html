@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="hzjsea">
+
+
+
+
+
+
+<title>网络知识测试 | hzjsea</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+    <script src="/js/jquery.min.js"></script>
+    
+
+
+
+    
+    
+        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+    
+
+
+
+
+    <script>
+    function searchToggle() {
+        const width = $(document.body).width()
+        if(width > 479) {
+            return;
+        }
+        const search = $('.search');
+        const searchForm = $('.form-search')
+
+        if(!search.hasClass("mobile-search")) {
+            search.addClass("mobile-search");
+        } else {
+            search.removeClass("mobile-search");
+        } 
+    }
+
+    function search(searchInputEl, formEl, flag) {
+        const path = "/" + "search.json"; // 可以在public 下查看这个search.json
+        $(formEl).submit(function(e){
+            e.preventDefault();
+            let target = null
+            if(searchInputEl == null) {
+                const screenWidth = $(document.body).width();
+                target = screenWidth > 479 ? $('#pc-search-input') : $('#mobile-search-input');
+                console.log(target);
+            } else {
+                target = $(searchInputEl)
+            }
+
+            if(!flag && target.val() === '') {
+                return ;
+            }
+
+            $("#u-search").fadeIn(500, function() {
+                $("body > .wrapper").addClass("modal-active");
+
+                $.ajax({
+                    url: path,
+                    dataType: "json",
+                    beforeSend: function (xhr) {
+                        $input = target.val();
+                        $(".form-input").val($input);
+                        const loadingBar = $('.search-loading-bar') 
+                        loadingBar.css({
+                            width:'100%',
+                            display: 'block'
+                        });
+                    },
+                    success: function( datas ) {
+                        console.log(datas);
+                        const $resultPanel = $(".modal-body")[0];
+                        let str = `<ul class="modal-results">`;
+                        var keywords = $(".form-input").val().trim().toLowerCase().split(/[\s\-]+/);
+                        $resultPanel.innerHTML = "";
+                        let hasResult = false
+                        let text = `<div class="no-result">找不到与关键词相关的内容....</div>`;
+
+                        if ($(".form-input").val().trim().length <= 0) {
+                            // 没有结果
+                            $resultPanel.innerHTML = text;
+                            return;
+                        }
+                        datas.forEach(function (data, index) {
+                            var isMatch = true;
+                            if (!data.title || data.title.trim() === '') {
+                                data.title = "Untitled";
+                            }
+                            var data_title = data.title.trim().toLowerCase();
+                            var data_content = data.content && data.content.trim().replace(/<[^>]+>/g, "").toLowerCase() || '';
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            // only match artiles with not empty contents
+                            if (data_content !== '') {
+                                keywords.forEach(function (keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        hasResult = true
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            } else {
+                                isMatch = false;
+                            }
+                            // show search results
+                            if (isMatch) {
+                                str += `<li class='result-item'><a href='${data_url}' class='result-item-detail'> <span class="title">${data_title}</span>`;
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 200 characters
+                                    var start = first_occur - 40;
+                                    var end = first_occur + 160;
+
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+
+                                    if (start == 0) {
+                                        end = 200;
+                                    }
+
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+
+                                    var match_content = content.substring(start, end);
+
+                                    // highlight all keywords
+                                    keywords.forEach(function (keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, `<em class="search-keyword">${keyword}</em>`);
+                                    });
+
+                                    str += `<span class="content"> ${match_content} ...</span></a>`;
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        if(hasResult) {
+                            $resultPanel.innerHTML = str;
+                        } else {
+                            $resultPanel.innerHTML = text;
+                        }
+
+                    },
+                    complete: function() {
+                        setTimeout(() => {
+                                const loadingBar = $('.search-loading-bar') 
+                                loadingBar.css({
+                                    width:'0%',
+                                    display: 'none'
+                                });
+                        }, 300)
+                    }
+                });
+            })
+
+        });
+    }
+
+    $(document).ready(function() {
+        $('.modal-close').click(function () { 
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+
+        $('.modal-overlay').click(function() {
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+        search(null, ".form-search", false)
+        search("#u-search-modal-form .form-input", ".u-search-modal-form", true)
+    })
+</script>
+
+
+
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo"><a href="/">hzjsea</a></div>
+        <div class="menu navbar-right">
+            
+            
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="pc-search-input"/>
+        </form>
+    </div>
+
+
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+            <input id="switch_default" type="checkbox" class="switch_default">
+            <label for="switch_default" class="toggleBtn"></label>
+        </div>
+    </div>
+</nav>
+
+
+<nav class="navbar-mobile" id="nav-mobile">
+    <div class="container">
+        <div class="navbar-header">
+            <div>
+                <a href="/">hzjsea</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+            </div>
+            <div class="navbar-mobile-right">
+                
+                
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="mobile-search-input"/>
+        </form>
+    </div>
+
+
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; 目录</div>
+            </div>
+            
+        </div>
+        <div class="menu" id="mobile-menu">
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+        </div>
+    </div>
+</nav>
+
+        <div class="main">
+			<!-- Chic/layout.ejs -->
+ <div id="u-search">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="container">
+                    <form id="u-search-modal-form" class="u-search-modal-form">
+                        <button type="submit" class="form-submit-btn">
+                            <img src="/image/search.png" class="search-btn-img" />
+                        </button>
+                        <input placeholder="搜索文章。。。" class="form-input" id="modal-form-input">
+                    </form>
+                    <a class="modal-close">x</a>
+                </div>
+                <div class="search-loading">
+                    <div class="search-loading-bar"></div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <!-- ul 格式如下 -->
+                <!-- <ul class="modal-results">
+                    <li class="result-item">
+                        <a class="result-item-detail">
+                            <span class="title">页面配置</span>
+                            <span class="content">
+                                content
+                            </span>
+                        </a>
+                    </li>
+                </ul> -->
+            </div>
+        </div>
+        <div class="modal-overlay"></div>
+    </div>
+            <div class="container">
+    
+    
+    <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">全部展开</a>
+        <a onclick="go_top()">回到顶部</a>
+        <a onclick="go_bottom()">回到底部</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "全部折叠"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "全部展开"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">网络知识测试</h1>
+            
+            <div class="post-meta">
+                
+                作者： <a itemprop="author" rel="author" href="/">hzjsea</a>&nbsp;
+                
+
+                
+                <span class="post-time">
+                    创建日期： <a
+                        href="#">July 19, 2020&nbsp;&nbsp;12:14:02</a>
+                </span>&nbsp;
+                
+                
+                <span class="post-category">
+                    分类：
+                    
+                    <a href="/categories/%E7%BD%91%E7%BB%9C/">网络</a>&nbsp;
+                    
+                </span>
+                
+                
+                状态：<a href="#">SNAPSHOT</a>
+                
+            </div>
+            
+        </header>
+
+        <div class="post-content">
+            <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+<ul>
+<li><a href="#question">Question</a><ul>
+<li><a href="#tcp%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E4%BB%A5%E5%8F%8A%E5%9B%9B%E6%AC%A1%E6%8C%A5%E6%89%8B">TCP三次握手以及四次挥手</a></li>
+<li><a href="#%E4%BA%A4%E6%8D%A2%E6%9C%BA%E7%AB%AF%E5%8F%A3%E5%8A%A8%E6%80%81%E6%B1%87%E8%81%9A%E5%92%8C%E9%9D%99%E6%80%81%E6%B1%87%E8%81%9A%E7%9A%84%E4%BC%98%E7%BC%BA%E7%82%B9%E5%AF%B9%E6%AF%94">交换机端口动态汇聚和静态汇聚的优缺点对比</a></li>
+<li><a href="#%E8%AE%BE%E8%AE%A1%E4%B8%80%E4%B8%AA%E6%9C%89100%E5%8F%B0%E5%B7%A6%E5%8F%B3%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%BD%91%E7%BB%9C%E6%9E%B6%E6%9E%84%E6%9C%89%E4%B8%80%E4%B8%AA%E6%80%BB%E8%AE%A1100g%E5%B8%A6%E5%AE%BD%E7%9A%84%E5%85%AC%E7%BD%91%E5%87%BA%E5%8F%A3%E4%BA%A4%E6%8D%A2%E6%9C%BA%E5%9E%8B%E5%8F%B7%E5%92%8C%E4%BD%BF%E7%94%A8%E6%95%B0%E9%87%8F%E4%B8%8D%E9%99%90%E5%86%85%E9%83%A8%E4%BA%92%E8%81%94%E6%8E%A5%E5%8F%A3%E7%B1%BB%E5%9E%8B%E4%B8%8D%E9%99%90%E9%9C%80%E8%A6%81%E8%80%83%E8%99%91%E9%AB%98%E5%8F%AF%E7%94%A8%E5%92%8C%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1">设计一个有100台左右服务器网络架构，有一个总计100G带宽的公网出口，交换机型号和使用数量不限，内部互联接口类型不限，需要考虑高可用和负载均衡</a></li>
+<li><a href="#%E7%BD%97%E5%88%97%E4%BA%A4%E6%8D%A2%E6%9C%BAirf%E4%BC%98%E7%BC%BA%E7%82%B9">罗列交换机IRF优缺点</a></li>
+<li><a href="#%E4%B8%BE%E4%BE%8Becmp%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E7%9A%84%E5%B8%B8%E7%94%A8%E5%9C%BA%E6%99%AF">举例ECMP负载均衡的常用场景</a></li>
+<li><a href="#%E6%A0%B9%E6%8D%AE%E4%B8%8B%E5%9B%BE%E6%98%AF%E5%90%A6%E5%8F%AF%E4%BB%A5%E5%88%A4%E6%96%AD%E5%AD%98%E5%9C%A8%E7%BD%91%E7%BB%9C%E6%94%BB%E5%87%BB">根据下图是否可以判断存在网络攻击？</a></li>
+<li><a href="#%E6%95%B0%E6%8D%AE%E4%B8%AD%E5%BF%83%E5%86%85%E9%83%A8%E7%BD%91%E7%BB%9C%E9%9C%80%E8%A6%81%E5%BC%80%E6%94%BE%E4%B8%80%E4%B8%AA%E5%AF%B9%E5%85%AC%E7%BD%91%E5%BC%80%E6%94%BE%E7%9A%84%E6%9C%8D%E5%8A%A1%E6%9C%89%E5%93%AA%E4%BA%9B%E6%96%B9%E6%B3%95%E6%9D%A5%E5%AE%9E%E7%8E%B0">数据中心内部网络需要开放一个对公网开放的服务，有哪些方法来实现？</a></li>
+<li><a href="#linux%E7%9A%84%E7%BD%91%E7%BB%9C%E6%80%A7%E8%83%BD%E7%93%B6%E9%A2%88%E5%9C%A8%E5%93%AA%E9%87%8C%E6%9C%89%E4%BB%80%E4%B9%88%E6%89%8B%E6%AE%B5%E6%9D%A5%E6%8F%90%E9%AB%98linux%E7%9A%84%E7%BD%91%E7%BB%9C%E6%80%A7%E8%83%BD">linux的网络性能瓶颈在哪里？有什么手段来提高linux的网络性能？</a></li>
+<li><a href="#linux%E4%BD%9C%E4%B8%BAnat%E7%BD%91%E5%85%B3%E9%9C%80%E8%A6%81%E8%BF%9B%E8%A1%8C%E5%93%AA%E4%BA%9B%E9%85%8D%E7%BD%AE">linux作为NAT网关需要进行哪些配置</a><ul>
+<li><a href="#vpc%E4%B8%8Eesc">VPC与ESC</a></li>
+<li><a href="#%E4%BB%8B%E7%BB%8Dnat-snat-dnat">介绍nat snat dnat</a></li>
+<li><a href="#%E6%95%B0%E6%8D%AE%E4%B8%AD%E5%BF%83%E5%86%85%E5%A4%96%E7%BD%91%E8%BD%AC%E5%8F%91%E7%9A%84%E5%BD%A2%E5%BC%8F">数据中心内外网转发的形式</a></li>
+<li><a href="#%E8%BE%B9%E7%BC%98%E8%8A%82%E7%82%B9%E5%A4%96to%E5%86%85%E7%9A%84%E8%BD%AC%E5%8F%91%E5%BD%A2%E5%BC%8F">边缘节点外to内的转发形式</a></li>
+<li><a href="#%E9%85%8D%E7%BD%AEsnat%E4%B8%8Ednat">配置SNAT与DNAT</a></li>
+</ul>
+</li>
+<li><a href="#%E9%9C%80%E8%A6%81%E5%9C%A8%E4%B8%80%E5%8F%B0%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%8A%E5%AF%B9%E5%BC%82%E5%B8%B8%E5%A4%A7%E6%B5%81%E9%87%8F%E8%BF%9B%E8%A1%8C%E5%AE%9A%E4%BD%8D%E5%88%86%E6%9E%90%E6%9C%89%E5%93%AA%E4%BA%9B%E6%96%B9%E6%B3%95">需要在一台服务器上对异常大流量进行定位分析，有哪些方法？</a></li>
+</ul>
+</li>
+</ul>
+<!-- /code_chunk_output -->
+
+<a id="more"></a>
+
+
+<h1 id="Question"><a href="#Question" class="headerlink" title="Question"></a>Question</h1><h2 id="TCP三次握手以及四次挥手"><a href="#TCP三次握手以及四次挥手" class="headerlink" title="TCP三次握手以及四次挥手"></a>TCP三次握手以及四次挥手</h2><p>三次握手</p>
+<ol>
+<li>客户端发送建立连接信号 (SYN=1;seq=client_id)</li>
+<li>服务端接收客户端返回确认信息  (SYN=1;seq=service_id;ack=client_id+1)</li>
+<li>客户端接收确认信息，此时已经建立建立，返回一个报文段 (SYN=1;seq=client_id+1;ack=service_id+1)</li>
+</ol>
+<p>四次挥手</p>
+<ol>
+<li>客户端发起终止信号 (FIN=1)</li>
+<li>服务端收到终止信号，返回确认信号(ACK)</li>
+<li>服务端发送终止信号(FIN=1)</li>
+<li>客户端收到终止信号，返回确认信号(ACK) ，服务收到信号后关闭连接 释放缓存</li>
+<li>客户端等待一段时间后，关闭连接，释放缓存</li>
+</ol>
+<p>握手注意点 第一阶段-第二阶段会发生SYN泛洪 解决方法 使用SYN cookie，服务器接收到第一阶段的建立连接信号后，不会发生半开连接，会先生成一段序号(service_id)返回给客户端，客户端带着这段序号+1 以及确认信号去请求服务器，服务器再次进行计算+1 比较service_id+1 相同则为合法连接，产生一个全开链接</p>
+<p><font color='red'>TCP生命周期要写上去嘛</font></p>
+<h2 id="交换机端口动态汇聚和静态汇聚的优缺点对比"><a href="#交换机端口动态汇聚和静态汇聚的优缺点对比" class="headerlink" title="交换机端口动态汇聚和静态汇聚的优缺点对比"></a>交换机端口动态汇聚和静态汇聚的优缺点对比</h2><p>动静态汇聚主要依靠的协议是链路聚合协议 (lacp)，链路聚合主要作用就是把多条物理链路绑定成几组逻辑链路，逻辑链路的存在一是可以起到备份的作用，二是可以起到增加带宽的作用<br>静态汇聚的优点是配置完成以后 端口的选中/非选中状态就不会受网络环境的影响，比较稳定。但同样的 缺点在于不能根据对端的状态调整端口的选中/非选中状态，不够灵活<br>而动态汇聚的有点在于，会自动协商汇聚口上选中与非选中的状态 能够根据对端和本端的信息调整端口的选中/非选中状态，比较灵活   但是缺点在于会受到网络环境的影响<br>所以对于这两种状态是两个正反面，不同的环境选择使用不同的配置<br>现在公司的配置默认统一为动态汇聚，这样做的好处是可以保证在之后扩口的时候方便操作，只需要划一个新的口到汇聚口里面去就好了</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 配置动态汇聚</span>
+link-aggregation mode dynamic
+<span class="token comment" spellcheck="true"># 查看链路汇聚协商状态</span>
+dis link-aggretion summary <span class="token comment" spellcheck="true"># 当Partner ID出现mac地址时候，则表示处于协商状态</span></code></pre>
+<h2 id="设计一个有100台左右服务器网络架构，有一个总计100G带宽的公网出口，交换机型号和使用数量不限，内部互联接口类型不限，需要考虑高可用和负载均衡"><a href="#设计一个有100台左右服务器网络架构，有一个总计100G带宽的公网出口，交换机型号和使用数量不限，内部互联接口类型不限，需要考虑高可用和负载均衡" class="headerlink" title="设计一个有100台左右服务器网络架构，有一个总计100G带宽的公网出口，交换机型号和使用数量不限，内部互联接口类型不限，需要考虑高可用和负载均衡"></a>设计一个有100台左右服务器网络架构，有一个总计100G带宽的公网出口，交换机型号和使用数量不限，内部互联接口类型不限，需要考虑高可用和负载均衡</h2><pre class=" language-mermaid"><code class="language-mermaid">graph LR
+   Switch1 --> 公网
+   6300-2 --> Switch1
+   6300-3 --> Switch1
+   6300-4 --> Switch1
+   6300-5 --> Switch1
+
+   service*5-1 --> 6300-2
+   service*5-2 --> 6300-3
+   service*5-3 --> 6300-4
+   service*5-4 --> 6300-5
+
+   5130-1 --> 6300-2
+   5130-2 --> 6300-3
+   5130-3 --> 6300-4
+   5130-4 --> 6300-5
+
+   service*10-1 --> 5130-1
+   service*10-2 --> 5130-2
+   service*10-3 --> 5130-3
+   service*10-4 --> 5130-4</code></pre>
+<h2 id="罗列交换机IRF优缺点"><a href="#罗列交换机IRF优缺点" class="headerlink" title="罗列交换机IRF优缺点"></a>罗列交换机IRF优缺点</h2><p>优点:</p>
+<ol>
+<li>配置方便,统一配置，IRF连接之后，只要在一台机器上进行配置管理就好了 简化管理</li>
+<li>高扩展性，增加成员设备，可以轻松自如地扩展IRF的端口数，带宽。</li>
+<li>高可靠性，两个交换机之间进行互备 其中一台挂了，另外一台会被选举成为新的master</li>
+</ol>
+<p>缺点:</p>
+<ol>
+<li>建立IRF体系 初期有点麻烦，配置还要重启，配置过程中步骤先后还很容易出错，建立初期蛮痛苦的</li>
+<li>堆叠交换机需要是同一类的交换机牌子</li>
+</ol>
+<h2 id="举例ECMP负载均衡的常用场景"><a href="#举例ECMP负载均衡的常用场景" class="headerlink" title="举例ECMP负载均衡的常用场景"></a>举例ECMP负载均衡的常用场景</h2><p>ECMP 即等价(equal cost )路径，主要存在于有多条链路到达同一目的地址的网络环境中。当设备支持等价路由时，发往该目的数据包可以通过不同的路径分担，实现网络的负载均衡，并在其中某些路径出现故障时，由其它路径代替完成转发处理，实现路由冗余备份功能。</p>
+<p>ECMP算法被多种路由协议支持，例如：OSPF、BGP等  <code>P254</code></p>
+<p>ECMP的路径选择策略</p>
+<ul>
+<li>哈希，例如根据源IP地址的哈希为流选择路径。</li>
+<li>轮询，各个流在多条路径之间轮询传输。</li>
+<li>基于路径权重，根据路径的权重分配流，权重大的路径分配的流数量更多。</li>
+</ul>
+<!-- https://www.sdnlab.com/20605.html -->
+
+
+<h2 id="根据下图是否可以判断存在网络攻击？"><a href="#根据下图是否可以判断存在网络攻击？" class="headerlink" title="根据下图是否可以判断存在网络攻击？"></a>根据下图是否可以判断存在网络攻击？</h2><p>pass </p>
+<h2 id="数据中心内部网络需要开放一个对公网开放的服务，有哪些方法来实现？"><a href="#数据中心内部网络需要开放一个对公网开放的服务，有哪些方法来实现？" class="headerlink" title="数据中心内部网络需要开放一个对公网开放的服务，有哪些方法来实现？"></a>数据中心内部网络需要开放一个对公网开放的服务，有哪些方法来实现？</h2><ol>
+<li>拿一台服务器当防火墙 或者在当前机器上的防火墙上做NAT转发  (NAT版)</li>
+<li>frp内网穿透</li>
+<li>那一台服务器当代理转发服务器   所有内外网交互全交给代理服务器做转发 (Nginx版本)</li>
+</ol>
+<h2 id="linux的网络性能瓶颈在哪里？有什么手段来提高linux的网络性能？"><a href="#linux的网络性能瓶颈在哪里？有什么手段来提高linux的网络性能？" class="headerlink" title="linux的网络性能瓶颈在哪里？有什么手段来提高linux的网络性能？"></a>linux的网络性能瓶颈在哪里？有什么手段来提高linux的网络性能？</h2><p>1.硬件设备<br>2.</p>
+<h2 id="linux作为NAT网关需要进行哪些配置"><a href="#linux作为NAT网关需要进行哪些配置" class="headerlink" title="linux作为NAT网关需要进行哪些配置"></a>linux作为NAT网关需要进行哪些配置</h2><h3 id="VPC与ESC"><a href="#VPC与ESC" class="headerlink" title="VPC与ESC"></a>VPC与ESC</h3><p>VPC  virrual Private Cloud 私有云<br>ESC  Elastic Compute Service 云服务器</p>
+<p>搭建NAT网关的主要作用就是为了实现在相同VPC内，没有公网IP的ECS借助有公网IP的ESC访问外网，或者是外网通过端口映射访问到内网服务器</p>
+<p>SNAT  实现没有公网IP的ECS实例借助有公网的ECS访问外网，但是外网无法访问到内网IP；也就是仅对源网络地址转换<br>DNAT  实现外网通过端口映射访问到内网服务器，但是不能实现内网ECS访问到外网； 也就是仅对目的网络地址进行转换</p>
+<h3 id="介绍nat-snat-dnat"><a href="#介绍nat-snat-dnat" class="headerlink" title="介绍nat snat dnat"></a>介绍nat snat dnat</h3><p>别名IP地址欺骗或者伪装<br>NAT也就是<code>网络地址转换</code> network address translation<br>主要是通过IP数据包中的IP地址进行转换的 内外网地址转发==&gt;内网地址与外网地址转换<br>DNAT <code>目的网络地址转换</code> destination network addres<br>SNAT <code>源网络地址转转换</code> source network address</p>
+<p>需要网络地址转发的原因是 </p>
+<pre class=" language-mermaid"><code class="language-mermaid">flowchart LR
+    A[公网地址 103.10.20.1] --> C[iptables] --x B[内网地址 19.168.20.1]  </code></pre>
+<p>内网机器A向外网机器发出一个IP数据包，如果SNAT没有对A主机进行源地址转换，A和B的连接就会发生不正常终端，因为当路由器将外网的数据包发送到外网后，公网IP会给你的死亡IP回数据包，这时候公网IP根本就无法知道你的私网IP应该如何走。所以他会去问上一级的路由器，因为在公网中无法看到私网的IP，无法建立通信，为了实现数据包的正确发送及返回，网关必须将A的地址转换为一个合法的公网地址，同时为了以后B主机能将数据包钻发给A 这个合法的公网地址必须是网关的外网地址</p>
+<h3 id="数据中心内外网转发的形式"><a href="#数据中心内外网转发的形式" class="headerlink" title="数据中心内外网转发的形式"></a>数据中心内外网转发的形式</h3><p><img src="http://img.noback.top/2020-07-24-16-09-53.png" alt="2020-07-24-16-09-53"></p>
+<p>NAT做地址转发是有消耗的，一般会建一组NAT机器去做NAT地址转发，此时这组机器相当于内外网地址转发的中心，所有的请求都会过这里<br>其中请求包较小，响应包或大或小</p>
+<p>所有服务器上都仅配有内网地址</p>
+<h3 id="边缘节点外to内的转发形式"><a href="#边缘节点外to内的转发形式" class="headerlink" title="边缘节点外to内的转发形式"></a>边缘节点外to内的转发形式</h3><p><img src="http://img.noback.top/2020-07-24-16-33-06.png" alt="2020-07-24-16-33-06"></p>
+<p>外网请求走NAT<br>内网响应包走服务器自带的外网IP<br>NAT到服务器</p>
+<h3 id="配置SNAT与DNAT"><a href="#配置SNAT与DNAT" class="headerlink" title="配置SNAT与DNAT"></a>配置SNAT与DNAT</h3><p>首先配置SNAT，让内网机器能够访问到外网机器</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token keyword">echo</span> <span class="token string">"net.ipv4.ip_forward = 1"</span> <span class="token operator">>></span> /etc/sysct.conf
+iptables -t nat -I POSTROUTING -s 172.16.0.0/16 -j SNAT --to-source 172.16.107.49
+<span class="token function">service</span> iptables save
+systemctl restart iptables.service</code></pre>
+<h2 id="需要在一台服务器上对异常大流量进行定位分析，有哪些方法？"><a href="#需要在一台服务器上对异常大流量进行定位分析，有哪些方法？" class="headerlink" title="需要在一台服务器上对异常大流量进行定位分析，有哪些方法？"></a>需要在一台服务器上对异常大流量进行定位分析，有哪些方法？</h2><ul>
+<li>iftop<br><img src="http://img.noback.top/2020-07-24-00-43-00.png" alt="2020-07-24-00-43-00"><br>找到对应的端口号<pre class=" language-bash"><code class="language-bash"><span class="token function">lsof</span> -i:xxx <span class="token comment" spellcheck="true"># 找到对应的PID</span>
+<span class="token function">cat</span> /proc/16276/cmdline <span class="token comment" spellcheck="true"># 找到对应的进程</span></code></pre>
+</li>
+</ul>
+<ul>
+<li><p>nethogs<br><a target="_blank" rel="noopener" href="https://man.linuxde.net/nethogs">https://man.linuxde.net/nethogs</a><br>可以直接暴露出PID  </p>
+</li>
+<li><p>iptraf<br>centos7之后 衍生除了iptraf-ng<br><img src="http://img.noback.top/2020-07-24-00-49-03.png" alt="2020-07-24-00-49-03"></p>
+</li>
+</ul>
+<pre class=" language-mermaid"><code class="language-mermaid">graph LR
+    根据警报/监控图发现大流量预警 --> 确定节点 --> 确定机器 --> 确定业务程序 --> 确定程序PID --> 确定程序执行命令</code></pre>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>标签：</span>
+                <span class="tag">
+                    
+                    
+                    <a href="/tags/%E7%BD%91%E7%BB%9C/"># 网络</a>
+                    
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript：window.history.back();">后退</a>
+                <span>· </span>
+                <a href="/">主页</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            <a class="prev" rel="prev" href="/2020/07/19/blog_back_new/leetcode/LinkList/%E9%93%BE%E8%A1%A8/">链表</a>
+            
+            
+            <a class="next" rel="next" href="/2020/07/17/blog_back_new/Python/re%E6%AD%A3%E5%88%99%E6%A8%A1%E5%9D%97/"></a>
+            
+        </section>
+    </article>
+</div>
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+    </div>
+</footer>
+
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

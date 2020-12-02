@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="hzjsea">
+
+
+
+
+
+
+<title>sqlalchemy使用方法 | hzjsea</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+    <script src="/js/jquery.min.js"></script>
+    
+
+
+
+    
+    
+        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+    
+
+
+
+
+    <script>
+    function searchToggle() {
+        const width = $(document.body).width()
+        if(width > 479) {
+            return;
+        }
+        const search = $('.search');
+        const searchForm = $('.form-search')
+
+        if(!search.hasClass("mobile-search")) {
+            search.addClass("mobile-search");
+        } else {
+            search.removeClass("mobile-search");
+        } 
+    }
+
+    function search(searchInputEl, formEl, flag) {
+        const path = "/" + "search.json"; // 可以在public 下查看这个search.json
+        $(formEl).submit(function(e){
+            e.preventDefault();
+            let target = null
+            if(searchInputEl == null) {
+                const screenWidth = $(document.body).width();
+                target = screenWidth > 479 ? $('#pc-search-input') : $('#mobile-search-input');
+                console.log(target);
+            } else {
+                target = $(searchInputEl)
+            }
+
+            if(!flag && target.val() === '') {
+                return ;
+            }
+
+            $("#u-search").fadeIn(500, function() {
+                $("body > .wrapper").addClass("modal-active");
+
+                $.ajax({
+                    url: path,
+                    dataType: "json",
+                    beforeSend: function (xhr) {
+                        $input = target.val();
+                        $(".form-input").val($input);
+                        const loadingBar = $('.search-loading-bar') 
+                        loadingBar.css({
+                            width:'100%',
+                            display: 'block'
+                        });
+                    },
+                    success: function( datas ) {
+                        console.log(datas);
+                        const $resultPanel = $(".modal-body")[0];
+                        let str = `<ul class="modal-results">`;
+                        var keywords = $(".form-input").val().trim().toLowerCase().split(/[\s\-]+/);
+                        $resultPanel.innerHTML = "";
+                        let hasResult = false
+                        let text = `<div class="no-result">找不到与关键词相关的内容....</div>`;
+
+                        if ($(".form-input").val().trim().length <= 0) {
+                            // 没有结果
+                            $resultPanel.innerHTML = text;
+                            return;
+                        }
+                        datas.forEach(function (data, index) {
+                            var isMatch = true;
+                            if (!data.title || data.title.trim() === '') {
+                                data.title = "Untitled";
+                            }
+                            var data_title = data.title.trim().toLowerCase();
+                            var data_content = data.content && data.content.trim().replace(/<[^>]+>/g, "").toLowerCase() || '';
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            // only match artiles with not empty contents
+                            if (data_content !== '') {
+                                keywords.forEach(function (keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        hasResult = true
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            } else {
+                                isMatch = false;
+                            }
+                            // show search results
+                            if (isMatch) {
+                                str += `<li class='result-item'><a href='${data_url}' class='result-item-detail'> <span class="title">${data_title}</span>`;
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 200 characters
+                                    var start = first_occur - 40;
+                                    var end = first_occur + 160;
+
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+
+                                    if (start == 0) {
+                                        end = 200;
+                                    }
+
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+
+                                    var match_content = content.substring(start, end);
+
+                                    // highlight all keywords
+                                    keywords.forEach(function (keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, `<em class="search-keyword">${keyword}</em>`);
+                                    });
+
+                                    str += `<span class="content"> ${match_content} ...</span></a>`;
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        if(hasResult) {
+                            $resultPanel.innerHTML = str;
+                        } else {
+                            $resultPanel.innerHTML = text;
+                        }
+
+                    },
+                    complete: function() {
+                        setTimeout(() => {
+                                const loadingBar = $('.search-loading-bar') 
+                                loadingBar.css({
+                                    width:'0%',
+                                    display: 'none'
+                                });
+                        }, 300)
+                    }
+                });
+            })
+
+        });
+    }
+
+    $(document).ready(function() {
+        $('.modal-close').click(function () { 
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+
+        $('.modal-overlay').click(function() {
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+        search(null, ".form-search", false)
+        search("#u-search-modal-form .form-input", ".u-search-modal-form", true)
+    })
+</script>
+
+
+
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo"><a href="/">hzjsea</a></div>
+        <div class="menu navbar-right">
+            
+            
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="pc-search-input"/>
+        </form>
+    </div>
+
+
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+            <input id="switch_default" type="checkbox" class="switch_default">
+            <label for="switch_default" class="toggleBtn"></label>
+        </div>
+    </div>
+</nav>
+
+
+<nav class="navbar-mobile" id="nav-mobile">
+    <div class="container">
+        <div class="navbar-header">
+            <div>
+                <a href="/">hzjsea</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+            </div>
+            <div class="navbar-mobile-right">
+                
+                
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="mobile-search-input"/>
+        </form>
+    </div>
+
+
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; 目录</div>
+            </div>
+            
+        </div>
+        <div class="menu" id="mobile-menu">
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+        </div>
+    </div>
+</nav>
+
+        <div class="main">
+			<!-- Chic/layout.ejs -->
+ <div id="u-search">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="container">
+                    <form id="u-search-modal-form" class="u-search-modal-form">
+                        <button type="submit" class="form-submit-btn">
+                            <img src="/image/search.png" class="search-btn-img" />
+                        </button>
+                        <input placeholder="搜索文章。。。" class="form-input" id="modal-form-input">
+                    </form>
+                    <a class="modal-close">x</a>
+                </div>
+                <div class="search-loading">
+                    <div class="search-loading-bar"></div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <!-- ul 格式如下 -->
+                <!-- <ul class="modal-results">
+                    <li class="result-item">
+                        <a class="result-item-detail">
+                            <span class="title">页面配置</span>
+                            <span class="content">
+                                content
+                            </span>
+                        </a>
+                    </li>
+                </ul> -->
+            </div>
+        </div>
+        <div class="modal-overlay"></div>
+    </div>
+            <div class="container">
+    
+    
+    <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">全部展开</a>
+        <a onclick="go_top()">回到顶部</a>
+        <a onclick="go_bottom()">回到底部</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "全部折叠"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "全部展开"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">sqlalchemy使用方法</h1>
+            
+            <div class="post-meta">
+                
+                作者： <a itemprop="author" rel="author" href="/">hzjsea</a>&nbsp;
+                
+
+                
+                <span class="post-time">
+                    创建日期： <a
+                        href="#">March 20, 2020&nbsp;&nbsp;10:37:09</a>
+                </span>&nbsp;
+                
+                
+                <span class="post-category">
+                    分类：
+                    
+                    <a href="/categories/python/">python</a>&nbsp;
+                    
+                </span>
+                
+                
+                状态：<a href="#">SNAPSHOT</a>
+                
+            </div>
+            
+        </header>
+
+        <div class="post-content">
+            <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+<ul>
+<li><a href="#sqlalchemy">sqlalchemy</a><ul>
+<li><a href="#%E4%BB%80%E4%B9%88%E6%98%AFsqlalchemy">什么是sqlalchemy</a></li>
+<li><a href="#%E4%B8%80%E4%B8%AA%E5%AE%8C%E6%95%B4%E7%9A%84%E5%AE%9E%E4%BE%8B">一个完整的实例</a></li>
+<li><a href="#%E8%8E%B7%E5%8F%96%E6%95%B0%E6%8D%AE%E6%93%8D%E4%BD%9C">获取数据操作</a><ul>
+<li><a href="#%E7%BB%99%E8%8E%B7%E5%8F%96%E7%9A%84%E5%AD%97%E6%AE%B5%E5%90%8D%E4%BF%AE%E6%94%B9%E5%90%8D%E7%A7%B0">给获取的字段名修改名称</a></li>
+<li><a href="#%E7%B1%BB%E4%BC%BCsql%E7%9A%84%E4%B8%80%E4%BA%9B%E6%9F%A5%E8%AF%A2%E6%93%8D%E4%BD%9C">类似sql的一些查询操作</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<!-- /code_chunk_output -->
+<a id="more"></a>
+
+<h1 id="sqlalchemy"><a href="#sqlalchemy" class="headerlink" title="sqlalchemy"></a>sqlalchemy</h1><h2 id="什么是sqlalchemy"><a href="#什么是sqlalchemy" class="headerlink" title="什么是sqlalchemy"></a>什么是sqlalchemy</h2><p>sqlalchemy是一个python的orm库，用于控制数据库</p>
+<h2 id="一个完整的实例"><a href="#一个完整的实例" class="headerlink" title="一个完整的实例"></a>一个完整的实例</h2><p>从创建数据库到添加第一条数据的整个实例过程</p>
+<p><code>创建数据库表结构</code></p>
+<pre class=" language-py"><code class="language-py"># 创建数据库实例，
+# echo表示在之后对数据库的操作中是否会显示提示内容
+engine = create_engine("sqlite:///memory.db",echo=True)
+# 创建基本类 这个基本类会映射到数据库中的表
+Base = declarative_base()
+
+# 所有的表都要继承Base这个类
+class User(Base):
+    # 数据库中的表名字
+    __tablename__ = 'users' # 表的名字
+
+    # 定义各字段
+    # 定义方式和django中的类似
+    # Sequence('user_id_seq')这个只是针对Oracle来添加的，用来申明主键标识符，其他数据库可以删除
+    # id = Column(Integer,Sequence('user_id_seq'), primary_key=True)
+    id = Column(Integer, primary_key=True)
+    name = Column(String(50))# 定义长度
+    fullname = Column(String)
+    password = Column(String)
+
+   # 面向用户，最终显示
+    # def __str__(self):
+        # return self.id
+
+    # 面向调试，输出所有
+    def __repr__(self):
+        return "<User(name='%s', fullname='%s', password='%s')>" % (
+                                self.name, self.fullname, self.password)
+
+# 上诉代码会创建的表结构为
+# Table('users', MetaData(bind=None),
+#             Column('id', Integer(), table=<users>, primary_key=True, nullable=False),
+#             Column('name', String(), table=<users>),
+#             Column('fullname', String(), table=<users>),
+#             Column('nickname', String(), table=<users>), schema=None)
+
+# 创建表
+Base.metadata.create_all(engine)</code></pre>
+<p><code>插入数据</code></p>
+<pre class=" language-py"><code class="language-py"># 建立连接
+Session = sessionmaker()
+# 绑定数据库
+Session.configure(bind=engine)
+# 实例化一个session
+session = Session()
+
+
+# session = Session.configure(bind=engine) 这样写是不行的</code></pre>
+<p><code>创建并提交数据</code></p>
+<pre class=" language-py"><code class="language-py"># 创建一个数据实例
+user_data = User(name="hzj",fullname="hzj",password="zzz")
+# 添加实例到session中,这里只是缓存到了session这个实例中
+session.add(user_data)
+# 提交缓存在session中的所有实例
+session.commit()
+
+user_data1 = User(name="hzj",fullname="hzj",password="qqq")
+session.add(user_data1)
+session.commit()</code></pre>
+<p><code>批量添加数据</code></p>
+<pre class=" language-py"><code class="language-py">user_data_list = [
+   User(name="hzj",fullname="hzj",password="zzz"),
+   User(name="hzj",fullname="hzj",password="zzz"),
+   User(name="hzj",fullname="hzj",password="zzz"),
+   User(name="hzj",fullname="hzj",password="zzz"),
+   User(name="hzj",fullname="hzj",password="zzz")
+]
+
+session.add_all(user_data_list)
+session.commit()</code></pre>
+<p>注释:</p>
+<pre class=" language-py"><code class="language-py">for i in range(1,7):
+    session.add(data)
+    session.commit()</code></pre>
+<p>别想着这样去加数据 没用2333</p>
+<p><img src="http://img.noback.top/2020-03-20-10-50-34.png" alt="2020-03-20-10-50-34"></p>
+<p><code>获取数据</code></p>
+<pre class=" language-py"><code class="language-py"># 获取数据
+get_data = session.query(User).filter_by(name="hzj").first()
+print(get_data)</code></pre>
+<h2 id="获取数据操作"><a href="#获取数据操作" class="headerlink" title="获取数据操作"></a>获取数据操作</h2><pre class=" language-py"><code class="language-py"># 获取所有内容，并按照id排序
+get_data_list = session.query(User).filter_by(name="hzj").order_by(User.id)
+print(get_data_list)
+for i in get_data_list:
+    print("by_id:&#123;&#125;".format(i))
+# by_id:<User(name='hzj', fullname='hzj', password='zzz')>
+# by_id:<User(name='hzj', fullname='hzj', password='zzz')>
+
+
+instance_list = session.query(User)
+for i in instance_list:
+    print("User:&#123;&#125;".format(i))
+# User:<User(name='hzj', fullname='hzj', password='zzz')>
+# User:<User(name='hzj', fullname='hzj', password='zzz')>
+# User:<User(name='hzj', fullname='hzj', password='zzz')
+</code></pre>
+<p>在没有做限制的条件下 sqlalchemy会返回一个元组</p>
+<pre class=" language-py"><code class="language-py">instance_list = session.query(User.name,User.password)  #返回的是元组
+# ('hzj', 'zzz')
+# ('hzj', 'zzz')
+# ('hzj', 'zzz')
+for name,password in instance_list:
+    print("User_name:  &#123;&#125;,User_password:  &#123;&#125;".format(name,password))
+# User_name:  hzj,User_password:  zzz
+# User_name:  hzj,User_password:  zzz
+# User_name:  hzj,User_password:  zz
+instance_list = session.query(User.name,User.password)[:2]  # 返回列表
+# instance_list = session.query(User.name,User.password).all() # 返回所有
+print(instance_list)</code></pre>
+<h3 id="给获取的字段名修改名称"><a href="#给获取的字段名修改名称" class="headerlink" title="给获取的字段名修改名称"></a>给获取的字段名修改名称</h3><pre class=" language-py"><code class="language-py">for new_name in session.query(User.name):
+    print(new_name.name) 
+# 这里的name 是我们之前创建User表时， 设定的变量名，但是在某些情况下
+# 我们需要修改这个变量名，可以使用label和alias
+# hzj
+# hzj 
+# hzj
+for new_name in session.query(User.name.label("new_name")):
+    print(new_name.new_name)
+# hzj
+# hzj
+# hzj
+</code></pre>
+<h3 id="类似sql的一些查询操作"><a href="#类似sql的一些查询操作" class="headerlink" title="类似sql的一些查询操作"></a>类似sql的一些查询操作</h3><pre class=" language-py"><code class="language-py"># 筛选字段数据
+print(session.query(User.name).filter_by(password="qqq").first())
+print(session.query(User.name).filter(User.password=="qqq").first())
+print(session.query(User.name).filter(User.password=="qqq").filter(User.fullname=="hzj").first())
+# like操作
+print(session.query(User.name).filter(User.password.like('%qq%')))
+# 不区分大小写的like操作
+print(session.query(User.name).filter(User.password.ilike('%qq%')))
+# https://docs.sqlalchemy.org/en/13/orm/tutorial.html#using-textual-sql
+支持sql的一些操作
+</code></pre>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>标签：</span>
+                <span class="tag">
+                    
+                    
+                    <a href="/tags/sqlalchemy/"># sqlalchemy</a>
+                    
+                    <a href="/tags/orm/"># orm</a>
+                    
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript：window.history.back();">后退</a>
+                <span>· </span>
+                <a href="/">主页</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            <a class="prev" rel="prev" href="/2020/03/20/blog_back_new/backup/jwtForFastapi/">jwtForFastapi</a>
+            
+            
+            <a class="next" rel="next" href="/2020/03/19/blog_back_new/nginx/nginx%E4%BC%98%E5%8C%96/">nginx优化配置</a>
+            
+        </section>
+    </article>
+</div>
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+    </div>
+</footer>
+
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="hzjsea">
+
+
+
+
+
+
+<title>docker-DokcerFile | hzjsea</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+    <script src="/js/jquery.min.js"></script>
+    
+
+
+
+    
+    
+        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+    
+
+
+
+
+    <script>
+    function searchToggle() {
+        const width = $(document.body).width()
+        if(width > 479) {
+            return;
+        }
+        const search = $('.search');
+        const searchForm = $('.form-search')
+
+        if(!search.hasClass("mobile-search")) {
+            search.addClass("mobile-search");
+        } else {
+            search.removeClass("mobile-search");
+        } 
+    }
+
+    function search(searchInputEl, formEl, flag) {
+        const path = "/" + "search.json"; // 可以在public 下查看这个search.json
+        $(formEl).submit(function(e){
+            e.preventDefault();
+            let target = null
+            if(searchInputEl == null) {
+                const screenWidth = $(document.body).width();
+                target = screenWidth > 479 ? $('#pc-search-input') : $('#mobile-search-input');
+                console.log(target);
+            } else {
+                target = $(searchInputEl)
+            }
+
+            if(!flag && target.val() === '') {
+                return ;
+            }
+
+            $("#u-search").fadeIn(500, function() {
+                $("body > .wrapper").addClass("modal-active");
+
+                $.ajax({
+                    url: path,
+                    dataType: "json",
+                    beforeSend: function (xhr) {
+                        $input = target.val();
+                        $(".form-input").val($input);
+                        const loadingBar = $('.search-loading-bar') 
+                        loadingBar.css({
+                            width:'100%',
+                            display: 'block'
+                        });
+                    },
+                    success: function( datas ) {
+                        console.log(datas);
+                        const $resultPanel = $(".modal-body")[0];
+                        let str = `<ul class="modal-results">`;
+                        var keywords = $(".form-input").val().trim().toLowerCase().split(/[\s\-]+/);
+                        $resultPanel.innerHTML = "";
+                        let hasResult = false
+                        let text = `<div class="no-result">找不到与关键词相关的内容....</div>`;
+
+                        if ($(".form-input").val().trim().length <= 0) {
+                            // 没有结果
+                            $resultPanel.innerHTML = text;
+                            return;
+                        }
+                        datas.forEach(function (data, index) {
+                            var isMatch = true;
+                            if (!data.title || data.title.trim() === '') {
+                                data.title = "Untitled";
+                            }
+                            var data_title = data.title.trim().toLowerCase();
+                            var data_content = data.content && data.content.trim().replace(/<[^>]+>/g, "").toLowerCase() || '';
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            // only match artiles with not empty contents
+                            if (data_content !== '') {
+                                keywords.forEach(function (keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        hasResult = true
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            } else {
+                                isMatch = false;
+                            }
+                            // show search results
+                            if (isMatch) {
+                                str += `<li class='result-item'><a href='${data_url}' class='result-item-detail'> <span class="title">${data_title}</span>`;
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 200 characters
+                                    var start = first_occur - 40;
+                                    var end = first_occur + 160;
+
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+
+                                    if (start == 0) {
+                                        end = 200;
+                                    }
+
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+
+                                    var match_content = content.substring(start, end);
+
+                                    // highlight all keywords
+                                    keywords.forEach(function (keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, `<em class="search-keyword">${keyword}</em>`);
+                                    });
+
+                                    str += `<span class="content"> ${match_content} ...</span></a>`;
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        if(hasResult) {
+                            $resultPanel.innerHTML = str;
+                        } else {
+                            $resultPanel.innerHTML = text;
+                        }
+
+                    },
+                    complete: function() {
+                        setTimeout(() => {
+                                const loadingBar = $('.search-loading-bar') 
+                                loadingBar.css({
+                                    width:'0%',
+                                    display: 'none'
+                                });
+                        }, 300)
+                    }
+                });
+            })
+
+        });
+    }
+
+    $(document).ready(function() {
+        $('.modal-close').click(function () { 
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+
+        $('.modal-overlay').click(function() {
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+        search(null, ".form-search", false)
+        search("#u-search-modal-form .form-input", ".u-search-modal-form", true)
+    })
+</script>
+
+
+
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo"><a href="/">hzjsea</a></div>
+        <div class="menu navbar-right">
+            
+            
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="pc-search-input"/>
+        </form>
+    </div>
+
+
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+            <input id="switch_default" type="checkbox" class="switch_default">
+            <label for="switch_default" class="toggleBtn"></label>
+        </div>
+    </div>
+</nav>
+
+
+<nav class="navbar-mobile" id="nav-mobile">
+    <div class="container">
+        <div class="navbar-header">
+            <div>
+                <a href="/">hzjsea</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+            </div>
+            <div class="navbar-mobile-right">
+                
+                
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="mobile-search-input"/>
+        </form>
+    </div>
+
+
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; 目录</div>
+            </div>
+            
+        </div>
+        <div class="menu" id="mobile-menu">
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+        </div>
+    </div>
+</nav>
+
+        <div class="main">
+			<!-- Chic/layout.ejs -->
+ <div id="u-search">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="container">
+                    <form id="u-search-modal-form" class="u-search-modal-form">
+                        <button type="submit" class="form-submit-btn">
+                            <img src="/image/search.png" class="search-btn-img" />
+                        </button>
+                        <input placeholder="搜索文章。。。" class="form-input" id="modal-form-input">
+                    </form>
+                    <a class="modal-close">x</a>
+                </div>
+                <div class="search-loading">
+                    <div class="search-loading-bar"></div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <!-- ul 格式如下 -->
+                <!-- <ul class="modal-results">
+                    <li class="result-item">
+                        <a class="result-item-detail">
+                            <span class="title">页面配置</span>
+                            <span class="content">
+                                content
+                            </span>
+                        </a>
+                    </li>
+                </ul> -->
+            </div>
+        </div>
+        <div class="modal-overlay"></div>
+    </div>
+            <div class="container">
+    
+    
+    <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">全部展开</a>
+        <a onclick="go_top()">回到顶部</a>
+        <a onclick="go_bottom()">回到底部</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "全部折叠"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "全部展开"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">docker-DokcerFile</h1>
+            
+            <div class="post-meta">
+                
+                作者： <a itemprop="author" rel="author" href="/">hzjsea</a>&nbsp;
+                
+
+                
+                <span class="post-time">
+                    创建日期： <a
+                        href="#">February 5, 2020&nbsp;&nbsp;13:56:09</a>
+                </span>&nbsp;
+                
+                
+                <span class="post-category">
+                    分类：
+                    
+                    <a href="/categories/docker/">docker</a>&nbsp;
+                    
+                </span>
+                
+                
+                状态：<a href="#">SNAPSHOT</a>
+                
+            </div>
+            
+        </header>
+
+        <div class="post-content">
+            <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+<ul>
+<li><a href="#dokcerfile">DokcerFile</a><ul>
+<li><a href="#dockerfile%E7%BC%96%E5%86%99%E8%A7%84%E5%88%99">dockerfile编写规则</a></li>
+<li><a href="#dockerfile%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F">dockerfile执行顺序</a></li>
+<li><a href="#docker%E7%BC%96%E5%86%99%E5%85%B3%E9%94%AE%E5%AD%97">docker编写关键字</a><ul>
+<li><a href="#add%E5%92%8Ccopy-%E4%BB%A5%E5%8F%8A%E8%BF%9C%E7%A8%8B%E6%96%87%E4%BB%B6%E7%9A%84%E6%B7%BB%E5%8A%A0">ADD和COPY 以及远程文件的添加</a></li>
+<li><a href="#workdir">WORKDIR</a></li>
+<li><a href="#cmd%E4%B8%8Eentrypoint">CMD与ENTRYPOINT</a></li>
+<li><a href="#onbuild%E4%BD%BF%E7%94%A8">ONBUILD使用</a></li>
+</ul>
+</li>
+<li><a href="#%E7%BC%96%E5%86%99%E5%AE%9E%E4%BE%8B">编写实例</a><ul>
+<li><a href="#%E4%B8%80%E4%B8%AA%E6%8C%82%E8%BD%BD%E6%96%87%E4%BB%B6%E7%9A%84dockerfile">一个挂载文件的dockerfile</a></li>
+<li><a href="#%E7%94%A8dockerfile%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AAcentos%E9%95%9C%E5%83%8F">用dockerfile创建一个centos镜像</a></li>
+<li><a href="#docker%E5%BC%80%E5%90%AFmysql%E9%95%9C%E5%83%8F">docker开启mysql镜像</a></li>
+<li><a href="#docker%E5%BC%80%E5%90%AFredis%E9%95%9C%E5%83%8F">docker开启redis镜像</a></li>
+<li><a href="#docker%E5%AE%89%E8%A3%85stress%E5%8E%8B%E5%8A%9B%E6%B5%8B%E8%AF%95%E8%BD%AF%E4%BB%B6">docker安装stress压力测试软件</a></li>
+</ul>
+</li>
+<li><a href="#%E7%BD%91%E5%9D%80">网址</a></li>
+</ul>
+</li>
+</ul>
+<!-- /code_chunk_output -->
+<a id="more"></a>
+
+
+<h1 id="DokcerFile"><a href="#DokcerFile" class="headerlink" title="DokcerFile"></a>DokcerFile</h1><p>dockerfile构建三步骤<br>dockerfile,docker build ,docker run</p>
+<p>dockerfiley有很多具体的实例可以在docker hub上看到 ，比如</p>
+<ul>
+<li>centos<br><a target="_blank" rel="noopener" href="https://hub.docker.com/_/centos">https://hub.docker.com/_/centos</a><pre class=" language-bash"><code class="language-bash">FROM scratch
+ADD centos-7-x86_64-docker.tar.xz /
+</code></pre>
+</li>
+</ul>
+<p>LABEL org.label-schema.schema-version=”1.0” <br>    org.label-schema.name=”CentOS Base Image” <br>    org.label-schema.vendor=”CentOS” <br>    org.label-schema.license=”GPLv2” <br>    org.label-schema.build-date=”20191001”</p>
+<p>CMD [“/bin/bash”] # 在进入容器后第一步执行的命令</p>
+<pre><code>- tomcat镜像
+https://github.com/docker-library/tomcat/blob/807a2b4f219d70f5ba6f4773d4ee4ee155850b0d/8.5/jdk11/openjdk/Dockerfile
+
+## dockerfile编写规则
+1. 每条保留字指令都必须为大写字母且后面要跟至少一个参数
+2. 指令按照顺序从上倒下，依次执行
+3. #表示注释
+4. 每条指令都会创建一个新的镜像层，并对镜像进行提交
+
+## dockerfile执行顺序
+1. docker从基础镜像运行一个容器
+2. 执行一条指令并对容器作出修改
+3. 执行类似docker commit的操作提交一个新的镜像层
+4. docker再基于刚提交的镜像运行一个新容器
+5. 执行dockerfile中的下一跳指令直到所有指令都执行完成
+
+## docker编写关键字
+- FROM
+声明基础镜像，如centos中声明的scratch
+- MAINTAINER
+镜像维护者的姓名和邮箱地址
+- LABEL
+镜像版本信息
+- RUN
+容器构建时需要运行的命令，可以用 \ 分行
+- EXPOSE
+暴露端口，比如tomcat镜像中的dockerfile 他expose了一个8080端口，当我们在用-P随机指定端口的时候，他会默认映射我们所暴露的端口，如8080
+- WORKDIR
+登陆之后的工作目录
+- ENV
+用来构建镜像过程中设置环境变量
+- ADD
+拷贝并解压到镜像中
+- COPY
+拷贝文件到镜像中，写法:
+```bash
+COPY src dest
+COPY [&quot;src&quot;,&quot;dest&quot;] </code></pre>
+<ul>
+<li>VOLUME<br>容器数据卷,用于数据保存和持久化工作,写法:<pre class=" language-bash"><code class="language-bash">VOLUME <span class="token punctuation">[</span><span class="token string">"/data/"</span>,<span class="token string">"/data1/"</span>,<span class="token punctuation">]</span> </code></pre>
+</li>
+<li>CMD<br>dockerfile中可以有多个CMD命令,但只有最后一个生效，且CMD会被docker run之后的CMD替换掉，比如我们在启动一个镜像的时候会执行docker run -it centos /bin/bash<br>指定一个容器要运行时，启动的命令,写法:<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># shell 格式</span>
+CMD <span class="token operator">&lt;</span>命令<span class="token operator">></span>
+<span class="token comment" spellcheck="true"># exec 格式</span>
+CMD <span class="token punctuation">[</span><span class="token string">"可执行文件"</span>,<span class="token string">"参数1"</span>,<span class="token string">"参数2"</span><span class="token punctuation">]</span>
+<span class="token comment" spellcheck="true"># 参数列表格式</span>
+CMN <span class="token punctuation">[</span><span class="token string">'参数1'</span>,<span class="token string">'参数2'</span><span class="token punctuation">]</span></code></pre>
+</li>
+<li>ENTRYPOINT<br>指定一个容器启动时候要运行的命令，不会被替换</li>
+<li>ONBUILD<br>当构建一个被继承的Dockerfile时运行命令,父镜像在被子继承后，父镜像的onbuild被触发</li>
+</ul>
+<h3 id="ADD和COPY-以及远程文件的添加"><a href="#ADD和COPY-以及远程文件的添加" class="headerlink" title="ADD和COPY 以及远程文件的添加"></a>ADD和COPY 以及远程文件的添加</h3><p>ADD不但可以复制还可以解压</p>
+<pre class=" language-bash"><code class="language-bash">ADD xx.tar.gz /
+COPY xx /tmp/data1/ </code></pre>
+<p><font color='red'>添加远程文件/目录 使用RUN curl | RUN wget </font></p>
+<h3 id="WORKDIR"><a href="#WORKDIR" class="headerlink" title="WORKDIR"></a>WORKDIR</h3><p>WORKDIR表示工作目录</p>
+<pre class=" language-bash"><code class="language-bash">WORKDIR /test</code></pre>
+<p>如果没有test工作目录，则会自动创建</p>
+<pre class=" language-bash"><code class="language-bash">WORKDIR /test
+WORKDIR demo1 </code></pre>
+<p>以上会生成的工作目录是/test/demo1</p>
+<p><font color='red'>尽量使用绝对目录</font></p>
+<h3 id="CMD与ENTRYPOINT"><a href="#CMD与ENTRYPOINT" class="headerlink" title="CMD与ENTRYPOINT"></a>CMD与ENTRYPOINT</h3><p>在tomcat的官方镜像包中，dockerfile里面的最后有这么一句CMD</p>
+<pre class=" language-bash"><code class="language-bash">CMD <span class="token punctuation">[</span><span class="token string">"catalina.sh"</span>,<span class="token string">"run"</span><span class="token punctuation">]</span> </code></pre>
+<p>意思就是说在dokcer run没有加CMD的情况下启动时，会去运行CMD [“catalina.sh”,”run”] 这一串内容。</p>
+<pre class=" language-bash"><code class="language-bash">06-Feb-2020 05:29:22.623 INFO <span class="token punctuation">[</span>main<span class="token punctuation">]</span> org.apache.catalina.startup.Catalina.load Initialization processed <span class="token keyword">in</span> 389 ms
+06-Feb-2020 05:29:22.639 INFO <span class="token punctuation">[</span>main<span class="token punctuation">]</span> org.apache.catalina.core.StandardService.startInternal Starting <span class="token function">service</span> <span class="token punctuation">[</span>Catalina<span class="token punctuation">]</span>
+06-Feb-2020 05:29:22.639 INFO <span class="token punctuation">[</span>main<span class="token punctuation">]</span> org.apache.catalina.core.StandardEngine.startInternal Starting Servlet Engine: Apache Tomcat/8.5.50
+06-Feb-2020 05:29:22.647 INFO <span class="token punctuation">[</span>main<span class="token punctuation">]</span> org.apache.coyote.AbstractProtocol.start Starting ProtocolHandler <span class="token punctuation">[</span><span class="token string">"http-nio-8080"</span><span class="token punctuation">]</span>
+06-Feb-2020 05:29:22.653 INFO <span class="token punctuation">[</span>main<span class="token punctuation">]</span> org.apache.coyote.AbstractProtocol.start Starting ProtocolHandler <span class="token punctuation">[</span><span class="token string">"ajp-nio-8009"</span><span class="token punctuation">]</span>
+06-Feb-2020 05:29:22.655 INFO <span class="token punctuation">[</span>main<span class="token punctuation">]</span> org.apache.catalina.startup.Catalina.start Server startup <span class="token keyword">in</span> 32 ms </code></pre>
+<p>但如果我们在后面加了如 /bin/bash</p>
+<pre class=" language-bash"><code class="language-bash">root:/tmp<span class="token comment" spellcheck="true"># docker run -it -P tomcat /bin/bash</span>
+root@2ee3ee482178:/usr/local/tomcat<span class="token comment" spellcheck="true">#</span></code></pre>
+<p>他就不回去运行这个catalina.sh这个程序</p>
+<p><font color='red'>ENTRYPOINT可以将参数累加</font></p>
+<pre class=" language-bash"><code class="language-bash">FROM centos
+RUN yum <span class="token function">install</span> curl -y
+ENTRYPOINT  <span class="token punctuation">[</span><span class="token string">"curl"</span>,<span class="token string">"-s"</span>,<span class="token string">"https://ip.cn/"</span><span class="token punctuation">]</span>
+
+docker run -it centos   -<span class="token operator">></span>  <span class="token punctuation">[</span><span class="token string">"curl"</span>,<span class="token string">"-s"</span>,<span class="token string">"https://ip.cn/"</span><span class="token punctuation">]</span>  
+docker run -it centos -i  -<span class="token operator">></span> <span class="token punctuation">[</span><span class="token string">"curl"</span>,<span class="token string">"-s"</span>,<span class="token string">"-i"</span>,<span class="token string">"https://ip.cn/"</span><span class="token punctuation">]</span> </code></pre>
+<p><font color='red'>两种风格的编写格式</font><br><img src="http://img.noback.top/2020-02-06-20-53-20.png" alt="2020-02-06-20-53-20"></p>
+<h3 id="ONBUILD使用"><a href="#ONBUILD使用" class="headerlink" title="ONBUILD使用"></a>ONBUILD使用</h3><p>ONBUILD就是在继承父容器之后，如果子容器运行了，就会在父容器中运行ONBUILD后面的命令</p>
+<pre class=" language-bash"><code class="language-bash">FROM centos
+RUN yum <span class="token function">install</span> -y curl
+ENTRYPOINT <span class="token punctuation">[</span><span class="token string">"curl"</span>,<span class="token string">"-s"</span>,<span class="token string">"https://ip.cn/"</span><span class="token punctuation">]</span> 
+ONBUILD RUN <span class="token keyword">echo</span> <span class="token string">"son is run "</span></code></pre>
+<p>父容器为m1 子容器为m2,这里的继承就是说以父容器镜像为基本模版创建的子镜像后生成的子容器</p>
+<h2 id="编写实例"><a href="#编写实例" class="headerlink" title="编写实例"></a>编写实例</h2><h3 id="一个挂载文件的dockerfile"><a href="#一个挂载文件的dockerfile" class="headerlink" title="一个挂载文件的dockerfile"></a>一个挂载文件的dockerfile</h3><pre class=" language-bash"><code class="language-bash">FROM centos
+VOLUME <span class="token punctuation">[</span><span class="token string">"data1/"</span>,<span class="token string">"data2/"</span><span class="token punctuation">]</span>  <span class="token comment" spellcheck="true"># 这种定义方式无法像命令一样指定本地的文件</span>
+CMD <span class="token keyword">echo</span> <span class="token string">"VOLUME TEST!"</span>
+CMD /bin/bash</code></pre>
+<p>根据编写的dockerfile构建自定义镜像</p>
+<pre class=" language-bash"><code class="language-bash">docker build -f /tmp/dockerfile -t hzj/centos <span class="token keyword">.</span> </code></pre>
+<p>使用Inspect查看挂载的文件路径</p>
+<pre class=" language-bash"><code class="language-bash">docker inspect hzj/centos </code></pre>
+<p>出现挂载的路径</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token string">"Mounts"</span><span class="token keyword">:</span> <span class="token punctuation">[</span>
+            <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+                <span class="token string">"Type"</span><span class="token keyword">:</span> <span class="token string">"volume"</span>,
+                <span class="token string">"Name"</span><span class="token keyword">:</span> <span class="token string">"2a8601766a8ec82c39132bc64c2c99546053cb4104bd94507f215b888e60464d"</span>,
+                <span class="token string">"Source"</span><span class="token keyword">:</span> <span class="token string">"/var/lib/docker/volumes/2a8601766a8ec82c39132bc64c2c99546053cb4104bd94507f215b888e60464d/_data"</span>,
+                <span class="token string">"Destination"</span><span class="token keyword">:</span> <span class="token string">"/data2"</span>,
+                <span class="token string">"Driver"</span><span class="token keyword">:</span> <span class="token string">"local"</span>,
+                <span class="token string">"Mode"</span><span class="token keyword">:</span> <span class="token string">""</span>,
+                <span class="token string">"RW"</span><span class="token keyword">:</span> true,
+                <span class="token string">"Propagation"</span><span class="token keyword">:</span> <span class="token string">""</span>
+            <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;, </span></code></pre>
+<h3 id="用dockerfile创建一个centos镜像"><a href="#用dockerfile创建一个centos镜像" class="headerlink" title="用dockerfile创建一个centos镜像"></a>用dockerfile创建一个centos镜像</h3><p>初始centos镜像只有最基本的kernel内容，并没有其他的软件，比如vim，比如ifconfig等。使用dockerfile创建一个centos系统</p>
+<pre class=" language-bash"><code class="language-bash">FROM centos <span class="token comment" spellcheck="true"># 基于centos，网上写东西 再生成镜像  镜像的分层原理</span>
+MAINTAINER hzj<span class="token operator">&lt;</span>a1097690268@gmail.com<span class="token operator">></span> <span class="token comment" spellcheck="true"># 作者信息</span>
+
+ENV workdir /usr/local <span class="token comment" spellcheck="true"># 申明环境变量</span>
+WORKDIR <span class="token variable">$workdir</span> <span class="token comment" spellcheck="true"># 设置登陆后的工作环境</span>
+
+RUN yum -y <span class="token function">install</span> vim
+RUN yum -y <span class="token function">install</span> net-tools
+
+EXPOSE 80 <span class="token comment" spellcheck="true"># 暴露端口</span>
+
+CMD <span class="token keyword">echo</span> <span class="token variable">$workdir</span>
+CMD <span class="token keyword">echo</span> <span class="token string">"success"</span>
+CMD /bin/bash</code></pre>
+<pre class=" language-bash"><code class="language-bash">docker  build  -f dockerfile -t hzj/centos:v3 <span class="token keyword">.</span></code></pre>
+<h3 id="docker开启mysql镜像"><a href="#docker开启mysql镜像" class="headerlink" title="docker开启mysql镜像"></a>docker开启mysql镜像</h3><pre class=" language-bash"><code class="language-bash">docker pull mysql
+docker run -p 12345:3306 --name mysql \
+-v /conf/mysql/conf:/etc/mysql/conf.d \
+-v /conf/mysql/logs:/logs \ 
+-v /conf/mysql/data:/var/lib/mysql \
+-e MYSQL_ROOT_PASSWD<span class="token operator">=</span>123456 \ <span class="token comment" spellcheck="true">#初始化密码</span>
+-d mysql:5.6</code></pre>
+<h3 id="docker开启redis镜像"><a href="#docker开启redis镜像" class="headerlink" title="docker开启redis镜像"></a>docker开启redis镜像</h3><pre class=" language-bash"><code class="language-bash">docker pull redis
+docker run -p 6379:6379 \
+-v /hzj/myredis/data:/data \
+-v /hzj/myredis/conf/redis.conf:/usr/local/etc/redis/redis.conf \ 
+-d redis:3.2 redis-server /usr/local/etc/redis/redis.conf \
+--appendonly <span class="token function">yes</span></code></pre>
+<h3 id="docker安装stress压力测试软件"><a href="#docker安装stress压力测试软件" class="headerlink" title="docker安装stress压力测试软件"></a>docker安装stress压力测试软件</h3><pre class=" language-bash"><code class="language-bash">FROM ubuntu
+RUN <span class="token function">apt-get</span> update <span class="token operator">&amp;&amp;</span> <span class="token function">apt-get</span> <span class="token function">install</span> stress -y
+ENTRYPOINT <span class="token punctuation">[</span><span class="token string">"/usr/bin/stress"</span><span class="token punctuation">]</span>
+<span class="token comment" spellcheck="true"># ENTRYPOINT ["/bin/bash","-c","stress"]</span>
+CMD <span class="token punctuation">[</span><span class="token punctuation">]</span></code></pre>
+<p>生成镜像</p>
+<pre class=" language-bash"><code class="language-bash">dokcer build -f dockerfile -t new/ubuntu-stress <span class="token keyword">.</span> </code></pre>
+<p>利用镜像运行容器</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 不加参数 /usr/bin/stress</span>
+root:~<span class="token comment" spellcheck="true"># docker  run -it   new/ubuntu-stress</span>
+<span class="token string">'stress'</span> imposes certain types of compute stress on your system
+
+Usage: stress <span class="token punctuation">[</span>OPTION <span class="token punctuation">[</span>ARG<span class="token punctuation">]</span><span class="token punctuation">]</span> <span class="token punctuation">..</span>.
+ -?, --help         show this <span class="token function">help</span> statement
+     --version      show version statement
+ -v, --verbose      be verbose
+ -q, --quiet        be quiet
+ -n, --dry-run      show what would have been <span class="token keyword">done</span>
+ -t, --timeout N    <span class="token function">timeout</span> after N seconds
+     --backoff N    <span class="token function">wait</span> factor of N microseconds before work starts
+ -c, --cpu N        spawn N workers spinning on sqrt<span class="token punctuation">(</span><span class="token punctuation">)</span>
+ -i, --io N         spawn N workers spinning on sync<span class="token punctuation">(</span><span class="token punctuation">)</span>
+ -m, --vm N         spawn N workers spinning on malloc<span class="token punctuation">(</span><span class="token punctuation">)</span>/free<span class="token punctuation">(</span><span class="token punctuation">)</span>
+     --vm-bytes B   malloc B bytes per vm worker <span class="token punctuation">(</span>default is 256MB<span class="token punctuation">)</span>
+     --vm-stride B  <span class="token function">touch</span> a byte every B bytes <span class="token punctuation">(</span>default is 4096<span class="token punctuation">)</span>
+     --vm-hang N    <span class="token function">sleep</span> N secs before <span class="token function">free</span> <span class="token punctuation">(</span>default none, 0 is inf<span class="token punctuation">)</span>
+     --vm-keep      redirty memory instead of freeing and reallocating
+ -d, --hdd N        spawn N workers spinning on write<span class="token punctuation">(</span><span class="token punctuation">)</span>/unlink<span class="token punctuation">(</span><span class="token punctuation">)</span>
+     --hdd-bytes B  <span class="token function">write</span> B bytes per hdd worker <span class="token punctuation">(</span>default is 1GB<span class="token punctuation">)</span>
+
+Example: stress --cpu 8 --io 4 --vm 2 --vm-bytes 128M --timeout 10s
+
+<span class="token comment" spellcheck="true"># 加参数 /usr/bin/stress -m 1</span>
+root:~<span class="token comment" spellcheck="true"># docker  run -it   new/ubuntu-stress -m 1</span>
+stress: info: <span class="token punctuation">[</span>1<span class="token punctuation">]</span> dispatching hogs: 0 cpu, 0 io, 1 vm, 0 hdd
+^Cstress: FAIL: <span class="token punctuation">[</span>1<span class="token punctuation">]</span> <span class="token punctuation">(</span>415<span class="token punctuation">)</span> <span class="token operator">&lt;</span>-- worker 6 got signal 2
+stress: WARN: <span class="token punctuation">[</span>1<span class="token punctuation">]</span> <span class="token punctuation">(</span>417<span class="token punctuation">)</span> now reaping child worker processes
+stress: FAIL: <span class="token punctuation">[</span>1<span class="token punctuation">]</span> <span class="token punctuation">(</span>421<span class="token punctuation">)</span> <span class="token function">kill</span> error: No such process
+stress: FAIL: <span class="token punctuation">[</span>1<span class="token punctuation">]</span> <span class="token punctuation">(</span>451<span class="token punctuation">)</span> failed run completed <span class="token keyword">in</span> 2s</code></pre>
+<h2 id="网址"><a href="#网址" class="headerlink" title="网址"></a>网址</h2><p>docker官方提供的一个dockerfile编写的规范<br><a target="_blank" rel="noopener" href="https://docs.docker.com/engine/reference/builder/">https://docs.docker.com/engine/reference/builder/</a><br>docker镜像发布到docker-hub上面<br><a target="_blank" rel="noopener" href="https://coding.imooc.com/lesson/189.html#mid=11620">https://coding.imooc.com/lesson/189.html#mid=11620</a></p>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>标签：</span>
+                <span class="tag">
+                    
+                    
+                    <a href="/tags/docker/"># docker</a>
+                    
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript：window.history.back();">后退</a>
+                <span>· </span>
+                <a href="/">主页</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            <a class="prev" rel="prev" href="/2020/02/06/blog_back_new/docker/docker%E5%AE%B9%E5%99%A8%E7%9A%84%E8%B5%84%E6%BA%90%E9%99%90%E5%88%B6/">docker容器的资源限制</a>
+            
+            
+            <a class="next" rel="next" href="/2020/02/05/blog_back_new/docker/docker%E5%AE%B9%E5%99%A8%E6%95%B0%E6%8D%AE%E5%8D%B7/">docker容器数据卷</a>
+            
+        </section>
+    </article>
+</div>
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+    </div>
+</footer>
+
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

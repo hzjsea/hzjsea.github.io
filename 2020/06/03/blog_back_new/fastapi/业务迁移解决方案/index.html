@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="hzjsea">
+
+
+
+
+
+
+<title>业务迁移解决方案 | hzjsea</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+    <script src="/js/jquery.min.js"></script>
+    
+
+
+
+    
+    
+        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+    
+
+
+
+
+    <script>
+    function searchToggle() {
+        const width = $(document.body).width()
+        if(width > 479) {
+            return;
+        }
+        const search = $('.search');
+        const searchForm = $('.form-search')
+
+        if(!search.hasClass("mobile-search")) {
+            search.addClass("mobile-search");
+        } else {
+            search.removeClass("mobile-search");
+        } 
+    }
+
+    function search(searchInputEl, formEl, flag) {
+        const path = "/" + "search.json"; // 可以在public 下查看这个search.json
+        $(formEl).submit(function(e){
+            e.preventDefault();
+            let target = null
+            if(searchInputEl == null) {
+                const screenWidth = $(document.body).width();
+                target = screenWidth > 479 ? $('#pc-search-input') : $('#mobile-search-input');
+                console.log(target);
+            } else {
+                target = $(searchInputEl)
+            }
+
+            if(!flag && target.val() === '') {
+                return ;
+            }
+
+            $("#u-search").fadeIn(500, function() {
+                $("body > .wrapper").addClass("modal-active");
+
+                $.ajax({
+                    url: path,
+                    dataType: "json",
+                    beforeSend: function (xhr) {
+                        $input = target.val();
+                        $(".form-input").val($input);
+                        const loadingBar = $('.search-loading-bar') 
+                        loadingBar.css({
+                            width:'100%',
+                            display: 'block'
+                        });
+                    },
+                    success: function( datas ) {
+                        console.log(datas);
+                        const $resultPanel = $(".modal-body")[0];
+                        let str = `<ul class="modal-results">`;
+                        var keywords = $(".form-input").val().trim().toLowerCase().split(/[\s\-]+/);
+                        $resultPanel.innerHTML = "";
+                        let hasResult = false
+                        let text = `<div class="no-result">找不到与关键词相关的内容....</div>`;
+
+                        if ($(".form-input").val().trim().length <= 0) {
+                            // 没有结果
+                            $resultPanel.innerHTML = text;
+                            return;
+                        }
+                        datas.forEach(function (data, index) {
+                            var isMatch = true;
+                            if (!data.title || data.title.trim() === '') {
+                                data.title = "Untitled";
+                            }
+                            var data_title = data.title.trim().toLowerCase();
+                            var data_content = data.content && data.content.trim().replace(/<[^>]+>/g, "").toLowerCase() || '';
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            // only match artiles with not empty contents
+                            if (data_content !== '') {
+                                keywords.forEach(function (keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        hasResult = true
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            } else {
+                                isMatch = false;
+                            }
+                            // show search results
+                            if (isMatch) {
+                                str += `<li class='result-item'><a href='${data_url}' class='result-item-detail'> <span class="title">${data_title}</span>`;
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 200 characters
+                                    var start = first_occur - 40;
+                                    var end = first_occur + 160;
+
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+
+                                    if (start == 0) {
+                                        end = 200;
+                                    }
+
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+
+                                    var match_content = content.substring(start, end);
+
+                                    // highlight all keywords
+                                    keywords.forEach(function (keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, `<em class="search-keyword">${keyword}</em>`);
+                                    });
+
+                                    str += `<span class="content"> ${match_content} ...</span></a>`;
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        if(hasResult) {
+                            $resultPanel.innerHTML = str;
+                        } else {
+                            $resultPanel.innerHTML = text;
+                        }
+
+                    },
+                    complete: function() {
+                        setTimeout(() => {
+                                const loadingBar = $('.search-loading-bar') 
+                                loadingBar.css({
+                                    width:'0%',
+                                    display: 'none'
+                                });
+                        }, 300)
+                    }
+                });
+            })
+
+        });
+    }
+
+    $(document).ready(function() {
+        $('.modal-close').click(function () { 
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+
+        $('.modal-overlay').click(function() {
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+        search(null, ".form-search", false)
+        search("#u-search-modal-form .form-input", ".u-search-modal-form", true)
+    })
+</script>
+
+
+
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo"><a href="/">hzjsea</a></div>
+        <div class="menu navbar-right">
+            
+            
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="pc-search-input"/>
+        </form>
+    </div>
+
+
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+            <input id="switch_default" type="checkbox" class="switch_default">
+            <label for="switch_default" class="toggleBtn"></label>
+        </div>
+    </div>
+</nav>
+
+
+<nav class="navbar-mobile" id="nav-mobile">
+    <div class="container">
+        <div class="navbar-header">
+            <div>
+                <a href="/">hzjsea</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+            </div>
+            <div class="navbar-mobile-right">
+                
+                
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="mobile-search-input"/>
+        </form>
+    </div>
+
+
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; 目录</div>
+            </div>
+            
+        </div>
+        <div class="menu" id="mobile-menu">
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+        </div>
+    </div>
+</nav>
+
+        <div class="main">
+			<!-- Chic/layout.ejs -->
+ <div id="u-search">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="container">
+                    <form id="u-search-modal-form" class="u-search-modal-form">
+                        <button type="submit" class="form-submit-btn">
+                            <img src="/image/search.png" class="search-btn-img" />
+                        </button>
+                        <input placeholder="搜索文章。。。" class="form-input" id="modal-form-input">
+                    </form>
+                    <a class="modal-close">x</a>
+                </div>
+                <div class="search-loading">
+                    <div class="search-loading-bar"></div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <!-- ul 格式如下 -->
+                <!-- <ul class="modal-results">
+                    <li class="result-item">
+                        <a class="result-item-detail">
+                            <span class="title">页面配置</span>
+                            <span class="content">
+                                content
+                            </span>
+                        </a>
+                    </li>
+                </ul> -->
+            </div>
+        </div>
+        <div class="modal-overlay"></div>
+    </div>
+            <div class="container">
+    
+    
+    <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">全部展开</a>
+        <a onclick="go_top()">回到顶部</a>
+        <a onclick="go_bottom()">回到底部</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "全部折叠"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "全部展开"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">业务迁移解决方案</h1>
+            
+            <div class="post-meta">
+                
+                作者： <a itemprop="author" rel="author" href="/">hzjsea</a>&nbsp;
+                
+
+                
+                <span class="post-time">
+                    创建日期： <a
+                        href="#">June 3, 2020&nbsp;&nbsp;17:23:32</a>
+                </span>&nbsp;
+                
+                
+                <span class="post-category">
+                    分类：
+                    
+                    <a href="/categories/fastapi/">fastapi</a>&nbsp;
+                    
+                </span>
+                
+                
+                状态：<a href="#">SNAPSHOT</a>
+                
+            </div>
+            
+        </header>
+
+        <div class="post-content">
+            <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+<ul>
+<li><a href="#%E4%B8%9A%E5%8A%A1%E8%BF%81%E7%A7%BB%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88">业务迁移解决方案</a><ul>
+<li><a href="#%E6%93%8D%E4%BD%9C%E6%AD%A5%E9%AA%A4">操作步骤</a><ul>
+<li><a href="#cdn%E5%8A%A0%E9%80%9F">CDN加速</a></li>
+<li><a href="#%E4%BA%91%E5%AD%98%E5%82%A8">云存储</a></li>
+<li><a href="#%E5%8E%9A%E5%BE%B7%E4%BA%91%E5%88%9B%E5%BB%BA%E9%A1%B9%E7%9B%AE">厚德云创建项目</a></li>
+<li><a href="#%E5%8E%9A%E5%BE%B7%E4%BA%91%E5%BC%80%E5%90%AF%E6%95%B0%E6%8D%AE%E5%BA%93">厚德云开启数据库</a></li>
+<li><a href="#https%E5%BC%80%E9%80%9A">https开通</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<!-- /code_chunk_output -->
+<a id="more"></a>
+
+<h1 id="业务迁移解决方案"><a href="#业务迁移解决方案" class="headerlink" title="业务迁移解决方案"></a>业务迁移解决方案</h1><p><img src="http://img.noback.top/2020-06-04-11-09-19.png" alt="2020-06-04-11-09-19"></p>
+<p>上图是一开始的项目结构，开发在自己的机器或者公有云上做部署项目，分别对源站和云存储做了CDN 用户访问对应内容通过CDN访问源站或者节点上的缓存，达到加速的目的，本地公有云本地mysql映射给自己的项目</p>
+<p><img src="http://img.noback.top/2020-06-04-11-15-11.png" alt="2020-06-04-11-15-11"></p>
+<p>首次迁移,程序可以先进行迁移，现将程序部署到容器中，数据库依旧还是使用公有云源站的数据库</p>
+<p><img src="http://img.noback.top/2020-06-04-11-15-29.png" alt="2020-06-04-11-15-29"></p>
+<p>第二次迁移，数据库也使用容器</p>
+<h2 id="操作步骤"><a href="#操作步骤" class="headerlink" title="操作步骤"></a>操作步骤</h2><h3 id="CDN加速"><a href="#CDN加速" class="headerlink" title="CDN加速"></a>CDN加速</h3><p>登录又拍云，注册账号，创建云存储服务和CDN加速服务<br><img src="http://img.noback.top/2020-06-04-15-48-31.png" alt="2020-06-04-15-48-31"><br>进入控制台 创建云存储服务和CDN加速服务<br><img src="http://img.noback.top/2020-06-04-15-49-25.png" alt="2020-06-04-15-49-25"><br>创建CDN服务<br><img src="http://img.noback.top/2020-06-04-15-55-20.png" alt="2020-06-04-15-55-20"><br><img src="http://img.noback.top/2020-06-04-15-56-31.png" alt="2020-06-04-15-56-31"></p>
+<p><font color='red'>记得设置参数跟随，不然无法访问api 缓存控制–&gt;参数跟随—&gt; 全程跟随</font></p>
+<p>进入阿里云或者其他的共有云做cname<br><img src="http://img.noback.top/2020-06-04-11-38-16.png" alt="2020-06-04-11-38-16"></p>
+<h3 id="云存储"><a href="#云存储" class="headerlink" title="云存储"></a>云存储</h3><p>登录又拍云，点击云存储，创建云存储<br><img src="http://img.noback.top/2020-06-04-16-00-51.png" alt="2020-06-04-16-00-51"><br><img src="http://img.noback.top/2020-06-04-16-02-05.png" alt="2020-06-04-16-02-05"></p>
+<h3 id="厚德云创建项目"><a href="#厚德云创建项目" class="headerlink" title="厚德云创建项目"></a>厚德云创建项目</h3><p><img src="http://img.noback.top/2020-06-04-11-24-53.png" alt="2020-06-04-11-24-53"><br>登录厚德云，点击创建项目<br><img src="http://img.noback.top/2020-06-04-11-25-21.png" alt="2020-06-04-11-25-21"><br>选择资源池<br><img src="http://img.noback.top/2020-06-04-11-28-04.png" alt="2020-06-04-11-28-04"><br>输入项目信息<br><img src="http://img.noback.top/2020-06-04-11-29-00.png" alt="2020-06-04-11-29-00"><br>点击容器部署程序<br><img src="http://img.noback.top/2020-06-04-11-29-35.png" alt="2020-06-04-11-29-35"><br>输入项目信息</p>
+<p>导入镜像运行项目<br><img src="http://img.noback.top/2020-06-04-16-08-21.png" alt="2020-06-04-16-08-21"><br>设置端口转发 ,程序内部开启的是8889端口，这里转发8889-&gt; 80端口<br><img src="http://img.noback.top/2020-06-04-16-09-40.png" alt="2020-06-04-16-09-40"></p>
+<p><img src="http://img.noback.top/2020-06-04-16-16-13.png" alt="2020-06-04-16-16-13"><br>内部流程 </p>
+<pre class=" language-bash"><code class="language-bash">先访问nono.guozen.cn ----<span class="token operator">></span> CND加速找边缘节点 guochancdn.bo.aicdn.com ---<span class="token operator">></span> nm.aicdn.com --<span class="token operator">></span> 节点缓存或者源站</code></pre>
+<h3 id="厚德云开启数据库"><a href="#厚德云开启数据库" class="headerlink" title="厚德云开启数据库"></a>厚德云开启数据库</h3><p>回到资源池，创建RDS数据库<br><img src="http://img.noback.top/2020-06-12-11-07-01.png" alt="2020-06-12-11-07-01"><br><img src="http://img.noback.top/2020-06-12-11-09-23.png" alt="2020-06-12-11-09-23"><br>选择配置，完成数据库创建</p>
+<h3 id="https开通"><a href="#https开通" class="headerlink" title="https开通"></a>https开通</h3><p>进入CDN服务，点击https配置<br><img src="http://img.noback.top/2020-06-04-17-56-20.png" alt="2020-06-04-17-56-20"><br>证书管理，添加，购买免费的ssl证书，等待审核通过<br><img src="http://img.noback.top/2020-06-04-17-56-43.png" alt="2020-06-04-17-56-43"></p>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>标签：</span>
+                <span class="tag">
+                    
+                    
+                    <a href="/tags/fastapi/"># fastapi</a>
+                    
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript：window.history.back();">后退</a>
+                <span>· </span>
+                <a href="/">主页</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            <a class="prev" rel="prev" href="/2020/06/05/blog_back_new/mysql/mysql%E4%B8%BB%E4%BB%8E%E5%A4%87%E4%BB%BD/">mysql主从备份</a>
+            
+            
+            <a class="next" rel="next" href="/2020/06/03/blog_back_new/vue/vue%E4%B8%AD%E5%86%85%E5%B5%8Cechart%E5%9B%BE%E6%96%B9%E6%A1%88/">vue中内嵌echart图方案</a>
+            
+        </section>
+    </article>
+</div>
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+    </div>
+</footer>
+
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

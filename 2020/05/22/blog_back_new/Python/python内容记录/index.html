@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="hzjsea">
+
+
+
+
+
+
+<title>python内容记录 | hzjsea</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+    <script src="/js/jquery.min.js"></script>
+    
+
+
+
+    
+    
+        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+    
+
+
+
+
+    <script>
+    function searchToggle() {
+        const width = $(document.body).width()
+        if(width > 479) {
+            return;
+        }
+        const search = $('.search');
+        const searchForm = $('.form-search')
+
+        if(!search.hasClass("mobile-search")) {
+            search.addClass("mobile-search");
+        } else {
+            search.removeClass("mobile-search");
+        } 
+    }
+
+    function search(searchInputEl, formEl, flag) {
+        const path = "/" + "search.json"; // 可以在public 下查看这个search.json
+        $(formEl).submit(function(e){
+            e.preventDefault();
+            let target = null
+            if(searchInputEl == null) {
+                const screenWidth = $(document.body).width();
+                target = screenWidth > 479 ? $('#pc-search-input') : $('#mobile-search-input');
+                console.log(target);
+            } else {
+                target = $(searchInputEl)
+            }
+
+            if(!flag && target.val() === '') {
+                return ;
+            }
+
+            $("#u-search").fadeIn(500, function() {
+                $("body > .wrapper").addClass("modal-active");
+
+                $.ajax({
+                    url: path,
+                    dataType: "json",
+                    beforeSend: function (xhr) {
+                        $input = target.val();
+                        $(".form-input").val($input);
+                        const loadingBar = $('.search-loading-bar') 
+                        loadingBar.css({
+                            width:'100%',
+                            display: 'block'
+                        });
+                    },
+                    success: function( datas ) {
+                        console.log(datas);
+                        const $resultPanel = $(".modal-body")[0];
+                        let str = `<ul class="modal-results">`;
+                        var keywords = $(".form-input").val().trim().toLowerCase().split(/[\s\-]+/);
+                        $resultPanel.innerHTML = "";
+                        let hasResult = false
+                        let text = `<div class="no-result">找不到与关键词相关的内容....</div>`;
+
+                        if ($(".form-input").val().trim().length <= 0) {
+                            // 没有结果
+                            $resultPanel.innerHTML = text;
+                            return;
+                        }
+                        datas.forEach(function (data, index) {
+                            var isMatch = true;
+                            if (!data.title || data.title.trim() === '') {
+                                data.title = "Untitled";
+                            }
+                            var data_title = data.title.trim().toLowerCase();
+                            var data_content = data.content && data.content.trim().replace(/<[^>]+>/g, "").toLowerCase() || '';
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            // only match artiles with not empty contents
+                            if (data_content !== '') {
+                                keywords.forEach(function (keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        hasResult = true
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            } else {
+                                isMatch = false;
+                            }
+                            // show search results
+                            if (isMatch) {
+                                str += `<li class='result-item'><a href='${data_url}' class='result-item-detail'> <span class="title">${data_title}</span>`;
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 200 characters
+                                    var start = first_occur - 40;
+                                    var end = first_occur + 160;
+
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+
+                                    if (start == 0) {
+                                        end = 200;
+                                    }
+
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+
+                                    var match_content = content.substring(start, end);
+
+                                    // highlight all keywords
+                                    keywords.forEach(function (keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, `<em class="search-keyword">${keyword}</em>`);
+                                    });
+
+                                    str += `<span class="content"> ${match_content} ...</span></a>`;
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        if(hasResult) {
+                            $resultPanel.innerHTML = str;
+                        } else {
+                            $resultPanel.innerHTML = text;
+                        }
+
+                    },
+                    complete: function() {
+                        setTimeout(() => {
+                                const loadingBar = $('.search-loading-bar') 
+                                loadingBar.css({
+                                    width:'0%',
+                                    display: 'none'
+                                });
+                        }, 300)
+                    }
+                });
+            })
+
+        });
+    }
+
+    $(document).ready(function() {
+        $('.modal-close').click(function () { 
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+
+        $('.modal-overlay').click(function() {
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+        search(null, ".form-search", false)
+        search("#u-search-modal-form .form-input", ".u-search-modal-form", true)
+    })
+</script>
+
+
+
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo"><a href="/">hzjsea</a></div>
+        <div class="menu navbar-right">
+            
+            
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="pc-search-input"/>
+        </form>
+    </div>
+
+
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+            <input id="switch_default" type="checkbox" class="switch_default">
+            <label for="switch_default" class="toggleBtn"></label>
+        </div>
+    </div>
+</nav>
+
+
+<nav class="navbar-mobile" id="nav-mobile">
+    <div class="container">
+        <div class="navbar-header">
+            <div>
+                <a href="/">hzjsea</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+            </div>
+            <div class="navbar-mobile-right">
+                
+                
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="mobile-search-input"/>
+        </form>
+    </div>
+
+
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; 目录</div>
+            </div>
+            
+        </div>
+        <div class="menu" id="mobile-menu">
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+        </div>
+    </div>
+</nav>
+
+        <div class="main">
+			<!-- Chic/layout.ejs -->
+ <div id="u-search">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="container">
+                    <form id="u-search-modal-form" class="u-search-modal-form">
+                        <button type="submit" class="form-submit-btn">
+                            <img src="/image/search.png" class="search-btn-img" />
+                        </button>
+                        <input placeholder="搜索文章。。。" class="form-input" id="modal-form-input">
+                    </form>
+                    <a class="modal-close">x</a>
+                </div>
+                <div class="search-loading">
+                    <div class="search-loading-bar"></div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <!-- ul 格式如下 -->
+                <!-- <ul class="modal-results">
+                    <li class="result-item">
+                        <a class="result-item-detail">
+                            <span class="title">页面配置</span>
+                            <span class="content">
+                                content
+                            </span>
+                        </a>
+                    </li>
+                </ul> -->
+            </div>
+        </div>
+        <div class="modal-overlay"></div>
+    </div>
+            <div class="container">
+    
+    
+    <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">全部展开</a>
+        <a onclick="go_top()">回到顶部</a>
+        <a onclick="go_bottom()">回到底部</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "全部折叠"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "全部展开"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">python内容记录</h1>
+            
+            <div class="post-meta">
+                
+                作者： <a itemprop="author" rel="author" href="/">hzjsea</a>&nbsp;
+                
+
+                
+                <span class="post-time">
+                    创建日期： <a
+                        href="#">May 22, 2020&nbsp;&nbsp;0:27:22</a>
+                </span>&nbsp;
+                
+                
+                <span class="post-category">
+                    分类：
+                    
+                    <a href="/categories/python/">python</a>&nbsp;
+                    
+                </span>
+                
+                
+                状态：<a href="#">SNAPSHOT</a>
+                
+            </div>
+            
+        </header>
+
+        <div class="post-content">
+            <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+<ul>
+<li><a href="#python%E5%86%85%E5%AE%B9%E8%AE%B0%E5%BD%95">python内容记录</a><ul>
+<li><a href="#%E5%8E%BB%E9%99%A4list%E4%B8%AD%E7%A9%BA%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%9A%84%E6%9C%80%E5%BF%AB%E6%96%B9%E6%B3%95">去除list中空字符串的最快方法</a></li>
+<li><a href="#%E8%BF%94%E5%9B%9E%E5%AD%97%E5%85%B8%E4%B8%AD%E7%9A%84key%E5%92%8Cvalue">返回字典中的key和value</a></li>
+<li><a href="#json%E5%BA%93%E4%B8%ADdumpsdumploadsload%E7%9A%84%E5%8C%BA%E5%88%AB%E4%B8%8E%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF">json库中dumps,dump,loads,load的区别与使用场景</a></li>
+<li><a href="#python%E4%B8%AD%E5%88%A0%E9%99%A4%E6%96%87%E4%BB%B6%E4%B8%8E%E7%9B%AE%E5%BD%95%E7%9A%84%E6%96%B9%E6%B3%95">python中删除文件与目录的方法</a></li>
+<li><a href="#python%E4%B8%AD%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%A4%A7%E5%B0%8F%E5%86%99%E8%BD%AC%E6%8D%A2">python中字符串大小写转换</a></li>
+</ul>
+</li>
+</ul>
+<!-- /code_chunk_output -->
+
+
+<a id="more"></a>
+
+<h1 id="python内容记录"><a href="#python内容记录" class="headerlink" title="python内容记录"></a>python内容记录</h1><p>python的一些快捷方法记录</p>
+<h2 id="去除list中空字符串的最快方法"><a href="#去除list中空字符串的最快方法" class="headerlink" title="去除list中空字符串的最快方法"></a>去除list中空字符串的最快方法</h2><pre class=" language-python"><code class="language-python">get_list<span class="token operator">=</span><span class="token punctuation">[</span> x <span class="token keyword">for</span> i <span class="token keyword">in</span> list <span class="token keyword">if</span> x <span class="token operator">!=</span> <span class="token string">''</span><span class="token punctuation">]</span></code></pre>
+<h2 id="返回字典中的key和value"><a href="#返回字典中的key和value" class="headerlink" title="返回字典中的key和value"></a>返回字典中的key和value</h2><pre class=" language-py"><code class="language-py">d=&#123;1:'one',2:'two',3:'three'&#125;
+for k,v in d.items():
+    print(k,v)</code></pre>
+<h2 id="json库中dumps-dump-loads-load的区别与使用场景"><a href="#json库中dumps-dump-loads-load的区别与使用场景" class="headerlink" title="json库中dumps,dump,loads,load的区别与使用场景"></a>json库中dumps,dump,loads,load的区别与使用场景</h2><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/Mr_EvanChen/article/details/77879967">https://blog.csdn.net/Mr_EvanChen/article/details/77879967</a></p>
+<h2 id="python中删除文件与目录的方法"><a href="#python中删除文件与目录的方法" class="headerlink" title="python中删除文件与目录的方法"></a>python中删除文件与目录的方法</h2><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/chengd/p/7533473.html">https://www.cnblogs.com/chengd/p/7533473.html</a></p>
+<h2 id="python中字符串大小写转换"><a href="#python中字符串大小写转换" class="headerlink" title="python中字符串大小写转换"></a>python中字符串大小写转换</h2><pre class=" language-py"><code class="language-py">str = "www.runoob.com"
+print(str.upper())          # 把所有字符中的小写字母转换成大写字母
+print(str.lower())          # 把所有字符中的大写字母转换成小写字母
+print(str.capitalize())     # 把第一个字母转化为大写字母，其余小写
+print(str.title())          # 把每个单词的第一个字母转化为大写，其余小写
+
+# WWW.RUNOOB.COM
+# www.runoob.com
+# Www.runoob.com
+# Www.Runoob.Com</code></pre>
+<h2 id="内置函数divmodc"><a href="#内置函数divmodc" class="headerlink" title="内置函数divmodc"></a>内置函数divmodc</h2><p>divmod() 函数把除数和余数运算结果结合起来，返回一个包含商和余数的元组(a // b, a % b)</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token operator">>></span><span class="token operator">></span>divmod<span class="token punctuation">(</span>7, 2<span class="token punctuation">)</span>
+<span class="token punctuation">(</span>3, 1<span class="token punctuation">)</span>
+<span class="token operator">>></span><span class="token operator">></span> divmod<span class="token punctuation">(</span>8, 2<span class="token punctuation">)</span>
+<span class="token punctuation">(</span>4, 0<span class="token punctuation">)</span>
+<span class="token operator">>></span><span class="token operator">></span> divmod<span class="token punctuation">(</span>1+2j,1+0.5j<span class="token punctuation">)</span>
+<span class="token punctuation">((</span>1+0j<span class="token punctuation">)</span>, 1.5j<span class="token punctuation">)</span></code></pre>
+<h2 id="浮点除、地板除、取余除"><a href="#浮点除、地板除、取余除" class="headerlink" title="浮点除、地板除、取余除"></a>浮点除、地板除、取余除</h2><p>浮点除，不管前面的是整形还是浮点型 结果都是浮点型</p>
+<pre class=" language-py"><code class="language-py"># 浮点除
+nums1 = 20
+nums2 = 10
+print(nums1/nums2) 
+nums1 = 10
+nums2 = 3
+print(nums1/nums2)
+# 地板除
+nums1 = 10
+nums2 = 3
+print(nums1//nums2)
+# 余数除
+nums1 = 10
+nums2 = 3
+print(nums1%nums2)
+# 余数地板除
+nums1 = 10
+nums2 = 3
+print(divmod(nums1,nums2))
+
+# 2.0
+# 3.3333333333333335
+# 3
+# 1
+# (3, 1)</code></pre>
+<h2 id="字符串头部检测字符"><a href="#字符串头部检测字符" class="headerlink" title="字符串头部检测字符"></a>字符串头部检测字符</h2><p>startswith() 方法用于检查字符串是否是以指定子字符串开头，如果是则返回 True，否则返回 False。如果参数 beg 和 end 指定值，则在指定范围内检查。</p>
+<pre class=" language-bash"><code class="language-bash">str <span class="token operator">=</span> <span class="token string">"this is string example....wow!!!"</span><span class="token punctuation">;</span>
+print str.startswith<span class="token punctuation">(</span> <span class="token string">'this'</span> <span class="token punctuation">)</span><span class="token punctuation">;</span>
+print str.startswith<span class="token punctuation">(</span> <span class="token string">'is'</span>, 2, 4 <span class="token punctuation">)</span><span class="token punctuation">;</span>
+print str.startswith<span class="token punctuation">(</span> <span class="token string">'this'</span>, 2, 4 <span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<h2 id="字符串"><a href="#字符串" class="headerlink" title="字符串"></a>字符串</h2><h3 id="字符串判断是否全是字母或者数字"><a href="#字符串判断是否全是字母或者数字" class="headerlink" title="字符串判断是否全是字母或者数字"></a>字符串判断是否全是字母或者数字</h3><pre class=" language-bash"><code class="language-bash">str.isnumeric<span class="token punctuation">(</span><span class="token punctuation">)</span>: True <span class="token keyword">if</span> 只包含数字 注意：此函数只能用于unicode string
+str.isdigit<span class="token punctuation">(</span><span class="token punctuation">)</span>: True <span class="token keyword">if</span> 只包含数字
+str.isalpha<span class="token punctuation">(</span><span class="token punctuation">)</span>：True <span class="token keyword">if</span> 只包含字母
+str.isalnum<span class="token punctuation">(</span><span class="token punctuation">)</span>：True <span class="token keyword">if</span> 只包含字母或者数字
+<span class="token comment" spellcheck="true"># 返回True or false</span>
+
+<span class="token comment" spellcheck="true"># 使用</span>
+str <span class="token operator">=</span> <span class="token string">"12usingLog.xslx"</span>
+res <span class="token operator">=</span> <span class="token string">"is integer"</span> <span class="token keyword">if</span> str<span class="token punctuation">[</span>:2<span class="token punctuation">]</span>.isdigit<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">else</span> <span class="token string">"not integer"</span>
+print<span class="token punctuation">(</span>res<span class="token punctuation">)</span>
+res <span class="token operator">=</span> <span class="token string">"is digit"</span> <span class="token keyword">if</span> str<span class="token punctuation">[</span>3:5<span class="token punctuation">]</span>.isalpha<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">else</span> <span class="token string">"not digit"</span>
+print<span class="token punctuation">(</span>res<span class="token punctuation">)</span>
+res <span class="token operator">=</span> <span class="token string">"not alnum"</span> <span class="token keyword">if</span> str.isalnum<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">else</span> <span class="token string">"not alnum"</span>
+print<span class="token punctuation">(</span>res<span class="token punctuation">)</span></code></pre>
+<h2 id="计时任务"><a href="#计时任务" class="headerlink" title="计时任务"></a>计时任务</h2><p>两个计时任务的库</p>
+<ul>
+<li>apSheduler</li>
+<li>celery</li>
+</ul>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>标签：</span>
+                <span class="tag">
+                    
+                    
+                    <a href="/tags/python/"># python</a>
+                    
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript：window.history.back();">后退</a>
+                <span>· </span>
+                <a href="/">主页</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            <a class="prev" rel="prev" href="/2020/05/27/blog_back_new/CDN/cdn/">cdn学习</a>
+            
+            
+            <a class="next" rel="next" href="/2020/05/22/blog_back_new/vue/vue%E5%86%85%E5%AE%B9%E8%AE%B0%E5%BD%95/">vue内容记录</a>
+            
+        </section>
+    </article>
+</div>
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+    </div>
+</footer>
+
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

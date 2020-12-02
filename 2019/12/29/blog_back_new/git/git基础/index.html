@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="hzjsea">
+
+
+
+
+
+
+<title>git基础 | hzjsea</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+    <script src="/js/jquery.min.js"></script>
+    
+
+
+
+    
+    
+        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+    
+
+
+
+
+    <script>
+    function searchToggle() {
+        const width = $(document.body).width()
+        if(width > 479) {
+            return;
+        }
+        const search = $('.search');
+        const searchForm = $('.form-search')
+
+        if(!search.hasClass("mobile-search")) {
+            search.addClass("mobile-search");
+        } else {
+            search.removeClass("mobile-search");
+        } 
+    }
+
+    function search(searchInputEl, formEl, flag) {
+        const path = "/" + "search.json"; // 可以在public 下查看这个search.json
+        $(formEl).submit(function(e){
+            e.preventDefault();
+            let target = null
+            if(searchInputEl == null) {
+                const screenWidth = $(document.body).width();
+                target = screenWidth > 479 ? $('#pc-search-input') : $('#mobile-search-input');
+                console.log(target);
+            } else {
+                target = $(searchInputEl)
+            }
+
+            if(!flag && target.val() === '') {
+                return ;
+            }
+
+            $("#u-search").fadeIn(500, function() {
+                $("body > .wrapper").addClass("modal-active");
+
+                $.ajax({
+                    url: path,
+                    dataType: "json",
+                    beforeSend: function (xhr) {
+                        $input = target.val();
+                        $(".form-input").val($input);
+                        const loadingBar = $('.search-loading-bar') 
+                        loadingBar.css({
+                            width:'100%',
+                            display: 'block'
+                        });
+                    },
+                    success: function( datas ) {
+                        console.log(datas);
+                        const $resultPanel = $(".modal-body")[0];
+                        let str = `<ul class="modal-results">`;
+                        var keywords = $(".form-input").val().trim().toLowerCase().split(/[\s\-]+/);
+                        $resultPanel.innerHTML = "";
+                        let hasResult = false
+                        let text = `<div class="no-result">找不到与关键词相关的内容....</div>`;
+
+                        if ($(".form-input").val().trim().length <= 0) {
+                            // 没有结果
+                            $resultPanel.innerHTML = text;
+                            return;
+                        }
+                        datas.forEach(function (data, index) {
+                            var isMatch = true;
+                            if (!data.title || data.title.trim() === '') {
+                                data.title = "Untitled";
+                            }
+                            var data_title = data.title.trim().toLowerCase();
+                            var data_content = data.content && data.content.trim().replace(/<[^>]+>/g, "").toLowerCase() || '';
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            // only match artiles with not empty contents
+                            if (data_content !== '') {
+                                keywords.forEach(function (keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        hasResult = true
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            } else {
+                                isMatch = false;
+                            }
+                            // show search results
+                            if (isMatch) {
+                                str += `<li class='result-item'><a href='${data_url}' class='result-item-detail'> <span class="title">${data_title}</span>`;
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 200 characters
+                                    var start = first_occur - 40;
+                                    var end = first_occur + 160;
+
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+
+                                    if (start == 0) {
+                                        end = 200;
+                                    }
+
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+
+                                    var match_content = content.substring(start, end);
+
+                                    // highlight all keywords
+                                    keywords.forEach(function (keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, `<em class="search-keyword">${keyword}</em>`);
+                                    });
+
+                                    str += `<span class="content"> ${match_content} ...</span></a>`;
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        if(hasResult) {
+                            $resultPanel.innerHTML = str;
+                        } else {
+                            $resultPanel.innerHTML = text;
+                        }
+
+                    },
+                    complete: function() {
+                        setTimeout(() => {
+                                const loadingBar = $('.search-loading-bar') 
+                                loadingBar.css({
+                                    width:'0%',
+                                    display: 'none'
+                                });
+                        }, 300)
+                    }
+                });
+            })
+
+        });
+    }
+
+    $(document).ready(function() {
+        $('.modal-close').click(function () { 
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+
+        $('.modal-overlay').click(function() {
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+        search(null, ".form-search", false)
+        search("#u-search-modal-form .form-input", ".u-search-modal-form", true)
+    })
+</script>
+
+
+
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo"><a href="/">hzjsea</a></div>
+        <div class="menu navbar-right">
+            
+            
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="pc-search-input"/>
+        </form>
+    </div>
+
+
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+            <input id="switch_default" type="checkbox" class="switch_default">
+            <label for="switch_default" class="toggleBtn"></label>
+        </div>
+    </div>
+</nav>
+
+
+<nav class="navbar-mobile" id="nav-mobile">
+    <div class="container">
+        <div class="navbar-header">
+            <div>
+                <a href="/">hzjsea</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+            </div>
+            <div class="navbar-mobile-right">
+                
+                
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="mobile-search-input"/>
+        </form>
+    </div>
+
+
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; 目录</div>
+            </div>
+            
+        </div>
+        <div class="menu" id="mobile-menu">
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+        </div>
+    </div>
+</nav>
+
+        <div class="main">
+			<!-- Chic/layout.ejs -->
+ <div id="u-search">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="container">
+                    <form id="u-search-modal-form" class="u-search-modal-form">
+                        <button type="submit" class="form-submit-btn">
+                            <img src="/image/search.png" class="search-btn-img" />
+                        </button>
+                        <input placeholder="搜索文章。。。" class="form-input" id="modal-form-input">
+                    </form>
+                    <a class="modal-close">x</a>
+                </div>
+                <div class="search-loading">
+                    <div class="search-loading-bar"></div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <!-- ul 格式如下 -->
+                <!-- <ul class="modal-results">
+                    <li class="result-item">
+                        <a class="result-item-detail">
+                            <span class="title">页面配置</span>
+                            <span class="content">
+                                content
+                            </span>
+                        </a>
+                    </li>
+                </ul> -->
+            </div>
+        </div>
+        <div class="modal-overlay"></div>
+    </div>
+            <div class="container">
+    
+    
+    <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">全部展开</a>
+        <a onclick="go_top()">回到顶部</a>
+        <a onclick="go_bottom()">回到底部</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "全部折叠"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "全部展开"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">git基础</h1>
+            
+            <div class="post-meta">
+                
+                作者： <a itemprop="author" rel="author" href="/">hzjsea</a>&nbsp;
+                
+
+                
+                <span class="post-time">
+                    创建日期： <a
+                        href="#">December 29, 2019&nbsp;&nbsp;20:50:50</a>
+                </span>&nbsp;
+                
+                
+                <span class="post-category">
+                    分类：
+                    
+                    <a href="/categories/git/">git</a>&nbsp;
+                    
+                </span>
+                
+                
+                状态：<a href="#">SNAPSHOT</a>
+                
+            </div>
+            
+        </header>
+
+        <div class="post-content">
+            <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+<ul>
+<li><a href="#%E6%B5%81%E7%A8%8B">流程</a><ul>
+<li><a href="#%E5%AE%89%E8%A3%85">安装</a></li>
+<li><a href="#%E5%85%A8%E5%B1%80%E5%A3%B0%E6%98%8E%E7%94%A8%E6%88%B7">全局声明用户</a></li>
+<li><a href="#%E5%A3%B0%E6%98%8E%E4%BB%93%E5%BA%93-%E5%BF%85%E9%A1%BB">声明仓库  必须</a></li>
+<li><a href="#%E6%8F%90%E4%BA%A4%E5%B9%B6%E6%8F%90%E4%BE%9B%E4%BF%A1%E6%81%AF">提交并提供信息</a></li>
+<li><a href="#%E6%B7%BB%E5%8A%A0%E6%96%87%E4%BB%B6">添加文件</a></li>
+<li><a href="#%E6%9F%A5%E7%9C%8B%E7%8A%B6%E6%80%81">查看状态</a></li>
+<li><a href="#%E6%9F%A5%E7%9C%8B%E6%97%A5%E5%BF%97">查看日志</a></li>
+<li><a href="#%E5%9B%9E%E9%80%80%E6%93%8D%E4%BD%9C">回退操作</a></li>
+<li><a href="#%E6%8F%90%E4%BA%A4%E8%BF%9C%E7%A8%8B%E4%BB%93%E5%BA%93">提交远程仓库</a></li>
+<li><a href="#%E4%BB%8E%E8%BF%9C%E7%A8%8B%E4%BB%93%E5%BA%93%E4%B8%8B%E8%BD%BD">从远程仓库下载</a></li>
+<li><a href="#%E4%BB%8E%E8%BF%9C%E7%A8%8B%E4%BB%93%E5%BA%93%E4%B8%8B%E8%BD%BD-%E6%8C%87%E5%AE%9A%E5%88%86%E6%94%AF">从远程仓库下载 – 指定分支</a></li>
+<li><a href="#%E5%88%86%E6%94%AF%E7%AE%A1%E7%90%86">分支管理</a></li>
+<li><a href="#%E5%88%86%E6%94%AF%E7%AE%A1%E7%90%862">分支管理2</a></li>
+<li><a href="#%E5%90%88%E5%B9%B6%E5%88%86%E6%94%AF">合并分支</a></li>
+<li><a href="#%E5%88%A0%E9%99%A4%E5%88%86%E6%94%AF">删除分支</a></li>
+<li><a href="#%E5%BC%BA%E5%88%B6%E8%A6%86%E7%9B%96%E6%9C%AC%E5%9C%B0%E4%BB%A3%E7%A0%81">强制覆盖本地代码</a></li>
+<li><a href="#git-%E5%85%B3%E4%BA%8Egit%E6%AF%8F%E6%AC%A1%E8%BF%9B%E5%85%A5%E9%83%BD%E9%9C%80%E8%A6%81%E8%BE%93%E5%85%A5%E7%94%A8%E6%88%B7%E5%90%8D%E5%92%8C%E5%AF%86%E7%A0%81%E7%9A%84%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3">git 关于Git每次进入都需要输入用户名和密码的问题解决</a></li>
+<li><a href="#%E5%88%86%E6%94%AF%E5%90%8C%E6%AD%A5%E4%B8%BB%E5%B9%B2">分支同步主干</a></li>
+<li><a href="#%E4%B8%BB%E5%B9%B2%E5%90%8C%E6%AD%A5%E5%88%86%E6%94%AF%E6%85%8E%E7%94%A8">主干同步分支(慎用)</a></li>
+<li><a href="#inventory%E6%93%8D%E4%BD%9C">inventory操作</a></li>
+<li><a href="#%E9%94%99%E8%AF%AF%E6%95%B4%E7%90%86">错误整理</a><ul>
+<li><a href="#%E5%9C%BA%E6%99%AF1">场景1</a></li>
+<li><a href="#%E5%9C%BA%E6%99%AF2">场景2</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<!-- /code_chunk_output -->
+<a id="more"></a>
+<h1 id="流程"><a href="#流程" class="headerlink" title="流程"></a>流程</h1><p>工作区(我们当前的文件夹)<br>暂存区(add 提交之后文件所存在的位置)<br>仓库(commit 之后将暂存区提交到的地方)</p>
+<p>首先是init初始化我们的工作区，这时候当前存在.git文件的就是我们的工作区，当前路径为我们的根目录<br>在工作区创建一个新的文件test.txt，<br>git add 之后文件上传到暂存区，我们可以用git status 会记录当前暂存区的操作<br>git diff可以比较工作区和暂存区的差异，当然这里是没有任何差异的，因为他们是同样的两份文件<br>修改test.txt 之后再去git diff 你会发现他们之间存在着差异，因为这个时候他们已经不是同样两份文件了<br>假如你再次 使用Git add . 再用git diff 时又没有差异了</p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># ubuntu</span>
+<span class="token function">sudo</span> <span class="token function">apt-get</span> <span class="token function">install</span> <span class="token function">git</span>
+<span class="token comment" spellcheck="true"># centos </span>
+yum <span class="token function">install</span> <span class="token function">git</span> -y
+<span class="token comment" spellcheck="true"># mac </span>
+brew <span class="token function">install</span> <span class="token function">git</span></code></pre>
+<h2 id="全局声明用户"><a href="#全局声明用户" class="headerlink" title="全局声明用户"></a>全局声明用户</h2><p>git config –global user.name “your name”<br>git config –global user.email “<a href="mailto:&#x78;&#x78;&#120;&#64;&#120;&#x78;&#120;&#x2e;&#x63;&#111;&#109;">&#x78;&#x78;&#120;&#64;&#120;&#x78;&#120;&#x2e;&#x63;&#111;&#109;</a>“</p>
+<h2 id="声明仓库-必须"><a href="#声明仓库-必须" class="headerlink" title="声明仓库  必须"></a>声明仓库  必须</h2><p>mkdir test<br>cd test<br>git init </p>
+<p>会生成一个.git的仓库管理文件,如果你使用了zsh的主题，你会发现多了一个master 这是你当前的分支，也仅仅只有这个分支</p>
+<p>git add . —&gt; 将文件放到暂存区<br>git commit —&gt; 将文件提交到当前分支 master</p>
+<p><strong>声明仓库内容  不一定</strong><br>既然是作为开源共享的项目或者说是线上多平台交互的私库，那一定需要一个专门解释这个仓库是做什么的文件—&gt; README.md<br>git add README.md</p>
+<h2 id="提交并提供信息"><a href="#提交并提供信息" class="headerlink" title="提交并提供信息"></a>提交并提供信息</h2><p>将文件提交到仓库</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token function">git</span> commit -m <span class="token string">"your message"</span></code></pre>
+<h2 id="添加文件"><a href="#添加文件" class="headerlink" title="添加文件"></a>添加文件</h2><pre class=" language-bash"><code class="language-bash"><span class="token function">git</span> add xxx.txt
+<span class="token function">git</span> add <span class="token keyword">.</span> <span class="token comment" spellcheck="true">#添加当前文件夹所有文件 </span></code></pre>
+<h2 id="查看状态"><a href="#查看状态" class="headerlink" title="查看状态"></a>查看状态</h2><p>git status</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 添加文件后的状态</span>
+ alpaca@hzj  ~/hzj/tu   master ●  <span class="token function">git</span> add README.md
+ alpaca@hzj  ~/hzj/tu   master ✚  <span class="token function">git</span> status
+On branch master
+Changes to be committed:
+  <span class="token punctuation">(</span>use <span class="token string">"git reset HEAD &lt;file>..."</span> to unstage<span class="token punctuation">)</span>
+
+        modified:   README.md
+
+
+<span class="token comment" spellcheck="true"># 提交 commit 后的状态</span>
+ alpaca@hzj  ~/hzj/tu   master ✚  <span class="token function">git</span> commit -m <span class="token string">"update some file"</span>
+<span class="token punctuation">[</span>master ff070f9<span class="token punctuation">]</span> update some <span class="token function">file</span>
+ 1 <span class="token function">file</span> changed, 2 insertions<span class="token punctuation">(</span>+<span class="token punctuation">)</span>
+ alpaca@hzj  ~/hzj/tu   master 
+
+<span class="token comment" spellcheck="true"># 状态</span>
+  alpaca@hzj  ~/hzj/tu   master  <span class="token function">git</span> status
+On branch master
+nothing to commit, working tree clean</code></pre>
+<h2 id="查看日志"><a href="#查看日志" class="headerlink" title="查看日志"></a>查看日志</h2><p>当你每一次使用commit 将文件提交到当前分支的时候，记录下每一个步骤<br>查看使用</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 查看日志</span>
+<span class="token function">git</span> log
+
+commit bb3c0e3a1e850af0c70d3ce3a22995eaae177e82 <span class="token punctuation">(</span>HEAD -<span class="token operator">></span> master<span class="token punctuation">)</span>
+Author: alpaca <span class="token operator">&lt;</span>1097690268@qq.com<span class="token operator">></span>
+Date:   Thu Nov 21 11:46:24 2019 +0800
+
+    update
+
+commit ff070f92dee18935752e5a98b2310d275e1191b6
+Author: alpaca <span class="token operator">&lt;</span>1097690268@qq.com<span class="token operator">></span>
+Date:   Thu Nov 21 11:42:58 2019 +0800
+
+    update some <span class="token function">file</span>
+
+commit 230660d585a95b90e3c6176ad21664c1b10f746a
+Author: alpaca <span class="token operator">&lt;</span>1097690268@qq.com<span class="token operator">></span>
+Date:   Thu Nov 21 10:37:04 2019 +0800
+
+    update some markdown <span class="token function">file</span>
+
+
+<span class="token comment" spellcheck="true"># 仅查看版本号</span>
+<span class="token function">git</span> log --pretty<span class="token operator">=</span>oneline
+<span class="token comment" spellcheck="true"># 指定版本号 如果你装了zsh 按tab就会出来commit_id</span>
+<span class="token function">git</span> log commit_id </code></pre>
+<p>由随机码(版本号) + 作者 + 日期 + commit_message 组成</p>
+<h2 id="回退操作"><a href="#回退操作" class="headerlink" title="回退操作"></a>回退操作</h2><p>版本回退，首先我们要知道一个事情 git log 只会记录下commit的过程，也就是上传到当前分支的过程，因此回退操作他并不会记录，但是他会重载之前的log状态，也就是当你一共提交了3次内容，你回退到了第三次提交前的版本。那么你的第三次提交log并不会被记录</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 回退add操作  checkout -- file  暂存区 --> 工作区</span>
+<span class="token function">git</span> checkout -- <span class="token function">file</span>
+
+<span class="token comment" spellcheck="true"># 回退connit操作上  仓库 ---> 暂存区</span>
+<span class="token function">git</span> reset --hard commit_id 
+
+<span class="token comment" spellcheck="true"># 查看回退日志</span>
+<span class="token function">git</span> reflog</code></pre>
+<h2 id="提交远程仓库"><a href="#提交远程仓库" class="headerlink" title="提交远程仓库"></a>提交远程仓库</h2><p>之前的操作都是本地的，包括最后一步git commit 也只是提交到了本地的仓库。为了更好的保存内容，我们已经引入云仓库或者说托管我们的项目</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 添加远程仓库地址</span>
+<span class="token function">git</span> remote add origin https://gitee.com/Alpaca-H/how-to-learn-git.git 
+
+<span class="token comment" spellcheck="true"># 提交当前分支到远程仓库</span>
+<span class="token function">git</span> push  origin master
+
+<span class="token comment" spellcheck="true"># 建议第一次使用push -u</span>
+<span class="token comment" spellcheck="true"># Git不但会把本地的master分支内容推送的远程新的master分支，还会把本地的master分支和远程的master分支关联起来 在以后的推送或者拉取时就可以简化命令。</span></code></pre>
+<h2 id="从远程仓库下载"><a href="#从远程仓库下载" class="headerlink" title="从远程仓库下载"></a>从远程仓库下载</h2><pre class=" language-bash"><code class="language-bash"><span class="token function">git</span> clone https://gitee.com/Alpaca-H/how-to-learn-git.git</code></pre>
+<p>第一次提交的存在的问题</p>
+<pre class=" language-bash"><code class="language-bash"> <span class="token operator">!</span> <span class="token punctuation">[</span>rejected<span class="token punctuation">]</span>        master -<span class="token operator">></span> master <span class="token punctuation">(</span>fetch first<span class="token punctuation">)</span>
+error: failed to push some refs to <span class="token string">'https://gitee.com/Alpaca-H/how-to-learn-git.git'</span>
+hint: Updates were rejected because the remote contains work that you <span class="token keyword">do</span>
+hint: not have locally. This is usually caused by another repository pushing
+hint: to the same ref. You may want to first integrate the remote changes
+hint: <span class="token punctuation">(</span>e.g., <span class="token string">'git pull ...'</span><span class="token punctuation">)</span> before pushing again.
+hint: See the <span class="token string">'Note about fast-forwards'</span> <span class="token keyword">in</span> <span class="token string">'git push --help'</span> <span class="token keyword">for</span> details. </code></pre>
+<p>如果你是在 码云上创建的项目，它本身就存在两个README文件，也就是说仓库中本身就存在文件了，这时候你删掉这两个也没用，(github上好像没这个问题)<br>我们需要同步远程仓库，也就是拉取下来并用–allow-unrelated-histories 合并</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token function">git</span> pull origin master --allow-unrelated-histories   
+<span class="token function">git</span> commit -m <span class="token string">"xxx"</span> <span class="token comment" spellcheck="true">#重新提交</span>
+<span class="token function">git</span> push origin master</code></pre>
+<h2 id="从远程仓库下载-–-指定分支"><a href="#从远程仓库下载-–-指定分支" class="headerlink" title="从远程仓库下载 – 指定分支"></a>从远程仓库下载 – 指定分支</h2><pre class=" language-bash"><code class="language-bash"><span class="token function">git</span> clone -b hzj_branch https://gitee.com/Alpaca-H/how-to-learn-git.git </code></pre>
+<h2 id="分支管理"><a href="#分支管理" class="headerlink" title="分支管理"></a>分支管理</h2><pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 创建分支  </span>
+<span class="token function">git</span> branch hzj
+<span class="token comment" spellcheck="true"># 切换分支</span>
+<span class="token function">git</span> checkout hzj
+
+<span class="token comment" spellcheck="true"># 创建并切换分支</span>
+<span class="token function">git</span> checkout -b hzj
+
+<span class="token comment" spellcheck="true"># 查看当前分支</span>
+<span class="token function">git</span> branch</code></pre>
+<p>记住上面的只是分支管理，他只是在你的本地有了分支，在你没有push之前所有的一切都是本地操作</p>
+<h2 id="分支管理2"><a href="#分支管理2" class="headerlink" title="分支管理2"></a>分支管理2</h2><pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 切换到新的分支 </span>
+<span class="token function">git</span> swicth -c dev
+<span class="token comment" spellcheck="true"># 切换到已有分支</span>
+<span class="token function">git</span> swicth dev</code></pre>
+<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 添加文件</span>
+<span class="token keyword">echo</span> <span class="token string">"我是hzj分支"</span> <span class="token operator">></span> README2.md
+<span class="token function">git</span> add README2.md
+<span class="token function">git</span> commit -m <span class="token string">"update hzj"</span>
+<span class="token function">git</span> push -u origin  hzj <span class="token comment" spellcheck="true"># 提交到hzj的分支</span></code></pre>
+<h2 id="合并分支"><a href="#合并分支" class="headerlink" title="合并分支"></a>合并分支</h2><p>进入master</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token function">git</span>  merge hzj <span class="token comment" spellcheck="true"># 合并在本地仓库的文件</span></code></pre>
+<h2 id="删除分支"><a href="#删除分支" class="headerlink" title="删除分支"></a>删除分支</h2><pre class=" language-bash"><code class="language-bash"><span class="token function">git</span> branch -d hzj </code></pre>
+<h2 id="强制覆盖本地代码"><a href="#强制覆盖本地代码" class="headerlink" title="强制覆盖本地代码"></a>强制覆盖本地代码</h2><pre class=" language-bash"><code class="language-bash">$ <span class="token function">git</span> fetch --all
+$ <span class="token function">git</span> reset --hard origin/master 
+$ <span class="token function">git</span> pull </code></pre>
+<h2 id="git-关于Git每次进入都需要输入用户名和密码的问题解决"><a href="#git-关于Git每次进入都需要输入用户名和密码的问题解决" class="headerlink" title="git 关于Git每次进入都需要输入用户名和密码的问题解决"></a>git 关于Git每次进入都需要输入用户名和密码的问题解决</h2><pre class=" language-bash"><code class="language-bash"><span class="token function">cd</span> your-project
+<span class="token function">git</span> config --global credential.helper store 
+<span class="token function">git</span> pull</code></pre>
+<p>输过一遍以后就不用再输入了</p>
+<h2 id="分支同步主干"><a href="#分支同步主干" class="headerlink" title="分支同步主干"></a>分支同步主干</h2><pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 切换到master分支</span>
+<span class="token function">git</span> checkout master 
+<span class="token comment" spellcheck="true"># 下拉master</span>
+<span class="token function">git</span> pull origin master
+<span class="token comment" spellcheck="true"># 切换分支</span>
+<span class="token function">git</span> checkout hzj
+<span class="token comment" spellcheck="true"># 同步分支</span>
+<span class="token function">git</span> merge  master</code></pre>
+<h2 id="主干同步分支-慎用"><a href="#主干同步分支-慎用" class="headerlink" title="主干同步分支(慎用)"></a>主干同步分支(慎用)</h2><pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 切换到主分支</span>
+<span class="token function">git</span> checkout master
+<span class="token comment" spellcheck="true"># 同步分支</span>
+<span class="token function">git</span> merge hzj
+<span class="token comment" spellcheck="true"># 提交</span>
+<span class="token function">git</span> push origin master </code></pre>
+<h2 id="inventory操作"><a href="#inventory操作" class="headerlink" title="inventory操作"></a>inventory操作</h2><ol>
+<li>拉取项目<br>git clone <a target="_blank" rel="noopener" href="https://gitlab.s.upyun.com/infrastructure/inventory.git">https://gitlab.s.upyun.com/infrastructure/inventory.git</a></li>
+<li>查看当前分支<br>git branch</li>
+<li>切换分支<br>git checkout hzj</li>
+<li>修改内容<br>…</li>
+<li>上传<br>git commit -am “update”<br>git push<br>到web端创建合并请求</li>
+<li>更新<br>首先切换到master，<br>拉取最新git pull<br>切换次分支 git checkout hzj<br>合并更新分支到hzj分支 git merge origin hzj</li>
+</ol>
+<p>发消息给有master权限的人，交由master来合并</p>
+<h2 id="错误整理"><a href="#错误整理" class="headerlink" title="错误整理"></a>错误整理</h2><h3 id="场景1"><a href="#场景1" class="headerlink" title="场景1"></a>场景1</h3><p>之前用过一个Alpaca-H的github账号，后来被弃用了，然后换成hzjsea的账号，并且使用git config –global更新了username和email也不行<br>后来发现mac会在本地生成一份凭证，存储在本地</p>
+<p>报错</p>
+<pre class=" language-bash"><code class="language-bash">➜  sea_blog git:<span class="token punctuation">(</span>master<span class="token punctuation">)</span> <span class="token function">git</span> push  origin master
+remote: Permission to hzjsea/sea_blog.git denied to Alpaca-H.
+fatal: unable to access <span class="token string">'https://github.com/hzjsea/sea_blog.git/'</span><span class="token keyword">:</span> The requested URL returned error: 403</code></pre>
+<p>解决办法</p>
+<ol>
+<li>进入Keychain Access (不知道在哪儿的可以command+space查找)</li>
+<li>在搜索框输入’git’进行查找，将找到的文件删掉，这里保存了历史账号的信息</li>
+<li>删除之后重新用git config –global更新username和email即可，之后git push会要求你输入username和password</li>
+<li>done!</li>
+</ol>
+<p><img src="http://img.noback.top/2020-03-14-23-38-56.png" alt="2020-03-14-23-38-56"></p>
+<h3 id="场景2"><a href="#场景2" class="headerlink" title="场景2"></a>场景2</h3><p>经常要输账号密码</p>
+<p><img src="http://img.noback.top/2020-04-10-14-47-32.png" alt="2020-04-10-14-47-32"><br>解决办法</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token function">git</span> config --global credential.helper store</code></pre>
+<p>生成一个本地文件用于存放账号密码，然后再pull一下就行了</p>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>标签：</span>
+                <span class="tag">
+                    
+                    
+                    <a href="/tags/git/"># git</a>
+                    
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript：window.history.back();">后退</a>
+                <span>· </span>
+                <a href="/">主页</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            <a class="prev" rel="prev" href="/2019/12/29/blog_back_new/mysql/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%86%85%E5%AE%B9%E6%80%BB%E7%BB%93/">数据库总结</a>
+            
+            
+            <a class="next" rel="next" href="/2019/12/29/blog_back_new/Python/%E7%88%AC%E5%8E%BBYouTube%E4%B8%8A%E7%9A%84%E8%A7%86%E9%A2%91/">Python爬YouTube视频</a>
+            
+        </section>
+    </article>
+</div>
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+    </div>
+</footer>
+
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

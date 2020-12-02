@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="hzjsea">
+
+
+
+
+
+
+<title>js技能补足 | hzjsea</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+    <script src="/js/jquery.min.js"></script>
+    
+
+
+
+    
+    
+        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+    
+
+
+
+
+    <script>
+    function searchToggle() {
+        const width = $(document.body).width()
+        if(width > 479) {
+            return;
+        }
+        const search = $('.search');
+        const searchForm = $('.form-search')
+
+        if(!search.hasClass("mobile-search")) {
+            search.addClass("mobile-search");
+        } else {
+            search.removeClass("mobile-search");
+        } 
+    }
+
+    function search(searchInputEl, formEl, flag) {
+        const path = "/" + "search.json"; // 可以在public 下查看这个search.json
+        $(formEl).submit(function(e){
+            e.preventDefault();
+            let target = null
+            if(searchInputEl == null) {
+                const screenWidth = $(document.body).width();
+                target = screenWidth > 479 ? $('#pc-search-input') : $('#mobile-search-input');
+                console.log(target);
+            } else {
+                target = $(searchInputEl)
+            }
+
+            if(!flag && target.val() === '') {
+                return ;
+            }
+
+            $("#u-search").fadeIn(500, function() {
+                $("body > .wrapper").addClass("modal-active");
+
+                $.ajax({
+                    url: path,
+                    dataType: "json",
+                    beforeSend: function (xhr) {
+                        $input = target.val();
+                        $(".form-input").val($input);
+                        const loadingBar = $('.search-loading-bar') 
+                        loadingBar.css({
+                            width:'100%',
+                            display: 'block'
+                        });
+                    },
+                    success: function( datas ) {
+                        console.log(datas);
+                        const $resultPanel = $(".modal-body")[0];
+                        let str = `<ul class="modal-results">`;
+                        var keywords = $(".form-input").val().trim().toLowerCase().split(/[\s\-]+/);
+                        $resultPanel.innerHTML = "";
+                        let hasResult = false
+                        let text = `<div class="no-result">找不到与关键词相关的内容....</div>`;
+
+                        if ($(".form-input").val().trim().length <= 0) {
+                            // 没有结果
+                            $resultPanel.innerHTML = text;
+                            return;
+                        }
+                        datas.forEach(function (data, index) {
+                            var isMatch = true;
+                            if (!data.title || data.title.trim() === '') {
+                                data.title = "Untitled";
+                            }
+                            var data_title = data.title.trim().toLowerCase();
+                            var data_content = data.content && data.content.trim().replace(/<[^>]+>/g, "").toLowerCase() || '';
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            // only match artiles with not empty contents
+                            if (data_content !== '') {
+                                keywords.forEach(function (keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        hasResult = true
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            } else {
+                                isMatch = false;
+                            }
+                            // show search results
+                            if (isMatch) {
+                                str += `<li class='result-item'><a href='${data_url}' class='result-item-detail'> <span class="title">${data_title}</span>`;
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 200 characters
+                                    var start = first_occur - 40;
+                                    var end = first_occur + 160;
+
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+
+                                    if (start == 0) {
+                                        end = 200;
+                                    }
+
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+
+                                    var match_content = content.substring(start, end);
+
+                                    // highlight all keywords
+                                    keywords.forEach(function (keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, `<em class="search-keyword">${keyword}</em>`);
+                                    });
+
+                                    str += `<span class="content"> ${match_content} ...</span></a>`;
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        if(hasResult) {
+                            $resultPanel.innerHTML = str;
+                        } else {
+                            $resultPanel.innerHTML = text;
+                        }
+
+                    },
+                    complete: function() {
+                        setTimeout(() => {
+                                const loadingBar = $('.search-loading-bar') 
+                                loadingBar.css({
+                                    width:'0%',
+                                    display: 'none'
+                                });
+                        }, 300)
+                    }
+                });
+            })
+
+        });
+    }
+
+    $(document).ready(function() {
+        $('.modal-close').click(function () { 
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+
+        $('.modal-overlay').click(function() {
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+        search(null, ".form-search", false)
+        search("#u-search-modal-form .form-input", ".u-search-modal-form", true)
+    })
+</script>
+
+
+
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo"><a href="/">hzjsea</a></div>
+        <div class="menu navbar-right">
+            
+            
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="pc-search-input"/>
+        </form>
+    </div>
+
+
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+            <input id="switch_default" type="checkbox" class="switch_default">
+            <label for="switch_default" class="toggleBtn"></label>
+        </div>
+    </div>
+</nav>
+
+
+<nav class="navbar-mobile" id="nav-mobile">
+    <div class="container">
+        <div class="navbar-header">
+            <div>
+                <a href="/">hzjsea</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+            </div>
+            <div class="navbar-mobile-right">
+                
+                
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="mobile-search-input"/>
+        </form>
+    </div>
+
+
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; 目录</div>
+            </div>
+            
+        </div>
+        <div class="menu" id="mobile-menu">
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+        </div>
+    </div>
+</nav>
+
+        <div class="main">
+			<!-- Chic/layout.ejs -->
+ <div id="u-search">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="container">
+                    <form id="u-search-modal-form" class="u-search-modal-form">
+                        <button type="submit" class="form-submit-btn">
+                            <img src="/image/search.png" class="search-btn-img" />
+                        </button>
+                        <input placeholder="搜索文章。。。" class="form-input" id="modal-form-input">
+                    </form>
+                    <a class="modal-close">x</a>
+                </div>
+                <div class="search-loading">
+                    <div class="search-loading-bar"></div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <!-- ul 格式如下 -->
+                <!-- <ul class="modal-results">
+                    <li class="result-item">
+                        <a class="result-item-detail">
+                            <span class="title">页面配置</span>
+                            <span class="content">
+                                content
+                            </span>
+                        </a>
+                    </li>
+                </ul> -->
+            </div>
+        </div>
+        <div class="modal-overlay"></div>
+    </div>
+            <div class="container">
+    
+    
+    <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">全部展开</a>
+        <a onclick="go_top()">回到顶部</a>
+        <a onclick="go_bottom()">回到底部</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "全部折叠"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "全部展开"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">js技能补足</h1>
+            
+            <div class="post-meta">
+                
+                作者： <a itemprop="author" rel="author" href="/">hzjsea</a>&nbsp;
+                
+
+                
+                <span class="post-time">
+                    创建日期： <a
+                        href="#">July 10, 2020&nbsp;&nbsp;18:29:34</a>
+                </span>&nbsp;
+                
+                
+                <span class="post-category">
+                    分类：
+                    
+                    <a href="/categories/js/">js</a>&nbsp;
+                    
+                </span>
+                
+                
+                状态：<a href="#">SNAPSHOT</a>
+                
+            </div>
+            
+        </header>
+
+        <div class="post-content">
+            <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+<ul>
+<li><a href="#js%E8%A1%A5%E8%B6%B3">js补足</a><ul>
+<li><a href="#npm%E4%B8%8Eyarn%E7%9A%84%E5%8C%BA%E5%88%AB">npm与yarn的区别</a><ul>
+<li><a href="#%E4%BD%BF%E7%94%A8yarn">使用yarn</a></li>
+<li><a href="#yarn%E5%91%BD%E4%BB%A4%E4%BD%BF%E7%94%A8">yarn命令使用</a></li>
+</ul>
+</li>
+<li><a href="#vue-cli-%E4%BD%BF%E7%94%A8">Vue-cli 使用</a><ul>
+<li><a href="#vue%E9%A1%B9%E7%9B%AE%E9%85%8D%E7%BD%AE">vue项目配置</a></li>
+<li><a href="#%E6%8F%92%E4%BB%B6%E4%B8%8E%E7%AE%A1%E7%90%86">插件与管理</a></li>
+<li><a href="#vue%E9%A1%B9%E7%9B%AE%E9%85%8D%E7%BD%AE%E4%B9%8Bvueconfigjs">vue项目配置之vue.config.js</a></li>
+</ul>
+</li>
+<li><a href="#axios%E4%BD%BF%E7%94%A8">axios使用</a></li>
+</ul>
+</li>
+</ul>
+<!-- /code_chunk_output -->
+<a id="more"></a>
+
+
+
+<h1 id="js补足"><a href="#js补足" class="headerlink" title="js补足"></a>js补足</h1><p>js这个东西怪怪的</p>
+<h2 id="npm与yarn的区别"><a href="#npm与yarn的区别" class="headerlink" title="npm与yarn的区别"></a>npm与yarn的区别</h2><p>Yarn是由Facebook、Google、Exponent 和 Tilde 联合推出了一个新的 JS 包管理工具 ，正如官方文档中写的，Yarn 是为了弥补 npm 的一些缺陷而出现的。”这句话让我想起了使用npm时的坑了</p>
+<ul>
+<li><code>npm install</code> 速度慢 特别是新的项目拉下来要等半天，删除node_modules，重新install的时候依旧如此</li>
+<li>同一个项目，安装的时候无法保持一致性。由于package.json文件中版本号的特点，下面三个版本号在安装的时候代表不同的含义</li>
+</ul>
+<pre class=" language-bash"><code class="language-bash"><span class="token string">"5.0.3"</span>,
+<span class="token string">"~5.0.3"</span>,
+<span class="token string">"^5.0.3"</span></code></pre>
+<p>“5.0.3”表示安装指定的5.0.3版本，“～5.0.3”表示安装5.0.X中最新的版本，“^5.0.3”表示安装5.X.X中最新的版本。这就麻烦了，常常会出现同一个项目，有的同事是OK的，有的同事会由于安装的版本不一致出现bug。</p>
+<ul>
+<li>安装的时候，包会在同一时间下载和安装，中途某个时候，一个包抛出了一个错误，但是npm会继续下载和安装包。因为npm会把所有的日志输出到终端，有关错误包的错误信息就会在一大堆npm打印的警告中丢失掉，并且你甚至永远不会注意到实际发生的错误。</li>
+</ul>
+<h3 id="使用yarn"><a href="#使用yarn" class="headerlink" title="使用yarn"></a>使用yarn</h3><ul>
+<li><p>速度快</p>
+<ul>
+<li>并行安装<br>  并行安装：无论 npm 还是 Yarn 在执行包的安装时，都会执行一系列任务。npm 是按照队列执行每个 package，也就是说必须要等到当前 package 安装完成之后，才能继续后面的安装。而 Yarn 是同步执行所有任务，提高了性能。</li>
+<li>离线模式<br>  如果之前已经安装过一个软件包，用Yarn再次安装时之间从缓存中获取，就不用像npm那样再从网络下载了</li>
+</ul>
+</li>
+<li><p>安装版本统一<br>  为了防止拉取到不同的版本，Yarn 有一个锁定文件 (lock file) 记录了被确切安装上的模块的版本号。每次只要新增了一个模块，Yarn 就会创建（或更新）yarn.lock 这个文件。这么做就保证了，每一次拉取同一个项目依赖时，使用的都是一样的模块版本。npm 其实也有办法实现处处使用相同版本的 packages，但需要开发者执行 npm shrinkwrap 命令。这个命令将会生成一个锁定文件，在执行 npm install 的时候，该锁定文件会先被读取，和 Yarn 读取 yarn.lock 文件一个道理。npm 和 Yarn 两者的不同之处在于，Yarn 默认会生成这样的锁定文件，而 npm 要通过 shrinkwrap 命令生成 npm-shrinkwrap.json 文件，只有当这个文件存在的时候，packages 版本信息才会被记录和更新</p>
+</li>
+<li><p>输出间接<br>  更简洁的输出：npm 的输出信息比较冗长。在执行 npm install  的时候，命令行里会不断地打印出所有被安装上的依赖。相比之下，Yarn 简洁太多：默认情况下，结合了 emoji直观且直接地打印出必要的信息，也提供了一些命令供开发者查询额外的安装信息。。</p>
+</li>
+</ul>
+<h3 id="yarn命令使用"><a href="#yarn命令使用" class="headerlink" title="yarn命令使用"></a>yarn命令使用</h3><pre class=" language-bash"><code class="language-bash"><span class="token function">npm</span>                             yarn 
+
+<span class="token function">npm</span> <span class="token function">install</span>                      yarn
+<span class="token function">npm</span> <span class="token function">install</span> react --save          yarn add react
+<span class="token function">npm</span> uninstall react --save        yarn remove react
+<span class="token function">npm</span> <span class="token function">install</span> react --save-dev      yarn add react --dev
+<span class="token function">npm</span> update --save                yarn upgrade</code></pre>
+<h2 id="Vue-cli-使用"><a href="#Vue-cli-使用" class="headerlink" title="Vue-cli 使用"></a>Vue-cli 使用</h2><p>安装</p>
+<pre class=" language-bash"><code class="language-bash">yarn global add @vue/cli
+vue create my-project
+<span class="token comment" spellcheck="true"># 使用图形界面</span>
+vue ui</code></pre>
+<h3 id="vue项目配置"><a href="#vue项目配置" class="headerlink" title="vue项目配置"></a>vue项目配置</h3><p>全局CLI配置<br>有些针对<code>@vue/cli</code>的全局配置，例如你惯用的包管理器和你本地保存的 preset，都保存在 home 目录下一个名叫<code>.vuerc</code>的 JSON 文件。你可以用编辑器直接编辑这个文件来更改已保存的选项。<br>你也可以使用<code>vue config</code>命令来审查或修改全局的CLI配置</p>
+<pre class=" language-bash"><code class="language-bash">vue config                                                                                     
+Resolved path: /Users/alpaca/.vuerc
+ <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+  <span class="token string">"useTaobaoRegistry"</span><span class="token keyword">:</span> true,
+  <span class="token string">"packageManager"</span><span class="token keyword">:</span> <span class="token string">"npm"</span>,
+  <span class="token string">"presets"</span><span class="token keyword">:</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+    <span class="token string">"first"</span><span class="token keyword">:</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+      <span class="token string">"useConfigFiles"</span><span class="token keyword">:</span> true,
+      <span class="token string">"plugins"</span><span class="token keyword">:</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+        <span class="token string">"@vue/cli-plugin-babel"</span><span class="token keyword">:</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;&amp;#125;,</span>
+        <span class="token string">"@vue/cli-plugin-router"</span><span class="token keyword">:</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+          <span class="token string">"historyMode"</span><span class="token keyword">:</span> <span class="token boolean">true</span>
+        <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;,</span>
+        <span class="token string">"@vue/cli-plugin-eslint"</span><span class="token keyword">:</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+          <span class="token string">"config"</span><span class="token keyword">:</span> <span class="token string">"base"</span>,
+          <span class="token string">"lintOn"</span><span class="token keyword">:</span> <span class="token punctuation">[</span>
+            <span class="token string">"save"</span>
+          <span class="token punctuation">]</span>
+        <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+      <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;,</span>
+      <span class="token string">"cssPreprocessor"</span><span class="token keyword">:</span> <span class="token string">"dart-sass"</span>
+    <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+  <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;,</span>
+  <span class="token string">"latestVersion"</span><span class="token keyword">:</span> <span class="token string">"4.2.3"</span>,
+  <span class="token string">"lastChecked"</span><span class="token keyword">:</span> 1584209986740
+<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span></code></pre>
+<h3 id="插件与管理"><a href="#插件与管理" class="headerlink" title="插件与管理"></a>插件与管理</h3><p>Vue CLI 使用了一套基于插件的架构。如果你查阅一个新创建项目的 <code>package.json</code>，就会发现依赖都是以 <code>@vue/cli-plugin-</code> 开头的</p>
+<p><font color='red'>需要注意的内容，在下载插件之前，可以先提交自己项目的最新状态到git仓库，因为新的插件可能会影响vue文件的布局或者其他改动</font></p>
+<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 安装插件</span>
+vue add eslint </code></pre>
+<p>插件的安装流程， 将<code>@vue/eslint</code> 解析为完整的包 <code>@vue/cli-plugin-eslint</code> 然后使用npm安装</p>
+<pre class=" language-bash"><code class="language-bash">vue add apollo <span class="token comment" spellcheck="true"># -> vue add @vue/cli-plugin-apollo </span></code></pre>
+<h3 id="vue项目配置之vue-config-js"><a href="#vue项目配置之vue-config-js" class="headerlink" title="vue项目配置之vue.config.js"></a>vue项目配置之vue.config.js</h3><p>全局CLI配置<br>有些针对 <code>@vue/cli</code> 的全局配置，例如你惯用的包管理器和你本地保存的 preset，都保存在 home 目录下一个名叫 <code>.vuerc</code> 的 JSON 文件。你可以用编辑器直接编辑这个文件来更改已保存的选项。<br>你也可以使用 <code>vue config</code> 命令来审查或修改全局的 CLI 配置</p>
+<pre class=" language-bash"><code class="language-bash">alpaca:技术补足/ <span class="token punctuation">(</span>master<span class="token punctuation">)</span> $ vue config
+ <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+  <span class="token string">"useTaobaoRegistry"</span><span class="token keyword">:</span> true,
+  <span class="token string">"packageManager"</span><span class="token keyword">:</span> <span class="token string">"npm"</span>,
+  <span class="token string">"presets"</span><span class="token keyword">:</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+    <span class="token string">"first"</span><span class="token keyword">:</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+      <span class="token string">"useConfigFiles"</span><span class="token keyword">:</span> true,
+      <span class="token string">"plugins"</span><span class="token keyword">:</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+        <span class="token string">"@vue/cli-plugin-babel"</span><span class="token keyword">:</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;&amp;#125;,</span>
+        <span class="token string">"@vue/cli-plugin-router"</span><span class="token keyword">:</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+          <span class="token string">"historyMode"</span><span class="token keyword">:</span> <span class="token boolean">true</span>
+        <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;,</span>
+        <span class="token string">"@vue/cli-plugin-eslint"</span><span class="token keyword">:</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+          <span class="token string">"config"</span><span class="token keyword">:</span> <span class="token string">"base"</span>,
+          <span class="token string">"lintOn"</span><span class="token keyword">:</span> <span class="token punctuation">[</span>
+            <span class="token string">"save"</span>
+          <span class="token punctuation">]</span>
+        <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+      <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;,</span>
+      <span class="token string">"cssPreprocessor"</span><span class="token keyword">:</span> <span class="token string">"dart-sass"</span>
+    <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+  <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;,</span>
+  <span class="token string">"latestVersion"</span><span class="token keyword">:</span> <span class="token string">"4.2.3"</span>,
+  <span class="token string">"lastChecked"</span><span class="token keyword">:</span> 1584209986740
+<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span></code></pre>
+<p><code>vue.config.js</code>是一个可选的配置文件，如果项目的 (和 package.json 同级的) 根目录中存在这个文件，那么它会被 <code>@vue/cli-service</code> 自动加载</p>
+<pre class=" language-bash"><code class="language-bash">module.exports <span class="token operator">=</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+
+<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span></code></pre>
+<p><code>vue.config.js</code>中的一些配置<br><a target="_blank" rel="noopener" href="https://cli.vuejs.org/zh/config/#%E5%85%A8%E5%B1%80-cli-%E9%85%8D%E7%BD%AE">https://cli.vuejs.org/zh/config/#%E5%85%A8%E5%B1%80-cli-%E9%85%8D%E7%BD%AE</a></p>
+<h2 id="axios使用"><a href="#axios使用" class="headerlink" title="axios使用"></a>axios使用</h2><pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 安装</span>
+<span class="token function">npm</span> <span class="token function">install</span> axios
+<span class="token comment" spellcheck="true"># or </span>
+yarn add axios</code></pre>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>标签：</span>
+                <span class="tag">
+                    
+                    
+                    <a href="/tags/js/"># js</a>
+                    
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript：window.history.back();">后退</a>
+                <span>· </span>
+                <a href="/">主页</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            <a class="prev" rel="prev" href="/2020/07/11/blog_back_new/%E6%8A%80%E6%9C%AF%E8%A1%A5%E8%B6%B3/vuepress%E4%BD%BF%E7%94%A8/">vue-press使用</a>
+            
+            
+            <a class="next" rel="next" href="/2020/07/08/blog_back_new/Rust/rust%E5%9F%BA%E7%A1%80/">rust</a>
+            
+        </section>
+    </article>
+</div>
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+    </div>
+</footer>
+
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

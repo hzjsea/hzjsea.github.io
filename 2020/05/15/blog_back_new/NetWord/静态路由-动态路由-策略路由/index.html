@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="hzjsea">
+
+
+
+
+
+
+<title>静态路由-动态路由-策略路由 | hzjsea</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+    <script src="/js/jquery.min.js"></script>
+    
+
+
+
+    
+    
+        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+    
+
+
+
+
+    <script>
+    function searchToggle() {
+        const width = $(document.body).width()
+        if(width > 479) {
+            return;
+        }
+        const search = $('.search');
+        const searchForm = $('.form-search')
+
+        if(!search.hasClass("mobile-search")) {
+            search.addClass("mobile-search");
+        } else {
+            search.removeClass("mobile-search");
+        } 
+    }
+
+    function search(searchInputEl, formEl, flag) {
+        const path = "/" + "search.json"; // 可以在public 下查看这个search.json
+        $(formEl).submit(function(e){
+            e.preventDefault();
+            let target = null
+            if(searchInputEl == null) {
+                const screenWidth = $(document.body).width();
+                target = screenWidth > 479 ? $('#pc-search-input') : $('#mobile-search-input');
+                console.log(target);
+            } else {
+                target = $(searchInputEl)
+            }
+
+            if(!flag && target.val() === '') {
+                return ;
+            }
+
+            $("#u-search").fadeIn(500, function() {
+                $("body > .wrapper").addClass("modal-active");
+
+                $.ajax({
+                    url: path,
+                    dataType: "json",
+                    beforeSend: function (xhr) {
+                        $input = target.val();
+                        $(".form-input").val($input);
+                        const loadingBar = $('.search-loading-bar') 
+                        loadingBar.css({
+                            width:'100%',
+                            display: 'block'
+                        });
+                    },
+                    success: function( datas ) {
+                        console.log(datas);
+                        const $resultPanel = $(".modal-body")[0];
+                        let str = `<ul class="modal-results">`;
+                        var keywords = $(".form-input").val().trim().toLowerCase().split(/[\s\-]+/);
+                        $resultPanel.innerHTML = "";
+                        let hasResult = false
+                        let text = `<div class="no-result">找不到与关键词相关的内容....</div>`;
+
+                        if ($(".form-input").val().trim().length <= 0) {
+                            // 没有结果
+                            $resultPanel.innerHTML = text;
+                            return;
+                        }
+                        datas.forEach(function (data, index) {
+                            var isMatch = true;
+                            if (!data.title || data.title.trim() === '') {
+                                data.title = "Untitled";
+                            }
+                            var data_title = data.title.trim().toLowerCase();
+                            var data_content = data.content && data.content.trim().replace(/<[^>]+>/g, "").toLowerCase() || '';
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            // only match artiles with not empty contents
+                            if (data_content !== '') {
+                                keywords.forEach(function (keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        hasResult = true
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            } else {
+                                isMatch = false;
+                            }
+                            // show search results
+                            if (isMatch) {
+                                str += `<li class='result-item'><a href='${data_url}' class='result-item-detail'> <span class="title">${data_title}</span>`;
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 200 characters
+                                    var start = first_occur - 40;
+                                    var end = first_occur + 160;
+
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+
+                                    if (start == 0) {
+                                        end = 200;
+                                    }
+
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+
+                                    var match_content = content.substring(start, end);
+
+                                    // highlight all keywords
+                                    keywords.forEach(function (keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, `<em class="search-keyword">${keyword}</em>`);
+                                    });
+
+                                    str += `<span class="content"> ${match_content} ...</span></a>`;
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        if(hasResult) {
+                            $resultPanel.innerHTML = str;
+                        } else {
+                            $resultPanel.innerHTML = text;
+                        }
+
+                    },
+                    complete: function() {
+                        setTimeout(() => {
+                                const loadingBar = $('.search-loading-bar') 
+                                loadingBar.css({
+                                    width:'0%',
+                                    display: 'none'
+                                });
+                        }, 300)
+                    }
+                });
+            })
+
+        });
+    }
+
+    $(document).ready(function() {
+        $('.modal-close').click(function () { 
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+
+        $('.modal-overlay').click(function() {
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+        search(null, ".form-search", false)
+        search("#u-search-modal-form .form-input", ".u-search-modal-form", true)
+    })
+</script>
+
+
+
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo"><a href="/">hzjsea</a></div>
+        <div class="menu navbar-right">
+            
+            
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="pc-search-input"/>
+        </form>
+    </div>
+
+
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+            <input id="switch_default" type="checkbox" class="switch_default">
+            <label for="switch_default" class="toggleBtn"></label>
+        </div>
+    </div>
+</nav>
+
+
+<nav class="navbar-mobile" id="nav-mobile">
+    <div class="container">
+        <div class="navbar-header">
+            <div>
+                <a href="/">hzjsea</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+            </div>
+            <div class="navbar-mobile-right">
+                
+                
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="mobile-search-input"/>
+        </form>
+    </div>
+
+
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; 目录</div>
+            </div>
+            
+        </div>
+        <div class="menu" id="mobile-menu">
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+        </div>
+    </div>
+</nav>
+
+        <div class="main">
+			<!-- Chic/layout.ejs -->
+ <div id="u-search">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="container">
+                    <form id="u-search-modal-form" class="u-search-modal-form">
+                        <button type="submit" class="form-submit-btn">
+                            <img src="/image/search.png" class="search-btn-img" />
+                        </button>
+                        <input placeholder="搜索文章。。。" class="form-input" id="modal-form-input">
+                    </form>
+                    <a class="modal-close">x</a>
+                </div>
+                <div class="search-loading">
+                    <div class="search-loading-bar"></div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <!-- ul 格式如下 -->
+                <!-- <ul class="modal-results">
+                    <li class="result-item">
+                        <a class="result-item-detail">
+                            <span class="title">页面配置</span>
+                            <span class="content">
+                                content
+                            </span>
+                        </a>
+                    </li>
+                </ul> -->
+            </div>
+        </div>
+        <div class="modal-overlay"></div>
+    </div>
+            <div class="container">
+    
+    
+    <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">全部展开</a>
+        <a onclick="go_top()">回到顶部</a>
+        <a onclick="go_bottom()">回到底部</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "全部折叠"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "全部展开"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">静态路由-动态路由-策略路由</h1>
+            
+            <div class="post-meta">
+                
+                作者： <a itemprop="author" rel="author" href="/">hzjsea</a>&nbsp;
+                
+
+                
+                <span class="post-time">
+                    创建日期： <a
+                        href="#">May 15, 2020&nbsp;&nbsp;1:08:07</a>
+                </span>&nbsp;
+                
+                
+                <span class="post-category">
+                    分类：
+                    
+                    <a href="/categories/%E7%BD%91%E7%BB%9C/">网络</a>&nbsp;
+                    
+                </span>
+                
+                
+                状态：<a href="#">SNAPSHOT</a>
+                
+            </div>
+            
+        </header>
+
+        <div class="post-content">
+            <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+<ul>
+<li><a href="#%E9%9D%99%E6%80%81%E8%B7%AF%E7%94%B1-%E5%8A%A8%E6%80%81%E8%B7%AF%E7%94%B1-%E7%AD%96%E7%95%A5%E8%B7%AF%E7%94%B1">静态路由-动态路由-策略路由</a><ul>
+<li><a href="#%E8%B7%AF%E7%94%B1%E8%A1%A8%E4%B8%8E%E8%BD%AC%E5%8F%91%E4%BF%A1%E6%81%AF%E5%BA%93fib">路由表与转发信息库FIB</a></li>
+<li><a href="#%E9%9D%99%E6%80%81%E8%B7%AF%E7%94%B1">静态路由</a><ul>
+<li><a href="#%E7%AD%96%E7%95%A5%E8%B7%AF%E7%94%B1">策略路由</a></li>
+<li><a href="#%E9%BB%98%E8%AE%A4%E8%B7%AF%E7%94%B1">默认路由</a></li>
+</ul>
+</li>
+<li><a href="#%E7%9B%B4%E8%BF%9E%E8%B7%AF%E7%94%B1">直连路由</a></li>
+<li><a href="#%E5%8A%A8%E6%80%81%E8%B7%AF%E7%94%B1">动态路由</a><ul>
+<li><a href="#%E4%BC%98%E7%82%B9%E4%B8%8E%E7%BC%BA%E7%82%B9">优点与缺点</a></li>
+</ul>
+</li>
+<li><a href="#%E8%B7%AF%E7%94%B1%E4%BC%98%E5%85%88%E7%BA%A7">路由优先级</a></li>
+<li><a href="#%E5%A4%9A%E7%A7%8D%E8%B7%AF%E7%94%B1%E8%B5%B0%E5%90%91">多种路由走向</a></li>
+<li><a href="#%E4%BA%A4%E6%8D%A2%E6%9C%BA">交换机</a><ul>
+<li><a href="#%E9%9D%99%E6%80%81%E8%B7%AF%E7%94%B1-1">静态路由</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<!-- /code_chunk_output -->
+
+
+<a id="more"></a>
+
+<h1 id="静态路由-动态路由-策略路由"><a href="#静态路由-动态路由-策略路由" class="headerlink" title="静态路由-动态路由-策略路由"></a>静态路由-动态路由-策略路由</h1><p><img src="http://img.noback.top/2020-05-15-10-54-35.png" alt="2020-05-15-10-54-35"></p>
+<h2 id="路由表与转发信息库FIB"><a href="#路由表与转发信息库FIB" class="headerlink" title="路由表与转发信息库FIB"></a>路由表与转发信息库FIB</h2><p>每个路由器中都至少保存着一张路由表和一张FIB表。<br>路由器通过路由表选择路由，把优选路由下发到FIB（Forwarding Information Base，转发信息库）表中，通过FIB表指导报文转发</p>
+<p>FIB表中每条转发项都指明了要到达某子网或某主机的报文应通过路由器的哪个物理接口发送，就可到达该路径的下一个路由器，或者不需再经过别的路由器便可传送到直接相连的网络中的目的主机。</p>
+<h2 id="静态路由"><a href="#静态路由" class="headerlink" title="静态路由"></a>静态路由</h2><p>顾名思义，就是固定的路由，由用户定好路由，具体包走具体的路<br>缺点:适用于拓扑结构简单并且稳定的小型网络。其缺点是每当网络拓扑结构发生变化，都需要手工重新配置，不能自动适应。</p>
+<h3 id="策略路由"><a href="#策略路由" class="headerlink" title="策略路由"></a>策略路由</h3><p>它只不过是一种复杂的静态路由，可以基于数据包源地址包头中的其他域向指定下一跳路由器转发数据包。普通的静态路由（也包括动态路由）是按照数据包的目的地址来进行路由，而策略路由还可以连接到扩展IP访问列表，也可以基于协议类型和端口号进行路由选择</p>
+<h3 id="默认路由"><a href="#默认路由" class="headerlink" title="默认路由"></a>默认路由</h3><p>默认路由是一种特殊的静态路由，指的是当路由表中与包的目的地址之间没有匹配的表项时路由器能够做出的选择。 默认路由在某些时候非常有效,当存在末梢网络（也叫末端网络或存根网络，一般指只有一个出口的网络）时，使用一条默认路由就可以完成路由器的配置,减轻管理员的工作负担,提高网络性能!也被称作是缺省路由路由表缺省情况下的路由或者叫做默认网关</p>
+<h2 id="直连路由"><a href="#直连路由" class="headerlink" title="直连路由"></a>直连路由</h2><p><font color='red'>直连路由是什么</font><br>直连路由是连接的直接路由，优先级是最高的，直连路由在链路层被发现</p>
+<h2 id="动态路由"><a href="#动态路由" class="headerlink" title="动态路由"></a>动态路由</h2><p>由协议发现路由<br>动态路由是与静态路由相对的一个概念，指路由器能够根据路由器之间的交换的特定路由信息自动地建立自己的路由表，并且能够根据链路和节点的变化适时地进行自动调整。当网络中节点或节点间的链路发生故障，或存在其它可用路由时，动态路由可以自行选择最佳的可用路由并继续转发报文。常见的动态路由协议有：RIP、OSPF、IS-IS、BGP、IGRP/EIGRP。每种路由协议的工作方式、选路原则等都有所不同</p>
+<h3 id="优点与缺点"><a href="#优点与缺点" class="headerlink" title="优点与缺点"></a>优点与缺点</h3><p>动态路由可以自动寻找最优的路径，邻居路由也可以通过学习来获得路由表，但是动态路由占用，线路带宽和CPU处理时间。 静态路由是不需要CPU处理时间同样也不占用线路带宽，但是这个路由需要对终端的PC机进行配置网关来实现，工作量是比较大的。</p>
+<h2 id="路由优先级"><a href="#路由优先级" class="headerlink" title="路由优先级"></a>路由优先级</h2><p>策略路由比路由表优先，路由器会先匹配策略路由， <font color='blue'>因此在交换机中，策略路由被放在vlan1</font> 所有的数据包进入交换机后，会先进入vlan1中匹配路由，vlan1作为入口可以设定多组策略路由提供匹配 如果匹配上了就直接按照路由策略转发，如果匹配不上才会看路由表；不过策略路由里的命令也有优先的区分，比如set ip next-hop x.x.x.x比路由表的<br>优先（如果匹配上了，直接按照此策略转发，不看路由表），而set ip default next-hop x.x.x.x比路由表的优先级低（如果路由表里没有对应的路由，则按照此策略转发）</p>
+<p>默认情况下在路由表中直连路由优先级最高，静态路由优先级其次，下来为动态路由，默认路由最低，如果没有默认路由，那么目的地址在路由表中没有匹配表项的包将被丢弃。</p>
+<h2 id="多种路由走向"><a href="#多种路由走向" class="headerlink" title="多种路由走向"></a>多种路由走向</h2><p>在同一台路由器上如果配置了策略、静态、动态、默认四种路由，路由器接口首先对入站的数据包源地址进行判断有没有匹配在此接口上配置的策略路由的数据流，如果有，则按照策略路由的配置转发数据包。如果没有，则按普通数据包情况路由。具体是静态路由协议优先还是动态路由协议优先（去往同一个目的地址根据路由协议的不同有多条路径），要看你在此路由器上定义的管理具体大小，管理距离越小则此种路由协议的可信度越高，则优先选用该种路由协议。而管理距离的默认值又根据各厂家路由器的不同而不同。如果路由表中的条目都没有匹配则按照默认路由转发。</p>
+<h2 id="交换机"><a href="#交换机" class="headerlink" title="交换机"></a>交换机</h2><p>查看交换机的路由表 <code>dis ip routing-table</code></p>
+<p><img src="http://img.noback.top/2020-05-15-11-12-14.png" alt="2020-05-15-11-12-14"></p>
+<h3 id="静态路由-1"><a href="#静态路由-1" class="headerlink" title="静态路由"></a>静态路由</h3><p>如果静态路由中指定的下一跳地址被配置为本地接口的IP地址，那么静态路由不会生效</p>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>标签：</span>
+                <span class="tag">
+                    
+                    
+                    <a href="/tags/%E7%BD%91%E7%BB%9C/"># 网络</a>
+                    
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript：window.history.back();">后退</a>
+                <span>· </span>
+                <a href="/">主页</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            <a class="prev" rel="prev" href="/2020/05/17/blog_back_new/golang/golang%E5%8C%85%E7%AE%A1%E7%90%86/">golang包管理</a>
+            
+            
+            <a class="next" rel="next" href="/2020/05/12/blog_back_new/nginx/nginx%E7%BC%96%E8%AF%91%E5%AE%89%E8%A3%85/">nginx编译安装</a>
+            
+        </section>
+    </article>
+</div>
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+    </div>
+</footer>
+
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

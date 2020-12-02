@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="hzjsea">
+
+
+
+
+
+
+<title>fastapi基础 | hzjsea</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+    <script src="/js/jquery.min.js"></script>
+    
+
+
+
+    
+    
+        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+    
+
+
+
+
+    <script>
+    function searchToggle() {
+        const width = $(document.body).width()
+        if(width > 479) {
+            return;
+        }
+        const search = $('.search');
+        const searchForm = $('.form-search')
+
+        if(!search.hasClass("mobile-search")) {
+            search.addClass("mobile-search");
+        } else {
+            search.removeClass("mobile-search");
+        } 
+    }
+
+    function search(searchInputEl, formEl, flag) {
+        const path = "/" + "search.json"; // 可以在public 下查看这个search.json
+        $(formEl).submit(function(e){
+            e.preventDefault();
+            let target = null
+            if(searchInputEl == null) {
+                const screenWidth = $(document.body).width();
+                target = screenWidth > 479 ? $('#pc-search-input') : $('#mobile-search-input');
+                console.log(target);
+            } else {
+                target = $(searchInputEl)
+            }
+
+            if(!flag && target.val() === '') {
+                return ;
+            }
+
+            $("#u-search").fadeIn(500, function() {
+                $("body > .wrapper").addClass("modal-active");
+
+                $.ajax({
+                    url: path,
+                    dataType: "json",
+                    beforeSend: function (xhr) {
+                        $input = target.val();
+                        $(".form-input").val($input);
+                        const loadingBar = $('.search-loading-bar') 
+                        loadingBar.css({
+                            width:'100%',
+                            display: 'block'
+                        });
+                    },
+                    success: function( datas ) {
+                        console.log(datas);
+                        const $resultPanel = $(".modal-body")[0];
+                        let str = `<ul class="modal-results">`;
+                        var keywords = $(".form-input").val().trim().toLowerCase().split(/[\s\-]+/);
+                        $resultPanel.innerHTML = "";
+                        let hasResult = false
+                        let text = `<div class="no-result">找不到与关键词相关的内容....</div>`;
+
+                        if ($(".form-input").val().trim().length <= 0) {
+                            // 没有结果
+                            $resultPanel.innerHTML = text;
+                            return;
+                        }
+                        datas.forEach(function (data, index) {
+                            var isMatch = true;
+                            if (!data.title || data.title.trim() === '') {
+                                data.title = "Untitled";
+                            }
+                            var data_title = data.title.trim().toLowerCase();
+                            var data_content = data.content && data.content.trim().replace(/<[^>]+>/g, "").toLowerCase() || '';
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            // only match artiles with not empty contents
+                            if (data_content !== '') {
+                                keywords.forEach(function (keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        hasResult = true
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            } else {
+                                isMatch = false;
+                            }
+                            // show search results
+                            if (isMatch) {
+                                str += `<li class='result-item'><a href='${data_url}' class='result-item-detail'> <span class="title">${data_title}</span>`;
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 200 characters
+                                    var start = first_occur - 40;
+                                    var end = first_occur + 160;
+
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+
+                                    if (start == 0) {
+                                        end = 200;
+                                    }
+
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+
+                                    var match_content = content.substring(start, end);
+
+                                    // highlight all keywords
+                                    keywords.forEach(function (keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, `<em class="search-keyword">${keyword}</em>`);
+                                    });
+
+                                    str += `<span class="content"> ${match_content} ...</span></a>`;
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        if(hasResult) {
+                            $resultPanel.innerHTML = str;
+                        } else {
+                            $resultPanel.innerHTML = text;
+                        }
+
+                    },
+                    complete: function() {
+                        setTimeout(() => {
+                                const loadingBar = $('.search-loading-bar') 
+                                loadingBar.css({
+                                    width:'0%',
+                                    display: 'none'
+                                });
+                        }, 300)
+                    }
+                });
+            })
+
+        });
+    }
+
+    $(document).ready(function() {
+        $('.modal-close').click(function () { 
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+
+        $('.modal-overlay').click(function() {
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+        search(null, ".form-search", false)
+        search("#u-search-modal-form .form-input", ".u-search-modal-form", true)
+    })
+</script>
+
+
+
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo"><a href="/">hzjsea</a></div>
+        <div class="menu navbar-right">
+            
+            
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="pc-search-input"/>
+        </form>
+    </div>
+
+
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+            <input id="switch_default" type="checkbox" class="switch_default">
+            <label for="switch_default" class="toggleBtn"></label>
+        </div>
+    </div>
+</nav>
+
+
+<nav class="navbar-mobile" id="nav-mobile">
+    <div class="container">
+        <div class="navbar-header">
+            <div>
+                <a href="/">hzjsea</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+            </div>
+            <div class="navbar-mobile-right">
+                
+                
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="mobile-search-input"/>
+        </form>
+    </div>
+
+
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; 目录</div>
+            </div>
+            
+        </div>
+        <div class="menu" id="mobile-menu">
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+        </div>
+    </div>
+</nav>
+
+        <div class="main">
+			<!-- Chic/layout.ejs -->
+ <div id="u-search">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="container">
+                    <form id="u-search-modal-form" class="u-search-modal-form">
+                        <button type="submit" class="form-submit-btn">
+                            <img src="/image/search.png" class="search-btn-img" />
+                        </button>
+                        <input placeholder="搜索文章。。。" class="form-input" id="modal-form-input">
+                    </form>
+                    <a class="modal-close">x</a>
+                </div>
+                <div class="search-loading">
+                    <div class="search-loading-bar"></div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <!-- ul 格式如下 -->
+                <!-- <ul class="modal-results">
+                    <li class="result-item">
+                        <a class="result-item-detail">
+                            <span class="title">页面配置</span>
+                            <span class="content">
+                                content
+                            </span>
+                        </a>
+                    </li>
+                </ul> -->
+            </div>
+        </div>
+        <div class="modal-overlay"></div>
+    </div>
+            <div class="container">
+    
+    
+    <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">全部展开</a>
+        <a onclick="go_top()">回到顶部</a>
+        <a onclick="go_bottom()">回到底部</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "全部折叠"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "全部展开"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">fastapi基础</h1>
+            
+            <div class="post-meta">
+                
+                作者： <a itemprop="author" rel="author" href="/">hzjsea</a>&nbsp;
+                
+
+                
+                <span class="post-time">
+                    创建日期： <a
+                        href="#">March 8, 2020&nbsp;&nbsp;19:37:17</a>
+                </span>&nbsp;
+                
+                
+                <span class="post-category">
+                    分类：
+                    
+                    <a href="/categories/fastapi/">fastapi</a>&nbsp;
+                    
+                </span>
+                
+                
+                状态：<a href="#">SNAPSHOT</a>
+                
+            </div>
+            
+        </header>
+
+        <div class="post-content">
+            <p>learn fastapi ⚡️</p>
+<a id="more"></a>
+<h1 id="使用fastapi框架"><a href="#使用fastapi框架" class="headerlink" title="使用fastapi框架"></a>使用fastapi框架</h1><h2 id="start"><a href="#start" class="headerlink" title="start"></a>start</h2><pre class=" language-py"><code class="language-py"># 引入包
+from fastapi import FastAPI
+from pydantic import BaseModel
+
+app = FastAPI()
+
+
+class itemmodel(BaseModel):
+    name: str
+    price: float
+    is_offer: bool = None
+
+
+
+
+# 定义根目录 方法为get 返回helloworld
+@app.get("/")
+def get_first():
+    return &#123;
+        "hello": "world"
+    &#125;
+
+
+# 定义耳机目录以及输入参数
+# 定义方法，请求参数类型
+@app.get("/items/&#123;item_id&#125;")
+def get_second(item_id: int, itemmodel: itemmodel):
+    return &#123;
+        "item_id": item_id,
+        "item": itemmodel.name
+    &#125;
+
+# 请求put
+@app.put("/items/&#123;item_id&#125;")
+def update_item(item_id: int, itemmodel: itemmodel):
+    return &#123;
+        "item_name": itemmodel.name,
+        "item_id": item_id
+    &#125;
+</code></pre>
+<p>运行项目<br>这里我所创建的py文件是server.py,所以启动方式是这样的 –reload的作用是，当代码变更的时候,服务器会重新开启</p>
+<pre class=" language-py"><code class="language-py">uvicorn server:app --reload</code></pre>
+<p><img src="http://img.noback.top/2020-03-08-00-46-06.png" alt="2020-03-08-00-46-06"></p>
+<p><font color='red'>交互式api文档,fastapi具有良好的api文档，自带swagger接口文档</font></p>
+<p>访问地址 <a target="_blank" rel="noopener" href="http://127.0.0.1:8000/docs">http://127.0.0.1:8000/docs</a><br>自定义api文档地址  <a target="_blank" rel="noopener" href="http://127.0.0.1:8000/redoc">http://127.0.0.1:8000/redoc</a><br>你可以在更开放的端口上看到他  <a target="_blank" rel="noopener" href="http://127.0.0.1:8000/openapi.json">http://127.0.0.1:8000/openapi.json</a></p>
+<h2 id="study"><a href="#study" class="headerlink" title="study"></a>study</h2><p>几种常用的http请求</p>
+<ul>
+<li>get 请求</li>
+<li>put 更新</li>
+<li>delete 删除</li>
+<li>post 添加<br>增删改查</li>
+</ul>
+<h3 id="路径参数-Path"><a href="#路径参数-Path" class="headerlink" title="路径参数  Path"></a>路径参数  Path</h3><pre class=" language-py"><code class="language-py">from fastapi import FastAPI
+app = FastAPI()
+@app.get("/")
+# 使用异步请求
+async def root():
+    return &#123;
+        "message":"hello world"
+    &#125;
+
+# 路径参数
+@app.get('/items/&#123;item_id&#125;')
+async def get_single_item(item_id):
+    return &#123;
+        "item_id" : item_id 
+    &#125;
+
+# 路径参数+ 参数类型限制
+@app.get('/items/&#123;item_str&#125;')
+async def get_str_item(item_str:str):
+    return &#123;
+        "item_str": item_str
+    &#125;
+
+# 参数类型限制表示，你在url中输入的内容是string类型的，他会自动帮你转换其他类型的，比如说这里的 string - > int 
+@app.get('/items/&#123;item_number&#125;')
+async def get_number_item(item_number:int):
+    return &#123;
+        "item_number": item_number
+    &#125;
+
+
+# 路径参数的默认值
+@app.get('/items/&#123;item_number&#125;')
+async def get_number_item(item_number: int=1):
+    message = "这是默认的"
+    if item_number == 1:
+        message = "你输出了默认的参数值 1"
+    else:
+        message = "你输出了其他的参数&#123;&#125;".format(item_number)
+
+    return &#123;
+        "message":message
+
+    &#125;
+
+</code></pre>
+<h4 id="路径参数的顺序"><a href="#路径参数的顺序" class="headerlink" title="路径参数的顺序"></a>路径参数的顺序</h4><p>fastapi的路径参数如果仅仅只有上面的内容，那么设计是不合理的，比如当你创建如下两个路径</p>
+<pre class=" language-py"><code class="language-py">
+from fastapi import  FastAPI
+
+app  = FastAPI()
+
+static_url = "http://127.0.0.1:8000&#123;0&#125;"
+
+@app.get("/")
+async def root():
+    return &#123;
+        "path1":static_url.format("/name/me"),
+        "path":static_url.format("/name/&#123;you can input something&#125;")
+    &#125;
+@app.get("/name/me")
+async def return_name():
+    return &#123;"name":"this name is me "&#125;
+
+@app.get("/name/&#123;name&#125;")
+async def return_name(name:str):
+    return &#123;"name":"you  input name is &#123;&#125;".format(name)&#125;</code></pre>
+<p>这里在定制了两个路径参数其中第一个<code>/name/me</code> 返回this name is me  第二个<code>/name&#123;name&#125;</code> 返回 you input name is {name}<br>而fastapi的执行顺序是从上到下的，如果我们把第二个接口放到第一位，当我们输入<code>me</code>的时候，程序无法判断我们使用的是哪个接口</p>
+<p><font color='red'>因此，一般有实例的api需要放在最前面</font></p>
+<h3 id="枚举-预定义值"><a href="#枚举-预定义值" class="headerlink" title="枚举 预定义值"></a>枚举 预定义值</h3><p><font color='red'>类似于选项框类的，需要预定义值得时候，可以使用枚举</font></p>
+<pre class=" language-py"><code class="language-py">from fastapi import FastAPI
+from enum import Enum
+
+app = FastAPI()
+
+class PeopleModel(str,Enum):
+    name = 'hzj',
+    age = 12,
+    text = 'like PeopleModel'
+
+@app.get('/items/&#123;model_name&#125;')
+def get_people(model_name: PeopleModel):
+    if model_name == PeopleModel.name:
+        return &#123;"model_name":model_name,"input_message":'show PeopleModel.name'&#125;
+    if model_name == PeopleModel.age:
+        return &#123;"model_name":model_name,"input_message":'show PeopleModel.age'&#125;
+    if model_name == PeopleModel.like:
+        return &#123;"model_name":model_name,"input_message":'show PeopleModel.like'&#125;</code></pre>
+<p>在python3.4之后其实就已经支持枚举类型了，和平常的枚举使用情况一样，没什么差别</p>
+<h3 id="查询参数-Query"><a href="#查询参数-Query" class="headerlink" title="查询参数 Query"></a>查询参数 Query</h3><p>和路径参数不同的是，我们可以在方法中输入请求方法中没有出现过的参数，这些参数会被解释成查询参数</p>
+<pre class=" language-py"><code class="language-py">from fastapi import FastAPI
+
+app = FastAPI()
+
+fake_items_db = [&#123;"item_name": "Foo"&#125;, &#123;"item_name": "Bar"&#125;, &#123;"item_name": "Baz"&#125;]
+
+# 这里可以使用查询参数
+# 请求形式 http://127.0.0.1:8000/items/?skip=0&limit=1
+# or http://127.0.0.1:8000/items/
+# 步进的形式，对列表做切割
+@app.get('/items/')
+async def read_item(skip: int = 1,limit: int = 2):
+    return fake_items_db[skip:skip+limit]
+
+# 这里只有路径参数
+# 请求形式 http://127.0.0.1:8000/items/1/2
+@app.get('/items/&#123;skip&#125;/&#123;limit&#125;')
+async def read_item(skip: int ,limit: int):
+    return fake_items_db[skip:skip+limit]</code></pre>
+<h3 id="查询参数中的可选与必选"><a href="#查询参数中的可选与必选" class="headerlink" title="查询参数中的可选与必选"></a>查询参数中的可选与必选</h3><p>在定义查询参数的时候，我们定义三种查询参数的形式</p>
+<ol>
+<li>可选参数,即默认为None</li>
+<li>必选参数,即传入参数，且初始不为None</li>
+<li>必选参数+默认值<pre class=" language-py"><code class="language-py">#!/usr/bin/env python3
+# encoding: utf-8
+'''
+@author: hzj
+@file: 03_queryParameters.py
+@time: 2020/3/15 12:13 上午
+'''
+</code></pre>
+</li>
+</ol>
+<p>from fastapi import  FastAPI</p>
+<p>app = FastAPI()</p>
+<p>@app.get(“/“)<br>async def root():<br>    return {“speak”:”helloworld”}</p>
+<p>#无查询参数<br>@app.get(“/name/“)<br>async def get_name():<br>    return {“name”:”hzj”}</p>
+<h1 id="查询可选参数-默认为None"><a href="#查询可选参数-默认为None" class="headerlink" title="查询可选参数,默认为None"></a>查询可选参数,默认为None</h1><p>@app.get(“/name/“)<br>async def  get_age(age :int=None ):<br>    message = “his age is {}”<br>    if age is None:<br>        message = “he dont have age”<br>    else:<br>        message = message.format(age)<br>    return {<br>        “message”:”his name is and {}”.format(message)<br>    }</p>
+<p>#查询必选参数<br>@app.get(“/name/“)<br>async def  get_age_one(age :int ):<br>    return {<br>        “message”:”his name is  and his age is {0}”.format(age)<br>    }</p>
+<h1 id="查询必须参数默认"><a href="#查询必须参数默认" class="headerlink" title="查询必须参数默认"></a>查询必须参数默认</h1><p>@app.get(“/name/“)</p>
+<p>async def  get_age_one(age :int=20 ):<br>    return {<br>        “message”:”his name is and his age is {0}”.format(age)<br>    }</p>
+<pre><code>无查询参数时候，只是简单的get路径参数就可以了
+![2020-03-31-10-16-27](http://img.noback.top/2020-03-31-10-16-27.png)
+
+有查询参数的时候，如果有默认值None或者默认为其他内容，则为可选查询参数 
+![2020-03-31-10-19-48](http://img.noback.top/2020-03-31-10-19-48.png)
+
+有查询参数，没有默认值，只定义了一个类型，则为必选参数
+![2020-03-31-10-20-32](http://img.noback.top/2020-03-31-10-20-32.png)
+
+
+
+
+### 请求体
+除了get方法 fastapi还可以创建实例，请求体可以对应数据库里面查询出来的内容，以json的形式出现
+```python
+#!/usr/bin/env python3
+# encoding: utf-8
+&#39;&#39;&#39;
+@author: hzj
+@file: 04_request_body.py
+@time: 2020/3/15 12:30 上午
+&#39;&#39;&#39;
+
+from fastapi import FastAPI
+from pydantic import BaseModel
+
+
+class Item(BaseModel):
+    name: str
+    description: str = None
+    price: float
+    tax: float = None
+app = FastAPI()
+
+
+@app.post(&quot;/items/&quot;)
+async def create_item(item: Item):
+    return item</code></pre>
+<h3 id="查询参数和字符串验证"><a href="#查询参数和字符串验证" class="headerlink" title="查询参数和字符串验证"></a>查询参数和字符串验证</h3><p>Query可以对查询参数做值上面的限定，当你查询某一个参数的时候，如果这个参数没有满足Query中的限制内容就无法查询</p>
+<p>如下有这么一个程序，输入名字查询结果</p>
+<pre class=" language-py"><code class="language-py">from fastapi import FastAPI
+
+app = FastAPI()
+
+name_server = [
+    &#123;"name":"hzj"&#125;,
+    &#123;"name":"xxx"&#125;,
+    &#123;"name":"yyy"&#125;,
+    &#123;"name":"qqq"&#125;,
+    &#123;"name":"fff"&#125;,
+]
+@app.get('/user/')
+def get_user(name: str):
+    for name_s in name_server:
+        if name in name_s.values():
+            return name_s
+        else:
+            return &#123;"msg":"不存在你要查询的内容"&#125;
+
+# url  http://127.0.0.1:8000/user/?name=hzj
+# res &#123;name: "hzj"&#125;</code></pre>
+<p>但是现在我们要把name这个查询参数做字符上的限制</p>
+<pre class=" language-py"><code class="language-py">from fastapi import FastAPI
+from fastapi import Query
+app = FastAPI()
+
+name_server = [
+    &#123;"name":"hzj"&#125;,
+    &#123;"name":"xxx"&#125;,
+    &#123;"name":"yyy"&#125;,
+    &#123;"name":"qqq"&#125;,
+    &#123;"name":"fff"&#125;,
+]
+
+@app.get('/user/')
+def get_user(name: str = Query(None,max_length=3,min_length=1,)):
+    for name_s in name_server:
+        if name in name_s.values():
+            return name_s
+        else:
+            return &#123;"msg":"不存在你要查询的内容"&#125;
+
+## 其中None为查询参数name 的默认值</code></pre>
+<p><font color='red'>比如现在我们用上面的代码中设置请求的查询参数最大长度是1个字符，使用swagger再次查询hzj这个名字是否存在于name_server中的时候，会出现报错</font></p>
+<p><img src="http://img.noback.top/2020-03-31-10-30-41.png" alt="2020-03-31-10-30-41"></p>
+<p>Query的约束和后面的Path约束的参数一样，他们来自同一个类，参数为</p>
+<pre class=" language-python"><code class="language-python">  alias<span class="token punctuation">:</span> str <span class="token operator">=</span> None<span class="token punctuation">,</span>
+    title<span class="token punctuation">:</span> str <span class="token operator">=</span> None<span class="token punctuation">,</span>
+    description<span class="token punctuation">:</span> str <span class="token operator">=</span> None<span class="token punctuation">,</span>
+    gt<span class="token punctuation">:</span> float <span class="token operator">=</span> None<span class="token punctuation">,</span>
+    ge<span class="token punctuation">:</span> float <span class="token operator">=</span> None<span class="token punctuation">,</span>
+    lt<span class="token punctuation">:</span> float <span class="token operator">=</span> None<span class="token punctuation">,</span>
+    le<span class="token punctuation">:</span> float <span class="token operator">=</span> None<span class="token punctuation">,</span>
+    min_length<span class="token punctuation">:</span> int <span class="token operator">=</span> None<span class="token punctuation">,</span>
+    max_length<span class="token punctuation">:</span> int <span class="token operator">=</span> None<span class="token punctuation">,</span>
+    regex<span class="token punctuation">:</span> str <span class="token operator">=</span> None<span class="token punctuation">,</span>
+    deprecated<span class="token punctuation">:</span> bool <span class="token operator">=</span> None<span class="token punctuation">,</span>
+    <span class="token operator">**</span>extra<span class="token punctuation">:</span> Any<span class="token punctuation">,</span></code></pre>
+<h3 id="None与…以及default"><a href="#None与…以及default" class="headerlink" title="None与…以及default"></a>None与…以及default</h3><p>虽然个人觉得这个…的设定有点奇葩，但是后来仔细看了一下文档，发现是有用处的<br>之前我们讲过在查询参数中的三种传入形式</p>
+<ul>
+<li>在查询的时候，默认查询参数为None或者其他内容，只要有默认值   可选查询参数</li>
+<li>在查询的时候，默认查询参数为某一类型  无默认值   必选查询参数</li>
+<li>无查询参数</li>
+</ul>
+<p>这是之前总结的</p>
+<p><font color='red'>现在要为这个查询参数在格式上或者说插入值上做一些限定，用的是Query这个关键字，但同样的在插入的形式上也要做限定，这个时候就要用到…这个关键字了</font></p>
+<ul>
+<li>在查询的时候，默认查询参数为None或者其他内容，只要有默认值，  可选查询参数<pre class=" language-py"><code class="language-py">@app.get('/user/')
+def get_user(name: str = Query(default="hzj",max_length=1,min_length=1,)):</code></pre>
+</li>
+<li>在查询的时候，默认查询参数为某一类型 无默认值  必选查询参数<pre class=" language-py"><code class="language-py">@app.get('/user/')
+def get_user(name: str = Query(...,max_length=1,min_length=1,)):</code></pre>
+</li>
+</ul>
+<p><font color='red'>这些关键字在Path路径查询参数中同样适用</font></p>
+<h3 id="路径参数和数值验证"><a href="#路径参数和数值验证" class="headerlink" title="路径参数和数值验证"></a>路径参数和数值验证</h3><p>在路径参数中，同样也可以像Query一样做参数上的约束</p>
+<pre class=" language-py"><code class="language-py">from fastapi import FastAPI, Path, Query
+app = FastAPI()
+@app.get("/items/&#123;item_id&#125;")
+async def read_items(
+    item_id: int = Path(..., title="The ID of the item to get"),
+    q: str = Query(None, alias="item-query"),
+):
+    results = &#123;"item_id": item_id&#125;
+    if q:
+        results.update(&#123;"q": q&#125;)
+    return results</code></pre>
+<p>Path用于限制路径参数 …表示该参数是必填的</p>
+<p>如果你想要让q也称为必填的参数，你可以这样写</p>
+<pre class=" language-python"><code class="language-python"><span class="token keyword">from</span> fastapi <span class="token keyword">import</span> FastAPI<span class="token punctuation">,</span> Path<span class="token punctuation">,</span> Query
+app <span class="token operator">=</span> FastAPI<span class="token punctuation">(</span><span class="token punctuation">)</span>
+@app<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">"/items/&amp;#123;item_id&amp;#125;"</span><span class="token punctuation">)</span>
+<span class="token keyword">async</span> <span class="token keyword">def</span> <span class="token function">read_items</span><span class="token punctuation">(</span>
+    item_id<span class="token punctuation">:</span> int <span class="token operator">=</span> Path<span class="token punctuation">(</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">,</span> title<span class="token operator">=</span><span class="token string">"The ID of the item to get"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    q<span class="token punctuation">:</span> str <span class="token operator">=</span> Query<span class="token punctuation">(</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">,</span> alias<span class="token operator">=</span><span class="token string">"item-query"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    results <span class="token operator">=</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;"item_id": item_id&amp;#125;</span>
+    results<span class="token punctuation">.</span>update<span class="token punctuation">(</span><span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;"q": q&amp;#125;)</span>
+    <span class="token keyword">return</span> results</code></pre>
+<p>这和我们之前写的必须查询参数是一样的</p>
+<pre class=" language-python"><code class="language-python">    q<span class="token punctuation">:</span> str <span class="token operator">=</span> Query<span class="token punctuation">(</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">,</span> alias<span class="token operator">=</span><span class="token string">"item-query"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token comment" spellcheck="true"># or</span>
+    q<span class="token punctuation">:</span> str </code></pre>
+<p>但是这里我们用到了Query可以做更多的东西</p>
+<p>当然你也可以这样写</p>
+<pre class=" language-python"><code class="language-python"><span class="token keyword">from</span> fastapi <span class="token keyword">import</span> FastAPI<span class="token punctuation">,</span> Path<span class="token punctuation">,</span> Query
+app <span class="token operator">=</span> FastAPI<span class="token punctuation">(</span><span class="token punctuation">)</span>
+@app<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">"/items/&amp;#123;item_id&amp;#125;"</span><span class="token punctuation">)</span>
+<span class="token keyword">async</span> <span class="token keyword">def</span> <span class="token function">read_items</span><span class="token punctuation">(</span>
+    q<span class="token punctuation">:</span> str<span class="token punctuation">,</span>item_id<span class="token punctuation">:</span> int <span class="token operator">=</span> Path<span class="token punctuation">(</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">,</span> title<span class="token operator">=</span><span class="token string">"The ID of the item to get"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    results <span class="token operator">=</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;"item_id": item_id&amp;#125;</span>
+    results<span class="token punctuation">.</span>update<span class="token punctuation">(</span><span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;"q": q&amp;#125;)</span>
+    <span class="token keyword">return</span> results</code></pre>
+<p><font color='red'>数值验证</font></p>
+<pre class=" language-py"><code class="language-py">from fastapi import FastAPI, Path, Query
+
+app = FastAPI()
+
+
+@app.get("/items/&#123;item_id&#125;")
+async def read_items(
+    *,
+    item_id: int = Path(..., title="The ID of the item to get", ge=0, le=1000),
+    q: str,
+    size: float = Query(..., gt=0, lt=10.5)
+):
+    results = &#123;"item_id": item_id&#125;
+    if q:
+        results.update(&#123;"q": q&#125;)
+    return results</code></pre>
+<h3 id=""><a href="#" class="headerlink" title="*"></a>*</h3><p>这边这个<code>*</code>做了什么动作</p>
+<p><font color='red'>文档里面说这个*没有做任何的动作。只是声明了后面所有传入的参数都为键值对的形式传入</font></p>
+<blockquote>
+<p>如果要声明的q查询参数不带Query默认值，也不带任何默认值，并且要item_id使用设置路径参数Path，并且使用不同的顺序，则Python对此有一些特殊的语法。<br>通过<em>，作为函数的第一个参数。<br>Python不会对此做任何事情</em>，但是它将知道以下所有参数都应称为关键字参数（键-值对），也称为kwargs。即使它们没有默认值。</p>
+</blockquote>
+<p>之前在vscode中试着把<code>*</code>去掉，但是没什么反应，后面尝试Pycharm实例一下，发现如果去掉<code>*</code>,就会报一个无法识别的错误<br><img src="http://img.noback.top/2020-03-31-13-05-30.png" alt="2020-03-31-13-05-30"></p>
+<h3 id="模型类"><a href="#模型类" class="headerlink" title="模型类"></a>模型类</h3><p>类比django中的django-model 在fastapi中我们还缺少model类，于是我们借用了Pydatic中的模型类，来完成模型的实现</p>
+<pre class=" language-py"><code class="language-py">from fastapi import FastAPI, Path
+from pydantic import BaseModel
+
+app = FastAPI()
+
+
+class Item(BaseModel):
+    name: str
+    description: str = None
+    price: float
+    tax: float = None
+
+
+@app.put("/items/&#123;item_id&#125;")
+async def update_item(
+    *,
+    item_id: int = Path(..., title="The ID of the item to get", ge=0, le=1000),
+    q: str = None,
+    item: Item = None,
+):
+    results = &#123;"item_id": item_id&#125;
+    if q:
+        results.update(&#123;"q": q&#125;)
+    if item:
+        results.update(&#123;"item": item&#125;)
+    return results</code></pre>
+<p>return values<br><img src="http://img.noback.top/2020-03-08-15-13-05.png" alt="2020-03-08-15-13-05"></p>
+<pre class=" language-py"><code class="language-py">from fastapi import FastAPI
+from pydantic import BaseModel
+
+app = FastAPI()
+
+# 创建模型类
+class Student(BaseModel):
+    name: str = 'hzj' # 默认值,你开心
+    age: int = None
+    like: str = "to do list"
+
+
+class User(BaseModel):
+    username: str
+    full_name: str = None
+
+@app.get('/')
+async def root():
+    return &#123;"hello":"hello world"&#125;
+
+# 更新用户
+# 传入参数为&#123;user-id&#125;
+@app.put('/user/&#123;user_id&#125;')
+async def update_user_items(
+    user_id: int,
+    S_item: Student,
+    user: User,
+):
+    res = &#123;"user_id":user_id&#125;
+    if S_item or user:
+        res.update(&#123;"S_item":S_item,"user":user&#125;)
+    elif user:
+        res.update(&#123;"user":user&#125;)
+    elif S_item:
+        res.update(&#123;"S_item":S_item&#125;)
+    else:
+        return &#123;"status":404&#125;
+    return res</code></pre>
+<h3 id="使用Body"><a href="#使用Body" class="headerlink" title="使用Body"></a>使用Body</h3><p>Body的用法和Query Path的用法一样</p>
+<p><font color='red'>这个关键字使用的方式是，将查询参数直接映射到request body中，而不是变成一个查询条件用于查询</font></p>
+<pre class=" language-python"><code class="language-python">
+<span class="token keyword">from</span> fastapi <span class="token keyword">import</span> Body<span class="token punctuation">,</span> FastAPI<span class="token punctuation">,</span>Path
+<span class="token keyword">from</span> pydantic <span class="token keyword">import</span> BaseModel
+
+app <span class="token operator">=</span> FastAPI<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+
+<span class="token keyword">class</span> <span class="token class-name">Item</span><span class="token punctuation">(</span>BaseModel<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    name<span class="token punctuation">:</span> str
+    description<span class="token punctuation">:</span> str <span class="token operator">=</span> None
+    price<span class="token punctuation">:</span> float
+    tax<span class="token punctuation">:</span> float <span class="token operator">=</span> None
+
+
+<span class="token keyword">class</span> <span class="token class-name">User</span><span class="token punctuation">(</span>BaseModel<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    username<span class="token punctuation">:</span> str
+    full_name<span class="token punctuation">:</span> str <span class="token operator">=</span> None
+
+
+@app<span class="token punctuation">.</span>put<span class="token punctuation">(</span><span class="token string">"/items/&amp;#123;item_id&amp;#125;"</span><span class="token punctuation">)</span>
+<span class="token keyword">async</span> <span class="token keyword">def</span> <span class="token function">update_item</span><span class="token punctuation">(</span>
+    <span class="token operator">*</span><span class="token punctuation">,</span> item_id<span class="token punctuation">:</span> int <span class="token operator">=</span> Path<span class="token punctuation">(</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">,</span>description<span class="token operator">=</span><span class="token string">"test filed"</span><span class="token punctuation">,</span><span class="token punctuation">)</span><span class="token punctuation">,</span> item<span class="token punctuation">:</span> Item<span class="token punctuation">,</span> user<span class="token punctuation">:</span> User<span class="token punctuation">,</span> importance<span class="token punctuation">:</span> int <span class="token operator">=</span> Body<span class="token punctuation">(</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">,</span>description<span class="token operator">=</span><span class="token string">"test_body"</span><span class="token punctuation">)</span>
+<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    importance <span class="token operator">=</span> <span class="token number">1000000</span>
+    results <span class="token operator">=</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;"item_id": item_id, "item": item, "user": user, "importance": importance&amp;#125;</span>
+    <span class="token keyword">return</span> results</code></pre>
+<p><img src="http://img.noback.top/2020-03-31-11-31-38.png" alt="2020-03-31-11-31-38"><br>没有出现在查询条件中，而是直接出现在了request body中</p>
+<p>把Body更换成Query 对查询参数做限制</p>
+<pre class=" language-py"><code class="language-py">from fastapi import Body, FastAPI,Path,Query
+from pydantic import BaseModel
+
+app = FastAPI()
+
+
+class Item(BaseModel):
+    name: str
+    description: str = None
+    price: float
+    tax: float = None
+
+
+class User(BaseModel):
+    username: str
+    full_name: str = None
+
+
+@app.put("/items/&#123;item_id&#125;")
+async def update_item(
+    *, item_id: int = Path(...,description="test filed",), item: Item, user: User, importance: int = Query(...,description="test_body")
+):
+    importance = 100000000000000
+    results = &#123;"item_id": item_id, "item": item, "user": user, "importance": importance&#125;
+    return results</code></pre>
+<p><img src="http://img.noback.top/2020-03-31-11-33-41.png" alt="2020-03-31-11-33-41"></p>
+<p><font color='red'>另外Body还有一些扩展的功能</font><br>比如写一个例子</p>
+<pre class=" language-py"><code class="language-py">from fastapi import Body, FastAPI
+from pydantic import BaseModel
+
+app = FastAPI()
+
+
+class Item(BaseModel):
+    name: str
+    description: str = None
+    price: float
+    tax: float = None
+
+
+@app.put("/items/&#123;item_id&#125;")
+async def update_item(
+    *,
+    item_id: int,
+    item: Item = Body(
+        ...,
+        example=&#123;
+            "name": "Foo",
+            "description": "A very nice Item",
+            "price": 35.4,
+            "tax": 3.2,
+        &#125;,
+    )
+):
+    results = &#123;"item_id": item_id, "item": item&#125;
+    return results</code></pre>
+<h4 id="规定模型类中的字段"><a href="#规定模型类中的字段" class="headerlink" title="规定模型类中的字段"></a>规定模型类中的字段</h4><p>pass</p>
+<h3 id="使用-Field"><a href="#使用-Field" class="headerlink" title="使用 Field"></a>使用 Field</h3><p>Field可以在定义模型类的时候，对模型类的中内容做限制<br>使用方法和Query以及Path一样，但是这个是在pydantic</p>
+<p>之前定义模型类 ，如下</p>
+<pre class=" language-py"><code class="language-py">#!/usr/bin/env python3
+# encoding: utf-8
+'''
+@author: hzj
+@file: test4.py
+@time: 2020/3/31 5:39 下午
+'''
+
+
+from fastapi import  FastAPI
+from pydantic import BaseModel,Field
+
+app = FastAPI()
+
+class Item(BaseModel):
+    name: str
+    description: str = None
+    price: float = None
+    tax: float = None
+    test_string: str = Field(None,title="The description of the item",max_length=1)
+    # test_example: str = Field(...,example="xxx")
+    test_example: str = Field(None,example="xxx")
+
+
+@app.get("/")
+async  def root():
+    return &#123;"hello":"world"&#125;
+
+@app.post("/items")
+async def post_items(item: Item):
+    return item</code></pre>
+<p>对字段上做限制，比如只允许test_string最长字符串为1<br>报错内容<br><img src="http://img.noback.top/2020-04-01-13-00-01.png" alt="2020-04-01-13-00-01"></p>
+<blockquote>
+<p>example可以对这个字段指定一个例子，但不是默认值</p>
+</blockquote>
+<h2 id="暂定"><a href="#暂定" class="headerlink" title="暂定"></a>暂定</h2><h2 id="静态资源"><a href="#静态资源" class="headerlink" title="静态资源"></a>静态资源</h2><p>安装aiofiles库文件</p>
+<pre class=" language-py"><code class="language-py">pip install aiofiles
+
+# 挂在静态文件到程序中
+from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+
+app = FastAPI()
+
+app.mount("/static", StaticFiles(directory="static"), name="static")</code></pre>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>标签：</span>
+                <span class="tag">
+                    
+                    
+                    <a href="/tags/fastapi/"># fastapi</a>
+                    
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript：window.history.back();">后退</a>
+                <span>· </span>
+                <a href="/">主页</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            <a class="prev" rel="prev" href="/2020/03/08/blog_back_new/backup/fastapi%E5%93%8D%E5%BA%94%E4%BD%93/">fastapi响应体</a>
+            
+            
+            <a class="next" rel="next" href="/2020/03/08/blog_back_new/ansible/1.%E5%AE%89%E8%A3%85ansible/">ansible安装</a>
+            
+        </section>
+    </article>
+</div>
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+    </div>
+</footer>
+
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

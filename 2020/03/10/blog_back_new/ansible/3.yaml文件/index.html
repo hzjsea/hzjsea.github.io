@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="hzjsea">
+
+
+
+
+
+
+<title>yaml格式入门 | hzjsea</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+    <script src="/js/jquery.min.js"></script>
+    
+
+
+
+    
+    
+        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+    
+
+
+
+
+    <script>
+    function searchToggle() {
+        const width = $(document.body).width()
+        if(width > 479) {
+            return;
+        }
+        const search = $('.search');
+        const searchForm = $('.form-search')
+
+        if(!search.hasClass("mobile-search")) {
+            search.addClass("mobile-search");
+        } else {
+            search.removeClass("mobile-search");
+        } 
+    }
+
+    function search(searchInputEl, formEl, flag) {
+        const path = "/" + "search.json"; // 可以在public 下查看这个search.json
+        $(formEl).submit(function(e){
+            e.preventDefault();
+            let target = null
+            if(searchInputEl == null) {
+                const screenWidth = $(document.body).width();
+                target = screenWidth > 479 ? $('#pc-search-input') : $('#mobile-search-input');
+                console.log(target);
+            } else {
+                target = $(searchInputEl)
+            }
+
+            if(!flag && target.val() === '') {
+                return ;
+            }
+
+            $("#u-search").fadeIn(500, function() {
+                $("body > .wrapper").addClass("modal-active");
+
+                $.ajax({
+                    url: path,
+                    dataType: "json",
+                    beforeSend: function (xhr) {
+                        $input = target.val();
+                        $(".form-input").val($input);
+                        const loadingBar = $('.search-loading-bar') 
+                        loadingBar.css({
+                            width:'100%',
+                            display: 'block'
+                        });
+                    },
+                    success: function( datas ) {
+                        console.log(datas);
+                        const $resultPanel = $(".modal-body")[0];
+                        let str = `<ul class="modal-results">`;
+                        var keywords = $(".form-input").val().trim().toLowerCase().split(/[\s\-]+/);
+                        $resultPanel.innerHTML = "";
+                        let hasResult = false
+                        let text = `<div class="no-result">找不到与关键词相关的内容....</div>`;
+
+                        if ($(".form-input").val().trim().length <= 0) {
+                            // 没有结果
+                            $resultPanel.innerHTML = text;
+                            return;
+                        }
+                        datas.forEach(function (data, index) {
+                            var isMatch = true;
+                            if (!data.title || data.title.trim() === '') {
+                                data.title = "Untitled";
+                            }
+                            var data_title = data.title.trim().toLowerCase();
+                            var data_content = data.content && data.content.trim().replace(/<[^>]+>/g, "").toLowerCase() || '';
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            // only match artiles with not empty contents
+                            if (data_content !== '') {
+                                keywords.forEach(function (keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        hasResult = true
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            } else {
+                                isMatch = false;
+                            }
+                            // show search results
+                            if (isMatch) {
+                                str += `<li class='result-item'><a href='${data_url}' class='result-item-detail'> <span class="title">${data_title}</span>`;
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 200 characters
+                                    var start = first_occur - 40;
+                                    var end = first_occur + 160;
+
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+
+                                    if (start == 0) {
+                                        end = 200;
+                                    }
+
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+
+                                    var match_content = content.substring(start, end);
+
+                                    // highlight all keywords
+                                    keywords.forEach(function (keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, `<em class="search-keyword">${keyword}</em>`);
+                                    });
+
+                                    str += `<span class="content"> ${match_content} ...</span></a>`;
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        if(hasResult) {
+                            $resultPanel.innerHTML = str;
+                        } else {
+                            $resultPanel.innerHTML = text;
+                        }
+
+                    },
+                    complete: function() {
+                        setTimeout(() => {
+                                const loadingBar = $('.search-loading-bar') 
+                                loadingBar.css({
+                                    width:'0%',
+                                    display: 'none'
+                                });
+                        }, 300)
+                    }
+                });
+            })
+
+        });
+    }
+
+    $(document).ready(function() {
+        $('.modal-close').click(function () { 
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+
+        $('.modal-overlay').click(function() {
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+        search(null, ".form-search", false)
+        search("#u-search-modal-form .form-input", ".u-search-modal-form", true)
+    })
+</script>
+
+
+
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo"><a href="/">hzjsea</a></div>
+        <div class="menu navbar-right">
+            
+            
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="pc-search-input"/>
+        </form>
+    </div>
+
+
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+            <input id="switch_default" type="checkbox" class="switch_default">
+            <label for="switch_default" class="toggleBtn"></label>
+        </div>
+    </div>
+</nav>
+
+
+<nav class="navbar-mobile" id="nav-mobile">
+    <div class="container">
+        <div class="navbar-header">
+            <div>
+                <a href="/">hzjsea</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+            </div>
+            <div class="navbar-mobile-right">
+                
+                
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="mobile-search-input"/>
+        </form>
+    </div>
+
+
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; 目录</div>
+            </div>
+            
+        </div>
+        <div class="menu" id="mobile-menu">
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+        </div>
+    </div>
+</nav>
+
+        <div class="main">
+			<!-- Chic/layout.ejs -->
+ <div id="u-search">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="container">
+                    <form id="u-search-modal-form" class="u-search-modal-form">
+                        <button type="submit" class="form-submit-btn">
+                            <img src="/image/search.png" class="search-btn-img" />
+                        </button>
+                        <input placeholder="搜索文章。。。" class="form-input" id="modal-form-input">
+                    </form>
+                    <a class="modal-close">x</a>
+                </div>
+                <div class="search-loading">
+                    <div class="search-loading-bar"></div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <!-- ul 格式如下 -->
+                <!-- <ul class="modal-results">
+                    <li class="result-item">
+                        <a class="result-item-detail">
+                            <span class="title">页面配置</span>
+                            <span class="content">
+                                content
+                            </span>
+                        </a>
+                    </li>
+                </ul> -->
+            </div>
+        </div>
+        <div class="modal-overlay"></div>
+    </div>
+            <div class="container">
+    
+    
+    <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">全部展开</a>
+        <a onclick="go_top()">回到顶部</a>
+        <a onclick="go_bottom()">回到底部</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "全部折叠"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "全部展开"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">yaml格式入门</h1>
+            
+            <div class="post-meta">
+                
+                作者： <a itemprop="author" rel="author" href="/">hzjsea</a>&nbsp;
+                
+
+                
+                <span class="post-time">
+                    创建日期： <a
+                        href="#">March 10, 2020&nbsp;&nbsp;17:36:40</a>
+                </span>&nbsp;
+                
+                
+                <span class="post-category">
+                    分类：
+                    
+                    <a href="/categories/ansible/">ansible</a>&nbsp;
+                    
+                </span>
+                
+                
+                状态：<a href="#">SNAPSHOT</a>
+                
+            </div>
+            
+        </header>
+
+        <div class="post-content">
+            <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+<ul>
+<li><a href="#yaml%E6%A0%BC%E5%BC%8F">yaml格式</a><ul>
+<li><a href="#yaml%E8%AF%AD%E6%B3%95%E8%A7%84%E5%88%99">yaml语法规则</a></li>
+<li><a href="#yaml%E6%94%AF%E6%8C%81%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84">yaml支持的数据结构</a></li>
+<li><a href="#yaml%E5%9F%BA%E6%9C%AC%E6%A0%B7%E4%BE%8B">yaml基本样例</a><ul>
+<li><a href="#%E5%AF%B9%E8%B1%A1">对象</a></li>
+<li><a href="#%E6%95%B0%E7%BB%84">数组</a></li>
+<li><a href="#%E7%BA%AF%E9%87%8F">纯量</a></li>
+<li><a href="#%E5%A4%8D%E5%90%88%E7%BB%93%E6%9E%84">复合结构</a></li>
+</ul>
+</li>
+<li><a href="#%E4%BD%BF%E7%94%A8pyyaml">使用pyyaml</a><ul>
+<li><a href="#%E5%B0%86dict-%E8%BD%AC%E6%8D%A2%E6%88%90-yaml%E6%96%87%E4%BB%B6">将dict 转换成 yaml文件</a></li>
+<li><a href="#%E5%B0%86yaml%E6%96%87%E4%BB%B6%E8%BD%AC%E6%8D%A2%E6%88%90dict%E6%96%87%E4%BB%B6">将yaml文件转换成dict文件</a></li>
+<li><a href="#%E6%9B%B4%E6%96%B0%E6%93%8D%E4%BD%9C">更新操作</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<!-- /code_chunk_output -->
+<a id="more"></a>
+<h1 id="yaml格式"><a href="#yaml格式" class="headerlink" title="yaml格式"></a>yaml格式</h1><blockquote>
+<p> YAML（[ˈjæməl] Yet Another Markup Language）是一种数据序列化格式，设计用于人类的可读性和与脚本语言的交互。PyYAML是Python的YAML解析器和生成器。<br>PyYAML提供了一个完整的YAML 1.1解析器、Unicode支持、pickle支持、支持扩展API和合理的错误消息。PyYAML支持标准的YAML标记，并提供了特定于Python的标记，允许表示任意的Python对象。<br>PyYAML适用于范围广泛的任务，从复杂的配置文件到对象序列化和持久性。<br>YAML是一种被认为可以超越XML、JSON的配置文件，最早接触是Spring Boot………</p>
+</blockquote>
+<h2 id="yaml语法规则"><a href="#yaml语法规则" class="headerlink" title="yaml语法规则"></a>yaml语法规则</h2><ul>
+<li>大小写敏感</li>
+<li>使用缩进表示层级关系</li>
+<li>缩进时不允许使用Tab键，只允许使用空格。</li>
+<li>缩进的空格数目不重要，只要相同层级的元素左侧对齐即可</li>
+<li>#表示注释，从这个字符一直到行尾，都会被解析器忽略，这个和python的注释一样,所以只能单行注释</li>
+</ul>
+<h2 id="yaml支持的数据结构"><a href="#yaml支持的数据结构" class="headerlink" title="yaml支持的数据结构"></a>yaml支持的数据结构</h2><ul>
+<li>对象：键值对的集合，又称为映射（mapping）/ 哈希（hashes） / 字典（dictionary）</li>
+<li>数组：一组按次序排列的值，又称为序列（sequence） / 列表（list）</li>
+<li>纯量（scalars）：单个的、不可再分的值。字符串、布尔值、整数、浮点数、Null、时间、日期</li>
+</ul>
+<h2 id="yaml基本样例"><a href="#yaml基本样例" class="headerlink" title="yaml基本样例"></a>yaml基本样例</h2><pre class=" language-yaml"><code class="language-yaml"><span class="token comment" spellcheck="true"># 对象</span>
+<span class="token key atrule">client</span><span class="token punctuation">:</span>
+    <span class="token comment" spellcheck="true"># 对象:常量</span>
+  <span class="token key atrule">default-character-set</span><span class="token punctuation">:</span> utf8
+  <span class="token comment" spellcheck="true">#对象</span>
+<span class="token key atrule">custom</span><span class="token punctuation">:</span>
+  <span class="token key atrule">user1</span><span class="token punctuation">:</span>
+    <span class="token key atrule">pwd</span><span class="token punctuation">:</span> <span class="token number">666</span>
+    <span class="token key atrule">user</span><span class="token punctuation">:</span> zhangkai
+  <span class="token key atrule">user2</span><span class="token punctuation">:</span>
+    <span class="token key atrule">pwd</span><span class="token punctuation">:</span> <span class="token number">999</span>
+    <span class="token key atrule">user</span><span class="token punctuation">:</span> zhangkai
+<span class="token key atrule">mysql</span><span class="token punctuation">:</span>
+  <span class="token key atrule">password</span><span class="token punctuation">:</span> <span class="token number">123</span>
+  <span class="token key atrule">user</span><span class="token punctuation">:</span> new_root
+<span class="token comment" spellcheck="true"># 对象</span>
+<span class="token key atrule">test</span><span class="token punctuation">:</span>
+    <span class="token comment" spellcheck="true"># 数组</span>
+  <span class="token punctuation">-</span> one
+  <span class="token punctuation">-</span> two
+  <span class="token punctuation">-</span> three
+</code></pre>
+<h3 id="对象"><a href="#对象" class="headerlink" title="对象"></a>对象</h3><pre class=" language-yaml"><code class="language-yaml"><span class="token key atrule">client</span><span class="token punctuation">:</span>
+  <span class="token key atrule">default</span><span class="token punctuation">:</span> xxx
+  <span class="token key atrule">other</span><span class="token punctuation">:</span> xxx</code></pre>
+<h3 id="数组"><a href="#数组" class="headerlink" title="数组"></a>数组</h3><pre class=" language-yaml"><code class="language-yaml"><span class="token punctuation">-</span> one
+<span class="token punctuation">-</span> two
+<span class="token punctuation">-</span> three</code></pre>
+<h3 id="纯量"><a href="#纯量" class="headerlink" title="纯量"></a>纯量</h3><pre class=" language-yaml"><code class="language-yaml">xxx
+xxx
+zhangkai
+new_root</code></pre>
+<h3 id="复合结构"><a href="#复合结构" class="headerlink" title="复合结构"></a>复合结构</h3><pre class=" language-yaml"><code class="language-yaml"><span class="token key atrule">client</span><span class="token punctuation">:</span>
+  <span class="token key atrule">default</span><span class="token punctuation">:</span> xxx
+  <span class="token key atrule">other</span><span class="token punctuation">:</span> xxx
+<span class="token key atrule">class</span><span class="token punctuation">:</span>
+  <span class="token punctuation">-</span> one
+  <span class="token punctuation">-</span> two
+  <span class="token punctuation">-</span> three
+<span class="token key atrule">languages</span><span class="token punctuation">:</span> <span class="token punctuation">[</span>Ruby<span class="token punctuation">,</span>Perl<span class="token punctuation">]</span></code></pre>
+<h2 id="使用pyyaml"><a href="#使用pyyaml" class="headerlink" title="使用pyyaml"></a>使用pyyaml</h2><pre class=" language-bash"><code class="language-bash">pip <span class="token function">install</span> pyyaml
+pip <span class="token function">install</span> -i https://pypi.doubanio.com/simple pyyaml</code></pre>
+<h3 id="将dict-转换成-yaml文件"><a href="#将dict-转换成-yaml文件" class="headerlink" title="将dict 转换成 yaml文件"></a>将dict 转换成 yaml文件</h3><pre class=" language-bash"><code class="language-bash">  <span class="token function">import</span> yaml
+
+  d <span class="token operator">=</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+      <span class="token string">"client"</span><span class="token keyword">:</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;"default-character-set": "utf8"&amp;#125;,</span>
+      <span class="token string">"mysql"</span><span class="token keyword">:</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;"user": 'root', "password": 123&amp;#125;,</span>
+      <span class="token string">"custom"</span><span class="token keyword">:</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+      ¦   <span class="token string">"user1"</span><span class="token keyword">:</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;"user": "zhangkai", "pwd": 666&amp;#125;,</span>
+      ¦   <span class="token string">"user2"</span><span class="token keyword">:</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;"user": "zhangkai", "pwd": 999&amp;#125;,</span>
+      <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+  <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+  <span class="token comment" spellcheck="true"># 直接dump可以把对象转为YAML文档</span>
+  print<span class="token punctuation">(</span>yaml.dump<span class="token punctuation">(</span>d<span class="token punctuation">))</span>
+  with open<span class="token punctuation">(</span><span class="token string">'./yaml_dump.yaml'</span>,<span class="token string">'w'</span>,encoding<span class="token operator">=</span><span class="token string">'utf-8'</span><span class="token punctuation">)</span> as f:
+    yaml.dump<span class="token punctuation">(</span>d, f<span class="token punctuation">)</span></code></pre>
+<p>输出结果</p>
+<pre class=" language-bash"><code class="language-bash">client:
+  default-character-set: utf8
+custom:
+  user1:
+    pwd: 666
+    user: zhangkai
+  user2:
+    pwd: 999
+    user: zhangkai
+mysql:
+  password: 123
+  user: root</code></pre>
+<h3 id="将yaml文件转换成dict文件"><a href="#将yaml文件转换成dict文件" class="headerlink" title="将yaml文件转换成dict文件"></a>将yaml文件转换成dict文件</h3><pre class=" language-bash"><code class="language-bash"><span class="token function">import</span> yaml
+  with open<span class="token punctuation">(</span><span class="token string">'./yaml_dump.yaml'</span>,<span class="token string">'r'</span>,encoding<span class="token operator">=</span><span class="token string">'utf-8'</span><span class="token punctuation">)</span> as fr:
+      data <span class="token operator">=</span> yaml.load<span class="token punctuation">(</span>fr<span class="token punctuation">)</span>
+
+  print<span class="token punctuation">(</span>data<span class="token punctuation">)</span></code></pre>
+<p>输出结果</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token punctuation">(</span>env<span class="token punctuation">)</span> ➜  <span class="token function">test</span> python xx.py
+xx.py:4: YAMLLoadWarning: calling yaml.load<span class="token punctuation">(</span><span class="token punctuation">)</span> without Loader<span class="token operator">=</span><span class="token punctuation">..</span>. is deprecated, as the default Loader is unsafe. Please <span class="token function">read</span> https://msg.pyyaml.org/load <span class="token keyword">for</span> full details.
+  data <span class="token operator">=</span> yaml.load<span class="token punctuation">(</span>fr,<span class="token punctuation">)</span></code></pre>
+<p>这里会报错，原因是这样做是不安全的,可以加一个yaml.FullLoader参数</p>
+<pre class=" language-py"><code class="language-py">import yaml
+  with open('./yaml_dump.yaml','r',encoding='utf-8') as fr:
+      data = yaml.load(fr,yaml.FullLoader)
+
+  print(data)</code></pre>
+<h3 id="更新操作"><a href="#更新操作" class="headerlink" title="更新操作"></a>更新操作</h3><p>更新操作无非就是把他先转换成dic文件，然后修改完成后转换成yaml文件</p>
+<pre class=" language-py"><code class="language-py">import yaml
+
+file_path = './my.yaml'
+with open(file_path, 'r', encoding='utf-8') as fr:
+    data = yaml.load(fr, yaml.FullLoader)
+
+data['mysql']['user'] = 'new_root'
+
+with open(file_path, 'w', encoding='utf-8') as fw:
+    yaml.dump(data, fw)</code></pre>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>标签：</span>
+                <span class="tag">
+                    
+                    
+                    <a href="/tags/ansible/"># ansible</a>
+                    
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript：window.history.back();">后退</a>
+                <span>· </span>
+                <a href="/">主页</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            <a class="prev" rel="prev" href="/2020/03/11/blog_back_new/ansible/4.ansible-playbook/">ansible-playbook</a>
+            
+            
+            <a class="next" rel="next" href="/2020/03/08/blog_back_new/ansible/2.ansible%E5%9F%BA%E7%A1%80/">ansible基础</a>
+            
+        </section>
+    </article>
+</div>
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+    </div>
+</footer>
+
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="hzjsea">
+
+
+
+
+
+
+<title>OSI模型运输层 | hzjsea</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+    <script src="/js/jquery.min.js"></script>
+    
+
+
+
+    
+    
+        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+    
+
+
+
+
+    <script>
+    function searchToggle() {
+        const width = $(document.body).width()
+        if(width > 479) {
+            return;
+        }
+        const search = $('.search');
+        const searchForm = $('.form-search')
+
+        if(!search.hasClass("mobile-search")) {
+            search.addClass("mobile-search");
+        } else {
+            search.removeClass("mobile-search");
+        } 
+    }
+
+    function search(searchInputEl, formEl, flag) {
+        const path = "/" + "search.json"; // 可以在public 下查看这个search.json
+        $(formEl).submit(function(e){
+            e.preventDefault();
+            let target = null
+            if(searchInputEl == null) {
+                const screenWidth = $(document.body).width();
+                target = screenWidth > 479 ? $('#pc-search-input') : $('#mobile-search-input');
+                console.log(target);
+            } else {
+                target = $(searchInputEl)
+            }
+
+            if(!flag && target.val() === '') {
+                return ;
+            }
+
+            $("#u-search").fadeIn(500, function() {
+                $("body > .wrapper").addClass("modal-active");
+
+                $.ajax({
+                    url: path,
+                    dataType: "json",
+                    beforeSend: function (xhr) {
+                        $input = target.val();
+                        $(".form-input").val($input);
+                        const loadingBar = $('.search-loading-bar') 
+                        loadingBar.css({
+                            width:'100%',
+                            display: 'block'
+                        });
+                    },
+                    success: function( datas ) {
+                        console.log(datas);
+                        const $resultPanel = $(".modal-body")[0];
+                        let str = `<ul class="modal-results">`;
+                        var keywords = $(".form-input").val().trim().toLowerCase().split(/[\s\-]+/);
+                        $resultPanel.innerHTML = "";
+                        let hasResult = false
+                        let text = `<div class="no-result">找不到与关键词相关的内容....</div>`;
+
+                        if ($(".form-input").val().trim().length <= 0) {
+                            // 没有结果
+                            $resultPanel.innerHTML = text;
+                            return;
+                        }
+                        datas.forEach(function (data, index) {
+                            var isMatch = true;
+                            if (!data.title || data.title.trim() === '') {
+                                data.title = "Untitled";
+                            }
+                            var data_title = data.title.trim().toLowerCase();
+                            var data_content = data.content && data.content.trim().replace(/<[^>]+>/g, "").toLowerCase() || '';
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            // only match artiles with not empty contents
+                            if (data_content !== '') {
+                                keywords.forEach(function (keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        hasResult = true
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            } else {
+                                isMatch = false;
+                            }
+                            // show search results
+                            if (isMatch) {
+                                str += `<li class='result-item'><a href='${data_url}' class='result-item-detail'> <span class="title">${data_title}</span>`;
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 200 characters
+                                    var start = first_occur - 40;
+                                    var end = first_occur + 160;
+
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+
+                                    if (start == 0) {
+                                        end = 200;
+                                    }
+
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+
+                                    var match_content = content.substring(start, end);
+
+                                    // highlight all keywords
+                                    keywords.forEach(function (keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, `<em class="search-keyword">${keyword}</em>`);
+                                    });
+
+                                    str += `<span class="content"> ${match_content} ...</span></a>`;
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        if(hasResult) {
+                            $resultPanel.innerHTML = str;
+                        } else {
+                            $resultPanel.innerHTML = text;
+                        }
+
+                    },
+                    complete: function() {
+                        setTimeout(() => {
+                                const loadingBar = $('.search-loading-bar') 
+                                loadingBar.css({
+                                    width:'0%',
+                                    display: 'none'
+                                });
+                        }, 300)
+                    }
+                });
+            })
+
+        });
+    }
+
+    $(document).ready(function() {
+        $('.modal-close').click(function () { 
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+
+        $('.modal-overlay').click(function() {
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+        search(null, ".form-search", false)
+        search("#u-search-modal-form .form-input", ".u-search-modal-form", true)
+    })
+</script>
+
+
+
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo"><a href="/">hzjsea</a></div>
+        <div class="menu navbar-right">
+            
+            
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="pc-search-input"/>
+        </form>
+    </div>
+
+
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+            <input id="switch_default" type="checkbox" class="switch_default">
+            <label for="switch_default" class="toggleBtn"></label>
+        </div>
+    </div>
+</nav>
+
+
+<nav class="navbar-mobile" id="nav-mobile">
+    <div class="container">
+        <div class="navbar-header">
+            <div>
+                <a href="/">hzjsea</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+            </div>
+            <div class="navbar-mobile-right">
+                
+                
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="mobile-search-input"/>
+        </form>
+    </div>
+
+
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; 目录</div>
+            </div>
+            
+        </div>
+        <div class="menu" id="mobile-menu">
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+        </div>
+    </div>
+</nav>
+
+        <div class="main">
+			<!-- Chic/layout.ejs -->
+ <div id="u-search">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="container">
+                    <form id="u-search-modal-form" class="u-search-modal-form">
+                        <button type="submit" class="form-submit-btn">
+                            <img src="/image/search.png" class="search-btn-img" />
+                        </button>
+                        <input placeholder="搜索文章。。。" class="form-input" id="modal-form-input">
+                    </form>
+                    <a class="modal-close">x</a>
+                </div>
+                <div class="search-loading">
+                    <div class="search-loading-bar"></div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <!-- ul 格式如下 -->
+                <!-- <ul class="modal-results">
+                    <li class="result-item">
+                        <a class="result-item-detail">
+                            <span class="title">页面配置</span>
+                            <span class="content">
+                                content
+                            </span>
+                        </a>
+                    </li>
+                </ul> -->
+            </div>
+        </div>
+        <div class="modal-overlay"></div>
+    </div>
+            <div class="container">
+    
+    
+    <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">全部展开</a>
+        <a onclick="go_top()">回到顶部</a>
+        <a onclick="go_bottom()">回到底部</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "全部折叠"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "全部展开"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">OSI模型运输层</h1>
+            
+            <div class="post-meta">
+                
+                作者： <a itemprop="author" rel="author" href="/">hzjsea</a>&nbsp;
+                
+
+                
+                <span class="post-time">
+                    创建日期： <a
+                        href="#">July 22, 2020&nbsp;&nbsp;18:32:21</a>
+                </span>&nbsp;
+                
+                
+                <span class="post-category">
+                    分类：
+                    
+                    <a href="/categories/%E7%BD%91%E7%BB%9C/">网络</a>&nbsp;
+                    
+                </span>
+                
+                
+                状态：<a href="#">SNAPSHOT</a>
+                
+            </div>
+            
+        </header>
+
+        <div class="post-content">
+            <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+<ul>
+<li><a href="#%E8%BF%90%E8%BE%93%E5%B1%82">运输层</a><ul>
+<li><a href="#%E8%BF%90%E8%BE%93%E5%B1%82%E6%9C%8D%E5%8A%A1">运输层服务</a></li>
+<li><a href="#%E8%BF%90%E8%BE%93%E5%B1%82%E5%8D%8F%E8%AE%AE%E4%BB%A5%E5%8F%8A%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B">运输层协议以及工作流程</a></li>
+<li><a href="#%E8%BF%90%E8%BE%93%E5%B1%82%E5%8D%8F%E8%AE%AE-udp%E5%8D%8F%E8%AE%AE">运输层协议 - UDP协议</a></li>
+<li><a href="#%E8%BF%90%E8%BE%93%E5%B1%82%E5%8D%8F%E8%AE%AE-tcp%E5%8D%8F%E8%AE%AE">运输层协议 - TCP协议</a></li>
+<li><a href="#%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8%E4%BB%A5%E5%8F%8A%E5%A4%9A%E8%B7%AF%E5%88%86%E8%A7%A3">多路复用以及多路分解</a><ul>
+<li><a href="#%E5%A5%97%E6%8E%A5%E5%AD%97">套接字</a></li>
+</ul>
+</li>
+<li><a href="#udp">UDP</a></li>
+<li><a href="#%E5%8F%AF%E9%9D%A0%E6%95%B0%E6%8D%AE%E4%BC%A0%E8%BE%93%E5%8E%9F%E7%90%86">可靠数据传输原理</a></li>
+<li><a href="#%E9%9D%A2%E5%90%91%E8%BF%9E%E6%8E%A5%E7%9A%84%E8%BF%90%E8%BE%93-tcp">面向连接的运输 TCP</a><ul>
+<li><a href="#tcp%E7%9A%84%E5%B7%A5%E4%BD%9C%E6%A8%A1%E5%BC%8F">TCP的工作模式</a></li>
+<li><a href="#tcp%E7%9A%84%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B">TCP的工作流程</a></li>
+<li><a href="#tcp%E6%8A%A5%E6%96%87%E6%AE%B5%E7%BB%93%E6%9E%84">TCP报文段结构</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<!-- /code_chunk_output -->
+<a id="more"></a>
+
+
+<h1 id="运输层"><a href="#运输层" class="headerlink" title="运输层"></a>运输层</h1><p>运输层所在的位置 运行在不同主机上的应用进程提供直接的通信服务</p>
+<pre class=" language-mermaid"><code class="language-mermaid">graph TD
+    应用层 --> 运输层 --> 网络层 --> 数据链路层 --> 物理层
+
+    运输层 --> 运输层协议
+    运输层协议 --> TCP协议
+    运输层协议 --> UDP协议</code></pre>
+<h2 id="运输层服务"><a href="#运输层服务" class="headerlink" title="运输层服务"></a>运输层服务</h2><p>运输层协议为运行在不同主机上的应用进程之间提供了<code>逻辑通信</code>,通过逻辑通信，运行在不同进程的主机好像直接相连一样<br>但实际上这些主机相距很远，可能是由多个路由设备以及多种类型的链路连接在一起。应用进程使用运输层提供的逻辑通信功能彼此发送报文，不需要考虑承载这些报文的物理设备</p>
+<h2 id="运输层协议以及工作流程"><a href="#运输层协议以及工作流程" class="headerlink" title="运输层协议以及工作流程"></a>运输层协议以及工作流程</h2><p>运输层协议是在端系统中而不是路由器中</p>
+<pre class=" language-bash"><code class="language-bash">- 发送端
+1. 运输层将发送应用程序进程接收到的报文转换成运输层分组 该运输层分组被称作 报文段
+2. 紧接着，运输层将这些报文段传递给网络层， 网络层将其封装成网络层分组被称作 数据包  并向目的地转发
+3. 向目的地转发的过程中则要经历 数据链路层-<span class="token operator">></span> 物理层 -<span class="token operator">></span> 对端物理层 -<span class="token operator">></span> 对端数据链路层 -<span class="token operator">></span> 网络层</code></pre>
+<p>运输层中的协议主要有<code>TCP协议</code>以及<code>UDP协议 </code><br>另外运输层会受到网络层的影响，但即是是这样运输层也能使用加密来保证应用程序报文不被入侵者读取</p>
+<p>::: tip<br>自顶向下这本书里面说 P124<br>有很多文献里面将TCP的运输层分组叫做报文段，将UDP的运输层分组叫做数据报<br>但是&lt;&lt;自顶向下&gt;&gt;书里面统称运输层上的分组为报文段，而将网络层上的分组称之为数据报<br>:::</p>
+<p>::: tip<br>介绍一下网络层中的<code>网际协议</code>  即IP<br>IP为主机之间提供了逻辑通信 IP的服务模型是尽力而为交付服务<br>也就是说IP会尽自己最大的努力，在通信的主机之间交付报文段 但他不确保报文段的交付，不拨正报文段的按序交付，不保证报文段数据的完整性<br>因此 IP也是一种不可靠服务</p>
+<p>:::</p>
+<h2 id="运输层协议-UDP协议"><a href="#运输层协议-UDP协议" class="headerlink" title="运输层协议 - UDP协议"></a>运输层协议 - UDP协议</h2><p>UDP(用户数据报协议)  为调用他的应用程序提供了一种不可靠、无连接的服务<br>UDP之所以被称作是无连接的服务，是因为他在发送报文段之前是没有握手，也就是没有了第一第二阶段</p>
+<p>UDP仅提供两种服务</p>
+<ul>
+<li>进程与进程之间的数据交付</li>
+<li>差错检查<br>这也是最基本的两个运输层服务<br>UDP传输的应用程序可以根据其需要以其意愿的任何速率发送数据</li>
+</ul>
+<p>UDP是由一个二元组全面标识的，该二元组包含一个目的IP地址和一个目的端口号</p>
+<p>::: tip<br>UDP使用过程</p>
+<ol>
+<li>UDP从应用进程获取数据，从不同的套接字中获取数据（多路复用） 封装目的地址和目的端口</li>
+<li>将报文段教给网络层</li>
+<li>网络层将报文段封装成数据报</li>
+<li>然后尽全力放到对端机器</li>
+<li>对端机器收到数据报以后拆分教给运输层</li>
+<li>运输层拆分报文段 获取目的端口和目的地址 通过套接字交付给应用进程<br>:::</li>
+</ol>
+<h2 id="运输层协议-TCP协议"><a href="#运输层协议-TCP协议" class="headerlink" title="运输层协议 - TCP协议"></a>运输层协议 - TCP协议</h2><p>TCP(传输控制协议)  提供了一种可靠的 面向连接的服务<br>TCP是一种可靠的运输层协议<br>通过 流量控制 序号 确认和定时器来讲网络层交付的数据报拆分成报文段 并且将不可靠的IP服务转换成可靠的TCP服务</p>
+<ul>
+<li>TCP的拥塞控制防止任何一条TCP连接过量的流量来淹没通信主机之间的链路和交换设备</li>
+<li>保证一条拥塞网络链路的连接平等的共享网络链路带宽 通过调节TCP连接发送端发送进网络的流量速率</li>
+</ul>
+<p>TCP套接字是由一个四元组组成的，包含 源IP地址 源端口号 目的IP地址 目的端口号</p>
+<h2 id="多路复用以及多路分解"><a href="#多路复用以及多路分解" class="headerlink" title="多路复用以及多路分解"></a>多路复用以及多路分解</h2><p>在目的主机，运输层从下面的网络层接收数据报拆分成报文段。紧接着运输层将这些报文段通过交付给<code>套接字</code>将数据交给适当的应用程序</p>
+<pre class=" language-mermaid"><code class="language-mermaid">graph LR
+   应用层1 --> 主机 --> 套接字1 --> 运输层1 --> 网络层1 -.-> 网络层 --> 运输层 --> 套接字 --> 适当的应用程序</code></pre>
+<p>::: tip<br>接收端  每个运输层中都包含几个字段，在接收端，运输层接收报文段，并且标识出接收的套接字，进而将报文段定向到该套接字。将运输层报文段中的数据交付到正确的套接字工作就叫做多路分解<br>发送端  源主机从不同的套接字中收集数据块，并为某个数据块封装上首部信息后 生成报文段，然后报文段通过网络层 这些工作叫做多路复用<br>:::</p>
+<h3 id="套接字"><a href="#套接字" class="headerlink" title="套接字"></a>套接字</h3><p>多路复用的实现主要依靠套接字和运输层来实现，其中套接字需要满足两个条件</p>
+<ul>
+<li>套接字有唯一标识符;</li>
+<li>每个报文段有特殊字段来指示该报文段所要交付到的套接字<br>这些特殊字段中包含 <code>源端口号</code> + <code>目的端口号</code> ,端口号是一个16比特的数字，大小在0<del>65535之间，但是其中0</del>1023是一些<code>周知端口号</code>，仅提供给固定的服务使用 比如http 80端口 ftp 21端口 </li>
+</ul>
+<p>UDP是由一个二元组全面标识的，该二元组包含一个目的IP地址和一个目的端口号<br>TCP套接字是由一个四元组组成的，包含 源IP地址 源端口号 目的IP地址 目的端口号</p>
+<p>套接字会分解这些元组，并将他们分配到不同的套接字</p>
+<p>:::  tip<br>这里UDP和TCP会有一些不同</p>
+<p>首先如果UDP的源地址不同，但是他们的目的地址相同 ，则会被分配到同一个套接字上面<br>但是同样情况对于TCP来说，他们会被分配到不同的套接字上<br>你可以理解为  对于UDP 仅识别目的 因为他只带了目的地址和端口<br>而对于TCP来说 是一一对应的关系。</p>
+<p>在现代的web服务器中，更多的web服务器通常指使用一个进程+多个线程的工作形式，每次有新的客户端连接的时候，都会重新开一个线程上来 ，这个线程上包含了新的套接字<br>:::</p>
+<h2 id="UDP"><a href="#UDP" class="headerlink" title="UDP"></a>UDP</h2><p>DNS同时占用的了UDP和TCP的53端口，再大部分情况下DNS采用UDP协议<br>:::  tip<br>DNS UDP 使用流程</p>
+<ol>
+<li>当你想要查询某个名字服务器的时候</li>
+<li>构建一个DNS查询报文并将其交个UDP</li>
+<li>UDP不需要执行握手流程，直接被网络层封装成数据报发送到对端</li>
+<li>如果有响应 则成功  如果没有响应 则通知到应用程序无响应</li>
+</ol>
+<p>:::</p>
+<p>UDP的优点(P131)</p>
+<h2 id="可靠数据传输原理"><a href="#可靠数据传输原理" class="headerlink" title="可靠数据传输原理"></a>可靠数据传输原理</h2><p>可靠数据传输的实现不仅存在于运输层还出现在链路层和应用层<br>可靠传输的实现主要依靠一条可靠的信道完成，数据通过一条可靠的信道进行传输，因为信道的存在，插孙湖数据比特就不会收到损坏，有0变为1，或者相反。而这个服务模型九四TCP向调用他的因特网应用所提供的服务模型，这种服务模型遵循的协议为 <code>可靠输出传输协议</code><br><img src="http://img.noback.top/2020-08-04-11-16-45.png" alt="2020-08-04-11-16-45"><br>P134</p>
+<h2 id="面向连接的运输-TCP"><a href="#面向连接的运输-TCP" class="headerlink" title="面向连接的运输 TCP"></a>面向连接的运输 TCP</h2><p>TCP连接是<code>面向连接的</code>，这是因为在一个应用进程可以开始向另一个应用进程发送数据之前，这两个进程必须先相互<code>握手</code><br>TCP/IP协议也就是传输控制协议/网际协议</p>
+<h3 id="TCP的工作模式"><a href="#TCP的工作模式" class="headerlink" title="TCP的工作模式"></a>TCP的工作模式</h3><p>TCP的工作模式是<code>全双工服务</code>，如果主机上的进程A与另一台主机上的进程B存在一条TCP连接，那么应用层数据就可以从进程B流向进程A 的同时，也从进程A流向进程B<br>TCP的连接模式是<code>点对点</code>连接，并不是以多播的形似连接，多播即单个发送方会将数据传送给多个接收方，这种情况对TCP来说是不可能的。TCP是单个发送方 单个接受方</p>
+<h3 id="TCP的工作流程"><a href="#TCP的工作流程" class="headerlink" title="TCP的工作流程"></a>TCP的工作流程</h3><ol>
+<li>应用层数据通过套接字将数据发送到运输层</li>
+<li>运输层获取这些数据，并交给TCP协议来处理</li>
+<li>TCP将这些数据引导到该连接的发送缓存里，(发送缓存是发起三次握手期间设置的缓存之一)</li>
+<li>TCP从缓存中取出一块数据以报文段的形式发送数据</li>
+</ol>
+<p>TCP可从缓存中取出并放入报文段中的数据数量受限于<code>最大报文段长度(MSS)</code><br><code>MSS</code>通常根据最初确定的由本地发送主机发送的最大链路即度(即最大传输单元MTU)来决定 </p>
+<p>TCP为每块客户数据添加一个TCP首部，这样就形成了多个TCP报文段，然后这些报文段下传到网络层，网络层将其封装在网络层IP数据报中。然后将这些IP数据报被发送到网络中。当TCP在另一端接收到报文段之后，该报文段的数据就被放入该TCP连接的接收缓存中。应用程序从此缓存中读取数据流。因为TCP是全双工的工作模式，因此它的每一端都有各自的发送缓存和接收缓存<br><img src="http://img.noback.top/2020-08-04-12-14-34.png" alt="2020-08-04-12-14-34"> </p>
+<h3 id="TCP报文段结构"><a href="#TCP报文段结构" class="headerlink" title="TCP报文段结构"></a>TCP报文段结构</h3><p><img src="http://img.noback.top/2020-08-04-12-17-34.png" alt="2020-08-04-12-17-34"><br>上面的是TCP的报文段，其中</p>
+<ul>
+<li>首部包括源端口号和目的端口号</li>
+<li>32比特的序号字段(se) 32的确认号字段(ack)  后面用握手和挥手用的</li>
+<li>16比特的接收窗口字段 该字段用于流量控制。用于指示接收方原因接收的字段数量</li>
+<li>4比特的首部长度 该字段指示了以32比特的字为单位的TCP首部长度。当选项字段为空的时候，TCP首部的长度为20</li>
+<li>可选与变长的选项字段，改字段用于发送方与接收方协商最大的报文字段长度(MSS)</li>
+<li>6比特的标志字段 ACK比特用于指示确认字段中的值是有效的，即该报文段包括一个对已被成功接收报文段的确认</li>
+<li>RST、YSN、FIN比特用于连接建立和拆除。当PSH被比特被置为1时，就表示接收方应立即将数据交给上层 </li>
+<li>URG比特用来指示报文段里存在着被发送端的上层实体为紧急数据。紧急数据的最后一个字节由16比特的紧急数据指针字段指出，当紧急数据存在并给出指向紧急数据尾指针的时候，TCP必须通知接收端的上层实体</li>
+</ul>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>标签：</span>
+                <span class="tag">
+                    
+                    
+                    <a href="/tags/%E7%BD%91%E7%BB%9C/"># 网络</a>
+                    
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript：window.history.back();">后退</a>
+                <span>· </span>
+                <a href="/">主页</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            <a class="prev" rel="prev" href="/2020/07/23/blog_back_new/NetWord/3OSI%E6%A8%A1%E5%9E%8B%E7%BD%91%E7%BB%9C%E5%B1%82/">OSI模型网络层</a>
+            
+            
+            <a class="next" rel="next" href="/2020/07/21/blog_back_new/leetcode/LinkList/letcode83_%E5%88%A0%E9%99%A4%E6%8E%92%E5%BA%8F%E9%93%BE%E8%A1%A8%E4%B8%AD%E7%9A%84%E9%87%8D%E5%A4%8D%E5%85%83%E7%B4%A0/">leetcode_删除排序链表中的重复元素</a>
+            
+        </section>
+    </article>
+</div>
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+    </div>
+</footer>
+
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

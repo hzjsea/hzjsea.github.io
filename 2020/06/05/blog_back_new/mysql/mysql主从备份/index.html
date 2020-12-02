@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="hzjsea">
+
+
+
+
+
+
+<title>mysql主从备份 | hzjsea</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+    <script src="/js/jquery.min.js"></script>
+    
+
+
+
+    
+    
+        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+    
+
+
+
+
+    <script>
+    function searchToggle() {
+        const width = $(document.body).width()
+        if(width > 479) {
+            return;
+        }
+        const search = $('.search');
+        const searchForm = $('.form-search')
+
+        if(!search.hasClass("mobile-search")) {
+            search.addClass("mobile-search");
+        } else {
+            search.removeClass("mobile-search");
+        } 
+    }
+
+    function search(searchInputEl, formEl, flag) {
+        const path = "/" + "search.json"; // 可以在public 下查看这个search.json
+        $(formEl).submit(function(e){
+            e.preventDefault();
+            let target = null
+            if(searchInputEl == null) {
+                const screenWidth = $(document.body).width();
+                target = screenWidth > 479 ? $('#pc-search-input') : $('#mobile-search-input');
+                console.log(target);
+            } else {
+                target = $(searchInputEl)
+            }
+
+            if(!flag && target.val() === '') {
+                return ;
+            }
+
+            $("#u-search").fadeIn(500, function() {
+                $("body > .wrapper").addClass("modal-active");
+
+                $.ajax({
+                    url: path,
+                    dataType: "json",
+                    beforeSend: function (xhr) {
+                        $input = target.val();
+                        $(".form-input").val($input);
+                        const loadingBar = $('.search-loading-bar') 
+                        loadingBar.css({
+                            width:'100%',
+                            display: 'block'
+                        });
+                    },
+                    success: function( datas ) {
+                        console.log(datas);
+                        const $resultPanel = $(".modal-body")[0];
+                        let str = `<ul class="modal-results">`;
+                        var keywords = $(".form-input").val().trim().toLowerCase().split(/[\s\-]+/);
+                        $resultPanel.innerHTML = "";
+                        let hasResult = false
+                        let text = `<div class="no-result">找不到与关键词相关的内容....</div>`;
+
+                        if ($(".form-input").val().trim().length <= 0) {
+                            // 没有结果
+                            $resultPanel.innerHTML = text;
+                            return;
+                        }
+                        datas.forEach(function (data, index) {
+                            var isMatch = true;
+                            if (!data.title || data.title.trim() === '') {
+                                data.title = "Untitled";
+                            }
+                            var data_title = data.title.trim().toLowerCase();
+                            var data_content = data.content && data.content.trim().replace(/<[^>]+>/g, "").toLowerCase() || '';
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            // only match artiles with not empty contents
+                            if (data_content !== '') {
+                                keywords.forEach(function (keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        hasResult = true
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            } else {
+                                isMatch = false;
+                            }
+                            // show search results
+                            if (isMatch) {
+                                str += `<li class='result-item'><a href='${data_url}' class='result-item-detail'> <span class="title">${data_title}</span>`;
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 200 characters
+                                    var start = first_occur - 40;
+                                    var end = first_occur + 160;
+
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+
+                                    if (start == 0) {
+                                        end = 200;
+                                    }
+
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+
+                                    var match_content = content.substring(start, end);
+
+                                    // highlight all keywords
+                                    keywords.forEach(function (keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, `<em class="search-keyword">${keyword}</em>`);
+                                    });
+
+                                    str += `<span class="content"> ${match_content} ...</span></a>`;
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        if(hasResult) {
+                            $resultPanel.innerHTML = str;
+                        } else {
+                            $resultPanel.innerHTML = text;
+                        }
+
+                    },
+                    complete: function() {
+                        setTimeout(() => {
+                                const loadingBar = $('.search-loading-bar') 
+                                loadingBar.css({
+                                    width:'0%',
+                                    display: 'none'
+                                });
+                        }, 300)
+                    }
+                });
+            })
+
+        });
+    }
+
+    $(document).ready(function() {
+        $('.modal-close').click(function () { 
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+
+        $('.modal-overlay').click(function() {
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+        search(null, ".form-search", false)
+        search("#u-search-modal-form .form-input", ".u-search-modal-form", true)
+    })
+</script>
+
+
+
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo"><a href="/">hzjsea</a></div>
+        <div class="menu navbar-right">
+            
+            
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="pc-search-input"/>
+        </form>
+    </div>
+
+
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+            <input id="switch_default" type="checkbox" class="switch_default">
+            <label for="switch_default" class="toggleBtn"></label>
+        </div>
+    </div>
+</nav>
+
+
+<nav class="navbar-mobile" id="nav-mobile">
+    <div class="container">
+        <div class="navbar-header">
+            <div>
+                <a href="/">hzjsea</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+            </div>
+            <div class="navbar-mobile-right">
+                
+                
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="mobile-search-input"/>
+        </form>
+    </div>
+
+
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; 目录</div>
+            </div>
+            
+        </div>
+        <div class="menu" id="mobile-menu">
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+        </div>
+    </div>
+</nav>
+
+        <div class="main">
+			<!-- Chic/layout.ejs -->
+ <div id="u-search">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="container">
+                    <form id="u-search-modal-form" class="u-search-modal-form">
+                        <button type="submit" class="form-submit-btn">
+                            <img src="/image/search.png" class="search-btn-img" />
+                        </button>
+                        <input placeholder="搜索文章。。。" class="form-input" id="modal-form-input">
+                    </form>
+                    <a class="modal-close">x</a>
+                </div>
+                <div class="search-loading">
+                    <div class="search-loading-bar"></div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <!-- ul 格式如下 -->
+                <!-- <ul class="modal-results">
+                    <li class="result-item">
+                        <a class="result-item-detail">
+                            <span class="title">页面配置</span>
+                            <span class="content">
+                                content
+                            </span>
+                        </a>
+                    </li>
+                </ul> -->
+            </div>
+        </div>
+        <div class="modal-overlay"></div>
+    </div>
+            <div class="container">
+    
+    
+    <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">全部展开</a>
+        <a onclick="go_top()">回到顶部</a>
+        <a onclick="go_bottom()">回到底部</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "全部折叠"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "全部展开"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">mysql主从备份</h1>
+            
+            <div class="post-meta">
+                
+                作者： <a itemprop="author" rel="author" href="/">hzjsea</a>&nbsp;
+                
+
+                
+                <span class="post-time">
+                    创建日期： <a
+                        href="#">June 5, 2020&nbsp;&nbsp;15:10:44</a>
+                </span>&nbsp;
+                
+                
+                <span class="post-category">
+                    分类：
+                    
+                    <a href="/categories/mysql/">mysql</a>&nbsp;
+                    
+                </span>
+                
+                
+                状态：<a href="#">SNAPSHOT</a>
+                
+            </div>
+            
+        </header>
+
+        <div class="post-content">
+            <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+<ul>
+<li><a href="#mysql%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6">mysql主从复制</a><ul>
+<li><a href="#%E5%9F%BA%E4%BA%8E%E4%BA%8C%E8%BF%9B%E5%88%B6%E6%97%A5%E5%BF%97%E7%82%B9%E7%9A%84%E5%BC%82%E6%AD%A5%E5%A4%8D%E5%88%B6%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88">基于二进制日志点的异步复制解决方案</a></li>
+<li><a href="#%E4%B8%BB%E4%BB%8E%E5%90%8C%E6%AD%A5%E8%BF%9B%E9%98%B6%E7%89%88-%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB">主从同步进阶版–读写分离</a></li>
+<li><a href="#master%E5%92%8Csalve%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E6%95%B0%E6%8D%AE%E4%B8%8D%E4%B8%80%E8%87%B4%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88">master和salve数据库的数据不一致解决方案</a><ul>
+<li><a href="#mysqldump-%E5%86%B7%E5%A4%87%E4%BB%BD">mysqldump 冷备份</a></li>
+<li><a href="#xtrabackup-%E7%83%AD%E5%A4%87%E4%BB%BD">Xtrabackup 热备份</a><ul>
+<li><a href="#%E5%A4%87%E4%BB%BD%E6%B5%81%E7%A8%8B">备份流程</a></li>
+<li><a href="#%E5%AE%89%E8%A3%85xtrabackup">安装xtrabackup</a></li>
+<li><a href="#%E4%BD%BF%E7%94%A8xtrabackup%E5%85%A8%E9%87%8F%E5%A4%87%E4%BB%BD">使用xtrabackup全量备份</a></li>
+<li><a href="#%E4%BD%BF%E7%94%A8xtrabackup%E5%A2%9E%E9%87%8F%E5%A4%87%E4%BB%BD">使用xtrabackup增量备份</a></li>
+<li><a href="#xtrabackup-%E6%B5%81%E5%BC%8F%E5%A4%87%E4%BB%BD">xtrabackup 流式备份</a></li>
+<li><a href="#%E5%A4%87%E4%BB%BD%E6%81%A2%E5%A4%8D">备份恢复</a></li>
+<li><a href="#%E5%8C%BA%E5%88%AB">区别</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#xtrabackup%E8%AF%A6%E8%A7%A3">xtrabackup详解</a></li>
+<li><a href="#%E9%94%99%E8%AF%AF">错误</a><ul>
+<li><a href="#docker-mysql">docker mysql</a></li>
+<li><a href="#innobackupex-%E5%91%BD%E4%BB%A4%E5%87%BA%E9%94%99">innobackupex 命令出错</a></li>
+<li><a href="#docker-mysql%E6%97%A0%E6%B3%95%E8%A2%ABinnobackupex%E5%A4%87%E4%BB%BD">docker-mysql无法被innobackupex备份</a></li>
+</ul>
+</li>
+<li><a href="#docker-mysql%E9%87%8D%E5%90%AF%E6%95%B0%E6%8D%AE%E5%BA%93">docker-mysql重启数据库</a></li>
+<li><a href="#docker-mysql%E8%BF%90%E8%A1%8C">docker-mysql运行</a></li>
+<li><a href="#mysql-%E4%B8%80%E9%94%AE%E8%84%9A%E6%9C%AC">mysql 一键脚本</a></li>
+<li><a href="#extra">extra</a></li>
+</ul>
+</li>
+</ul>
+<!-- /code_chunk_output -->
+<a id="more"></a>
+
+
+<h1 id="mysql主从复制"><a href="#mysql主从复制" class="headerlink" title="mysql主从复制"></a>mysql主从复制</h1><p>mysql主从复制的两种解决方案</p>
+<ol>
+<li>传统方式：<br>mysql支持单向、异步复制，复制过程中一个服务器充当主服务器，而一个或多个其它服务器充当从服务器。mysql复制基于主服务器在二进制日志中跟踪所有对数据库的更改(更新、删除等等)。因此，要进行复制，必须在主服务器上启用二进制日志。每个从服务器从主服务器接收主服务器已经记录到其二进制日志的保存的更新。当一个从服务器连接主服务器时，它通知主服务器从服务器在日志中读取的最后一次成功更新的位置。从服务器接收从那时起发生的任何更新，并在本机上执行相同的更新。然后封锁并等待主服务器通知新的更新。从服务器执行备份不会干扰主服务器，在备份过程中主服务器可以继续处理更新。<br>基于主库的bin-log将日志事件和事件位置复制到从库，从库再加以应用来达到主从同步的目的。</li>
+<li>Gtid方式（MySQL&gt;=5.7推荐使用）：<br>基于GTID的复制中，从库会告知主库已经执行的事务的GTID的值，然后主库会将所有未执行的事务的GTID的列表返回给从库，并且可以保证同一个事务只在指定的从库执行一次。</li>
+</ol>
+<p>mysql复制的几种方式</p>
+<ol>
+<li>异步复制<br>一个主库，一个或多个从库，数据异步同步到从库。</li>
+<li>同步复制<br>在MySQL cluster中特有的复制方式。</li>
+<li>半同步复制<br>在异步复制的基础上，确保任何一个主库上的事物在提交之前至少有一个从库已经收到该事物并日志记录下来。</li>
+<li>延迟复制<br>在异步复制的基础上，人为设定主库和从库的数据同步延迟时间，即保证数据延迟至少是这个参数。</li>
+</ol>
+<p>mysql复制的几种形式</p>
+<ol>
+<li><strong>基于语句的复制</strong>：在主服务器上执行的SQL语句，在从服务器上执行同样的语句。MySQL默认采用基于语句的复制，效率比较高。 一旦发现没法精确复制时，会自动选着基于行的复制<pre class=" language-bash"><code class="language-bash">binlog_format<span class="token operator">=</span>Statement</code></pre>
+</li>
+<li><strong>基于行的复制</strong>：把改变的内容复制过去，而不是把命令在从服务器上执行一遍. 从mysql5.0开始支持<pre class=" language-bash"><code class="language-bash">binlog_format<span class="token operator">=</span>Row</code></pre>
+</li>
+<li><strong>混合类型的复制</strong>：默认采用基于语句的复制，一旦发现基于语句的无法精确的复制时，就会采用基于行的复制。<pre class=" language-bash"><code class="language-bash">binlog_format<span class="token operator">=</span>Mixed</code></pre>
+</li>
+</ol>
+<h2 id="基于二进制日志点的异步复制解决方案"><a href="#基于二进制日志点的异步复制解决方案" class="headerlink" title="基于二进制日志点的异步复制解决方案"></a>基于二进制日志点的异步复制解决方案</h2><p>我们在MySQL中配置了主从之后，</p>
+<ul>
+<li>只要我们对Master节点进行了写操作，这个操作将会被保存到MySQL的binary-log（bin-log）日志当中， 这些记录叫做二进制日志事件，binary log events）</li>
+<li>slave 将 master 的 binary log events 拷贝到它的中继日志(relay log)</li>
+<li>slave 重做中继日志中的事件，将改变反映它自己的数据。</li>
+</ul>
+<p><img src="http://img.noback.top/2020-06-08-08-51-22.png" alt="2020-06-08-08-51-22"></p>
+<p>两个线程的主要作用</p>
+<ul>
+<li>I/O线程：该线程链接到master机器，master机器的binlog发送到slave的时候，IO线程会将该日志内容写在本地的中继日志（Relay log）中。</li>
+<li>SQL线程：该线程读取中继日志中的内容，并且根据中继日志中的内容对Slave数据库做相应的操作。<br>可能造成的问题：在写请求相当多的情况下，可能会造成Slave数据和Master数据不一致的情况，这是因为日志传输过程中的短暂延迟、或者写命令较多，系统速度不匹配造成的。<br>这大致就是MySQL主从同步的原理，真正在其中起到作用的实际上就是这两个日志文件，binlog和中继日志（Relay log）。</li>
+</ul>
+<p>创建两个mysql容器 因为配置文件我们后面要做修改，所以需要外面挂载进去<br>设置配置文件</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token function">mkdir</span> /hzj/mysql
+<span class="token punctuation">[</span>mysqld<span class="token punctuation">]</span>
+datadir<span class="token operator">=</span>/var/lib/mysql
+socket<span class="token operator">=</span>/var/lib/mysql/mysql.sock
+
+<span class="token comment" spellcheck="true"># ====== 主从复制配置文件</span>
+
+server-id <span class="token operator">=</span> 1            <span class="token comment" spellcheck="true"># 服务器 id 号，不要和其他服务器重复</span>
+log-bin<span class="token operator">=</span>mysql-bin     <span class="token comment" spellcheck="true"># 开启二进制日志</span>
+log_bin_index <span class="token operator">=</span> mysql-bin.index    <span class="token comment" spellcheck="true"># 索引二进制日志的文件名</span>
+sync_binlog <span class="token operator">=</span> 1      <span class="token comment" spellcheck="true"># 设为1就是把MySql每次发生的修改和事件的日志即时同步到硬盘上</span>
+binlog_format <span class="token operator">=</span> Row     <span class="token comment" spellcheck="true"># 复制模式 Statement, Row, mixed 这里是基于行的复制</span>
+skip_slave_start <span class="token operator">=</span> 1     <span class="token comment" spellcheck="true"># 防止从服务器在崩溃后自动开启，以给你足够的时间修复。</span>
+max_binlog_size <span class="token operator">=</span> 200M     <span class="token comment" spellcheck="true"># 指定二进制日志的大小</span>
+
+binlog-do-db <span class="token operator">=</span> datafordata
+<span class="token comment" spellcheck="true"># Disabling symbolic-links is recommended to prevent assorted security risks</span>
+symbolic-links<span class="token operator">=</span>0
+
+<span class="token comment" spellcheck="true"># Recommended in standard MySQL setup</span>
+sql-mode<span class="token operator">=</span>NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION
+
+<span class="token punctuation">[</span>mysqld_safe<span class="token punctuation">]</span>
+log-error<span class="token operator">=</span>/var/log/mysqld.log
+pid-file<span class="token operator">=</span>/var/run/mysqld/mysqld.pid
+
+
+<span class="token comment" spellcheck="true"># slave.cnf</span>
+<span class="token punctuation">[</span>mysqld<span class="token punctuation">]</span>
+<span class="token comment" spellcheck="true"># read_rnd_buffer_size = 2M</span>
+datadir<span class="token operator">=</span>/var/lib/mysql
+socket<span class="token operator">=</span>/var/lib/mysql/mysql.sock
+
+<span class="token comment" spellcheck="true"># ======= 主从赋值配置文件</span>
+server-id <span class="token operator">=</span> 2  <span class="token comment" spellcheck="true"># 服务器 id 号，不要和其他服务器重复</span>
+read_only <span class="token operator">=</span> 1  <span class="token comment" spellcheck="true"># 让从服务器只读，可以防止有人误从服务器插入数据，导致主从数据不一致。·</span>
+log-bin<span class="token operator">=</span>mysql-bin <span class="token comment" spellcheck="true"># 开启二进制日志</span>
+log_bin_index <span class="token operator">=</span> mysql-bin.index<span class="token comment" spellcheck="true"># 索引二进制日志的文件名</span>
+log_slave_updates <span class="token operator">=</span> 1
+relay_log <span class="token operator">=</span> mysql-relay-bin  <span class="token comment" spellcheck="true"># 中继日志·</span>
+relay_log_index <span class="token operator">=</span> mysql-relay-bin.index
+skip_slave_start <span class="token operator">=</span> 1  <span class="token comment" spellcheck="true"># 防止从服务器在崩溃后自动开启，以给你足够的时间修复。·</span>
+max_binlog_size <span class="token operator">=</span> 200M   <span class="token comment" spellcheck="true"># 指定二进制日志的大小</span>
+
+binlog-do-db <span class="token operator">=</span> datafordata
+<span class="token comment" spellcheck="true"># Disabling symbolic-links is recommended to prevent assorted security risks</span>
+symbolic-links<span class="token operator">=</span>0
+
+<span class="token comment" spellcheck="true"># Recommended in standard MySQL setup</span>
+sql-mode<span class="token operator">=</span>NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION
+
+<span class="token punctuation">[</span>mysqld_safe<span class="token punctuation">]</span>
+log-error<span class="token operator">=</span>/var/log/mysqld.log
+pid-file<span class="token operator">=</span>/var/run/mysqld/mysqld.pid
+
+<span class="token comment" spellcheck="true"># 1. 主从备份相关配置 - 从服务器</span>
+<span class="token comment" spellcheck="true"># 不在这里配置主服务器信息，而是通过命令来配置</span>
+server-id <span class="token operator">=</span> 2 <span class="token comment" spellcheck="true"># 服务器 id 号，不要和其他服务器重复</span>
+read_only <span class="token operator">=</span> 1 <span class="token comment" spellcheck="true"># 让从服务器只读，可以防止有人误从服务器插入数据，导致主从数据不一致。·</span>
+log-bin<span class="token operator">=</span>mysql-bin <span class="token comment" spellcheck="true"># 开启二进制日志</span>
+log_bin_index <span class="token operator">=</span> mysql-bin.index<span class="token comment" spellcheck="true"># 索引二进制日志的文件名</span>
+log_slave_updates <span class="token operator">=</span> 1
+relay_log <span class="token operator">=</span> mysql-relay-bin <span class="token comment" spellcheck="true"># 中继日志·</span>
+relay_log_index <span class="token operator">=</span> mysql-relay-bin.index
+skip_slave_start <span class="token operator">=</span> 1 <span class="token comment" spellcheck="true"># 防止从服务器在崩溃后自动开启，以给你足够的时间修复。·</span>
+max_binlog_size <span class="token operator">=</span> 200M  <span class="token comment" spellcheck="true"># 指定二进制日志的大小</span>
+
+<span class="token comment" spellcheck="true"># 以下配置是为了方便以后，从库切换为主库</span>
+<span class="token comment" spellcheck="true"># 1.1 需要同步的二进制数据库名</span>
+binlog-do-db <span class="token operator">=</span> datafordata
+<span class="token comment" spellcheck="true"># 1.2 不同步的二进制数据库名,如果不设置可以将其注释掉</span>
+<span class="token comment" spellcheck="true"># binlog-ignore-db = information_schema</span>
+<span class="token comment" spellcheck="true"># binlog-ignore-db = mysql</span>
+</code></pre>
+<pre class=" language-bash"><code class="language-bash">docker pull mysql:5.7
+docker run -p 3305:3306 --name mysql-slave -v /root/hzj/hzj/mysql/slave.cnf:/etc/mysql/conf.d/slave.cnf -e MYSQL_ROOT_PASSWORD<span class="token operator">=</span>upyun123 -itd mysql:5.7
+docker run -p 3306:3306 --name mysql-master -v /root/hzj/hzj/mysql/master.cnf:/etc/mysql/conf.d/master.cnf -e MYSQL_ROOT_PASSWORD<span class="token operator">=</span>upyun123 -itd mysql:5.7</code></pre>
+<p>进入容器配置远程用户</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 主机</span>
+docker <span class="token function">exec</span> -it mysql-master /bin/bash
+
+<span class="token operator">></span> mysql -u root -p
+<span class="token comment" spellcheck="true"># 修改本地root密码</span>
+<span class="token operator">></span> ALTER USER <span class="token string">'root'</span>@<span class="token string">'localhost'</span> IDENTIFIED BY <span class="token string">'upyun123'</span><span class="token punctuation">;</span>
+<span class="token comment" spellcheck="true"># 创建远程登录用户</span>
+<span class="token operator">></span> CREATE USER <span class="token string">'hzj'</span>@<span class="token string">'%'</span> IDENTIFIED WITH mysql_native_password BY <span class="token string">'upyun123'</span><span class="token punctuation">;</span>
+<span class="token operator">></span> GRANT ALL PRIVILEGES ON *.* TO <span class="token string">'hzj'</span>@<span class="token string">'%'</span><span class="token punctuation">;</span>
+
+<span class="token comment" spellcheck="true"># 备机</span>
+docker <span class="token function">exec</span> -it mysql-slave /bin/bash
+
+<span class="token operator">></span> mysql -u root -p
+<span class="token comment" spellcheck="true"># 修改本地root密码</span>
+<span class="token operator">></span> ALTER USER <span class="token string">'root'</span>@<span class="token string">'localhost'</span> IDENTIFIED BY <span class="token string">'upyun123'</span><span class="token punctuation">;</span>
+<span class="token comment" spellcheck="true"># 创建远程登录用户</span>
+<span class="token operator">></span> CREATE USER <span class="token string">'hzj'</span>@<span class="token string">'%'</span> IDENTIFIED WITH mysql_native_password BY <span class="token string">'upyun123'</span><span class="token punctuation">;</span>
+<span class="token operator">></span> GRANT ALL PRIVILEGES ON *.* TO <span class="token string">'hzj'</span>@<span class="token string">'%'</span><span class="token punctuation">;</span></code></pre>
+<p><img src="http://img.noback.top/2020-06-05-15-30-18.png" alt="2020-06-05-15-30-18"></p>
+<p>初始化主机上的内容，并插入内容，模拟需要备份的内容</p>
+<pre class=" language-sql"><code class="language-sql">
+<span class="token keyword">create</span> <span class="token keyword">database</span> datafordata  <span class="token keyword">character set</span> utf8mb4<span class="token punctuation">;</span>
+
+<span class="token keyword">use</span> datafordata<span class="token punctuation">;</span>
+
+<span class="token keyword">CREATE</span> <span class="token keyword">TABLE</span> <span class="token punctuation">`</span>t_temp<span class="token punctuation">`</span> <span class="token punctuation">(</span>
+    <span class="token punctuation">`</span>id<span class="token punctuation">`</span> <span class="token keyword">bigint</span><span class="token punctuation">(</span><span class="token number">20</span><span class="token punctuation">)</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span> <span class="token keyword">AUTO_INCREMENT</span> <span class="token keyword">COMMENT</span> <span class="token string">'主键ID'</span><span class="token punctuation">,</span>
+    <span class="token punctuation">`</span><span class="token keyword">comment</span><span class="token punctuation">`</span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">)</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span> <span class="token keyword">DEFAULT</span> <span class="token string">''</span> <span class="token keyword">COMMENT</span> <span class="token string">'备注'</span><span class="token punctuation">,</span>
+    <span class="token punctuation">`</span>create_time<span class="token punctuation">`</span> <span class="token keyword">bigint</span><span class="token punctuation">(</span><span class="token number">20</span><span class="token punctuation">)</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span> <span class="token punctuation">,</span>
+    <span class="token punctuation">`</span>update_time<span class="token punctuation">`</span> <span class="token keyword">bigint</span><span class="token punctuation">(</span><span class="token number">20</span><span class="token punctuation">)</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span> <span class="token punctuation">,</span>
+    <span class="token keyword">PRIMARY</span> <span class="token keyword">KEY</span> <span class="token punctuation">(</span><span class="token punctuation">`</span>id<span class="token punctuation">`</span><span class="token punctuation">)</span>
+<span class="token punctuation">)</span> <span class="token keyword">ENGINE</span><span class="token operator">=</span><span class="token keyword">InnoDB</span> <span class="token keyword">AUTO_INCREMENT</span><span class="token operator">=</span><span class="token number">1</span> <span class="token keyword">DEFAULT</span> <span class="token keyword">CHARSET</span><span class="token operator">=</span>utf8mb4<span class="token punctuation">;</span>
+
+<span class="token comment" spellcheck="true"># 插入数据</span>
+<span class="token keyword">INSERT</span> <span class="token keyword">INTO</span> <span class="token punctuation">`</span>datafordata<span class="token punctuation">`</span><span class="token punctuation">.</span><span class="token punctuation">`</span>t_temp<span class="token punctuation">`</span> <span class="token punctuation">(</span><span class="token punctuation">`</span>id<span class="token punctuation">`</span><span class="token punctuation">,</span> <span class="token punctuation">`</span><span class="token keyword">comment</span><span class="token punctuation">`</span><span class="token punctuation">,</span> <span class="token punctuation">`</span>create_time<span class="token punctuation">`</span><span class="token punctuation">,</span> <span class="token punctuation">`</span>update_time<span class="token punctuation">`</span><span class="token punctuation">)</span> <span class="token keyword">VALUES</span> <span class="token punctuation">(</span><span class="token string">'1'</span><span class="token punctuation">,</span> <span class="token string">'helloworld'</span><span class="token punctuation">,</span> <span class="token string">'1'</span><span class="token punctuation">,</span> <span class="token string">'1'</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p><img src="http://img.noback.top/2020-06-05-15-39-52.png" alt="2020-06-05-15-39-52"></p>
+<p>更新完毕以后，查看主从机器中主机的状态<br><img src="http://img.noback.top/2020-06-05-17-02-43.png" alt="2020-06-05-17-02-43"><br><img src="http://img.noback.top/2020-06-05-18-21-19.png" alt="2020-06-05-18-21-19"></p>
+<p>参数介绍</p>
+<ul>
+<li>File: mysql-bin.000033 #当前记录的日志</li>
+<li>Position: 337523 #日志中记录的位置  </li>
+<li>Binlog_Do_DB: </li>
+<li>Binlog_Ignore_DB: </li>
+</ul>
+<p>在从机上设置同步目标</p>
+<pre class=" language-bash"><code class="language-bash">change  master to master_host<span class="token operator">=</span><span class="token string">'10.0.6.55'</span>,MASTER_PORT<span class="token operator">=</span>3306,master_user<span class="token operator">=</span><span class="token string">'root'</span>,master_password<span class="token operator">=</span><span class="token string">'upyun123'</span>,master_log_file<span class="token operator">=</span><span class="token string">'mysql-bin.000003'</span>,master_log_pos<span class="token operator">=</span>4210<span class="token punctuation">;</span></code></pre>
+<p>其中master_log_pos和master_log_file是在主机上面使用<code>show master status </code> 查看对应的log名字和log大小<br>开启同步</p>
+<pre class=" language-bash"><code class="language-bash">start slave<span class="token punctuation">;</span>
+<span class="token comment" spellcheck="true"># 查看同步状态</span>
+show slave status\G<span class="token punctuation">;</span>
+<span class="token comment" spellcheck="true">#</span></code></pre>
+<p><img src="http://img.noback.top/2020-06-05-18-28-14.png" alt="2020-06-05-18-28-14"><br>这里面如果是yes表示正在同步了，如果是no则表示没有同步</p>
+<p><font color='red'>主从备份的时候要保证两个数据库的数据结构是一一致的</font></p>
+<h2 id="主从同步进阶版–读写分离"><a href="#主从同步进阶版–读写分离" class="headerlink" title="主从同步进阶版–读写分离"></a>主从同步进阶版–读写分离</h2><p><img src="http://img.noback.top/2020-06-08-08-53-53.png" alt="2020-06-08-08-53-53"></p>
+<h2 id="master和salve数据库的数据不一致解决方案"><a href="#master和salve数据库的数据不一致解决方案" class="headerlink" title="master和salve数据库的数据不一致解决方案"></a>master和salve数据库的数据不一致解决方案</h2><p>主从数据库的数据要保持一致，不然主从同步会出现bug..<br>如果主数据库中已经存在数据，有两种解决方案.</p>
+<ul>
+<li>第一种方案是选择忽略主库之前的数据，不做处理。这种方案只适用于不重要的可有可无的数据，并且业务上能够容忍主从库数据不一致的场景。</li>
+<li>第二种方案是对主库的数据进行备份，然后将主数据库中导出的数据导入到从数据库，然后再开启主从复制，以此来保证主从数据库数据一致</li>
+</ul>
+<h3 id="mysqldump-冷备份"><a href="#mysqldump-冷备份" class="headerlink" title="mysqldump 冷备份"></a>mysqldump 冷备份</h3><p>在之前就备份好数据库，使用mysqldump备份数据库<br>mysqldump是mysql原生自带很好用的逻辑备份工具<br>备份的基本流程如下</p>
+<pre class=" language-bash"><code class="language-bash">1.调用FTWRL<span class="token punctuation">(</span>flush tables with <span class="token function">read</span> lock<span class="token punctuation">)</span>，全局禁止读写
+2.开启快照读，获取此时的快照<span class="token punctuation">(</span>仅对innodb表起作用<span class="token punctuation">)</span>
+3.备份非innodb表数据<span class="token punctuation">(</span>*.frm,*.myi,*.myd等<span class="token punctuation">)</span>
+4.非innodb表备份完毕后，释放FTWRL锁
+5.逐一备份innodb表数据
+6.备份完成</code></pre>
+<p>常用备份参数</p>
+<pre class=" language-bash"><code class="language-bash">-A <span class="token comment" spellcheck="true">#备份全库</span>
+-B <span class="token comment" spellcheck="true">#备某一个数据库下的所有表</span>
+-R <span class="token comment" spellcheck="true">#备份存储过程和函数数据</span>
+--triggers <span class="token comment" spellcheck="true"># 备份触发器数据</span>
+--master-data <span class="token operator">=</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;1|2&amp;#125; # 告诉你备份后时刻的binlog位置 ,如果等于1，则将其打印为CHANGE MASTER命令; 如果等于2，那么该命令将以注释符号为前缀。</span>
+--single-transaction <span class="token comment" spellcheck="true"># 对innodb引擎进行热备</span>
+-F, --flush-logs <span class="token comment" spellcheck="true"># 刷新binlog日志</span>
+-x, --lock-all-tables <span class="token comment" spellcheck="true"># 锁定所有数据库的所有表。这是通过在整个转储期间采用全局读锁来实现的</span>
+-l, --lock-tables <span class="token comment" spellcheck="true"># 锁定所有表以供读取</span>
+-d,  <span class="token comment" spellcheck="true"># 仅表结构</span>
+-t, <span class="token comment" spellcheck="true"># 仅数据</span>
+--compact <span class="token comment" spellcheck="true">#减少无用数据输出(调试)</span>
+
+mysqldump -A -R --triggers --master-data<span class="token operator">=</span>2 --single-transaction <span class="token operator">|</span><span class="token function">gzip</span> <span class="token operator">></span>/opt/all_<span class="token variable"><span class="token variable">$(</span><span class="token function">date</span> +%F<span class="token variable">)</span></span>.sql.gz </code></pre>
+<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 1.锁定数据库，保证在同步的过程中不会有新的数据插入</span>
+flush tables with <span class="token function">read</span> lock<span class="token punctuation">;</span>
+<span class="token comment" spellcheck="true"># 2. 使用mysqldump备份数据库</span>
+
+<span class="token punctuation">[</span>root@localhost data<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># cd /data/db_backup/</span>
+<span class="token punctuation">[</span>root@localhost db_backup<span class="token punctuation">]</span><span class="token comment" spellcheck="true">#  mysqldump -uroot -p --master-data=1 --single-transaction --routines --triggers --events  --all-databases > all.sql</span>
+Enter password
+
+<span class="token comment" spellcheck="true"># 3.解除主数据库的锁定</span>
+unlock tables<span class="token punctuation">;</span>
+
+<span class="token comment" spellcheck="true"># 4. 把数据全量导入slave数据库，保证主从数据一致</span></code></pre>
+<h3 id="Xtrabackup-热备份"><a href="#Xtrabackup-热备份" class="headerlink" title="Xtrabackup 热备份"></a>Xtrabackup 热备份</h3><p>Xtrabackup是一个开源的免费的热备工具，在Xtrabackup包中主要有Xtrabackup和innobackupex两个工具。xtrabackup 是用来备份 InnoDB 表的，不能备份非 InnoDB 表，和 mysqld server 没有交互；innobackupex 脚本用来备份非 InnoDB 表，同时会调用 xtrabackup 命令来备份 InnoDB 表，还会和 mysqld server 发送命令进行交互，如加读锁（FTWRL）、获取位点（SHOW SLAVE STATUS）等。简单来说，innobackupex 在 xtrabackup 之上做了一层封装。</p>
+<p>安装完成xtarbackup之后，会有下面4个工具</p>
+<pre class=" language-bash"><code class="language-bash">usr
+├── bin
+│   ├── innobackupex  <span class="token comment" spellcheck="true"># 备份innodb表</span>
+│   ├── xbcrypt  <span class="token comment" spellcheck="true"># 备份加密</span>
+│   ├── xbstream  <span class="token comment" spellcheck="true"># 流式备份</span>
+│   └── xtrabackup  <span class="token comment" spellcheck="true"># 备份非innodb表</span></code></pre>
+<h4 id="备份流程"><a href="#备份流程" class="headerlink" title="备份流程"></a>备份流程</h4><p><img src="http://img.noback.top/2020-06-08-10-54-05.png" alt="2020-06-08-10-54-05"><br>备份过程<br><img src="http://img.noback.top/2020-06-08-10-55-13.png" alt="2020-06-08-10-55-13"><br>恢复过程<br><img src="http://img.noback.top/2020-06-08-10-44-07.png" alt="2020-06-08-10-44-07"></p>
+<ol>
+<li>innobackupex 在启动后，会先 fork 一个进程，启动 xtrabackup进程，然后就等待 xtrabackup 备份完 ibd 数据文件；</li>
+<li>xtrabackup 在备份 InnoDB 相关数据时，是有2种线程的，1种是 redo 拷贝线程，负责拷贝 redo 文件，1种是 ibd 拷贝线程，负责拷贝 ibd 文件；redo 拷贝线程只有一个，在 ibd 拷贝线程之前启动，在 ibd 线程结束后结束。xtrabackup 进程开始执行后，先启动 redo 拷贝线程，从最新的 checkpoint 点开始顺序拷贝 redo 日志；然后再启动 ibd 数据拷贝线程，在 xtrabackup 拷贝 ibd 过程中，innobackupex 进程一直处于等待状态（等待文件被创建）</li>
+<li>xtrabackup 拷贝完成idb后，通知 innobackupex（通过创建文件），同时自己进入等待（redo 线程仍然继续拷贝）;</li>
+<li>innobackupex 收到 xtrabackup 通知后，执行FLUSH TABLES WITH READ LOCK (FTWRL)，取得一致性位点，然后开始备份非 InnoDB 文件（包括 frm、MYD、MYI、CSV、opt、par等）。拷贝非 InnoDB 文件过程中，因为数据库处于全局只读状态，如果在业务的主库备份的话，要特别小心，非 InnoDB 表（主要是MyISAM）比较多的话整库只读时间就会比较长，这个影响一定要评估到。</li>
+<li>当 innobackupex 拷贝完所有非 InnoDB 表文件后，通知 xtrabackup（通过删文件） ，同时自己进入等待（等待另一个文件被创建）；</li>
+<li>xtrabackup 收到 innobackupex 备份完非 InnoDB 通知后，就停止 redo 拷贝线程，然后通知 innobackupex redo log 拷贝完成（通过创建文件）；</li>
+<li>innobackupex 收到 redo 备份完成通知后，就开始解锁，执行 UNLOCK TABLES；</li>
+<li>最后 innobackupex 和 xtrabackup 进程各自完成收尾工作，如资源的释放、写备份元数据信息等，innobackupex 等待 xtrabackup 子进程结束后退出。</li>
+</ol>
+<p>在上面描述的文件拷贝，都是备份进程直接通过操作系统读取数据文件的，只在执行 SQL 命令时和数据库有交互，基本不影响数据库的运行，在备份非 InnoDB 时会有一段时间只读（如果没有MyISAM表的话，只读时间在几秒左右），在备份 InnoDB 数据文件时，对数据库完全没有影响，是真正的热备。</p>
+<p>InnoDB 和非 InnoDB 文件的备份都是通过拷贝文件来做的，但是实现的方式不同，前者是以page为粒度做的(xtrabackup)，后者是 cp 或者 tar 命令(innobackupex)，xtrabackup 在读取每个page时会校验 checksum 值，保证数据块是一致的，而 innobackupex 在 cp MyISAM 文件时已经做了flush（FTWRL），磁盘上的文件也是完整的，所以最终备份集里的数据文件都是写入完整的。</p>
+<p> — <a target="_blank" rel="noopener" href="http://mysql.taobao.org/monthly/2016/03/07/">http://mysql.taobao.org/monthly/2016/03/07/</a></p>
+<h4 id="安装xtrabackup"><a href="#安装xtrabackup" class="headerlink" title="安装xtrabackup"></a>安装xtrabackup</h4><ul>
+<li>下载安装包<br>网址是<a target="_blank" rel="noopener" href="https://www.percona.com/downloads/">https://www.percona.com/downloads/</a> 我这里使用的是2.4.14版本。</li>
+<li>下载依赖包<br>然后下载依赖包，网址是<a target="_blank" rel="noopener" href="http://rpmfind.net/linux/atrpms/el6-x86_64/atrpms/stable/libev-4.04-2.el6.x86_64.rpm%E3%80%82">http://rpmfind.net/linux/atrpms/el6-x86_64/atrpms/stable/libev-4.04-2.el6.x86_64.rpm。</a></li>
+</ul>
+<pre class=" language-bash"><code class="language-bash">mdkir /root/package <span class="token operator">&amp;&amp;</span> <span class="token function">cd</span> /root/package
+<span class="token function">wget</span> Percona-XtraBackup-2.4.14-ref675d4-el7-x86_64-bundle.tar
+<span class="token function">wget</span> http://rpmfind.net/linux/atrpms/el6-x86_64/atrpms/stable/libev-4.04-2.el6.x86_64.rpm
+
+rpm -ivh libev-4.04-2.el6.x86_64.rpm
+<span class="token function">tar</span> -xf Percona-XtraBackup-2.4.14-ref675d4-el7-x86_64-bundle.tar
+yum -y <span class="token function">install</span> percona-xtrabackup-24-2.4.14-1.el7.x86_64.rpm</code></pre>
+<p><font color='red'>xtrabackup是根据数据库的配置文件来查找数据库的，默认情况下指向/etc/my.cnf</font></p>
+<h4 id="使用xtrabackup全量备份"><a href="#使用xtrabackup全量备份" class="headerlink" title="使用xtrabackup全量备份"></a>使用xtrabackup全量备份</h4><p>在备份数据库时会涉及到两个用户：系统用户与数据库内部的用户。<br>　　系统用户需要在datadir（配置文件内设置的目录）上具有读写执行权限（rwx）。而数据库内部用户需要：RELOAD和LOCK TABLES权限，为了执行FLUSH TABLES WITH READ LOCK；REPLICATION CLIENT权限，为了获取binary log（二进制日志文件）位置；CREATE TABLESPACE权限，为了导入表，用户表级别的恢复；SUPER权限，为了在slave环境下备份用来启动和关闭slave线程。</p>
+<p>常用参数</p>
+<pre class=" language-bash"><code class="language-bash">--user<span class="token operator">=</span><span class="token punctuation">[</span>数据库用户<span class="token punctuation">]</span>    以什么用户身份进行操作
+--password<span class="token operator">=</span><span class="token punctuation">[</span>密码<span class="token punctuation">]</span>    数据库用户的密码
+--port<span class="token operator">=</span><span class="token punctuation">[</span>端口号<span class="token punctuation">]</span>    数据库的端口号，默认3306
+--stream<span class="token operator">=</span><span class="token punctuation">[</span>tar<span class="token operator">|</span>xbstream<span class="token punctuation">]</span>　　打包（数据流）
+--defaults-file<span class="token operator">=</span><span class="token punctuation">[</span>配置文件<span class="token punctuation">]</span>　　指定默认配置文件，默认读取/etc/my.cnf
+--no-timestamp　　不创建时间戳文件，而改用目的地址（可以自动创建）
+--copy-back　　备份还原的主要选项
+--incremental　　使用增量备份，默认使用的完整备份
+--apply-log 应用数据
+--incremental-basedir<span class="token operator">=</span><span class="token punctuation">[</span>地址<span class="token punctuation">]</span>　　与--incremental选项联合使用，该参数指定上一级备份的地址来做增量备份</code></pre>
+<p>使用</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 复制数据库中的内容</span>
+innobackupex --user<span class="token operator">=</span>root --password<span class="token operator">=</span>123456 ./db_backup/  <span class="token comment" spellcheck="true"># 会打印每一个备份的步骤</span>
+innobackupex --user<span class="token operator">=</span>root --password<span class="token operator">=</span>123456 ./db_backup/ 2<span class="token operator">>></span>./db_backup/backup.log　　<span class="token comment" spellcheck="true"># 将输出内容丢到黑洞如果不想要输出信息，可以将输出信息重定向到指定文件或黑洞文件中 </span>
+
+<span class="token comment" spellcheck="true"># 如果mysql是挂在docker里面的 需要指定IP和端口 本机也需要</span>
+innobackupex --user<span class="token operator">=</span>root --password<span class="token operator">=</span>123456 --host<span class="token operator">=</span>10.0.6.55 --port<span class="token operator">=</span>3303 ./db_backup/
+
+<span class="token comment" spellcheck="true"># ==== nc方法 </span>
+<span class="token comment" spellcheck="true"># 流式备份，完成远程主机间的全量备份</span>
+<span class="token comment" spellcheck="true"># master端</span>
+innobackupex --user<span class="token operator">=</span>root --password<span class="token operator">=</span>123456 --host<span class="token operator">=</span>10.0.6.55 --port<span class="token operator">=</span>3303 --stream<span class="token operator">=</span>tar ./ <span class="token operator">|</span> nc 10.0.6.35 9998
+<span class="token comment" spellcheck="true"># slave 端</span>
+nc -l 9998 <span class="token operator">|</span> <span class="token function">tar</span> -ixvf -
+
+
+<span class="token comment" spellcheck="true"># ==== 官方的xbstream</span>
+innobackupex  --user<span class="token operator">=</span>root --password<span class="token operator">=</span><span class="token string">"upyun123"</span> --port<span class="token operator">=</span>3303 --host<span class="token operator">=</span>10.0.6.55 --slave-info --parallel<span class="token operator">=</span>16  --stream<span class="token operator">=</span>xbstream ./ 2<span class="token operator">></span>/data/xtrabackup_log.txt <span class="token operator">|</span> <span class="token function">pv</span> -q -L40m <span class="token operator">|</span> <span class="token function">ssh</span> lily@172.26.1.245 <span class="token string">" cat - |  xbstream -x -C /data/innobackup"</span>
+
+
+<span class="token comment" spellcheck="true"># 备份完成后会在/db_backup文件夹下面产生一个根据日期来创建的备份文件夹</span>
+<span class="token comment" spellcheck="true"># 自定义备份文件名</span>
+innobackupex --user<span class="token operator">=</span>root --password<span class="token operator">=</span>123456 --no-timestamp ./db_backup/test/ 2<span class="token operator">>></span>./db_backup/backup.log
+
+<span class="token comment" spellcheck="true"># 需要清除数据，不然出现报错</span>
+systemctl stop mysqld
+<span class="token function">rm</span> -rf /var/lib/mysql/*　　<span class="token comment" spellcheck="true">#危险操作，请在测试环境测试</span>
+innobackupex --apply-log ./db_backup/ --use-memory<span class="token operator">=</span>16G  
+<span class="token function">chown</span> -R mysql:mysql /var/lib/mysql　<span class="token comment" spellcheck="true"># 重新授权</span>
+systemctl start mysqld</code></pre>
+<h4 id="使用xtrabackup增量备份"><a href="#使用xtrabackup增量备份" class="headerlink" title="使用xtrabackup增量备份"></a>使用xtrabackup增量备份</h4><p>待填<br><a target="_blank" rel="noopener" href="https://www.centos.bz/2017/09/xtrabackup-backup-mysql-innodb/">https://www.centos.bz/2017/09/xtrabackup-backup-mysql-innodb/</a><br>cnblogs.com/zhoujinyi/p/4088866.html<br><a target="_blank" rel="noopener" href="https://www.cnblogs.com/gaogao67/p/10980642.html">https://www.cnblogs.com/gaogao67/p/10980642.html</a></p>
+<h4 id="xtrabackup-流式备份"><a href="#xtrabackup-流式备份" class="headerlink" title="xtrabackup 流式备份"></a>xtrabackup 流式备份</h4><p>如果需要将 机器上面的备份数据发送到远程机器，或者快速搭建主从，可以采用流式备份。<br>例如：这里将172.26.1.3的数据发送到 172.26.1.245 并做成主从同步。  master: 172.26.1.3  slave:172.26.1.245<br>172.26.1.3 备份之前需要先关闭多线程复制，否则会报错</p>
+<pre class=" language-bash"><code class="language-bash">mysql<span class="token operator">></span> show variables like <span class="token string">'%worker%'</span>
+    -<span class="token operator">></span> <span class="token punctuation">;</span>
++------------------------+-------+
+<span class="token operator">|</span> Variable_name          <span class="token operator">|</span> Value <span class="token operator">|</span>
++------------------------+-------+
+<span class="token operator">|</span> slave_parallel_workers <span class="token operator">|</span> 0     <span class="token operator">|</span>
++------------------------+-------+
+1 row <span class="token keyword">in</span> <span class="token keyword">set</span> <span class="token punctuation">(</span>0.00 sec<span class="token punctuation">)</span>
+
+mysql<span class="token operator">></span> <span class="token keyword">set</span> global slave_parallel_workers<span class="token operator">=</span>0<span class="token punctuation">;</span>
+Query OK, 0 rows affected <span class="token punctuation">(</span>0.00 sec<span class="token punctuation">)</span></code></pre>
+<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># master端 </span>
+<span class="token comment" spellcheck="true"># 主要操作就是打包本地的数据，使用xbstream传输到对端机器，然后使用ssh登录对端 并且接收</span>
+innobackupex  --user<span class="token operator">=</span>root --password<span class="token operator">=</span><span class="token string">"upyun123"</span> --port<span class="token operator">=</span>3303 --host<span class="token operator">=</span>10.0.6.55 --slave-info --parallel<span class="token operator">=</span>16  --stream<span class="token operator">=</span>xbstream ./ 2<span class="token operator">></span>/data/xtrabackup_log.txt <span class="token operator">|</span> <span class="token function">pv</span> -q -L40m <span class="token operator">|</span> <span class="token function">ssh</span> lily@172.26.1.245 <span class="token string">" cat - |  xbstream -x -C /data/innobackup"</span></code></pre>
+<p>注：这里的 172.26.1.245 是远程机器的ip</p>
+<p>–slave-info： 备份目录下会多生成一个xtrabackup_slave_info文件，文件内容类似于:CHANGE MASTER TO MASTER_LOG_FILE=’’, MASTER_LOG_POS=0。<br>    这个参数适用的场景：假设有主库A和从库B，目前想再添加一台备库C，并让备库C以主库A为master；因为主库A是生产库，压力一般比较大，所以就在备库B上备份一个数据库，然后把这个备份拿到C服务器上，并导入到C库，接下来再在C服务器上执行change master的命令：其中master_host是A的ip,而master_log_file和master_log_pos就是这个xtrabackup_slave_info里面的值。 </p>
+<h4 id="备份恢复"><a href="#备份恢复" class="headerlink" title="备份恢复"></a>备份恢复</h4><pre class=" language-bash"><code class="language-bash">恢复（在远程机器172.26.1.245执行）
+1，拷贝master机器的/etc/my.cnf 文件，并修改server_id。
+2，将172.26.1.245做成172.26.1.3的从库， 从 /data/innobackup/xtrabackup_binlog_info 文件里面读取binlog和position信息。
+<span class="token comment" spellcheck="true">#  cat /data/innobackup/xtrabackup_binlog_info </span>
+mysql-bin.000066 94839444
+mysql<span class="token operator">></span> CHANGE MASTER TO MASTER_HOST<span class="token operator">=</span><span class="token string">'172.26.1.3'</span>,MASTER_USER<span class="token operator">=</span><span class="token string">'repl'</span>,MASTER_PASSWORD<span class="token operator">=</span><span class="token string">'xxxxxx'</span>,MASTER_AUTO_POSITION<span class="token operator">=</span>0,MASTER_LOG_FILE<span class="token operator">=</span><span class="token string">'mysql-bin.000066'</span>,MASTER_LOG_POS<span class="token operator">=</span>94839444<span class="token punctuation">;</span> 
+
+mysql<span class="token operator">></span> start slave<span class="token punctuation">;</span></code></pre>
+<h4 id="区别"><a href="#区别" class="headerlink" title="区别"></a>区别</h4><p>Xtrabackup备份时不能备份表结构、触发器等等，也不能智能区分.idb数据文件。另外innobackupex还不能完全支持增量备份，需要和xtrabackup结合起来实现全备的功能。</p>
+<h2 id="xtrabackup详解"><a href="#xtrabackup详解" class="headerlink" title="xtrabackup详解"></a>xtrabackup详解</h2><p>记录一下xtrabackup的备份流程</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 先备份</span>
+innobackupex --user<span class="token operator">=</span>hzj --password<span class="token operator">=</span>upyun123 --port<span class="token operator">=</span>3303 --host<span class="token operator">=</span>10.0.6.55 ./
+<span class="token function">cat</span> /root/data/backup/2020-06-08_01-55-22/xtrabackup_checkpoints
+<span class="token comment" spellcheck="true"># backup_type = full-backuped  # 这里提示backup 说明当前是备份的</span>
+<span class="token comment" spellcheck="true"># from_lsn = 0</span>
+<span class="token comment" spellcheck="true"># to_lsn = 6110542</span>
+<span class="token comment" spellcheck="true"># last_lsn = 6110542</span>
+<span class="token comment" spellcheck="true"># compact = 0</span>
+<span class="token comment" spellcheck="true"># recover_binlog_info = 0</span>
+<span class="token comment" spellcheck="true"># flushed_lsn = 12501828</span>
+
+<span class="token comment" spellcheck="true"># 回滚 </span>
+<span class="token comment" spellcheck="true"># 将全量备份后的内容拷贝到需要备份的从机器上进行备份</span>
+innobackupex --apply-log --use-memory<span class="token operator">=</span>32M /root/data/backup/2020-06-08_01-55-22/
+<span class="token comment" spellcheck="true"># 查看文件状态</span>
+<span class="token function">more</span> xtrabackup_checkpoints
+<span class="token comment" spellcheck="true"># backup_type = full-prepared # 已经准备完成</span>
+<span class="token comment" spellcheck="true"># from_lsn = 0</span>
+<span class="token comment" spellcheck="true"># to_lsn = 2641979</span>
+<span class="token comment" spellcheck="true"># last_lsn = 2641988</span>
+<span class="token comment" spellcheck="true"># compact = 0</span>
+<span class="token comment" spellcheck="true"># recover_binlog_info = 0</span>
+<span class="token comment" spellcheck="true"># flushed_lsn = 12501828</span>
+
+<span class="token comment" spellcheck="true"># 备份</span>
+innobackupex --copy-back /root/data/backup/2020-06-08_01-55-22/
+<span class="token function">chown</span> -R mysql.mysql /application/mysql/ <span class="token comment" spellcheck="true"># 修改权限</span>
+<span class="token comment" spellcheck="true"># 重启数据库</span>
+systemctl restart mysqld</code></pre>
+<h2 id="错误"><a href="#错误" class="headerlink" title="错误"></a>错误</h2><h3 id="docker-mysql"><a href="#docker-mysql" class="headerlink" title="docker mysql"></a>docker mysql</h3><pre class=" language-bash"><code class="language-bash">docker run -p 3306:3306 --name mysql-master -v /opt/docker_v/mysql/conf:./master.cnf -e MYSQL_ROOT_PASSWORD<span class="token operator">=</span>upyun123 -itd mysql:5.7
+docker: Error response from daemon: invalid volume specification: <span class="token string">'/opt/docker_v/mysql/conf:./master.cnf'</span><span class="token keyword">:</span> invalid <span class="token function">mount</span> config <span class="token keyword">for</span> <span class="token function">type</span> <span class="token string">"bind"</span><span class="token keyword">:</span> invalid <span class="token function">mount</span> path: <span class="token string">'./master.cnf'</span> <span class="token function">mount</span> path must be absolute.</code></pre>
+<p>这里挂在需要挂在绝对路径</p>
+<h3 id="innobackupex-命令出错"><a href="#innobackupex-命令出错" class="headerlink" title="innobackupex 命令出错"></a>innobackupex 命令出错</h3><pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span>root@db01 mysql<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># innobackupex --user=root --password=123456 --defaults-file=/application/mysql/my.cnf /data/mysql/backup/</span>
+xtrabackup: Error: --defaults-file must be specified first on the <span class="token function">command</span> line
+<span class="token punctuation">[</span>root@db01 mysql<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># innobackupex --defaults-file=/application/mysql/my.cnf --user=root --password=123456 /data/mysql/backup/</span>
+190817 09:07:47 innobackupex: Starting the backup operation</code></pre>
+<p>需要把–defaults-file 作为第一个参数</p>
+<h3 id="docker-mysql无法被innobackupex备份"><a href="#docker-mysql无法被innobackupex备份" class="headerlink" title="docker-mysql无法被innobackupex备份"></a>docker-mysql无法被innobackupex备份</h3><p>使用过程中出现这个错误，这里做下记录</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 如果mysql是挂在docker里面的 需要指定IP和端口 本机也需要</span>
+innobackup --user<span class="token operator">=</span>root --password<span class="token operator">=</span>123456 --host<span class="token operator">=</span>10.0.6.55 --port<span class="token operator">=</span>3303 ./db_backup/</code></pre>
+<h2 id="docker-mysql重启数据库"><a href="#docker-mysql重启数据库" class="headerlink" title="docker-mysql重启数据库"></a>docker-mysql重启数据库</h2><p>因为mysql的配置文件会根据需求去更改，所以最好把配置文件从本地挂载进去</p>
+<pre class=" language-bash"><code class="language-bash">docker run -p 3306:3306 --name mysql-master -v /root/hzj/hzj/mysql/master.cnf:/etc/mysql/conf.d/master.cnf -e MYSQL_ROOT_PASSWORD<span class="token operator">=</span>upyun123 -itd mysql:5.7
+
+<span class="token operator">></span>c8328f40cfcb</code></pre>
+<p>修改配置文件重启数据库—&gt; 重启docekr容器</p>
+<pre class=" language-bash"><code class="language-bash">docker restart c8328f40cfcb</code></pre>
+<h2 id="docker-mysql运行"><a href="#docker-mysql运行" class="headerlink" title="docker-mysql运行"></a>docker-mysql运行</h2><pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 挂在日志 数据和配置</span>
+docker run -p 3308:3306 --name mysql-slave \
+-v /mydata/mysql-slave/log:/var/log/mysql \
+-v /mydata/mysql-slave/data:/var/lib/mysql \
+-v /mydata/mysql-slave/conf:/etc/mysql \
+-e MYSQL_ROOT_PASSWORD<span class="token operator">=</span>root  \
+-d mysql:5.7
+</code></pre>
+<h2 id="mysql-一键脚本"><a href="#mysql-一键脚本" class="headerlink" title="mysql 一键脚本"></a>mysql 一键脚本</h2><pre class=" language-bash"><code class="language-bash">
+ALTER USER <span class="token string">'root'</span>@<span class="token string">'localhost'</span> IDENTIFIED BY <span class="token string">'upyun123'</span><span class="token punctuation">;</span>
+CREATE USER <span class="token string">'hzj'</span>@<span class="token string">'%'</span> IDENTIFIED WITH mysql_native_password BY <span class="token string">'upyun123'</span><span class="token punctuation">;</span>
+GRANT ALL PRIVILEGES ON *.* TO <span class="token string">'hzj'</span>@<span class="token string">'%'</span><span class="token punctuation">;</span>
+create database datafordata  character <span class="token keyword">set</span> utf8mb4<span class="token punctuation">;</span>
+use datafordata<span class="token punctuation">;</span>
+CREATE TABLE <span class="token variable"><span class="token variable">`</span>t_temp<span class="token variable">`</span></span> <span class="token punctuation">(</span>
+    <span class="token variable"><span class="token variable">`</span><span class="token function">id</span><span class="token variable">`</span></span> bigint<span class="token punctuation">(</span>20<span class="token punctuation">)</span> NOT NULL AUTO_INCREMENT COMMENT <span class="token string">'主键ID'</span>,
+    <span class="token variable"><span class="token variable">`</span>comment<span class="token variable">`</span></span> varchar<span class="token punctuation">(</span>10<span class="token punctuation">)</span> NOT NULL DEFAULT <span class="token string">''</span> COMMENT <span class="token string">'备注'</span>,
+    <span class="token variable"><span class="token variable">`</span>create_time<span class="token variable">`</span></span> bigint<span class="token punctuation">(</span>20<span class="token punctuation">)</span> NOT NULL ,
+    <span class="token variable"><span class="token variable">`</span>update_time<span class="token variable">`</span></span> bigint<span class="token punctuation">(</span>20<span class="token punctuation">)</span> NOT NULL ,
+    PRIMARY KEY <span class="token punctuation">(</span><span class="token variable"><span class="token variable">`</span><span class="token function">id</span><span class="token variable">`</span></span><span class="token punctuation">)</span>
+<span class="token punctuation">)</span> ENGINE<span class="token operator">=</span>InnoDB AUTO_INCREMENT<span class="token operator">=</span>1 DEFAULT CHARSET<span class="token operator">=</span>utf8mb4<span class="token punctuation">;</span>
+INSERT INTO <span class="token variable"><span class="token variable">`</span>datafordata<span class="token variable">`</span></span><span class="token keyword">.</span><span class="token variable"><span class="token variable">`</span>t_temp<span class="token variable">`</span></span> <span class="token punctuation">(</span><span class="token variable"><span class="token variable">`</span><span class="token function">id</span><span class="token variable">`</span></span>, <span class="token variable"><span class="token variable">`</span>comment<span class="token variable">`</span></span>, <span class="token variable"><span class="token variable">`</span>create_time<span class="token variable">`</span></span>, <span class="token variable"><span class="token variable">`</span>update_time<span class="token variable">`</span></span><span class="token punctuation">)</span> VALUES <span class="token punctuation">(</span><span class="token string">'1'</span>, <span class="token string">'helloworld'</span>, <span class="token string">'1'</span>, <span class="token string">'1'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+INSERT INTO <span class="token variable"><span class="token variable">`</span>datafordata<span class="token variable">`</span></span><span class="token keyword">.</span><span class="token variable"><span class="token variable">`</span>t_temp<span class="token variable">`</span></span> <span class="token punctuation">(</span><span class="token variable"><span class="token variable">`</span><span class="token function">id</span><span class="token variable">`</span></span>, <span class="token variable"><span class="token variable">`</span>comment<span class="token variable">`</span></span>, <span class="token variable"><span class="token variable">`</span>create_time<span class="token variable">`</span></span>, <span class="token variable"><span class="token variable">`</span>update_time<span class="token variable">`</span></span><span class="token punctuation">)</span> VALUES <span class="token punctuation">(</span><span class="token string">'2'</span>, <span class="token string">'helloworld'</span>, <span class="token string">'1'</span>, <span class="token string">'1'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+INSERT INTO <span class="token variable"><span class="token variable">`</span>datafordata<span class="token variable">`</span></span><span class="token keyword">.</span><span class="token variable"><span class="token variable">`</span>t_temp<span class="token variable">`</span></span> <span class="token punctuation">(</span><span class="token variable"><span class="token variable">`</span><span class="token function">id</span><span class="token variable">`</span></span>, <span class="token variable"><span class="token variable">`</span>comment<span class="token variable">`</span></span>, <span class="token variable"><span class="token variable">`</span>create_time<span class="token variable">`</span></span>, <span class="token variable"><span class="token variable">`</span>update_time<span class="token variable">`</span></span><span class="token punctuation">)</span> VALUES <span class="token punctuation">(</span><span class="token string">'3'</span>, <span class="token string">'helloworld'</span>, <span class="token string">'1'</span>, <span class="token string">'1'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+INSERT INTO <span class="token variable"><span class="token variable">`</span>datafordata<span class="token variable">`</span></span><span class="token keyword">.</span><span class="token variable"><span class="token variable">`</span>t_temp<span class="token variable">`</span></span> <span class="token punctuation">(</span><span class="token variable"><span class="token variable">`</span><span class="token function">id</span><span class="token variable">`</span></span>, <span class="token variable"><span class="token variable">`</span>comment<span class="token variable">`</span></span>, <span class="token variable"><span class="token variable">`</span>create_time<span class="token variable">`</span></span>, <span class="token variable"><span class="token variable">`</span>update_time<span class="token variable">`</span></span><span class="token punctuation">)</span> VALUES <span class="token punctuation">(</span><span class="token string">'4'</span>, <span class="token string">'helloworld'</span>, <span class="token string">'1'</span>, <span class="token string">'1'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+INSERT INTO <span class="token variable"><span class="token variable">`</span>datafordata<span class="token variable">`</span></span><span class="token keyword">.</span><span class="token variable"><span class="token variable">`</span>t_temp<span class="token variable">`</span></span> <span class="token punctuation">(</span><span class="token variable"><span class="token variable">`</span><span class="token function">id</span><span class="token variable">`</span></span>, <span class="token variable"><span class="token variable">`</span>comment<span class="token variable">`</span></span>, <span class="token variable"><span class="token variable">`</span>create_time<span class="token variable">`</span></span>, <span class="token variable"><span class="token variable">`</span>update_time<span class="token variable">`</span></span><span class="token punctuation">)</span> VALUES <span class="token punctuation">(</span><span class="token string">'5'</span>, <span class="token string">'helloworld'</span>, <span class="token string">'1'</span>, <span class="token string">'1'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+INSERT INTO <span class="token variable"><span class="token variable">`</span>datafordata<span class="token variable">`</span></span><span class="token keyword">.</span><span class="token variable"><span class="token variable">`</span>t_temp<span class="token variable">`</span></span> <span class="token punctuation">(</span><span class="token variable"><span class="token variable">`</span><span class="token function">id</span><span class="token variable">`</span></span>, <span class="token variable"><span class="token variable">`</span>comment<span class="token variable">`</span></span>, <span class="token variable"><span class="token variable">`</span>create_time<span class="token variable">`</span></span>, <span class="token variable"><span class="token variable">`</span>update_time<span class="token variable">`</span></span><span class="token punctuation">)</span> VALUES <span class="token punctuation">(</span><span class="token string">'6'</span>, <span class="token string">'helloworld'</span>, <span class="token string">'1'</span>, <span class="token string">'1'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+INSERT INTO <span class="token variable"><span class="token variable">`</span>datafordata<span class="token variable">`</span></span><span class="token keyword">.</span><span class="token variable"><span class="token variable">`</span>t_temp<span class="token variable">`</span></span> <span class="token punctuation">(</span><span class="token variable"><span class="token variable">`</span><span class="token function">id</span><span class="token variable">`</span></span>, <span class="token variable"><span class="token variable">`</span>comment<span class="token variable">`</span></span>, <span class="token variable"><span class="token variable">`</span>create_time<span class="token variable">`</span></span>, <span class="token variable"><span class="token variable">`</span>update_time<span class="token variable">`</span></span><span class="token punctuation">)</span> VALUES <span class="token punctuation">(</span><span class="token string">'7'</span>, <span class="token string">'helloworld'</span>, <span class="token string">'1'</span>, <span class="token string">'1'</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<h2 id="extra"><a href="#extra" class="headerlink" title="extra"></a>extra</h2><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/clsn/p/8138015.html#auto-id-40">https://www.cnblogs.com/clsn/p/8138015.html#auto-id-40</a><br><a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000022440263">https://segmentfault.com/a/1190000022440263</a><br><a target="_blank" rel="noopener" href="https://www.cnblogs.com/clsn/p/8150036.html#auto-id-0">https://www.cnblogs.com/clsn/p/8150036.html#auto-id-0</a></p>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>标签：</span>
+                <span class="tag">
+                    
+                    
+                    <a href="/tags/mysql/"># mysql</a>
+                    
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript：window.history.back();">后退</a>
+                <span>· </span>
+                <a href="/">主页</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            <a class="prev" rel="prev" href="/2020/07/08/blog_back_new/fastapi/fastapi%E5%AE%9A%E6%97%B6%E5%99%A8%E5%AE%9E%E8%B7%B5/">fastapi定时器实践</a>
+            
+            
+            <a class="next" rel="next" href="/2020/06/03/blog_back_new/fastapi/%E4%B8%9A%E5%8A%A1%E8%BF%81%E7%A7%BB%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/">业务迁移解决方案</a>
+            
+        </section>
+    </article>
+</div>
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+    </div>
+</footer>
+
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

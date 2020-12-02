@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="hzjsea">
+
+
+
+
+
+
+<title>docker-k8s | hzjsea</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+    <script src="/js/jquery.min.js"></script>
+    
+
+
+
+    
+    
+        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+    
+
+
+
+
+    <script>
+    function searchToggle() {
+        const width = $(document.body).width()
+        if(width > 479) {
+            return;
+        }
+        const search = $('.search');
+        const searchForm = $('.form-search')
+
+        if(!search.hasClass("mobile-search")) {
+            search.addClass("mobile-search");
+        } else {
+            search.removeClass("mobile-search");
+        } 
+    }
+
+    function search(searchInputEl, formEl, flag) {
+        const path = "/" + "search.json"; // 可以在public 下查看这个search.json
+        $(formEl).submit(function(e){
+            e.preventDefault();
+            let target = null
+            if(searchInputEl == null) {
+                const screenWidth = $(document.body).width();
+                target = screenWidth > 479 ? $('#pc-search-input') : $('#mobile-search-input');
+                console.log(target);
+            } else {
+                target = $(searchInputEl)
+            }
+
+            if(!flag && target.val() === '') {
+                return ;
+            }
+
+            $("#u-search").fadeIn(500, function() {
+                $("body > .wrapper").addClass("modal-active");
+
+                $.ajax({
+                    url: path,
+                    dataType: "json",
+                    beforeSend: function (xhr) {
+                        $input = target.val();
+                        $(".form-input").val($input);
+                        const loadingBar = $('.search-loading-bar') 
+                        loadingBar.css({
+                            width:'100%',
+                            display: 'block'
+                        });
+                    },
+                    success: function( datas ) {
+                        console.log(datas);
+                        const $resultPanel = $(".modal-body")[0];
+                        let str = `<ul class="modal-results">`;
+                        var keywords = $(".form-input").val().trim().toLowerCase().split(/[\s\-]+/);
+                        $resultPanel.innerHTML = "";
+                        let hasResult = false
+                        let text = `<div class="no-result">找不到与关键词相关的内容....</div>`;
+
+                        if ($(".form-input").val().trim().length <= 0) {
+                            // 没有结果
+                            $resultPanel.innerHTML = text;
+                            return;
+                        }
+                        datas.forEach(function (data, index) {
+                            var isMatch = true;
+                            if (!data.title || data.title.trim() === '') {
+                                data.title = "Untitled";
+                            }
+                            var data_title = data.title.trim().toLowerCase();
+                            var data_content = data.content && data.content.trim().replace(/<[^>]+>/g, "").toLowerCase() || '';
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            // only match artiles with not empty contents
+                            if (data_content !== '') {
+                                keywords.forEach(function (keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        hasResult = true
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            } else {
+                                isMatch = false;
+                            }
+                            // show search results
+                            if (isMatch) {
+                                str += `<li class='result-item'><a href='${data_url}' class='result-item-detail'> <span class="title">${data_title}</span>`;
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 200 characters
+                                    var start = first_occur - 40;
+                                    var end = first_occur + 160;
+
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+
+                                    if (start == 0) {
+                                        end = 200;
+                                    }
+
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+
+                                    var match_content = content.substring(start, end);
+
+                                    // highlight all keywords
+                                    keywords.forEach(function (keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, `<em class="search-keyword">${keyword}</em>`);
+                                    });
+
+                                    str += `<span class="content"> ${match_content} ...</span></a>`;
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        if(hasResult) {
+                            $resultPanel.innerHTML = str;
+                        } else {
+                            $resultPanel.innerHTML = text;
+                        }
+
+                    },
+                    complete: function() {
+                        setTimeout(() => {
+                                const loadingBar = $('.search-loading-bar') 
+                                loadingBar.css({
+                                    width:'0%',
+                                    display: 'none'
+                                });
+                        }, 300)
+                    }
+                });
+            })
+
+        });
+    }
+
+    $(document).ready(function() {
+        $('.modal-close').click(function () { 
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+
+        $('.modal-overlay').click(function() {
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+        search(null, ".form-search", false)
+        search("#u-search-modal-form .form-input", ".u-search-modal-form", true)
+    })
+</script>
+
+
+
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo"><a href="/">hzjsea</a></div>
+        <div class="menu navbar-right">
+            
+            
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="pc-search-input"/>
+        </form>
+    </div>
+
+
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+            <input id="switch_default" type="checkbox" class="switch_default">
+            <label for="switch_default" class="toggleBtn"></label>
+        </div>
+    </div>
+</nav>
+
+
+<nav class="navbar-mobile" id="nav-mobile">
+    <div class="container">
+        <div class="navbar-header">
+            <div>
+                <a href="/">hzjsea</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+            </div>
+            <div class="navbar-mobile-right">
+                
+                
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="mobile-search-input"/>
+        </form>
+    </div>
+
+
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; 目录</div>
+            </div>
+            
+        </div>
+        <div class="menu" id="mobile-menu">
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+        </div>
+    </div>
+</nav>
+
+        <div class="main">
+			<!-- Chic/layout.ejs -->
+ <div id="u-search">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="container">
+                    <form id="u-search-modal-form" class="u-search-modal-form">
+                        <button type="submit" class="form-submit-btn">
+                            <img src="/image/search.png" class="search-btn-img" />
+                        </button>
+                        <input placeholder="搜索文章。。。" class="form-input" id="modal-form-input">
+                    </form>
+                    <a class="modal-close">x</a>
+                </div>
+                <div class="search-loading">
+                    <div class="search-loading-bar"></div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <!-- ul 格式如下 -->
+                <!-- <ul class="modal-results">
+                    <li class="result-item">
+                        <a class="result-item-detail">
+                            <span class="title">页面配置</span>
+                            <span class="content">
+                                content
+                            </span>
+                        </a>
+                    </li>
+                </ul> -->
+            </div>
+        </div>
+        <div class="modal-overlay"></div>
+    </div>
+            <div class="container">
+    
+    
+    <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">全部展开</a>
+        <a onclick="go_top()">回到顶部</a>
+        <a onclick="go_bottom()">回到底部</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "全部折叠"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "全部展开"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">docker-k8s</h1>
+            
+            <div class="post-meta">
+                
+                作者： <a itemprop="author" rel="author" href="/">hzjsea</a>&nbsp;
+                
+
+                
+                <span class="post-time">
+                    创建日期： <a
+                        href="#">February 10, 2020&nbsp;&nbsp;3:55:11</a>
+                </span>&nbsp;
+                
+                
+                <span class="post-category">
+                    分类：
+                    
+                    <a href="/categories/docker/">docker</a>&nbsp;
+                    
+                </span>
+                
+                
+                状态：<a href="#">SNAPSHOT</a>
+                
+            </div>
+            
+        </header>
+
+        <div class="post-content">
+            <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+<ul>
+<li><a href="#docker-k8s">docker-k8s</a><ul>
+<li><a href="#%E5%AE%89%E8%A3%85k8s%E5%8F%8A%E5%85%B6%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7">安装k8s及其管理工具</a></li>
+<li><a href="#k8s%E5%8D%95%E8%8A%82%E7%82%B9%E7%8E%AF%E5%A2%83-minikube">k8s单节点环境 minikube</a><ul>
+<li><a href="#%E5%8F%AF%E8%83%BD%E4%BC%9A%E5%87%BA%E7%8E%B0%E7%9A%84%E9%94%99%E8%AF%AF">可能会出现的错误</a></li>
+</ul>
+</li>
+<li><a href="#%E4%BD%BF%E7%94%A8k8s%E6%90%AD%E5%BB%BA%E5%A4%9A%E8%8A%82%E7%82%B9%E9%9B%86%E7%BE%A4">使用k8s搭建多节点集群</a></li>
+<li><a href="#%E6%9E%84%E5%BB%BAdockerk8s%E7%B3%BB%E7%BB%9F%E7%8E%AF%E5%A2%83%E8%84%9A%E6%9C%AC">构建docker+k8s系统环境脚本</a></li>
+<li><a href="#%E4%BD%BF%E7%94%A8kubectl">使用kubectl</a></li>
+</ul>
+</li>
+</ul>
+<!-- /code_chunk_output -->
+<a id="more"></a>
+
+<h1 id="docker-k8s"><a href="#docker-k8s" class="headerlink" title="docker-k8s"></a>docker-k8s</h1><h2 id="安装k8s及其管理工具"><a href="#安装k8s及其管理工具" class="headerlink" title="安装k8s及其管理工具"></a>安装k8s及其管理工具</h2><p>一些需要准备的环境</p>
+<ul>
+<li>关闭防火墙<pre class=" language-bash"><code class="language-bash">systemctl stop firewalld
+systemctl disable firewalld</code></pre>
+</li>
+<li>禁用selinux<pre class=" language-bash"><code class="language-bash">setenforce 0
+<span class="token function">sed</span> -i <span class="token string">'s/SELINUX=permissive/SELINUX=disabled/'</span> /etc/sysconfig/selinux </code></pre>
+</li>
+<li>关闭swap<pre class=" language-bash"><code class="language-bash">swapoff -a
+<span class="token keyword">echo</span> <span class="token string">"vm.swappiness = 0"</span><span class="token operator">>></span> /etc/sysctl.conf  </code></pre>
+安装k8s <pre class=" language-bash"><code class="language-bash">
+</code></pre>
+</li>
+</ul>
+<h1 id="国外镜像"><a href="#国外镜像" class="headerlink" title="国外镜像"></a>国外镜像</h1><h1 id="这里的eof会被屏蔽掉所以我在这里加了注释。让他能够完整的显示"><a href="#这里的eof会被屏蔽掉所以我在这里加了注释。让他能够完整的显示" class="headerlink" title="这里的eof会被屏蔽掉所以我在这里加了注释。让他能够完整的显示"></a>这里的eof会被屏蔽掉所以我在这里加了注释。让他能够完整的显示</h1><h1 id="cat-lt-lt-EOF-gt-etc-yum-repos-d-kubernetes-repo"><a href="#cat-lt-lt-EOF-gt-etc-yum-repos-d-kubernetes-repo" class="headerlink" title="cat &lt;&lt; EOF &gt; /etc/yum.repos.d/kubernetes.repo"></a>cat &lt;&lt; EOF &gt; /etc/yum.repos.d/kubernetes.repo</h1><p>[kubernetes]<br>name=Kubernetes<br>baseurl=<a target="_blank" rel="noopener" href="https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64">https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64</a><br>enabled=1<br>gpgcheck=1<br>repo_gpgcheck=1<br>gpgkey=<a target="_blank" rel="noopener" href="https://packages.cloud.google.com/yum/doc/yum-key.gpg">https://packages.cloud.google.com/yum/doc/yum-key.gpg</a><br>        <a target="_blank" rel="noopener" href="https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg">https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg</a><br>EOF</p>
+<h1 id="国内镜像"><a href="#国内镜像" class="headerlink" title="国内镜像"></a>国内镜像</h1><h1 id="cat-lt-etc-yum-repos-d-kubernetes-repo"><a href="#cat-lt-etc-yum-repos-d-kubernetes-repo" class="headerlink" title="cat &lt; /etc/yum.repos.d/kubernetes.repo"></a>cat &lt;<EOF > /etc/yum.repos.d/kubernetes.repo</h1><p>[kubernetes]<br>name=Kubernetes<br>baseurl=<a target="_blank" rel="noopener" href="https://mirrors.aliyun.com/kubernetes/yum/repos/kubernetes-el7-x86_64/">https://mirrors.aliyun.com/kubernetes/yum/repos/kubernetes-el7-x86_64/</a><br>enabled=1<br>gpgcheck=1<br>repo_gpgcheck=1<br>gpgkey=<a target="_blank" rel="noopener" href="https://mirrors.aliyun.com/kubernetes/yum/doc/yum-key.gpg">https://mirrors.aliyun.com/kubernetes/yum/doc/yum-key.gpg</a> <a target="_blank" rel="noopener" href="https://mirrors.aliyun.com/kubernetes/yum/doc/rpm-package-key.gpg">https://mirrors.aliyun.com/kubernetes/yum/doc/rpm-package-key.gpg</a><br>EOF</p>
+<h1 id="测试安装地址是否可以使用"><a href="#测试安装地址是否可以使用" class="headerlink" title="测试安装地址是否可以使用"></a>测试安装地址是否可以使用</h1><p>curl <a target="_blank" rel="noopener" href="https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64">https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64</a></p>
+<h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><p>yum makecache fast<br>yum install -y kubelet kubeadm kubectl</p>
+<pre><code>
+## k8s单节点环境 minikube
+1. 检查Linux是否支持虚拟化
+```bash
+grep -E --color &#39;vmx|svm&#39; /proc/cpuinfo
+
+# 有两种情况
+# 如果不支持虚拟化则显示为空
+# 如果支持虚拟化则会显示具体内容，如下
+[root@work196 ~]# grep -E --color &#39;vmx|svm&#39; /proc/cpuinfo
+flags           : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc arch_perfmo
+n pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf eagerfpu pni pclmulqdq dtes64 monitor ds_cpl  ------&gt; here   -----&gt;  vmx &lt;------- smx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc
+_deadline_timer aes xsave avx f16c rdrand lahf_lm abm epb invpcid_single ssbd ibrs ibpb stibp tpr_shadow vnmi flexpriority ept vpid fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid xsaveo
+pt dtherm ida arat pln pts md_clear spec_ctrl intel_stibp flush_l1d
+</code></pre>
+<ol start="2">
+<li>在linux上直接安装minikube<pre class=" language-bash"><code class="language-bash">curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 \
+<span class="token operator">&amp;&amp;</span> <span class="token function">chmod</span> +x minikube</code></pre>
+</li>
+<li>启动minikube创建一个k8s单节点集群<pre class=" language-bash"><code class="language-bash">minikube start <span class="token comment" spellcheck="true"># 这里可能会出现一个问题， 没有指定虚拟机，</span>
+<span class="token punctuation">[</span>root@ops ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># minikube start</span>
+😄  minikube v1.7.3 on Centos 7.2.1511
+💣  Unable to determine a default driver to use. Try specifying --vm-driver, or see https://minikube.sigs.k8s.io/docs/st
+</code></pre>
+</li>
+</ol>
+<h1 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法:"></a>解决方法:</h1><p>minikube start –vm-driver=none<br>[root@ops ~]# minikube start –vm-driver=none<br>😄  minikube v1.7.3 on Centos 7.2.1511<br>   Using the none driver based on user configuration<br>🤹  Running on localhost (CPUs=2, Memory=1989MB, Disk=20462MB) …<br>ℹ️    OS release is CentOS Linux 7 (Core)<br>🐳  Preparing Kubernetes v1.17.3 on Docker 19.03.6 …<br>💾  Downloading kubectl v1.17.3<br>💾  Downloading kubeadm v1.17.3<br>💾  Downloading kubelet v1.17.3<br>🚀  Launching Kubernetes …<br>…<br>⚠️  The ‘none’ driver provides limited isolation and may reduce system security and reliability.<br>⚠️  For more information, see:<br>👉  <a target="_blank" rel="noopener" href="https://minikube.sigs.k8s.io/docs/reference/drivers/none/">https://minikube.sigs.k8s.io/docs/reference/drivers/none/</a></p>
+<pre><code>
+### 可能会出现的错误
+```bash
+[root@ops ~]# minikube start --vm-driver=none
+😄  minikube v1.7.3 on Centos 7.2.1511
+✨  Using the none driver based on user configuration
+⌛  Reconfiguring existing host ...
+🔄  Starting existing none VM for &quot;minikube&quot; ...
+ℹ️   OS release is CentOS Linux 7 (Core)
+🐳  Preparing Kubernetes v1.17.3 on Docker 19.03.6 ...
+🚀  Launching Kubernetes ...
+
+💣  Error starting cluster: init failed. output: &quot;-- stdout --\n[init] Using Kubernetes version: v1.17.3\n[preflight] Running pre-flight checks\n\n-- /stdout --\n** stderr ** \nW0225 12:50:34
+.116477   31929 validation.go:28] Cannot validate kube-proxy config - no validator is available\nW0225 12:50:34.116548   31929 validation.go:28] Cannot validate kubelet config - no validator
+is available\n\t[WARNING Service-Docker]: docker service is not enabled, please run &#39;systemctl enable docker.service&#39;\n\t[WARNING IsDockerSystemdCheck]: detected \&quot;cgroupfs\&quot; as the Docker cg
+roup driver. The recommended driver is \&quot;systemd\&quot;. Please follow the guide at https://kubernetes.io/docs/setup/cri/\n\t[WARNING Hostname]: hostname \&quot;ops.novalocal\&quot; could not be reached\n\t
+[WARNING Hostname]: hostname \&quot;ops.novalocal\&quot;: lookup ops.novalocal on 114.114.114.114:53: no such host\n\t[WARNING Service-Kubelet]: kubelet service is not enabled, please run &#39;systemctl en
+able kubelet.service&#39;\nerror execution phase preflight: [preflight] Some fatal errors occurred:\n\t[ERROR FileContent--proc-sys-net-bridge-bridge-nf-call-iptables]: /proc/sys/net/bridge/bridg
+e-nf-call-iptables contents are not set to 1\n[preflight] If you know what you are doing, you can make a check non-fatal with `--ignore-preflight-errors=...`\nTo see the stack trace of this e
+rror execute with --v=5 or higher\n\n** /stderr **&quot;: /bin/bash -c &quot;sudo env PATH=/var/lib/minikube/binaries/v1.17.3:$PATH kubeadm init --config /var/tmp/minikube/kubeadm.yaml  --ignore-prefli
+ght-errors=DirAvailable--etc-kubernetes-manifests,DirAvailable--var-lib-minikube,DirAvailable--var-lib-minikube-etcd,FileAvailable--etc-kubernetes-manifests-kube-scheduler.yaml,FileAvailable-
+-etc-kubernetes-manifests-kube-apiserver.yaml,FileAvailable--etc-kubernetes-manifests-kube-controller-manager.yaml,FileAvailable--etc-kubernetes-manifests-etcd.yaml,Port-10250,Swap,SystemVeri
+fication&quot;: exit status 1
+stdout:
+[init] Using Kubernetes version: v1.17.3
+[preflight] Running pre-flight checks
+
+stderr:
+W0225 12:50:34.116477   31929 validation.go:28] Cannot validate kube-proxy config - no validator is available
+W0225 12:50:34.116548   31929 validation.go:28] Cannot validate kubelet config - no validator is available
+        [WARNING Service-Docker]: docker service is not enabled, please run &#39;systemctl enable docker.service&#39;
+        [WARNING IsDockerSystemdCheck]: detected &quot;cgroupfs&quot; as the Docker cgroup driver. The recommended driver is &quot;systemd&quot;. Please follow the guide at https://kubernetes.io/docs/setup/cri/
+        [WARNING Hostname]: hostname &quot;ops.novalocal&quot; could not be reached
+        [WARNING Hostname]: hostname &quot;ops.novalocal&quot;: lookup ops.novalocal on 114.114.114.114:53: no such host
+        [WARNING Service-Kubelet]: kubelet service is not enabled, please run &#39;systemctl enable kubelet.service&#39;
+error execution phase preflight: [preflight] Some fatal errors occurred:
+        [ERROR FileContent--proc-sys-net-bridge-bridge-nf-call-iptables]: /proc/sys/net/bridge/bridge-nf-call-iptables contents are not set to 1
+[preflight] If you know what you are doing, you can make a check non-fatal with `--ignore-preflight-errors=...`
+To see the stack trace of this error execute with --v=5 or higher
+
+
+😿  minikube is exiting due to an error. If the above message is not useful, open an issue:
+👉  https://github.com/kubernetes/minikube/issues/new/choose</code></pre>
+<p>这里报错说是/proc/sys/net/bridge/bridge-nf-call-iptables没有设置1<br>解决方法</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token keyword">echo</span> <span class="token string">"1"</span> <span class="token operator">></span> /proc/sys/net/bridge/bridge-nf-call-iptables</code></pre>
+<p><font color='red'>minikube搭建的单节点的过程中会需要一些时间，可能就卡着不动了</font></p>
+<p>安装完成</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span>root@ops ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># minikube start --vm-driver=none</span>
+😄  minikube v1.7.3 on Centos 7.2.1511
+✨  Using the none driver based on user configuration
+⌛  Reconfiguring existing host <span class="token punctuation">..</span>.
+🏃  Using the running none <span class="token string">"minikube"</span> VM <span class="token punctuation">..</span>.
+ℹ️   OS release is CentOS Linux 7 <span class="token punctuation">(</span>Core<span class="token punctuation">)</span>
+🐳  Preparing Kubernetes v1.17.3 on Docker 19.03.6 <span class="token punctuation">..</span>.
+🚀  Launching Kubernetes <span class="token punctuation">..</span>.
+
+🌟  Enabling addons: default-storageclass, storage-provisioner
+🤹  Configuring local host environment <span class="token punctuation">..</span>.
+
+⚠️  The <span class="token string">'none'</span> driver provides limited isolation and may reduce system security and reliability.
+⚠️  For <span class="token function">more</span> information, see:
+👉  https://minikube.sigs.k8s.io/docs/reference/drivers/none/
+
+⚠️  kubectl and minikube configuration will be stored <span class="token keyword">in</span> /root
+⚠️  To use kubectl or minikube commands as your own user, you may need to relocate them. For example, to overwrite your own settings, run:
+
+    ▪ <span class="token function">sudo</span> <span class="token function">mv</span> /root/.kube /root/.minikube <span class="token variable">$HOME</span>
+    ▪ <span class="token function">sudo</span> <span class="token function">chown</span> -R <span class="token variable">$USER</span> <span class="token variable">$HOME</span>/.kube <span class="token variable">$HOME</span>/.minikube
+
+💡  This can also be <span class="token keyword">done</span> automatically by setting the <span class="token function">env</span> var CHANGE_MINIKUBE_NONE_USER<span class="token operator">=</span>true
+🏄  Done<span class="token operator">!</span> kubectl is now configured to use <span class="token string">"minikube"</span></code></pre>
+<p><font color='red'>使用minikub ssh 进入容器，如果你是在Linux机器上的还，是无法使用minikub ssh 登陆的，因为你已经在minikue节点上了</font></p>
+<h2 id="使用k8s搭建多节点集群"><a href="#使用k8s搭建多节点集群" class="headerlink" title="使用k8s搭建多节点集群"></a>使用k8s搭建多节点集群</h2><p>机器分配<br>10.0.6.55 master<br>10.0.5.233 node1<br>10.0.5.196 node2</p>
+<p>kubeadm init on master node</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token function">sudo</span> kubeadm init --pod-network-cidr 172.100.0.0/16 --apiserver-advertise-address 192.168.205.120  <span class="token comment" spellcheck="true"># 192.168.205.120 is master node ip</span>
+
+<span class="token comment" spellcheck="true"># result</span>
+<span class="token punctuation">[</span>addons<span class="token punctuation">]</span> Applied essential addon: CoreDNS
+<span class="token punctuation">[</span>addons<span class="token punctuation">]</span> Applied essential addon: kube-proxy
+
+Your Kubernetes control-plane has initialized successfully<span class="token operator">!</span>
+
+To start using your cluster, you need to run the following as a regular user:
+
+  <span class="token function">mkdir</span> -p <span class="token variable">$HOME</span>/.kube
+  <span class="token function">sudo</span> <span class="token function">cp</span> -i /etc/kubernetes/admin.conf <span class="token variable">$HOME</span>/.kube/config
+  <span class="token function">sudo</span> <span class="token function">chown</span> <span class="token variable"><span class="token variable">$(</span><span class="token function">id</span> -u<span class="token variable">)</span></span><span class="token keyword">:</span><span class="token variable"><span class="token variable">$(</span><span class="token function">id</span> -g<span class="token variable">)</span></span> <span class="token variable">$HOME</span>/.kube/config
+
+You should now deploy a pod network to the cluster.
+Run <span class="token string">"kubectl apply -f [podnetwork].yaml"</span> with one of the options listed at:
+  https://kubernetes.io/docs/concepts/cluster-administration/addons/
+
+Then you can <span class="token function">join</span> any number of worker nodes by running the following on each as root:
+
+kubeadm <span class="token function">join</span> 10.0.6.55:6443 --token dbw4qc.ey3dpkozmv8yb15t \
+    --discovery-token-ca-cert-hash sha256:b1c47bc371709d90c6c381e6f3c7c9c034a7dcbfc585b18260016d480aab24a8</code></pre>
+<p>继续运行</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token function">mkdir</span> -p <span class="token variable">$HOME</span>/.kube
+  <span class="token function">sudo</span> <span class="token function">cp</span> -i /etc/kubernetes/admin.conf <span class="token variable">$HOME</span>/.kube/config
+  <span class="token function">sudo</span> <span class="token function">chown</span> <span class="token variable"><span class="token variable">$(</span><span class="token function">id</span> -u<span class="token variable">)</span></span><span class="token keyword">:</span><span class="token variable"><span class="token variable">$(</span><span class="token function">id</span> -g<span class="token variable">)</span></span> <span class="token variable">$HOME</span>/.kube/config</code></pre>
+<p>检查pod </p>
+<pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span>root@manager55 ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># kubectl get pod --all-namespaces</span>
+NAMESPACE     NAME                                READY   STATUS    RESTARTS   AGE
+kube-system   coredns-6955765f44-2d7b4            0/1     Pending   0          7m34s   <span class="token comment" spellcheck="true"># 这两个是网络插件后面安装</span>
+kube-system   coredns-6955765f44-hmg9g            0/1     Pending   0          7m34s
+kube-system   etcd-manager55                      1/1     Running   0          7m49s
+kube-system   kube-apiserver-manager55            1/1     Running   0          7m49s
+kube-system   kube-controller-manager-manager55   1/1     Running   0          7m49s
+kube-system   kube-proxy-v8dxm                    1/1     Running   0          7m34s
+kube-system   kube-scheduler-manager55            1/1     Running   0          7m49s</code></pre>
+<p>安装网络插件</p>
+<pre class=" language-bash"><code class="language-bash">kubectl apply -f <span class="token string">"https://cloud.weave.works/k8s/net?k8s-version=<span class="token variable"><span class="token variable">$(</span>kubectl version <span class="token operator">|</span> base64 <span class="token operator">|</span> <span class="token function">tr</span> -d '\n'<span class="token variable">)</span></span>"</span> </code></pre>
+<p>检查网络插件</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span>root@manager55 ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># kubectl get pod --all-namespaces</span>
+NAMESPACE     NAME                                READY   STATUS    RESTARTS   AGE
+kube-system   coredns-6955765f44-2d7b4            1/1     Running   0          9m1s
+kube-system   coredns-6955765f44-hmg9g            1/1     Running   0          9m1s
+kube-system   etcd-manager55                      1/1     Running   0          9m16s
+kube-system   kube-apiserver-manager55            1/1     Running   0          9m16s
+kube-system   kube-controller-manager-manager55   1/1     Running   0          9m16s
+kube-system   kube-proxy-v8dxm                    1/1     Running   0          9m1s
+kube-system   kube-scheduler-manager55            1/1     Running   0          9m16s
+kube-system   weave-net-bf5jp                     2/2     Running   0          42s </code></pre>
+<p>将其他node机器加入到master主机群下面</p>
+<pre class=" language-bash"><code class="language-bash">kubeadm <span class="token function">join</span> 10.0.6.55:6443 --token dbw4qc.ey3dpkozmv8yb15t \
+    --discovery-token-ca-cert-hash sha256:b1c47bc371709d90c6c381e6f3c7c9c034a7dcbfc585b18260016d480aab24a8 </code></pre>
+<p>在master主机上查看node节点加入情况</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 加入node 前</span>
+<span class="token punctuation">[</span>root@manager55 ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># kubectl get nodes</span>
+NAME        STATUS   ROLES    AGE   VERSION
+manager55   Ready    master   11m   v1.17.2 
+<span class="token comment" spellcheck="true"># 加入之后</span>
+<span class="token punctuation">[</span>root@manager55 ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># kubectl get nodes</span>
+NAME        STATUS   ROLES    AGE   VERSION
+manager55   Ready    master   60m   v1.17.2
+work196     Ready    <span class="token operator">&lt;</span>none<span class="token operator">></span>   34m   v1.17.2
+work233     Ready    <span class="token operator">&lt;</span>none<span class="token operator">></span>   15m   v1.17.2</code></pre>
+<h2 id="构建docker-k8s系统环境脚本"><a href="#构建docker-k8s系统环境脚本" class="headerlink" title="构建docker+k8s系统环境脚本"></a>构建docker+k8s系统环境脚本</h2><p><font color='red'>centos7版本</font></p>
+<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true">#/bin/sh</span>
+
+<span class="token comment" spellcheck="true"># install some tools</span>
+<span class="token function">sudo</span> yum <span class="token function">install</span> -y vim telnet bind-utils <span class="token function">wget</span>
+
+
+<span class="token comment" spellcheck="true"># install docker</span>
+curl -fsSL get.docker.com -o get-docker.sh
+sh get-docker.sh
+
+<span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token operator">!</span> <span class="token variable"><span class="token variable">$(</span>getent group docker<span class="token variable">)</span></span> <span class="token punctuation">]</span><span class="token punctuation">;</span>
+then·
+    <span class="token function">sudo</span> <span class="token function">groupadd</span> docker<span class="token punctuation">;</span>
+<span class="token keyword">else</span>
+    <span class="token keyword">echo</span> <span class="token string">"docker user group already exists"</span>
+<span class="token keyword">fi</span>
+
+<span class="token function">sudo</span> gpasswd -a <span class="token variable">$USER</span> docker
+<span class="token function">sudo</span> systemctl restart docker
+
+<span class="token function">rm</span> -rf get-docker.sh
+
+<span class="token comment" spellcheck="true"># open password auth for backup if ssh key doesn't work, bydefault, username=vagrant password=vagrant</span>
+<span class="token function">sudo</span> <span class="token function">sed</span> -i <span class="token string">'s/PasswordAuthentication no/PasswordAuthentication yes/g'</span> /etc/ssh/sshd_config
+<span class="token function">sudo</span> systemctl restart sshd
+
+<span class="token function">sudo</span> <span class="token function">bash</span> -c <span class="token string">'cat &lt;&lt;EOF > /etc/yum.repos.d/kubernetes.repo
+[kubernetes]
+name=Kubernetes
+baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+enabled=1
+gpgcheck=1
+repo_gpgcheck=1
+gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+EOF'</span>
+
+<span class="token comment" spellcheck="true"># 也可以尝试国内的源 http://ljchen.net/2018/10/23/%E5%9F%BA%E4%BA%8E%E9%98%BF%E9%87%8C%E4%BA%91%E9%95%9C%E5%83%8F%E7%AB%99%E5%AE%89%E8%A3%85ku⟫</span>
+
+<span class="token function">sudo</span> setenforce 0
+
+<span class="token comment" spellcheck="true"># install kubeadm, kubectl, and kubelet.</span>
+<span class="token function">sudo</span> yum <span class="token function">install</span> -y kubelet kubeadm kubectl
+
+<span class="token function">sudo</span> <span class="token function">bash</span> -c <span class="token string">'cat &lt;&lt;EOF >  /etc/sysctl.d/k8s.conf
+net.bridge.bridge-nf-call-ip6tables = 1
+net.bridge.bridge-nf-call-iptables = 1
+net.ipv4.ip_forward=1
+EOF'</span>
+<span class="token function">sudo</span> sysctl --system
+
+<span class="token function">sudo</span> systemctl stop firewalld
+<span class="token function">sudo</span> systemctl disable firewalld
+<span class="token function">sudo</span> swapoff -a
+
+systemctl <span class="token function">enable</span> docker.service
+systemctl <span class="token function">enable</span> kubelet.service </code></pre>
+<h2 id="使用kubectl"><a href="#使用kubectl" class="headerlink" title="使用kubectl"></a>使用kubectl</h2><p>在linux下面使用</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 查看补足帮助，里面会给出一些各个环境的补足帮助</span>
+kubectl  completion  -h
+<span class="token comment" spellcheck="true"># linux下的补足</span>
+<span class="token function">source</span> <span class="token operator">&lt;</span><span class="token punctuation">(</span>kubectl completion bash<span class="token punctuation">)</span></code></pre>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>标签：</span>
+                <span class="tag">
+                    
+                    
+                    <a href="/tags/docker/"># docker</a>
+                    
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript：window.history.back();">后退</a>
+                <span>· </span>
+                <a href="/">主页</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            <a class="prev" rel="prev" href="/2020/02/10/blog_back_new/docker/k8s%E5%B8%B8%E8%A7%81%E9%94%99%E8%AF%AF/">k8s常见错误</a>
+            
+            
+            <a class="next" rel="next" href="/2020/02/09/blog_back_new/docker/docker-swarm-wordpress/">docker-swarm-wordpress</a>
+            
+        </section>
+    </article>
+</div>
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+    </div>
+</footer>
+
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

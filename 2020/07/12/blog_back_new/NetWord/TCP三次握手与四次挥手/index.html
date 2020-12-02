@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="hzjsea">
+
+
+
+
+
+
+<title>TCP/IP的三次握手与四次挥手 | hzjsea</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+    <script src="/js/jquery.min.js"></script>
+    
+
+
+
+    
+    
+        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+    
+
+
+
+
+    <script>
+    function searchToggle() {
+        const width = $(document.body).width()
+        if(width > 479) {
+            return;
+        }
+        const search = $('.search');
+        const searchForm = $('.form-search')
+
+        if(!search.hasClass("mobile-search")) {
+            search.addClass("mobile-search");
+        } else {
+            search.removeClass("mobile-search");
+        } 
+    }
+
+    function search(searchInputEl, formEl, flag) {
+        const path = "/" + "search.json"; // 可以在public 下查看这个search.json
+        $(formEl).submit(function(e){
+            e.preventDefault();
+            let target = null
+            if(searchInputEl == null) {
+                const screenWidth = $(document.body).width();
+                target = screenWidth > 479 ? $('#pc-search-input') : $('#mobile-search-input');
+                console.log(target);
+            } else {
+                target = $(searchInputEl)
+            }
+
+            if(!flag && target.val() === '') {
+                return ;
+            }
+
+            $("#u-search").fadeIn(500, function() {
+                $("body > .wrapper").addClass("modal-active");
+
+                $.ajax({
+                    url: path,
+                    dataType: "json",
+                    beforeSend: function (xhr) {
+                        $input = target.val();
+                        $(".form-input").val($input);
+                        const loadingBar = $('.search-loading-bar') 
+                        loadingBar.css({
+                            width:'100%',
+                            display: 'block'
+                        });
+                    },
+                    success: function( datas ) {
+                        console.log(datas);
+                        const $resultPanel = $(".modal-body")[0];
+                        let str = `<ul class="modal-results">`;
+                        var keywords = $(".form-input").val().trim().toLowerCase().split(/[\s\-]+/);
+                        $resultPanel.innerHTML = "";
+                        let hasResult = false
+                        let text = `<div class="no-result">找不到与关键词相关的内容....</div>`;
+
+                        if ($(".form-input").val().trim().length <= 0) {
+                            // 没有结果
+                            $resultPanel.innerHTML = text;
+                            return;
+                        }
+                        datas.forEach(function (data, index) {
+                            var isMatch = true;
+                            if (!data.title || data.title.trim() === '') {
+                                data.title = "Untitled";
+                            }
+                            var data_title = data.title.trim().toLowerCase();
+                            var data_content = data.content && data.content.trim().replace(/<[^>]+>/g, "").toLowerCase() || '';
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            // only match artiles with not empty contents
+                            if (data_content !== '') {
+                                keywords.forEach(function (keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        hasResult = true
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            } else {
+                                isMatch = false;
+                            }
+                            // show search results
+                            if (isMatch) {
+                                str += `<li class='result-item'><a href='${data_url}' class='result-item-detail'> <span class="title">${data_title}</span>`;
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 200 characters
+                                    var start = first_occur - 40;
+                                    var end = first_occur + 160;
+
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+
+                                    if (start == 0) {
+                                        end = 200;
+                                    }
+
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+
+                                    var match_content = content.substring(start, end);
+
+                                    // highlight all keywords
+                                    keywords.forEach(function (keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, `<em class="search-keyword">${keyword}</em>`);
+                                    });
+
+                                    str += `<span class="content"> ${match_content} ...</span></a>`;
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        if(hasResult) {
+                            $resultPanel.innerHTML = str;
+                        } else {
+                            $resultPanel.innerHTML = text;
+                        }
+
+                    },
+                    complete: function() {
+                        setTimeout(() => {
+                                const loadingBar = $('.search-loading-bar') 
+                                loadingBar.css({
+                                    width:'0%',
+                                    display: 'none'
+                                });
+                        }, 300)
+                    }
+                });
+            })
+
+        });
+    }
+
+    $(document).ready(function() {
+        $('.modal-close').click(function () { 
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+
+        $('.modal-overlay').click(function() {
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+        search(null, ".form-search", false)
+        search("#u-search-modal-form .form-input", ".u-search-modal-form", true)
+    })
+</script>
+
+
+
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo"><a href="/">hzjsea</a></div>
+        <div class="menu navbar-right">
+            
+            
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="pc-search-input"/>
+        </form>
+    </div>
+
+
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+            <input id="switch_default" type="checkbox" class="switch_default">
+            <label for="switch_default" class="toggleBtn"></label>
+        </div>
+    </div>
+</nav>
+
+
+<nav class="navbar-mobile" id="nav-mobile">
+    <div class="container">
+        <div class="navbar-header">
+            <div>
+                <a href="/">hzjsea</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+            </div>
+            <div class="navbar-mobile-right">
+                
+                
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="mobile-search-input"/>
+        </form>
+    </div>
+
+
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; 目录</div>
+            </div>
+            
+        </div>
+        <div class="menu" id="mobile-menu">
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+        </div>
+    </div>
+</nav>
+
+        <div class="main">
+			<!-- Chic/layout.ejs -->
+ <div id="u-search">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="container">
+                    <form id="u-search-modal-form" class="u-search-modal-form">
+                        <button type="submit" class="form-submit-btn">
+                            <img src="/image/search.png" class="search-btn-img" />
+                        </button>
+                        <input placeholder="搜索文章。。。" class="form-input" id="modal-form-input">
+                    </form>
+                    <a class="modal-close">x</a>
+                </div>
+                <div class="search-loading">
+                    <div class="search-loading-bar"></div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <!-- ul 格式如下 -->
+                <!-- <ul class="modal-results">
+                    <li class="result-item">
+                        <a class="result-item-detail">
+                            <span class="title">页面配置</span>
+                            <span class="content">
+                                content
+                            </span>
+                        </a>
+                    </li>
+                </ul> -->
+            </div>
+        </div>
+        <div class="modal-overlay"></div>
+    </div>
+            <div class="container">
+    
+    
+    <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">全部展开</a>
+        <a onclick="go_top()">回到顶部</a>
+        <a onclick="go_bottom()">回到底部</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "全部折叠"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "全部展开"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">TCP/IP的三次握手与四次挥手</h1>
+            
+            <div class="post-meta">
+                
+                作者： <a itemprop="author" rel="author" href="/">hzjsea</a>&nbsp;
+                
+
+                
+                <span class="post-time">
+                    创建日期： <a
+                        href="#">July 12, 2020&nbsp;&nbsp;10:20:27</a>
+                </span>&nbsp;
+                
+                
+                <span class="post-category">
+                    分类：
+                    
+                    <a href="/categories/%E7%BD%91%E7%BB%9C/">网络</a>&nbsp;
+                    
+                </span>
+                
+                
+                状态：<a href="#">SNAPSHOT</a>
+                
+            </div>
+            
+        </header>
+
+        <div class="post-content">
+            <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+<ul>
+<li><a href="#tcpip%E7%9A%84%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E4%B8%8E%E5%9B%9B%E6%AC%A1%E6%8C%A5%E6%89%8B">TCP/IP的三次握手与四次挥手</a><ul>
+<li><a href="#tcp%E7%9A%846%E7%A7%8D%E6%A0%87%E5%BF%97%E4%BD%8D">TCP的6种标志位</a></li>
+<li><a href="#tcp%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B">TCP三次握手</a></li>
+<li><a href="#tcp%E5%9B%9B%E6%AC%A1%E6%8C%A5%E6%89%8B">TCP四次挥手</a></li>
+<li><a href="#tcp%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F">TCP的生命周期</a><ul>
+<li><a href="#%E5%AE%A2%E6%88%B7%E7%AB%AFtcp%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F">客户端TCP生命周期</a></li>
+<li><a href="#%E6%9C%8D%E5%8A%A1%E7%AB%AFtcp%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F">服务端TCP生命周期</a></li>
+</ul>
+</li>
+<li><a href="#syn%E6%B4%AA%E6%B3%9B">SYN洪泛</a><ul>
+<li><a href="#syn-cookie">SYN COOKIE</a></li>
+</ul>
+</li>
+<li><a href="#rst%E6%A0%87%E5%BF%97%E4%BD%8D">RST标志位</a></li>
+</ul>
+</li>
+</ul>
+<!-- /code_chunk_output -->
+<a id="more"></a>
+
+<h1 id="TCP-IP的三次握手与四次挥手"><a href="#TCP-IP的三次握手与四次挥手" class="headerlink" title="TCP/IP的三次握手与四次挥手"></a>TCP/IP的三次握手与四次挥手</h1><p>客户端与服务端的连接</p>
+<h2 id="TCP的6种标志位"><a href="#TCP的6种标志位" class="headerlink" title="TCP的6种标志位"></a>TCP的6种标志位</h2><p>这些标志位被写在报文段的首位，用于识别报文段的作用</p>
+<ul>
+<li>SYN(synchronous建立联机)</li>
+<li>ACK(acknowledgement 确认)</li>
+<li>PSH(push传送)</li>
+<li>FIN(finish结束)</li>
+<li>RST(reset重置)</li>
+<li>URG(urgent紧急)</li>
+<li>Sequence number(顺序号码)</li>
+<li>Acknowledge number(确认号码)</li>
+</ul>
+<h2 id="TCP三次握手"><a href="#TCP三次握手" class="headerlink" title="TCP三次握手"></a>TCP三次握手</h2><ol>
+<li>客户端TCP首先向服务端的TCP发送一段特殊的TCP报文段，该报文段不包含任何的应用层数据,但是在报文段的首部标识了一个标志位 也就是<code>SYN=1</code> 因此我们把这个特殊的报文段叫做<code>SYN</code>报文段, 另外客户端TCP还要自带一个标识自己身份的id号，也就是<code>seq=client_isn</code> ,并将此编号放置于该起始的TCP SYN报文段的序号中。该报文段会被封装在一个IP数据报中，发送给服务器</li>
+<li>服务器接收到带有TCP-SYN的报文段的IP数据报后，服务器会从该数据报中提取TCP-SYN段报文，为该TCP连接分配TCP缓存和变量，并向该客户TCP发送允许连接的报文段。这个允许连接的报文段也不包含应用层数据。但是和客户端首次发来的TCP报文段一样，在他的头部也带有重要的标识。 首先是返回确认信息<code>ACK=client_isn+1</code>，再接着是建立连接<code>SYN=1</code>,最后是自己服务端的初始序号<code>seq=service_id</code></li>
+<li>客户端在接收到<code>SYNACK</code>报文段之后吗，也要给改连接分配<code>缓存和变量</code>.并且客户机还要想服务器发送另外一个报文段 。 该报文段的主要内容为(<code>SYN=0</code>,<code>ACK=service_id+1</code>,<code>seq=client_id+1</code>)因为连接已经建立，所以SYN是被置为0的  并且，在第三个阶段中，报文段可以在负载中携带客户到服务器的数据</li>
+</ol>
+<p>连接之后该做的事:</p>
+<p>连接完成之后，客户和服务器之间就可以正常接发报文段了，并且在之后的每一个报文段中 SYN的比特都将被置为0</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 总结一下</span>
+<span class="token comment" spellcheck="true"># client -> service 1</span>
+SYN<span class="token operator">=</span>1 ,seq<span class="token operator">=</span>client_id
+<span class="token comment" spellcheck="true"># service  -> client 2</span>
+SYN<span class="token operator">=</span>1 ,seq<span class="token operator">=</span>service_id ask<span class="token operator">=</span>client_id+1
+<span class="token comment" spellcheck="true"># client -> service 3</span>
+SYN<span class="token operator">=</span>0,seq<span class="token operator">=</span>client+1 ask<span class="token operator">=</span>service_id+1
+
+<span class="token comment" spellcheck="true"># client -> service n or  service -> client n</span>
+SYN<span class="token operator">=</span>0</code></pre>
+<p>注意到三次握手的每一段都需要分配一定的缓存和变量来处理连接,这样的设定则会导致<code>SYN泛洪</code></p>
+<h2 id="TCP四次挥手"><a href="#TCP四次挥手" class="headerlink" title="TCP四次挥手"></a>TCP四次挥手</h2><p>TCP的四次挥手包含了四个阶段，这里假设客户端发起停止</p>
+<ol>
+<li>客户端会发起一段特殊的TCP报文段，头部标识信息为<code>FIN=1</code> </li>
+<li>服务器收到报文段后，返回一个确认报文段 <code>ACK</code></li>
+<li>然后服务器发送一个终止报文段 <code>FIN=1</code></li>
+<li>客户端接收到以后 发送一个确认报文段<code>ACK</code></li>
+<li>一定时间后，客户端关闭 两个主机上的所有资源都被释放</li>
+</ol>
+<h2 id="TCP的生命周期"><a href="#TCP的生命周期" class="headerlink" title="TCP的生命周期"></a>TCP的生命周期</h2><p>在一个TCP连接中 TP的状态不断的在变迁</p>
+<h3 id="客户端TCP生命周期"><a href="#客户端TCP生命周期" class="headerlink" title="客户端TCP生命周期"></a>客户端TCP生命周期</h3><p><img src="http://img.noback.top/2020-07-22-14-43-41.png" alt="2020-07-22-14-43-41"></p>
+<h3 id="服务端TCP生命周期"><a href="#服务端TCP生命周期" class="headerlink" title="服务端TCP生命周期"></a>服务端TCP生命周期</h3><p><img src="http://img.noback.top/2020-07-22-14-56-02.png" alt="2020-07-22-14-56-02"></p>
+<h2 id="SYN洪泛"><a href="#SYN洪泛" class="headerlink" title="SYN洪泛"></a>SYN洪泛</h2><p>之前有说过使用TCP三次握手建立连接的时候，每个阶段都需要分配一定的缓存和变量来维持状态</p>
+<ol>
+<li>服务端发送SYN</li>
+<li>客户端响应SYN 发送ack给服务端，并等待客户端的ACK报文段<br>如果客户发送ACK来完成三次握手的第三步，服务端在一分钟之后会终止该半开连接并回收资源</li>
+</ol>
+<p>产生SYN洪泛，攻击者发送大量的TCP-SYN报文段，假设在一分钟之内发送了不可想象数量的TCPSYN报文段，但是不完成第三次握手的步骤，则在服务端会不断的为这些半开连接分配资源。短时间内这些资源不会被释放，于是会导致服务器的链接资源被消耗殆尽</p>
+<h3 id="SYN-COOKIE"><a href="#SYN-COOKIE" class="headerlink" title="SYN COOKIE"></a>SYN COOKIE</h3><p><font color='red'>SYN COOKIE是怎么体现的 是seq=service_id 这个来体现的嘛</font></p>
+<p>SYN COOKIE是用来防御SYN洪泛的一种手段</p>
+<ol>
+<li>当服务器接收到SYNseq报文段之后，并不会去生成一个半开连接，也就是不会去分配缓存,服务器会生成一个初始的TCP序列号(序列号是SYN报文段的源和目的的IP地址与 端口号以及仅有改服务器知道的机器码通过散列函数生成的序列号)，服务器则发送具有这种特殊的序列号。 服务器并不记忆该cookie或任何对于SYN的其他状态信息</li>
+<li>当合法的用户接收到SYNack报文段之后 会返回一个SYNack。当服务器收到该Ack之后，需要验证该ack与前面发送的SYN济宁对应</li>
+</ol>
+<p>:::<br>之前说了服务器在使用SYN-COOKIE之后不维护有关SYN报文段的记忆的，那他是怎么来验证客户端的合法性的呢<br>:::</p>
+<p>这里客户端发送了的SYNACK报文段中包含了一下几个内容</p>
+<pre class=" language-bash"><code class="language-bash">SYN<span class="token operator">=</span>1
+seq<span class="token operator">=</span>service_id+1
+ask<span class="token operator">=</span>client_id+1</code></pre>
+<p>其中<code>seq=service_id+1</code>就是用来验证合法性的，当客户端接收到这一段报文之后，会和之前一样生成一段TCP序列号，再将这段序列号+1 与seq中的进行比较，如果相符合，则表示报文段合法，如果不符合则直接丢弃<br>合法之后，服务器会生成一个具有套接字的全开连接</p>
+<p>这样在一方面可以验证第二阶段中SYNACK报文段的合法性  又可以在第一阶段防止出现额外的半开连接 而导致服务器内存崩溃</p>
+<h2 id="RST标志位"><a href="#RST标志位" class="headerlink" title="RST标志位"></a>RST标志位</h2><p>当客户端发起一个SYN标志位到服务端时，但是服务端不接受这一段报文段，比如端口不被允许，则会发送一段标志位<code>RST=1</code>的报文段</p>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>标签：</span>
+                <span class="tag">
+                    
+                    
+                    <a href="/tags/%E7%BD%91%E7%BB%9C/"># 网络</a>
+                    
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript：window.history.back();">后退</a>
+                <span>· </span>
+                <a href="/">主页</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            <a class="prev" rel="prev" href="/2020/07/15/blog_back_new/Python/subprocess%E6%A8%A1%E5%9D%97/">subprocess模块</a>
+            
+            
+            <a class="next" rel="next" href="/2020/07/11/blog_back_new/%E6%8A%80%E6%9C%AF%E8%A1%A5%E8%B6%B3/vuepress%E4%BD%BF%E7%94%A8/">vue-press使用</a>
+            
+        </section>
+    </article>
+</div>
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+    </div>
+</footer>
+
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

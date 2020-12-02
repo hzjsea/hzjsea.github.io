@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="hzjsea">
+
+
+
+
+
+
+<title>vue-press使用 | hzjsea</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+    <script src="/js/jquery.min.js"></script>
+    
+
+
+
+    
+    
+        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+    
+
+
+
+
+    <script>
+    function searchToggle() {
+        const width = $(document.body).width()
+        if(width > 479) {
+            return;
+        }
+        const search = $('.search');
+        const searchForm = $('.form-search')
+
+        if(!search.hasClass("mobile-search")) {
+            search.addClass("mobile-search");
+        } else {
+            search.removeClass("mobile-search");
+        } 
+    }
+
+    function search(searchInputEl, formEl, flag) {
+        const path = "/" + "search.json"; // 可以在public 下查看这个search.json
+        $(formEl).submit(function(e){
+            e.preventDefault();
+            let target = null
+            if(searchInputEl == null) {
+                const screenWidth = $(document.body).width();
+                target = screenWidth > 479 ? $('#pc-search-input') : $('#mobile-search-input');
+                console.log(target);
+            } else {
+                target = $(searchInputEl)
+            }
+
+            if(!flag && target.val() === '') {
+                return ;
+            }
+
+            $("#u-search").fadeIn(500, function() {
+                $("body > .wrapper").addClass("modal-active");
+
+                $.ajax({
+                    url: path,
+                    dataType: "json",
+                    beforeSend: function (xhr) {
+                        $input = target.val();
+                        $(".form-input").val($input);
+                        const loadingBar = $('.search-loading-bar') 
+                        loadingBar.css({
+                            width:'100%',
+                            display: 'block'
+                        });
+                    },
+                    success: function( datas ) {
+                        console.log(datas);
+                        const $resultPanel = $(".modal-body")[0];
+                        let str = `<ul class="modal-results">`;
+                        var keywords = $(".form-input").val().trim().toLowerCase().split(/[\s\-]+/);
+                        $resultPanel.innerHTML = "";
+                        let hasResult = false
+                        let text = `<div class="no-result">找不到与关键词相关的内容....</div>`;
+
+                        if ($(".form-input").val().trim().length <= 0) {
+                            // 没有结果
+                            $resultPanel.innerHTML = text;
+                            return;
+                        }
+                        datas.forEach(function (data, index) {
+                            var isMatch = true;
+                            if (!data.title || data.title.trim() === '') {
+                                data.title = "Untitled";
+                            }
+                            var data_title = data.title.trim().toLowerCase();
+                            var data_content = data.content && data.content.trim().replace(/<[^>]+>/g, "").toLowerCase() || '';
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            // only match artiles with not empty contents
+                            if (data_content !== '') {
+                                keywords.forEach(function (keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        hasResult = true
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            } else {
+                                isMatch = false;
+                            }
+                            // show search results
+                            if (isMatch) {
+                                str += `<li class='result-item'><a href='${data_url}' class='result-item-detail'> <span class="title">${data_title}</span>`;
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 200 characters
+                                    var start = first_occur - 40;
+                                    var end = first_occur + 160;
+
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+
+                                    if (start == 0) {
+                                        end = 200;
+                                    }
+
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+
+                                    var match_content = content.substring(start, end);
+
+                                    // highlight all keywords
+                                    keywords.forEach(function (keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, `<em class="search-keyword">${keyword}</em>`);
+                                    });
+
+                                    str += `<span class="content"> ${match_content} ...</span></a>`;
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        if(hasResult) {
+                            $resultPanel.innerHTML = str;
+                        } else {
+                            $resultPanel.innerHTML = text;
+                        }
+
+                    },
+                    complete: function() {
+                        setTimeout(() => {
+                                const loadingBar = $('.search-loading-bar') 
+                                loadingBar.css({
+                                    width:'0%',
+                                    display: 'none'
+                                });
+                        }, 300)
+                    }
+                });
+            })
+
+        });
+    }
+
+    $(document).ready(function() {
+        $('.modal-close').click(function () { 
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+
+        $('.modal-overlay').click(function() {
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+        search(null, ".form-search", false)
+        search("#u-search-modal-form .form-input", ".u-search-modal-form", true)
+    })
+</script>
+
+
+
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo"><a href="/">hzjsea</a></div>
+        <div class="menu navbar-right">
+            
+            
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="pc-search-input"/>
+        </form>
+    </div>
+
+
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+            <input id="switch_default" type="checkbox" class="switch_default">
+            <label for="switch_default" class="toggleBtn"></label>
+        </div>
+    </div>
+</nav>
+
+
+<nav class="navbar-mobile" id="nav-mobile">
+    <div class="container">
+        <div class="navbar-header">
+            <div>
+                <a href="/">hzjsea</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+            </div>
+            <div class="navbar-mobile-right">
+                
+                
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="mobile-search-input"/>
+        </form>
+    </div>
+
+
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; 目录</div>
+            </div>
+            
+        </div>
+        <div class="menu" id="mobile-menu">
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+        </div>
+    </div>
+</nav>
+
+        <div class="main">
+			<!-- Chic/layout.ejs -->
+ <div id="u-search">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="container">
+                    <form id="u-search-modal-form" class="u-search-modal-form">
+                        <button type="submit" class="form-submit-btn">
+                            <img src="/image/search.png" class="search-btn-img" />
+                        </button>
+                        <input placeholder="搜索文章。。。" class="form-input" id="modal-form-input">
+                    </form>
+                    <a class="modal-close">x</a>
+                </div>
+                <div class="search-loading">
+                    <div class="search-loading-bar"></div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <!-- ul 格式如下 -->
+                <!-- <ul class="modal-results">
+                    <li class="result-item">
+                        <a class="result-item-detail">
+                            <span class="title">页面配置</span>
+                            <span class="content">
+                                content
+                            </span>
+                        </a>
+                    </li>
+                </ul> -->
+            </div>
+        </div>
+        <div class="modal-overlay"></div>
+    </div>
+            <div class="container">
+    
+    
+    <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">全部展开</a>
+        <a onclick="go_top()">回到顶部</a>
+        <a onclick="go_bottom()">回到底部</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "全部折叠"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "全部展开"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">vue-press使用</h1>
+            
+            <div class="post-meta">
+                
+                作者： <a itemprop="author" rel="author" href="/">hzjsea</a>&nbsp;
+                
+
+                
+                <span class="post-time">
+                    创建日期： <a
+                        href="#">July 11, 2020&nbsp;&nbsp;15:08:11</a>
+                </span>&nbsp;
+                
+                
+                <span class="post-category">
+                    分类：
+                    
+                    <a href="/categories/js/">js</a>&nbsp;
+                    
+                </span>
+                
+                
+                状态：<a href="#">SNAPSHOT</a>
+                
+            </div>
+            
+        </header>
+
+        <div class="post-content">
+            <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+<ul>
+<li><a href="#vuepress%E4%BD%BF%E7%94%A8%E8%AE%B0%E5%BD%95">Vuepress使用记录</a><ul>
+<li><a href="#%E4%BD%BF%E7%94%A8vuepress">使用vuepress</a></li>
+<li><a href="#%E7%9B%AE%E5%BD%95%E7%BB%93%E6%9E%84">目录结构</a></li>
+<li><a href="#vuepress%E5%AF%B9makrdown%E7%9A%84%E8%BF%9B%E4%B8%80%E6%AD%A5%E6%94%AF%E6%8C%81">vuepress对makrdown的进一步支持</a></li>
+<li><a href="#vuepress%E9%85%8D%E7%BD%AE">vuepress配置</a></li>
+<li><a href="#github%E9%83%A8%E7%BD%B2">github部署</a></li>
+<li><a href="#%E9%85%8D%E7%BD%AEreco%E4%B8%BB%E9%A2%98">配置reco主题</a></li>
+</ul>
+</li>
+</ul>
+<!-- /code_chunk_output -->
+<a id="more"></a>
+
+
+
+<h1 id="Vuepress使用记录"><a href="#Vuepress使用记录" class="headerlink" title="Vuepress使用记录"></a>Vuepress使用记录</h1><p>hexo加载文章有点慢，布局也有点丑，想更新一个新的主题<br>这里打算使用vuepreess作为新的博客后端</p>
+<h2 id="使用vuepress"><a href="#使用vuepress" class="headerlink" title="使用vuepress"></a>使用vuepress</h2><pre class=" language-python"><code class="language-python"><span class="token comment" spellcheck="true"># 创建一个文件夹并且初始化</span>
+mkdir blog_test <span class="token operator">&amp;</span><span class="token operator">&amp;</span> cd blog_test <span class="token operator">&amp;</span><span class="token operator">&amp;</span> yarn init
+<span class="token comment" spellcheck="true"># 安装vuepress 本地安装</span>
+yarn add <span class="token operator">-</span>D vuepress
+<span class="token comment" spellcheck="true"># 创建第一篇文档</span>
+mkdir docs <span class="token operator">&amp;</span><span class="token operator">&amp;</span> echo <span class="token string">'# Hello VuePress'</span> <span class="token operator">></span> docs<span class="token operator">/</span>README<span class="token punctuation">.</span>md
+<span class="token comment" spellcheck="true"># 初始化</span>
+yarn init
+<span class="token comment" spellcheck="true"># 启动本地服务器,支持热更新</span>
+yarn docs<span class="token punctuation">:</span>dev  </code></pre>
+<h2 id="目录结构"><a href="#目录结构" class="headerlink" title="目录结构"></a>目录结构</h2><pre class=" language-bash"><code class="language-bash"><span class="token keyword">.</span>
+├── docs
+│   ├── .vuepress <span class="token punctuation">(</span>可选的<span class="token punctuation">)</span>  <span class="token comment" spellcheck="true"># 主要存储的是你的主题配置文件</span>
+│   │   ├── components <span class="token punctuation">(</span>可选的<span class="token punctuation">)</span>
+│   │   ├── theme <span class="token punctuation">(</span>可选的<span class="token punctuation">)</span>
+│   │   │   └── Layout.vue
+│   │   ├── public <span class="token punctuation">(</span>可选的<span class="token punctuation">)</span>
+│   │   ├── styles <span class="token punctuation">(</span>可选的<span class="token punctuation">)</span>
+│   │   │   ├── index.styl
+│   │   │   └── palette.styl
+│   │   ├── templates <span class="token punctuation">(</span>可选的, 谨慎配置<span class="token punctuation">)</span>
+│   │   │   ├── dev.html
+│   │   │   └── ssr.html
+│   │   ├── config.js <span class="token punctuation">(</span>可选的<span class="token punctuation">)</span>
+│   │   └── enhanceApp.js <span class="token punctuation">(</span>可选的<span class="token punctuation">)</span>
+│   │ 
+│   ├── README.md
+│   ├── guide
+│   │   └── README.md
+│   └── config.md
+│ 
+└── package.json
+
+docs/.vuepress: 用于存放全局的配置、组件、静态资源等。
+docs/.vuepress/components: 该目录中的 Vue 组件将会被自动注册为全局组件。
+docs/.vuepress/theme: 用于存放本地主题。
+docs/.vuepress/styles: 用于存放样式相关的文件。
+docs/.vuepress/styles/index.styl: 将会被自动应用的全局样式文件，会生成在最终的 CSS 文件结尾，具有比默认样式更高的优先级。
+docs/.vuepress/styles/palette.styl: 用于重写默认颜色常量，或者设置新的 stylus 颜色常量。
+docs/.vuepress/public: 静态资源目录。
+docs/.vuepress/templates: 存储 HTML 模板文件。
+docs/.vuepress/templates/dev.html: 用于开发环境的 HTML 模板文件。
+docs/.vuepress/templates/ssr.html: 构建时基于 Vue SSR 的 HTML 模板文件。
+docs/.vuepress/config.js: 配置文件的入口文件，也可以是 YML 或 toml。
+docs/.vuepress/enhanceApp.js: 客户端应用的增强。
+</code></pre>
+<h2 id="vuepress对makrdown的进一步支持"><a href="#vuepress对makrdown的进一步支持" class="headerlink" title="vuepress对makrdown的进一步支持"></a>vuepress对makrdown的进一步支持</h2><p>emoji</p>
+<pre class=" language-bash"><code class="language-bash">:tada: :100:</code></pre>
+<p>目录</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span><span class="token punctuation">[</span>toc<span class="token punctuation">]</span><span class="token punctuation">]</span></code></pre>
+<p>自定义容器</p>
+<pre class=" language-bash"><code class="language-bash">::: tip
+这是一个提示
+:::
+
+::: warning
+这是一个警告
+:::
+
+::: danger
+这是一个危险警告
+:::
+
+::: details
+这是一个详情块，在 IE / Edge 中不生效
+:::</code></pre>
+<p>代码块中的行高亮</p>
+<pre class=" language-py"><code class="language-py">#``` js &#123;4&#125;
+export default &#123;
+  data () &#123;
+    return &#123;
+      msg: 'Highlighted!'
+    &#125;
+  &#125;
+&#125;
+#```</code></pre>
+<h2 id="vuepress配置"><a href="#vuepress配置" class="headerlink" title="vuepress配置"></a>vuepress配置</h2><p>配置主要在<code>docs/.vuepress/config.js</code>中修改</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 支持行号显示</span>
+module.exports <span class="token operator">=</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+  markdown: <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+    lineNumbers: <span class="token boolean">true</span>
+  <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+</code></pre>
+<h2 id="github部署"><a href="#github部署" class="headerlink" title="github部署"></a>github部署</h2><p>部署脚本</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true">#!/usr/bin/env sh</span>
+
+<span class="token comment" spellcheck="true"># 确保脚本抛出遇到的错误</span>
+<span class="token keyword">set</span> -e
+
+<span class="token comment" spellcheck="true"># 生成静态文件</span>
+<span class="token function">npm</span> run docs:build
+
+<span class="token comment" spellcheck="true"># 进入生成的文件夹</span>
+<span class="token function">cd</span> docs/.vuepress/dist
+
+<span class="token comment" spellcheck="true"># 如果是发布到自定义域名</span>
+<span class="token comment" spellcheck="true"># echo 'www.example.com' > CNAME</span>
+
+<span class="token function">git</span> init
+<span class="token function">git</span> add -A
+<span class="token function">git</span> commit -m <span class="token string">'deploy'</span>
+
+<span class="token comment" spellcheck="true"># 如果发布到 https://&lt;USERNAME>.github.io</span>
+<span class="token comment" spellcheck="true"># git push -f git@github.com:&lt;USERNAME>/&lt;USERNAME>.github.io.git master</span>
+
+<span class="token comment" spellcheck="true"># 如果发布到 https://&lt;USERNAME>.github.io/&lt;REPO></span>
+<span class="token comment" spellcheck="true"># git push -f git@github.com:&lt;USERNAME>/&lt;REPO>.git master:gh-pages</span>
+
+<span class="token function">cd</span> -</code></pre>
+<h2 id="配置reco主题"><a href="#配置reco主题" class="headerlink" title="配置reco主题"></a>配置reco主题</h2><p><font color='red'>注意，这里的一些配置是reco中有的 reco是默认主题的超集</font></p>
+<pre class=" language-js"><code class="language-js"><span class="token comment" spellcheck="true">// 下载主题 本地</span>
+yarn add vuepress<span class="token operator">-</span>theme<span class="token operator">-</span>reco
+
+<span class="token comment" spellcheck="true">// 修改配置文件 docs/.vuepress/config.js</span>
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+  head<span class="token punctuation">:</span> <span class="token punctuation">[</span>  <span class="token comment" spellcheck="true">// 移动端焦点问题</span>
+    <span class="token punctuation">[</span><span class="token string">'meta'</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span> name<span class="token punctuation">:</span> <span class="token string">'viewport'</span><span class="token punctuation">,</span> content<span class="token punctuation">:</span> <span class="token string">'width=device-width,initial-scale=1,user-scalable=no'</span> <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">]</span>
+  <span class="token punctuation">]</span><span class="token punctuation">,</span>
+  theme<span class="token punctuation">:</span> <span class="token string">'vuepress-theme-reco'</span><span class="token punctuation">,</span>
+  themeConfig<span class="token punctuation">:</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">// 备案</span>
+    record<span class="token punctuation">:</span> <span class="token string">'ICP 备案文案'</span><span class="token punctuation">,</span>
+    recordLink<span class="token punctuation">:</span> <span class="token string">'ICP 备案指向链接'</span><span class="token punctuation">,</span>
+    cyberSecurityRecord<span class="token punctuation">:</span> <span class="token string">'公安部备案文案'</span><span class="token punctuation">,</span>
+    cyberSecurityLink<span class="token punctuation">:</span> <span class="token string">'公安部备案指向链接'</span><span class="token punctuation">,</span>
+    <span class="token comment" spellcheck="true">// 项目开始时间，只填写年份</span>
+    startYear<span class="token punctuation">:</span> <span class="token string">'2017'</span><span class="token punctuation">,</span>
+    <span class="token comment" spellcheck="true">// author</span>
+    author<span class="token punctuation">:</span> <span class="token string">'reco_luan'</span><span class="token punctuation">,</span>
+    <span class="token comment" spellcheck="true">// 导航栏左侧logo</span>
+    logo<span class="token punctuation">:</span> <span class="token string">'/head.png'</span><span class="token punctuation">,</span> 
+    <span class="token comment" spellcheck="true">// 开启搜索</span>
+    search<span class="token punctuation">:</span><span class="token boolean">true</span><span class="token punctuation">,</span>
+    nav<span class="token punctuation">:</span> <span class="token punctuation">[</span>  <span class="token comment" spellcheck="true">// 添加时间线</span>
+    <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span> text<span class="token punctuation">:</span> <span class="token string">'TimeLine'</span><span class="token punctuation">,</span> link<span class="token punctuation">:</span> <span class="token string">'/timeline/'</span><span class="token punctuation">,</span> icon<span class="token punctuation">:</span> <span class="token string">'reco-date'</span> <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token punctuation">]</span>
+    <span class="token comment" spellcheck="true">// 头像</span>
+    authorAvatar<span class="token punctuation">:</span> <span class="token string">'/avatar.png'</span><span class="token punctuation">,</span>
+    <span class="token comment" spellcheck="true">// 博客配置</span>
+    blogConfig<span class="token punctuation">:</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+      category<span class="token punctuation">:</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        location<span class="token punctuation">:</span> <span class="token number">2</span><span class="token punctuation">,</span>     <span class="token comment" spellcheck="true">// 在导航栏菜单中所占的位置，默认2</span>
+        text<span class="token punctuation">:</span> <span class="token string">'Category'</span> <span class="token comment" spellcheck="true">// 默认文案 “分类”</span>
+      <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span>
+      tag<span class="token punctuation">:</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        location<span class="token punctuation">:</span> <span class="token number">3</span><span class="token punctuation">,</span>     <span class="token comment" spellcheck="true">// 在导航栏菜单中所占的位置，默认3</span>
+        text<span class="token punctuation">:</span> <span class="token string">'Tag'</span>      <span class="token comment" spellcheck="true">// 默认文案 “标签”</span>
+      <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span>
+    <span class="token comment" spellcheck="true">// 密钥</span>
+    keyPage<span class="token punctuation">:</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+      keys<span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">'32位的 md5 加密密文'</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token comment" spellcheck="true">// 1.3.0 版本后需要设置为密文</span>
+      color<span class="token punctuation">:</span> <span class="token string">'#42b983'</span><span class="token punctuation">,</span> <span class="token comment" spellcheck="true">// 登录页动画球的颜色</span>
+      lineColor<span class="token punctuation">:</span> <span class="token string">'#42b983'</span> <span class="token comment" spellcheck="true">// 登录页动画线的颜色</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>，
+    <span class="token comment" spellcheck="true">//导航菜单中使用主题的内置图标</span>
+    <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span> text<span class="token punctuation">:</span> <span class="token string">'Tags'</span><span class="token punctuation">,</span> link<span class="token punctuation">:</span> <span class="token string">'/tags/'</span><span class="token punctuation">,</span> icon<span class="token punctuation">:</span> <span class="token string">'reco-tag'</span> <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+  <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span></code></pre>
+<p>md5密文获取方式<br><a target="_blank" rel="noopener" href="https://vuepress-theme-reco.recoluan.com/views/1.x/password.html#%E5%8A%A0%E5%AF%86%E4%BB%8B%E7%BB%8D">https://vuepress-theme-reco.recoluan.com/views/1.x/password.html#%E5%8A%A0%E5%AF%86%E4%BB%8B%E7%BB%8D</a></p>
+<p>写文章时添加的分类和标签</p>
+<pre class=" language-bash"><code class="language-bash">---
+title: 【vue】跨域解决方案之proxyTable
+date: 2017-12-28
+categories: <span class="token punctuation">[</span>frontEnd,hello<span class="token punctuation">]</span>
+tags: <span class="token punctuation">[</span>vue,world<span class="token punctuation">]</span>
+keys:  <span class="token string">'12345'</span> <span class="token comment" spellcheck="true"># 密码</span>
+sidebar <span class="token keyword">:</span> auto  <span class="token comment" spellcheck="true"># 是否开启侧边栏  auto/true/false</span>
+publish <span class="token keyword">:</span> <span class="token boolean">false</span> <span class="token comment" spellcheck="true"># 是否发布 false/true</span>
+sticky <span class="token keyword">:</span> 
+    - <span class="token function">type</span> <span class="token keyword">:</span> number <span class="token comment" spellcheck="true"># 文章置顶</span>
+---</code></pre>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>标签：</span>
+                <span class="tag">
+                    
+                    
+                    <a href="/tags/js/"># js</a>
+                    
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript：window.history.back();">后退</a>
+                <span>· </span>
+                <a href="/">主页</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            <a class="prev" rel="prev" href="/2020/07/12/blog_back_new/NetWord/TCP%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E4%B8%8E%E5%9B%9B%E6%AC%A1%E6%8C%A5%E6%89%8B/">TCP/IP的三次握手与四次挥手</a>
+            
+            
+            <a class="next" rel="next" href="/2020/07/10/blog_back_new/%E6%8A%80%E6%9C%AF%E8%A1%A5%E8%B6%B3/js-vue/">js技能补足</a>
+            
+        </section>
+    </article>
+</div>
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+    </div>
+</footer>
+
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

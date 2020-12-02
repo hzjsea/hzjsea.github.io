@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="hzjsea">
+
+
+
+
+
+
+<title>docker-k8s 基础 | hzjsea</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+    <script src="/js/jquery.min.js"></script>
+    
+
+
+
+    
+    
+        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+    
+
+
+
+
+    <script>
+    function searchToggle() {
+        const width = $(document.body).width()
+        if(width > 479) {
+            return;
+        }
+        const search = $('.search');
+        const searchForm = $('.form-search')
+
+        if(!search.hasClass("mobile-search")) {
+            search.addClass("mobile-search");
+        } else {
+            search.removeClass("mobile-search");
+        } 
+    }
+
+    function search(searchInputEl, formEl, flag) {
+        const path = "/" + "search.json"; // 可以在public 下查看这个search.json
+        $(formEl).submit(function(e){
+            e.preventDefault();
+            let target = null
+            if(searchInputEl == null) {
+                const screenWidth = $(document.body).width();
+                target = screenWidth > 479 ? $('#pc-search-input') : $('#mobile-search-input');
+                console.log(target);
+            } else {
+                target = $(searchInputEl)
+            }
+
+            if(!flag && target.val() === '') {
+                return ;
+            }
+
+            $("#u-search").fadeIn(500, function() {
+                $("body > .wrapper").addClass("modal-active");
+
+                $.ajax({
+                    url: path,
+                    dataType: "json",
+                    beforeSend: function (xhr) {
+                        $input = target.val();
+                        $(".form-input").val($input);
+                        const loadingBar = $('.search-loading-bar') 
+                        loadingBar.css({
+                            width:'100%',
+                            display: 'block'
+                        });
+                    },
+                    success: function( datas ) {
+                        console.log(datas);
+                        const $resultPanel = $(".modal-body")[0];
+                        let str = `<ul class="modal-results">`;
+                        var keywords = $(".form-input").val().trim().toLowerCase().split(/[\s\-]+/);
+                        $resultPanel.innerHTML = "";
+                        let hasResult = false
+                        let text = `<div class="no-result">找不到与关键词相关的内容....</div>`;
+
+                        if ($(".form-input").val().trim().length <= 0) {
+                            // 没有结果
+                            $resultPanel.innerHTML = text;
+                            return;
+                        }
+                        datas.forEach(function (data, index) {
+                            var isMatch = true;
+                            if (!data.title || data.title.trim() === '') {
+                                data.title = "Untitled";
+                            }
+                            var data_title = data.title.trim().toLowerCase();
+                            var data_content = data.content && data.content.trim().replace(/<[^>]+>/g, "").toLowerCase() || '';
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            // only match artiles with not empty contents
+                            if (data_content !== '') {
+                                keywords.forEach(function (keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        hasResult = true
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            } else {
+                                isMatch = false;
+                            }
+                            // show search results
+                            if (isMatch) {
+                                str += `<li class='result-item'><a href='${data_url}' class='result-item-detail'> <span class="title">${data_title}</span>`;
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 200 characters
+                                    var start = first_occur - 40;
+                                    var end = first_occur + 160;
+
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+
+                                    if (start == 0) {
+                                        end = 200;
+                                    }
+
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+
+                                    var match_content = content.substring(start, end);
+
+                                    // highlight all keywords
+                                    keywords.forEach(function (keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, `<em class="search-keyword">${keyword}</em>`);
+                                    });
+
+                                    str += `<span class="content"> ${match_content} ...</span></a>`;
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        if(hasResult) {
+                            $resultPanel.innerHTML = str;
+                        } else {
+                            $resultPanel.innerHTML = text;
+                        }
+
+                    },
+                    complete: function() {
+                        setTimeout(() => {
+                                const loadingBar = $('.search-loading-bar') 
+                                loadingBar.css({
+                                    width:'0%',
+                                    display: 'none'
+                                });
+                        }, 300)
+                    }
+                });
+            })
+
+        });
+    }
+
+    $(document).ready(function() {
+        $('.modal-close').click(function () { 
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+
+        $('.modal-overlay').click(function() {
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+        search(null, ".form-search", false)
+        search("#u-search-modal-form .form-input", ".u-search-modal-form", true)
+    })
+</script>
+
+
+
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo"><a href="/">hzjsea</a></div>
+        <div class="menu navbar-right">
+            
+            
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="pc-search-input"/>
+        </form>
+    </div>
+
+
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+            <input id="switch_default" type="checkbox" class="switch_default">
+            <label for="switch_default" class="toggleBtn"></label>
+        </div>
+    </div>
+</nav>
+
+
+<nav class="navbar-mobile" id="nav-mobile">
+    <div class="container">
+        <div class="navbar-header">
+            <div>
+                <a href="/">hzjsea</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+            </div>
+            <div class="navbar-mobile-right">
+                
+                
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="mobile-search-input"/>
+        </form>
+    </div>
+
+
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; 目录</div>
+            </div>
+            
+        </div>
+        <div class="menu" id="mobile-menu">
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+        </div>
+    </div>
+</nav>
+
+        <div class="main">
+			<!-- Chic/layout.ejs -->
+ <div id="u-search">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="container">
+                    <form id="u-search-modal-form" class="u-search-modal-form">
+                        <button type="submit" class="form-submit-btn">
+                            <img src="/image/search.png" class="search-btn-img" />
+                        </button>
+                        <input placeholder="搜索文章。。。" class="form-input" id="modal-form-input">
+                    </form>
+                    <a class="modal-close">x</a>
+                </div>
+                <div class="search-loading">
+                    <div class="search-loading-bar"></div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <!-- ul 格式如下 -->
+                <!-- <ul class="modal-results">
+                    <li class="result-item">
+                        <a class="result-item-detail">
+                            <span class="title">页面配置</span>
+                            <span class="content">
+                                content
+                            </span>
+                        </a>
+                    </li>
+                </ul> -->
+            </div>
+        </div>
+        <div class="modal-overlay"></div>
+    </div>
+            <div class="container">
+    
+    
+    <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">全部展开</a>
+        <a onclick="go_top()">回到顶部</a>
+        <a onclick="go_bottom()">回到底部</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "全部折叠"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "全部展开"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">docker-k8s 基础</h1>
+            
+            <div class="post-meta">
+                
+                作者： <a itemprop="author" rel="author" href="/">hzjsea</a>&nbsp;
+                
+
+                
+                <span class="post-time">
+                    创建日期： <a
+                        href="#">February 25, 2020&nbsp;&nbsp;15:52:22</a>
+                </span>&nbsp;
+                
+                
+                <span class="post-category">
+                    分类：
+                    
+                    <a href="/categories/docker/">docker</a>&nbsp;
+                    
+                </span>
+                
+                
+                状态：<a href="#">SNAPSHOT</a>
+                
+            </div>
+            
+        </header>
+
+        <div class="post-content">
+            <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+<ul>
+<li><a href="#docker-k8s%E5%9F%BA%E7%A1%80">docker-k8s基础</a><ul>
+<li><a href="#k8s%E4%B8%AD%E7%9A%84%E6%9C%80%E5%B0%8F%E8%B0%83%E5%BA%A6%E5%8D%95%E5%85%83-pod">k8s中的最小调度单元 pod</a><ul>
+<li><a href="#%E6%A0%B9%E6%8D%AEpods-yaml%E6%96%87%E4%BB%B6%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AAnginx%E5%AE%B9%E5%99%A8">根据pods yaml文件创建一个nginx容器</a></li>
+<li><a href="#%E6%89%B9%E9%87%8F%E5%88%9B%E5%BB%BA%E5%A4%9A%E4%B8%AA%E5%AE%B9%E5%99%A8-replicaset">批量创建多个容器 ReplicaSet</a></li>
+<li><a href="#%E6%A8%AA%E5%90%91%E6%89%A9%E5%B1%95%E4%B8%8E%E7%BC%A9%E6%94%BE">横向扩展与缩放</a></li>
+</ul>
+</li>
+<li><a href="#kubectl%E7%9A%84%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95">kubectl的使用方法</a></li>
+</ul>
+</li>
+</ul>
+<!-- /code_chunk_output -->
+<a id="more"></a>
+
+
+
+<h1 id="docker-k8s基础"><a href="#docker-k8s基础" class="headerlink" title="docker-k8s基础"></a>docker-k8s基础</h1><h2 id="k8s中的最小调度单元-pod"><a href="#k8s中的最小调度单元-pod" class="headerlink" title="k8s中的最小调度单元 pod"></a>k8s中的最小调度单元 pod</h2><p><img src="http://img.noback.top/2020-02-25-15-54-43.png" alt="2020-02-25-15-54-43"><br>在k8s里面，有很多新的技术概念，其中有一个东西被称之为pod。pod是k8s集群里面运行和部署的最小单元，它的设计理念是，一个pod可以承载多个容器，并且共享网络地址和文件系统，内部的容器通过进程间的通信相互访问。<br>也就是说在k8s中，最小的单位不再是container，而是pod<br>一个pod节点中可以有多个container容器</p>
+<h3 id="根据pods-yaml文件创建一个nginx容器"><a href="#根据pods-yaml文件创建一个nginx容器" class="headerlink" title="根据pods yaml文件创建一个nginx容器"></a>根据pods yaml文件创建一个nginx容器</h3><p>创建一个pod节点，pod.yml文件</p>
+<pre class=" language-yml"><code class="language-yml">## pod_nginx.yml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+  labels:
+  ¦ app: nginx
+spec:
+  containers:
+  - name: nginx
+  ¦ image: nginx
+  ¦ ports:
+  ¦ - containerPort: 80</code></pre>
+<p>创建pod节点</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 创建节点</span>
+<span class="token punctuation">[</span>root@ops ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># kubectl create -f pod_nginx.yml</span>
+pod/nginx created
+<span class="token comment" spellcheck="true"># 查看节点</span>
+<span class="token punctuation">[</span>root@ops ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># kubectl get pods</span>
+NAME    READY   STATUS    RESTARTS   AGE
+nginx   1/1     Running   0          2m27s
+<span class="token comment" spellcheck="true"># 查看详细信息</span>
+<span class="token punctuation">[</span>root@ops ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># kubectl get pods -o wide</span>
+NAME    READY   STATUS    RESTARTS   AGE     IP           NODE            NOMINATED NODE   READINESS GATES
+nginx   1/1     Running   0          4m44s   172.17.0.4   ops.novalocal   <span class="token operator">&lt;</span>none<span class="token operator">></span>           <span class="token operator">&lt;</span>none<span class="token operator">></span></code></pre>
+<p><font color='red'>查看容器id</font></p>
+<p>如果你本身自己就是linux机器的话，机器本身就是Minikub节点了，查看docker</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span>root@ops ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># docker ps</span>
+CONTAINER ID        IMAGE                  COMMAND                  CREATED             STATUS              PORTS               NAMES
+be7d61df08ee        nginx                  <span class="token string">"nginx -g 'daemon of…"</span>   5 minutes ago       Up 5 minutes                            k8s_nginx_nginx_default_3a2d631d-0de5-40fc-969d-1451a2190389_0
+55af5366716a        k8s.gcr.io/pause:3.1   <span class="token string">"/pause"</span>                 5 minutes ago       Up 5 minutes                            k8s_POD_nginx_default_3a2d631d-0de5-40fc-969d-1451a2190389_0
+<span class="token comment" spellcheck="true">## 进入容器,查看网络</span>
+docker <span class="token function">exec</span> be7d61df08ee -it /bin/bash</code></pre>
+<h3 id="批量创建多个容器-ReplicaSet"><a href="#批量创建多个容器-ReplicaSet" class="headerlink" title="批量创建多个容器 ReplicaSet"></a>批量创建多个容器 ReplicaSet</h3><pre class=" language-yml"><code class="language-yml">## rs_nginx.yaml
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: nginx
+  labels:
+  ¦ tier: frontend
+spec:
+  replicas: 3
+  selector:
+  ¦ matchLabels:
+  ¦ ¦ tier: frontend
+  template:
+  ¦ metadata:
+  ¦ ¦ name: nginx
+  ¦ ¦ labels:
+  ¦ ¦ ¦ tier: frontend
+  ¦ spec:
+  ¦ ¦ containers:
+  ¦ ¦ - name: nginx
+  ¦ ¦ ¦ image: nginx
+  ¦ ¦ ¦ ports:
+  ¦ ¦ ¦ - containerPort: 80</code></pre>
+<p>创建多节点</p>
+<pre class=" language-bash"><code class="language-bash">kubectl create -f rs_nginx.yml
+<span class="token punctuation">[</span>root@ops ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># kubectl get pods</span>
+NAME          READY   STATUS              RESTARTS   AGE
+nginx-df6pr   1/1     Running             0          10s
+nginx-sspd2   0/1     ContainerCreating   0          10s
+nginx-vbjs6   0/1     ContainerCreating   0          10s</code></pre>
+<p><font color='blue'>使用这个方法创建的内容，会维持容器的数量</font></p>
+<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true">## 删除一个容器</span>
+<span class="token punctuation">[</span>root@ops ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># kubectl delete pods nginx-df6pr</span>
+pod <span class="token string">"nginx-df6pr"</span> deleted
+<span class="token comment" spellcheck="true"># 再次查看节点中的容器时，会发现他会再生成一个容器</span>
+<span class="token punctuation">[</span>root@ops ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># kubectl get pods</span>
+NAME          READY   STATUS              RESTARTS   AGE
+nginx-pnk4c   0/1     ContainerCreating   0          4s
+nginx-sspd2   1/1     Running             0          5m51s
+nginx-vbjs6   1/1     Running             0          5m51s</code></pre>
+<h3 id="横向扩展与缩放"><a href="#横向扩展与缩放" class="headerlink" title="横向扩展与缩放"></a>横向扩展与缩放</h3><p>将容器减少到2个</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span>root@ops ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># kubectl scale rs nginx --replicas=2</span>
+replicaset.apps/nginx scaled
+<span class="token punctuation">[</span>root@ops ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># kubectl get rs</span>
+NAME    DESIRED   CURRENT   READY   AGE
+nginx   2         2         2       21m
+<span class="token punctuation">[</span>root@ops ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># kubectl get pods</span>
+NAME          READY   STATUS    RESTARTS   AGE
+nginx-sspd2   1/1     Running   0          21m
+nginx-vbjs6   1/1     Running   0          21m</code></pre>
+<p>将容器增加到5个</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span>root@ops ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># kubectl scale rs nginx --replicas=2</span>
+replicaset.apps/nginx scaled
+<span class="token punctuation">[</span>root@ops ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># kubectl scale rs nginx --replicas=5</span>
+replicaset.apps/nginx scaled
+<span class="token punctuation">[</span>root@ops ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># kubectl get pods</span>
+NAME          READY   STATUS              RESTARTS   AGE
+nginx-bnnbc   0/1     ContainerCreating   0          3s
+nginx-jh5kn   0/1     ContainerCreating   0          3s
+nginx-skhqq   0/1     ContainerCreating   0          3s
+nginx-sspd2   1/1     Running             0          23m
+nginx-vbjs6   1/1     Running             0          23m</code></pre>
+<h2 id="kubectl的使用方法"><a href="#kubectl的使用方法" class="headerlink" title="kubectl的使用方法"></a>kubectl的使用方法</h2><p>kubectl提供了许多便捷的方法，其帮助命令也很完善，这边举例几个常用的</p>
+<pre class=" language-bash"><code class="language-bash">kubectl get pods -o wide <span class="token comment" spellcheck="true"># 查看pods节点上有哪些容器</span>
+kubectl <span class="token function">exec</span> -it CONTAINER-NAME sh <span class="token comment" spellcheck="true"># 进入第一个叫CONTAINER-NAME的容器</span>
+kubectl <span class="token function">exec</span> -it -c Container name sh <span class="token comment" spellcheck="true"># 指定容器名字进入</span>
+kubectl describe pods nginx <span class="token comment" spellcheck="true"># 查看pods节点详情</span>
+kubectl get pods <span class="token comment" spellcheck="true"># 查看有哪些节点</span>
+kubectl create -f xx.yml <span class="token comment" spellcheck="true"># 根据yml文件创建pods</span>
+kubectl delete -f xx.yml <span class="token comment" spellcheck="true"># 删除由xx.yml创建的pods</span></code></pre>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>标签：</span>
+                <span class="tag">
+                    
+                    
+                    <a href="/tags/docker/"># docker</a>
+                    
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript：window.history.back();">后退</a>
+                <span>· </span>
+                <a href="/">主页</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            <a class="prev" rel="prev" href="/2020/03/04/blog_back_new/NetWord/%E4%BA%A4%E6%8D%A2%E6%9C%BA%E5%8D%87%E7%BA%A7%E6%AD%A5%E9%AA%A4/">交换机升级步骤</a>
+            
+            
+            <a class="next" rel="next" href="/2020/02/25/blog_back_new/mysql/mysql%E5%AE%89%E8%A3%85/">mysql安装</a>
+            
+        </section>
+    </article>
+</div>
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+    </div>
+</footer>
+
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="hzjsea">
+
+
+
+
+
+
+<title>docker基础 | hzjsea</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+    <script src="/js/jquery.min.js"></script>
+    
+
+
+
+    
+    
+        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+    
+
+
+
+
+    <script>
+    function searchToggle() {
+        const width = $(document.body).width()
+        if(width > 479) {
+            return;
+        }
+        const search = $('.search');
+        const searchForm = $('.form-search')
+
+        if(!search.hasClass("mobile-search")) {
+            search.addClass("mobile-search");
+        } else {
+            search.removeClass("mobile-search");
+        } 
+    }
+
+    function search(searchInputEl, formEl, flag) {
+        const path = "/" + "search.json"; // 可以在public 下查看这个search.json
+        $(formEl).submit(function(e){
+            e.preventDefault();
+            let target = null
+            if(searchInputEl == null) {
+                const screenWidth = $(document.body).width();
+                target = screenWidth > 479 ? $('#pc-search-input') : $('#mobile-search-input');
+                console.log(target);
+            } else {
+                target = $(searchInputEl)
+            }
+
+            if(!flag && target.val() === '') {
+                return ;
+            }
+
+            $("#u-search").fadeIn(500, function() {
+                $("body > .wrapper").addClass("modal-active");
+
+                $.ajax({
+                    url: path,
+                    dataType: "json",
+                    beforeSend: function (xhr) {
+                        $input = target.val();
+                        $(".form-input").val($input);
+                        const loadingBar = $('.search-loading-bar') 
+                        loadingBar.css({
+                            width:'100%',
+                            display: 'block'
+                        });
+                    },
+                    success: function( datas ) {
+                        console.log(datas);
+                        const $resultPanel = $(".modal-body")[0];
+                        let str = `<ul class="modal-results">`;
+                        var keywords = $(".form-input").val().trim().toLowerCase().split(/[\s\-]+/);
+                        $resultPanel.innerHTML = "";
+                        let hasResult = false
+                        let text = `<div class="no-result">找不到与关键词相关的内容....</div>`;
+
+                        if ($(".form-input").val().trim().length <= 0) {
+                            // 没有结果
+                            $resultPanel.innerHTML = text;
+                            return;
+                        }
+                        datas.forEach(function (data, index) {
+                            var isMatch = true;
+                            if (!data.title || data.title.trim() === '') {
+                                data.title = "Untitled";
+                            }
+                            var data_title = data.title.trim().toLowerCase();
+                            var data_content = data.content && data.content.trim().replace(/<[^>]+>/g, "").toLowerCase() || '';
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            // only match artiles with not empty contents
+                            if (data_content !== '') {
+                                keywords.forEach(function (keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        hasResult = true
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            } else {
+                                isMatch = false;
+                            }
+                            // show search results
+                            if (isMatch) {
+                                str += `<li class='result-item'><a href='${data_url}' class='result-item-detail'> <span class="title">${data_title}</span>`;
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 200 characters
+                                    var start = first_occur - 40;
+                                    var end = first_occur + 160;
+
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+
+                                    if (start == 0) {
+                                        end = 200;
+                                    }
+
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+
+                                    var match_content = content.substring(start, end);
+
+                                    // highlight all keywords
+                                    keywords.forEach(function (keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, `<em class="search-keyword">${keyword}</em>`);
+                                    });
+
+                                    str += `<span class="content"> ${match_content} ...</span></a>`;
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        if(hasResult) {
+                            $resultPanel.innerHTML = str;
+                        } else {
+                            $resultPanel.innerHTML = text;
+                        }
+
+                    },
+                    complete: function() {
+                        setTimeout(() => {
+                                const loadingBar = $('.search-loading-bar') 
+                                loadingBar.css({
+                                    width:'0%',
+                                    display: 'none'
+                                });
+                        }, 300)
+                    }
+                });
+            })
+
+        });
+    }
+
+    $(document).ready(function() {
+        $('.modal-close').click(function () { 
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+
+        $('.modal-overlay').click(function() {
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+        search(null, ".form-search", false)
+        search("#u-search-modal-form .form-input", ".u-search-modal-form", true)
+    })
+</script>
+
+
+
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo"><a href="/">hzjsea</a></div>
+        <div class="menu navbar-right">
+            
+            
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="pc-search-input"/>
+        </form>
+    </div>
+
+
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+            <input id="switch_default" type="checkbox" class="switch_default">
+            <label for="switch_default" class="toggleBtn"></label>
+        </div>
+    </div>
+</nav>
+
+
+<nav class="navbar-mobile" id="nav-mobile">
+    <div class="container">
+        <div class="navbar-header">
+            <div>
+                <a href="/">hzjsea</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+            </div>
+            <div class="navbar-mobile-right">
+                
+                
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="mobile-search-input"/>
+        </form>
+    </div>
+
+
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; 目录</div>
+            </div>
+            
+        </div>
+        <div class="menu" id="mobile-menu">
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+        </div>
+    </div>
+</nav>
+
+        <div class="main">
+			<!-- Chic/layout.ejs -->
+ <div id="u-search">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="container">
+                    <form id="u-search-modal-form" class="u-search-modal-form">
+                        <button type="submit" class="form-submit-btn">
+                            <img src="/image/search.png" class="search-btn-img" />
+                        </button>
+                        <input placeholder="搜索文章。。。" class="form-input" id="modal-form-input">
+                    </form>
+                    <a class="modal-close">x</a>
+                </div>
+                <div class="search-loading">
+                    <div class="search-loading-bar"></div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <!-- ul 格式如下 -->
+                <!-- <ul class="modal-results">
+                    <li class="result-item">
+                        <a class="result-item-detail">
+                            <span class="title">页面配置</span>
+                            <span class="content">
+                                content
+                            </span>
+                        </a>
+                    </li>
+                </ul> -->
+            </div>
+        </div>
+        <div class="modal-overlay"></div>
+    </div>
+            <div class="container">
+    
+    
+    <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">全部展开</a>
+        <a onclick="go_top()">回到顶部</a>
+        <a onclick="go_bottom()">回到底部</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "全部折叠"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "全部展开"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">docker基础</h1>
+            
+            <div class="post-meta">
+                
+                作者： <a itemprop="author" rel="author" href="/">hzjsea</a>&nbsp;
+                
+
+                
+                <span class="post-time">
+                    创建日期： <a
+                        href="#">February 4, 2020&nbsp;&nbsp;17:26:54</a>
+                </span>&nbsp;
+                
+                
+                <span class="post-category">
+                    分类：
+                    
+                    <a href="/categories/docker/">docker</a>&nbsp;
+                    
+                </span>
+                
+                
+                状态：<a href="#">SNAPSHOT</a>
+                
+            </div>
+            
+        </header>
+
+        <div class="post-content">
+            <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+<ul>
+<li><a href="#docker">docker</a><ul>
+<li><a href="#docker%E4%B8%8E%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E5%8C%BA%E5%88%AB">docker与虚拟机的区别</a><ul>
+<li><a href="#%E8%99%9A%E6%8B%9F%E6%9C%BA">虚拟机</a></li>
+<li><a href="#dokcer%E5%AE%B9%E5%99%A8">dokcer容器</a></li>
+<li><a href="#%E5%8C%BA%E5%88%AB">区别</a></li>
+</ul>
+</li>
+<li><a href="#%E6%A6%82%E5%BF%B5">概念</a></li>
+<li><a href="#%E9%95%9C%E5%83%8F">镜像</a><ul>
+<li><a href="#%E8%8E%B7%E5%8F%96%E9%95%9C%E5%83%8F">获取镜像</a></li>
+<li><a href="#%E6%8F%90%E4%BA%A4%E4%B8%80%E4%B8%AA%E5%AE%B9%E5%99%A8%E4%B8%BA%E6%96%B0%E7%9A%84%E9%95%9C%E5%83%8F%E4%B8%8D%E6%8F%90%E5%80%A1">提交一个容器为新的镜像(不提倡)</a></li>
+<li><a href="#%E8%BF%90%E8%A1%8C%E9%95%9C%E5%83%8F">运行镜像</a></li>
+<li><a href="#%E6%9F%A5%E7%9C%8B%E9%95%9C%E5%83%8F%E4%BF%A1%E6%81%AF">查看镜像信息</a></li>
+<li><a href="#%E6%90%9C%E5%AF%BB%E9%95%9C%E5%83%8F">搜寻镜像</a></li>
+<li><a href="#%E5%88%A0%E9%99%A4%E9%95%9C%E5%83%8F">删除镜像</a></li>
+</ul>
+</li>
+<li><a href="#%E5%AE%B9%E5%99%A8">容器</a><ul>
+<li><a href="#%E5%88%9B%E5%BB%BA%E5%AE%B9%E5%99%A8%E4%B8%8E%E5%90%AF%E5%8A%A8">创建容器与启动</a></li>
+<li><a href="#%E6%96%B0%E5%BB%BA%E5%B9%B6%E5%90%AF%E5%8A%A8%E5%AE%B9%E5%99%A8">新建并启动容器</a></li>
+<li><a href="#%E5%AE%88%E6%8A%A4%E7%8A%B6%E6%80%81%E8%BF%90%E8%A1%8C">守护状态运行</a></li>
+<li><a href="#%E7%BB%88%E6%AD%A2%E5%AE%B9%E5%99%A8">终止容器</a></li>
+<li><a href="#%E8%BF%9B%E5%85%A5%E5%AE%B9%E5%99%A8">进入容器</a></li>
+<li><a href="#%E5%88%A0%E9%99%A4%E5%AE%B9%E5%99%A8">删除容器</a></li>
+<li><a href="#%E5%AF%BC%E5%85%A5%E4%B8%8E%E5%AF%BC%E5%87%BA%E5%AE%B9%E5%99%A8">导入与导出容器</a></li>
+<li><a href="#%E6%9F%A5%E7%9C%8B%E5%AE%B9%E5%99%A8">查看容器</a></li>
+<li><a href="#%E5%A4%8D%E5%88%B6%E5%AE%B9%E5%99%A8%E5%86%85%E6%96%87%E4%BB%B6">复制容器内文件</a></li>
+</ul>
+</li>
+<li><a href="#%E5%B8%AE%E5%8A%A9%E5%91%BD%E4%BB%A4">帮助命令</a></li>
+<li><a href="#%E6%B8%85%E9%99%A4%E5%AE%B9%E5%99%A8">清除容器</a></li>
+<li><a href="#%E6%95%B0%E6%8D%AE%E5%8D%B7%E5%AE%B9%E5%99%A8">数据卷容器</a></li>
+<li><a href="#%E9%94%99%E8%AF%AF%E5%90%88%E9%9B%86">错误合集</a></li>
+</ul>
+</li>
+</ul>
+<!-- /code_chunk_output -->
+<a id="more"></a>
+
+<h1 id="docker"><a href="#docker" class="headerlink" title="docker"></a>docker</h1><h2 id="docker与虚拟机的区别"><a href="#docker与虚拟机的区别" class="headerlink" title="docker与虚拟机的区别"></a>docker与虚拟机的区别</h2><h3 id="虚拟机"><a href="#虚拟机" class="headerlink" title="虚拟机"></a>虚拟机</h3><p>虚拟机运行多个隔离应用时<br><img src="http://img.noback.top/2020-02-04-18-07-59.png" alt="2020-02-04-18-07-59"></p>
+<p>从下到上来看:</p>
+<ul>
+<li>基础设施(Infrastructure)。它可以是你的个人电脑，数据中心的服务器，或者是云主机。</li>
+<li>主操作系统(Host Operating System)。你的个人电脑之上，运行的可能是MacOS，Windows或者某个Linux发行版。</li>
+<li>虚拟机管理系统(Hypervisor)。利用Hypervisor，可以在主操作系统之上运行多个不同的从操作系统。类型1的Hypervisor有支持MacOS的HyperKit，支持Windows的Hyper-V以及支持Linux的KVM。类型2的Hypervisor有VirtualBox和VMWare。</li>
+<li>从操作系统(Guest Operating System)。假设你需要运行3个相互隔离的应用，则需要使用Hypervisor启动3个从操作系统，也就是3个虚拟机。这些虚拟机都非常大，也许有700MB，这就意味着它们将占用2.1GB的磁盘空间。它们还会消耗很多CPU和内存。</li>
+<li>各种依赖。每一个从操作系统都需要安装许多依赖。如果你的的应用需要连接PostgreSQL的话，则需要安装libpq-dev；如果你使用Ruby的话，应该需要安装gems；如果使用其他编程语言，比如Python或者Node.js，都会需要安装对应的依赖库。</li>
+<li>应用。安装依赖之后，就可以在各个从操作系统分别运行应用了，这样各个应用就是相互隔离的。</li>
+</ul>
+<h3 id="dokcer容器"><a href="#dokcer容器" class="headerlink" title="dokcer容器"></a>dokcer容器</h3><p><img src="http://img.noback.top/2020-02-04-18-10-43.png" alt="2020-02-04-18-10-43"><br>相比于虚拟机来说  docker更加的简洁</p>
+<p>从下到上</p>
+<ul>
+<li>基础设施(Infrastructure)。</li>
+<li>主操作系统(Host Operating System)。所有主流的Linux发行版都可以运行Docker。对于MacOS和Windows，也有一些办法”运行”Docker。</li>
+<li>Docker守护进程(Docker Daemon)。Docker守护进程取代了Hypervisor，它是运行在操作系统之上的后台进程，负责管理Docker容器。</li>
+<li>各种依赖。对于Docker，应用的所有依赖都打包在Docker镜像中，Docker容器是基于Docker镜像创建的。</li>
+<li>应用。应用的源代码与它的依赖都打包在Docker镜像中，不同的应用需要不同的Docker镜像。不同的应用运行在不同的Docker容器中，它们是相互隔离的</li>
+</ul>
+<h3 id="区别"><a href="#区别" class="headerlink" title="区别"></a>区别</h3><p>Docker守护进程可以直接与主操作系统进行通信，为各个Docker容器分配资源；它还可以将容器与主操作系统隔离，并将各个容器互相隔离。虚拟机启动需要数分钟，而Docker容器可以在数毫秒内启动。由于没有臃肿的从操作系统，Docker可以节省大量的磁盘空间以及其他系统资源。</p>
+<p>说了这么多Docker的优势，大家也没有必要完全否定虚拟机技术，因为两者有不同的使用场景。虚拟机更擅长于彻底隔离整个运行环境。例如，云服务提供商通常采用虚拟机技术隔离不同的用户。而Docker通常用于隔离不同的应用，例如前端，后端以及数据库。</p>
+<h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><ul>
+<li>镜像(Image)<br>面向docker引擎的只读模版，包含了文件系统</li>
+<li>容器(Container)<br>沙箱，利用容器来运行和隔离应用，容器与容器之间是相互隔离、互不可见的<br><font color='red'>镜像自身是只读的。容器从镜像启动的时候，Docker会在镜像的最上层创建一个可写层。镜像本身将保持不变。</font></li>
+<li>仓库(Repository)<br>存放镜像的地方，类似于代码仓库github  gitee等等</li>
+</ul>
+<p><img src="http://img.noback.top/2020-02-06-19-51-47.png" alt="2020-02-06-19-51-47"></p>
+<h2 id="镜像"><a href="#镜像" class="headerlink" title="镜像"></a>镜像</h2><h3 id="获取镜像"><a href="#获取镜像" class="headerlink" title="获取镜像"></a>获取镜像</h3><pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 安装Ubuntu:latest镜像</span>
+<span class="token punctuation">[</span>root@CodeSheep ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># docker pull ubuntu</span>
+Using default tag: latest
+latest: Pulling from library/ubuntu
+5c939e3a4d10: Downloading  8.608MB/26.69MB
+c63719cdbe7a: Download complete
+19a861ea6baf: Download complete
+651c9d2d6c4f: Downloadan zhuang 
+<span class="token comment" spellcheck="true"># 安装Ubuntu:14.04镜像</span>
+docker pull ubuntu:14.04
+<span class="token comment" spellcheck="true"># 从社区安装ubuntu镜像</span>
+docker pull dl.dockerpool.com:5000/ubuntu</code></pre>
+<h3 id="提交一个容器为新的镜像-不提倡"><a href="#提交一个容器为新的镜像-不提倡" class="headerlink" title="提交一个容器为新的镜像(不提倡)"></a>提交一个容器为新的镜像(不提倡)</h3><p>建议使用dockerfile创建新的镜像</p>
+<pre class=" language-bash"><code class="language-bash">docker commit CONTAINER  REPOSITORY:tag
+root:~<span class="token comment" spellcheck="true"># docker ps</span>
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+612090a371f6        centos              <span class="token string">"/bin/bash"</span>         5 seconds ago       Up 5 seconds                            frosty_tereshkova
+root:~<span class="token comment" spellcheck="true"># docker commit frosty_tereshkova new/centos:v4</span>
+sha256:2b405e30c679a448d9b913c19c48a4c435447655001abad264fcc3e7b2264312</code></pre>
+<h3 id="运行镜像"><a href="#运行镜像" class="headerlink" title="运行镜像"></a>运行镜像</h3><pre class=" language-bash"><code class="language-bash">docker run -t -i ubuntu /bin/bash</code></pre>
+<h3 id="查看镜像信息"><a href="#查看镜像信息" class="headerlink" title="查看镜像信息"></a>查看镜像信息</h3><pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 列出本地主机上所有镜像</span>
+<span class="token comment" spellcheck="true"># --------------------------</span>
+root:~<span class="token comment" spellcheck="true"># docker images</span>
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+docker.io/ubuntu    latest              ccc6e87d482b        6 days ago          64.2 MB
+
+<span class="token comment" spellcheck="true"># REPOSITORY 表示镜像的仓库源</span>
+<span class="token comment" spellcheck="true"># TAG 表示镜像的标签</span>
+<span class="token comment" spellcheck="true"># IMAGE ID 表示镜像的ID</span>
+<span class="token comment" spellcheck="true"># CREATED 镜像的创建时间</span>
+<span class="token comment" spellcheck="true"># SIZE 镜像大小</span>
+<span class="token comment" spellcheck="true"># --------------------------</span>
+
+<span class="token comment" spellcheck="true"># 显示所有镜像的ID -a 显示所有镜像 -q显示ID</span>
+root:~<span class="token comment" spellcheck="true"># docker images -qa</span>
+41f1d7eba8f3
+470671670cac
+ccc6e87d482b
+fce289e99eb9
+
+<span class="token comment" spellcheck="true"># 显示镜像的摘要信息</span>
+root:~<span class="token comment" spellcheck="true"># docker images --digests</span>
+
+<span class="token comment" spellcheck="true"># 显示镜像详细信息</span>
+root:~<span class="token comment" spellcheck="true"># docker images --no-trunc</span>
+
+<span class="token comment" spellcheck="true"># 添加新的镜像标签</span>
+root:～<span class="token comment" spellcheck="true"># docker tag docker.io/ubuntu:latest docker-ubuntu-version:v2</span>
+root:~<span class="token comment" spellcheck="true"># docker images</span>
+REPOSITORY              TAG                 IMAGE ID            CREATED             SIZE
+docker-ubuntu-version   v2                  ccc6e87d482b        6 days ago          64.2 MB
+docker.io/ubuntu        latest              ccc6e87d482b        6 days ago          64.2 MB
+docker.io/ubuntu        14.04               6e4f1fe62ff1        4 weeks ago         197 MB
+
+<span class="token comment" spellcheck="true"># 查看镜像相信信息</span>
+docker inspect ccc6e87d482b 
+docker imspect ccc
+</code></pre>
+<p>REPOSITORY表示镜像来自于哪个仓库<br>TAG 标签信息，版本信息<br>IMAMGE ID 镜像的ID号码，唯一<br>CREATED 创建时间<br>SIZE  镜像大小</p>
+<h3 id="搜寻镜像"><a href="#搜寻镜像" class="headerlink" title="搜寻镜像"></a>搜寻镜像</h3><pre class=" language-bash"><code class="language-bash">docker search mysql
+<span class="token comment" spellcheck="true"># --automated=false 仅显示自动创建的镜像</span>
+<span class="token comment" spellcheck="true"># --no-trunc=false 输出信息不截断显示</span>
+<span class="token comment" spellcheck="true"># -s --starts=0 指定仅显示评价为指定星级以上的镜像</span></code></pre>
+<h3 id="删除镜像"><a href="#删除镜像" class="headerlink" title="删除镜像"></a>删除镜像</h3><pre class=" language-bash"><code class="language-bash">docker rmi IMAGE<span class="token punctuation">[</span>IMAGE<span class="token punctuation">..</span>.<span class="token punctuation">]</span>
+<span class="token comment" spellcheck="true"># IMAGE...可以是标签或者ID</span>
+<span class="token comment" spellcheck="true"># docker rmi -f IMAGE[IMAGE...] 强制删除</span>
+
+<span class="token comment" spellcheck="true"># 删除全部</span>
+docker rmi  -f <span class="token variable"><span class="token variable">$(</span>docker images -qa<span class="token variable">)</span></span></code></pre>
+<p>当前镜像有被使用于某一个容器的时候，使用docker rmi IMAGE 会出现报错的内容,可以进行强制的删除，但这样的做法并不建议，可以先删除依赖于该镜像的容器，然后再删除该镜像</p>
+<h2 id="容器"><a href="#容器" class="headerlink" title="容器"></a>容器</h2><h3 id="创建容器与启动"><a href="#创建容器与启动" class="headerlink" title="创建容器与启动"></a>创建容器与启动</h3><p>使用create创建容器后，容器是处于停止状态的，可以使用start开启</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 创建容器</span>
+docker create -it ubuntu:test 
+<span class="token comment" spellcheck="true"># 开启容器</span>
+docker start ID
+<span class="token comment" spellcheck="true"># 重新开启容器</span>
+docker restart ID</code></pre>
+<h3 id="新建并启动容器"><a href="#新建并启动容器" class="headerlink" title="新建并启动容器"></a>新建并启动容器</h3><pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># docker run [OPTIONS] IMAGE [COMMAND][ARG...]</span>
+<span class="token comment" spellcheck="true"># --name 指定容器名字，未指定则随机生成</span>
+<span class="token comment" spellcheck="true"># -t 给docker分一个伪终端 </span>
+<span class="token comment" spellcheck="true"># -i 提供交互模式 </span>
+<span class="token comment" spellcheck="true"># -d 后台运行容器，并返回容器ID</span>
+<span class="token comment" spellcheck="true"># -P 随机端口映射</span>
+<span class="token comment" spellcheck="true"># -p 指定端口映射 主机端口:容器端口</span>
+<span class="token comment" spellcheck="true"># -e 指定环境变量</span>
+
+docker run -i -t ubuntu:latest /bin/bash
+
+<span class="token comment" spellcheck="true"># 区分-p 与 -P的区别</span>
+docker pull comcat 
+docker run -it -d -p 8080:8080 tomcat
+docker run -it -d -P tomcat
+root:~<span class="token comment" spellcheck="true"># docker ps</span>
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS                     NAMES
+d5987c3d0257        tomcat              <span class="token string">"catalina.sh run"</span>   3 seconds ago       Up 2 seconds        0.0.0.0:32768-<span class="token operator">></span>8080/tcp   xenodochial_hugle
+ae1370718b31        tomcat              <span class="token string">"catalina.sh run"</span>   36 seconds ago      Up 35 seconds       0.0.0.0:8080-<span class="token operator">></span>8080/tcp    upbeat_beaver</code></pre>
+<p>exit后容器处于终止状态</p>
+<h3 id="守护状态运行"><a href="#守护状态运行" class="headerlink" title="守护状态运行"></a>守护状态运行</h3><p>正常情况下，退出容器后，容器处于终止状态。使用-d可以在后台运行容器</p>
+<pre class=" language-bash"><code class="language-bash">docker run -d ubuntu:latest /bin/bash -c <span class="token string">"while true;do echo helloworld > xx.txt;sleep 1;done"</span></code></pre>
+<h3 id="终止容器"><a href="#终止容器" class="headerlink" title="终止容器"></a>终止容器</h3><p>使用stop终止容器的时候，会先发送一个SIGTERM信号，等待10s后发送SIGKILL信号终止容器<br>kill 会直接发送SIGKILL终止容器</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 终止容器</span>
+docker stop -t xxx  ID
+docker stop --time xxx  ID
+docker <span class="token function">kill</span> ID</code></pre>
+<h3 id="进入容器"><a href="#进入容器" class="headerlink" title="进入容器"></a>进入容器</h3><ul>
+<li>attach 命令<br>attach可以进入-d开启的后台运行中的容器,但是多个窗口同时attach到同一个容器的时候，所有窗口会同步显示，当某个窗口命令阻塞的时候，其他窗口也无法执行操作了<pre class=" language-bash"><code class="language-bash">docker attach ID</code></pre>
+</li>
+<li>exec 命令<br>通常使用这个<pre class=" language-bash"><code class="language-bash">docker <span class="token function">exec</span> -it ID /bin/bash </code></pre>
+</li>
+</ul>
+<h3 id="删除容器"><a href="#删除容器" class="headerlink" title="删除容器"></a>删除容器</h3><p>删除终止状态下的容器</p>
+<pre class=" language-bash"><code class="language-bash">docker <span class="token function">rm</span> <span class="token punctuation">[</span>OPTIONS<span class="token punctuation">]</span> CONTAINER <span class="token punctuation">[</span>CONTAINER<span class="token punctuation">..</span>.<span class="token punctuation">]</span>
+<span class="token comment" spellcheck="true"># -f --force=false 终止并删除一个正在运行的容器</span>
+<span class="token comment" spellcheck="true"># -l --link=false 删除容器的连接，但保留容器</span>
+<span class="token comment" spellcheck="true"># -v --volumes=false 删除容器挂载的数据卷</span>
+
+<span class="token comment" spellcheck="true"># 停止所有容器</span>
+docker stop <span class="token variable"><span class="token variable">$(</span>dokcer <span class="token function">ps</span> -q<span class="token variable">)</span></span>
+<span class="token comment" spellcheck="true"># 删除所有容器</span>
+docker <span class="token function">rm</span> <span class="token variable"><span class="token variable">$(</span>docker <span class="token function">ps</span> -aq<span class="token variable">)</span></span> <span class="token comment" spellcheck="true">#需要先暂停</span>
+docker <span class="token function">rm</span> -f <span class="token variable"><span class="token variable">$(</span>docker <span class="token function">ps</span> -aq<span class="token variable">)</span></span> <span class="token comment" spellcheck="true"># 不需要暂停</span></code></pre>
+<h3 id="导入与导出容器"><a href="#导入与导出容器" class="headerlink" title="导入与导出容器"></a>导入与导出容器</h3><pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 导入</span>
+docker <span class="token function">export</span> ID <span class="token operator">></span> xx.tar
+<span class="token comment" spellcheck="true"># 导出</span>
+<span class="token function">cat</span> xx.tar <span class="token operator">|</span> docker <span class="token function">import</span> - test/ubuntu:v1</code></pre>
+<h3 id="查看容器"><a href="#查看容器" class="headerlink" title="查看容器"></a>查看容器</h3><pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 查看活跃的容器</span>
+root:~<span class="token comment" spellcheck="true"># docker ps</span>
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+4171c783b51f        470671670cac        <span class="token string">"/bin/bash"</span>         12 days ago         Up 2 seconds                            devtest
+<span class="token comment" spellcheck="true"># 查看所有容器</span>
+root:~<span class="token comment" spellcheck="true"># docker ps -a</span>
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS                     PORTS               NAMES
+7945b6135dda        ubuntu              <span class="token string">"echo '“hello world'"</span>   5 seconds ago       Exited <span class="token punctuation">(</span>0<span class="token punctuation">)</span> 4 seconds ago                       silly_kirch
+<span class="token comment" spellcheck="true"># -l 显示最近创建的容器</span>
+<span class="token comment" spellcheck="true"># -n 显示最近n个创建的容器</span>
+
+<span class="token comment" spellcheck="true"># 查看容器日志</span>
+docker logs -f -t --tail  IMAGE
+
+<span class="token comment" spellcheck="true"># 查看容器内运行进程</span>
+docker <span class="token function">top</span> IMAGE
+
+<span class="token comment" spellcheck="true">#</span></code></pre>
+<p>status 状态表示是否在后台运行，up表示在后台运行  Exited表示终止</p>
+<h3 id="复制容器内文件"><a href="#复制容器内文件" class="headerlink" title="复制容器内文件"></a>复制容器内文件</h3><pre class=" language-bash"><code class="language-bash">docker <span class="token function">cp</span> IMAGE:file_path now_path </code></pre>
+<h2 id="帮助命令"><a href="#帮助命令" class="headerlink" title="帮助命令"></a>帮助命令</h2><pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 查看版本</span>
+docker version
+
+<span class="token comment" spellcheck="true"># 显示docker信息，包括容器数量，镜像数量等等</span>
+<span class="token punctuation">[</span>root@CodeSheep ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># docker info</span>
+Client:
+ Debug Mode: <span class="token boolean">false</span>
+
+Server:
+ Containers: 3
+  Running: 0
+  Paused: 0
+  Stopped: 3
+ Images: 1
+ Server Version: 19.03.1
+ Storage Driver: overlay2
+  Backing Filesystem: extfs
+  Supports d_type: <span class="token boolean">true</span>
+  Native Overlay Diff: <span class="token boolean">true</span>
+ Logging Driver: json-file
+ Cgroup Driver: cgroupfs
+
+
+<span class="token comment" spellcheck="true"># 查看日志</span>
+docker logs CONTAINER</code></pre>
+<h2 id="清除容器"><a href="#清除容器" class="headerlink" title="清除容器"></a>清除容器</h2><p>默认情况下，每个container在退出时，它的文件系统也会保存下来。这样一方面调试会方便些，因为你可以通过查看日志等方式来确定最终状态。另外一方面，你也可以保存container所产生的数据。但是当你仅仅需要短期的运行一个前台container，这些数据同时不需要保留时。你可能就希望docker能在container结束时自动清理其所产生的数据。 这个时候你就需要–rm这个参数了</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token function">sudo</span> docker run --rm centos:latest</code></pre>
+<p><font color='red'>注意：–rm 和 -d不能共用！</font></p>
+<h2 id="数据卷容器"><a href="#数据卷容器" class="headerlink" title="数据卷容器"></a>数据卷容器</h2><p>–volumes-from 顾名思义，就是从另一个容器当中挂载容器中已经创建好的数据卷。<br>如果你有一些持续更新的数据需要在容器之间共享，最好创建数据卷容器。 数据卷容器，其实就是一个正常的容器，专门用来提供数据卷供其它容器挂载的。 我们首先先创建一个数据卷容器</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 给postgres数据库创建一个数据卷容器</span>
+<span class="token function">sudo</span> docker run -d -v /dbdata --name dbdata training/postgres <span class="token keyword">echo</span> Data-only container <span class="token keyword">for</span> postgres
+
+<span class="token comment" spellcheck="true"># 创建容器挂在数据卷</span>
+<span class="token function">sudo</span> docker run -d --volumes-from dbdata --name db1 training/postgres</code></pre>
+<p>数据卷容器本身是不需要保持运行的</p>
+<p><strong>利用数据卷容器来备份、恢复、迁移数据卷</strong><br>首先使用 –volumes-from 标记来创建一个加载 dbdata 容器卷的容器，并从本地主机挂载当前到容器的 /backup 目录。命令如下：</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token function">sudo</span> docker run --volumes-from dbdata -v <span class="token variable"><span class="token variable">$(</span><span class="token function">pwd</span><span class="token variable">)</span></span>:/backup ubuntu <span class="token function">tar</span> cvf /backup/backup.tar /dbdata</code></pre>
+<p>容器启动后，使用了 tar 命令来将 dbdata 卷备份为本地的 /backup/backup.tar。 如果要恢复数据到一个容器，首先创建一个带有数据卷的容器 dbdata2。</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token function">sudo</span> docker run -v /dbdata --name dbdata2 ubuntu /bin/bash</code></pre>
+<p>然后创建另一个容器，挂载 dbdata2 的容器，并使用 untar 解压备份文件到挂载的容器卷中</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token function">sudo</span> docker run --volumes-from dbdata2 -v <span class="token variable"><span class="token variable">$(</span><span class="token function">pwd</span><span class="token variable">)</span></span>:/backup busybox <span class="token function">tar</span> xvf
+/backup/backup.tar</code></pre>
+<h2 id="错误合集"><a href="#错误合集" class="headerlink" title="错误合集"></a>错误合集</h2><ul>
+<li>错误0<br>docker下载源出错<pre class=" language-bash"><code class="language-bash">base                                                                                                                                                            <span class="token operator">|</span> 3.6 kB  00:00:00     
+http://download.docker.com/linux/centos/docker-ce.rep/repodata/repomd.xml: <span class="token punctuation">[</span>Errno 14<span class="token punctuation">]</span> HTTPS Error 404 - Not Found
+Trying other mirror.
+To address this issue please refer to the below wiki article  </code></pre>
+这是因为添加源是国外源，有时候网络不对的情况下无法安装，建议添加阿里源<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 删除仓库内的国外源</span>
+<span class="token function">cd</span> /etc/yum.repos.d/
+<span class="token function">rm</span> -rf docker-ce.repo download.docker.com_linux_centos_docker-ce.rep.repo 
+<span class="token comment" spellcheck="true"># 添加阿里源</span>
+<span class="token function">sudo</span> yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo</code></pre>
+</li>
+<li>错误1<br>没有开启docker服务<pre class=" language-bash"><code class="language-bash">Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docker daemon running 
+</code></pre>
+</li>
+</ul>
+<h1 id="检测"><a href="#检测" class="headerlink" title="检测"></a>检测</h1><p>root:~# systemctl status docker</p>
+<ul>
+<li>docker.service - Docker Application Container Engine<br> Loaded: loaded (/usr/lib/systemd/system/docker.service; disabled; vendor preset: disabled)<br> Active: inactive (dead)<br>   Docs: <a target="_blank" rel="noopener" href="http://docs.docker.com/">http://docs.docker.com</a></li>
+</ul>
+<h1 id="开启服务"><a href="#开启服务" class="headerlink" title="开启服务"></a>开启服务</h1><p>systemctl start docker</p>
+<pre><code>
+- 错误2
+使用当前镜像的容器正在运行
+```bash
+root:~# docker rmi ccc6e87d482
+Error response from daemon: conflict: unable to delete ccc6e87d482b (must be forced) - image is referenced in multiple repositories
+
+# 强制删除
+docker rmi -f ccc6e87d482
+
+# 不建议强制删除，应当先删除所有依赖于该镜像的容器，再删除镜像</code></pre>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>标签：</span>
+                <span class="tag">
+                    
+                    
+                    <a href="/tags/docker/"># docker</a>
+                    
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript：window.history.back();">后退</a>
+                <span>· </span>
+                <a href="/">主页</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            <a class="prev" rel="prev" href="/2020/02/05/blog_back_new/docker/docker%E9%95%9C%E5%83%8F%E5%88%86%E5%B1%82%E5%8E%9F%E7%90%86/">docker镜像分层原理</a>
+            
+            
+            <a class="next" rel="next" href="/2020/02/03/blog_back_new/nginx/nginx%E5%9F%BA%E7%A1%80/">nginx基础</a>
+            
+        </section>
+    </article>
+</div>
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+    </div>
+</footer>
+
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

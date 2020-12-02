@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="hzjsea">
+
+
+
+
+
+
+<title>mysql错误 | hzjsea</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+    <script src="/js/jquery.min.js"></script>
+    
+
+
+
+    
+    
+        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+    
+
+
+
+
+    <script>
+    function searchToggle() {
+        const width = $(document.body).width()
+        if(width > 479) {
+            return;
+        }
+        const search = $('.search');
+        const searchForm = $('.form-search')
+
+        if(!search.hasClass("mobile-search")) {
+            search.addClass("mobile-search");
+        } else {
+            search.removeClass("mobile-search");
+        } 
+    }
+
+    function search(searchInputEl, formEl, flag) {
+        const path = "/" + "search.json"; // 可以在public 下查看这个search.json
+        $(formEl).submit(function(e){
+            e.preventDefault();
+            let target = null
+            if(searchInputEl == null) {
+                const screenWidth = $(document.body).width();
+                target = screenWidth > 479 ? $('#pc-search-input') : $('#mobile-search-input');
+                console.log(target);
+            } else {
+                target = $(searchInputEl)
+            }
+
+            if(!flag && target.val() === '') {
+                return ;
+            }
+
+            $("#u-search").fadeIn(500, function() {
+                $("body > .wrapper").addClass("modal-active");
+
+                $.ajax({
+                    url: path,
+                    dataType: "json",
+                    beforeSend: function (xhr) {
+                        $input = target.val();
+                        $(".form-input").val($input);
+                        const loadingBar = $('.search-loading-bar') 
+                        loadingBar.css({
+                            width:'100%',
+                            display: 'block'
+                        });
+                    },
+                    success: function( datas ) {
+                        console.log(datas);
+                        const $resultPanel = $(".modal-body")[0];
+                        let str = `<ul class="modal-results">`;
+                        var keywords = $(".form-input").val().trim().toLowerCase().split(/[\s\-]+/);
+                        $resultPanel.innerHTML = "";
+                        let hasResult = false
+                        let text = `<div class="no-result">找不到与关键词相关的内容....</div>`;
+
+                        if ($(".form-input").val().trim().length <= 0) {
+                            // 没有结果
+                            $resultPanel.innerHTML = text;
+                            return;
+                        }
+                        datas.forEach(function (data, index) {
+                            var isMatch = true;
+                            if (!data.title || data.title.trim() === '') {
+                                data.title = "Untitled";
+                            }
+                            var data_title = data.title.trim().toLowerCase();
+                            var data_content = data.content && data.content.trim().replace(/<[^>]+>/g, "").toLowerCase() || '';
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            // only match artiles with not empty contents
+                            if (data_content !== '') {
+                                keywords.forEach(function (keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        hasResult = true
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            } else {
+                                isMatch = false;
+                            }
+                            // show search results
+                            if (isMatch) {
+                                str += `<li class='result-item'><a href='${data_url}' class='result-item-detail'> <span class="title">${data_title}</span>`;
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 200 characters
+                                    var start = first_occur - 40;
+                                    var end = first_occur + 160;
+
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+
+                                    if (start == 0) {
+                                        end = 200;
+                                    }
+
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+
+                                    var match_content = content.substring(start, end);
+
+                                    // highlight all keywords
+                                    keywords.forEach(function (keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, `<em class="search-keyword">${keyword}</em>`);
+                                    });
+
+                                    str += `<span class="content"> ${match_content} ...</span></a>`;
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        if(hasResult) {
+                            $resultPanel.innerHTML = str;
+                        } else {
+                            $resultPanel.innerHTML = text;
+                        }
+
+                    },
+                    complete: function() {
+                        setTimeout(() => {
+                                const loadingBar = $('.search-loading-bar') 
+                                loadingBar.css({
+                                    width:'0%',
+                                    display: 'none'
+                                });
+                        }, 300)
+                    }
+                });
+            })
+
+        });
+    }
+
+    $(document).ready(function() {
+        $('.modal-close').click(function () { 
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+
+        $('.modal-overlay').click(function() {
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+        search(null, ".form-search", false)
+        search("#u-search-modal-form .form-input", ".u-search-modal-form", true)
+    })
+</script>
+
+
+
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo"><a href="/">hzjsea</a></div>
+        <div class="menu navbar-right">
+            
+            
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="pc-search-input"/>
+        </form>
+    </div>
+
+
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+            <input id="switch_default" type="checkbox" class="switch_default">
+            <label for="switch_default" class="toggleBtn"></label>
+        </div>
+    </div>
+</nav>
+
+
+<nav class="navbar-mobile" id="nav-mobile">
+    <div class="container">
+        <div class="navbar-header">
+            <div>
+                <a href="/">hzjsea</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+            </div>
+            <div class="navbar-mobile-right">
+                
+                
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="mobile-search-input"/>
+        </form>
+    </div>
+
+
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; 目录</div>
+            </div>
+            
+        </div>
+        <div class="menu" id="mobile-menu">
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+        </div>
+    </div>
+</nav>
+
+        <div class="main">
+			<!-- Chic/layout.ejs -->
+ <div id="u-search">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="container">
+                    <form id="u-search-modal-form" class="u-search-modal-form">
+                        <button type="submit" class="form-submit-btn">
+                            <img src="/image/search.png" class="search-btn-img" />
+                        </button>
+                        <input placeholder="搜索文章。。。" class="form-input" id="modal-form-input">
+                    </form>
+                    <a class="modal-close">x</a>
+                </div>
+                <div class="search-loading">
+                    <div class="search-loading-bar"></div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <!-- ul 格式如下 -->
+                <!-- <ul class="modal-results">
+                    <li class="result-item">
+                        <a class="result-item-detail">
+                            <span class="title">页面配置</span>
+                            <span class="content">
+                                content
+                            </span>
+                        </a>
+                    </li>
+                </ul> -->
+            </div>
+        </div>
+        <div class="modal-overlay"></div>
+    </div>
+            <div class="container">
+    
+    
+    <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">全部展开</a>
+        <a onclick="go_top()">回到顶部</a>
+        <a onclick="go_bottom()">回到底部</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "全部折叠"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "全部展开"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">mysql错误</h1>
+            
+            <div class="post-meta">
+                
+                作者： <a itemprop="author" rel="author" href="/">hzjsea</a>&nbsp;
+                
+
+                
+                <span class="post-time">
+                    创建日期： <a
+                        href="#">February 24, 2020&nbsp;&nbsp;16:29:33</a>
+                </span>&nbsp;
+                
+                
+                <span class="post-category">
+                    分类：
+                    
+                    <a href="/categories/mysql/">mysql</a>&nbsp;
+                    
+                </span>
+                
+                
+                状态：<a href="#">SNAPSHOT</a>
+                
+            </div>
+            
+        </header>
+
+        <div class="post-content">
+            <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+<ul>
+<li><a href="#mysql%E9%94%99%E8%AF%AF">mysql错误</a><ul>
+<li><a href="#mysql%E9%94%99%E8%AF%AF%E5%90%88%E9%9B%86">mysql错误合集</a></li>
+<li><a href="#%E9%94%99%E8%AF%AF-%E6%89%BE%E4%B8%8D%E5%88%B0sock%E6%96%87%E4%BB%B6">错误 找不到sock文件</a></li>
+<li><a href="#%E7%89%88%E6%9C%AC%E6%9B%B4%E6%96%B057%E4%BF%AE%E6%94%B9%E5%AF%86%E7%A0%81%E6%8C%87%E4%BB%A4%E5%8F%98%E5%8A%A8">版本更新5.7修改密码指令变动</a></li>
+<li><a href="#mysql%E4%B8%A5%E6%A0%BC%E6%A8%A1%E5%BC%8F">mysql严格模式</a></li>
+<li><a href="#mysql%E9%A9%B1%E5%8A%A8%E5%99%A8%E6%8A%A5%E9%94%99">mysql驱动器报错</a></li>
+<li><a href="#mysql%E8%BF%9C%E7%A8%8B%E7%99%BB%E5%BD%95%E6%8E%88%E6%9D%83%E9%94%99%E8%AF%AF">mysql远程登录授权错误</a></li>
+<li><a href="#%E7%94%A8%E6%88%B7%E6%8E%88%E6%9D%83%E7%9A%84%E9%97%AE%E9%A2%98">用户授权的问题</a></li>
+<li><a href="#%E4%BE%9D%E8%B5%96%E5%B7%B2%E5%AD%98%E5%9C%A8%E7%9A%84%E9%97%AE%E9%A2%98">依赖已存在的问题</a></li>
+<li><a href="#mysql57%E8%AE%BE%E7%BD%AE%E7%AE%80%E5%8D%95%E5%AF%86%E7%A0%81%E6%8A%A5%E9%94%99">mysql5.7设置简单密码报错</a></li>
+</ul>
+</li>
+</ul>
+<!-- /code_chunk_output -->
+
+
+<a id="more"></a>
+
+<h1 id="mysql错误"><a href="#mysql错误" class="headerlink" title="mysql错误"></a>mysql错误</h1><h2 id="mysql错误合集"><a href="#mysql错误合集" class="headerlink" title="mysql错误合集"></a>mysql错误合集</h2><ol>
+<li>mysql插入汉字的问题</li>
+</ol>
+<p>创建数据库时使用utf8</p>
+<pre class=" language-sql"><code class="language-sql"><span class="token keyword">CREATE</span> <span class="token keyword">DATABASE</span> <span class="token punctuation">`</span>mydb<span class="token punctuation">`</span> <span class="token keyword">CHARACTER SET</span> utf8 <span class="token keyword">COLLATE</span> utf8_general_ci<span class="token punctuation">;</span></code></pre>
+<ol start="2">
+<li>初始化服务器的密码问题<br>MySQL服务器初始化（从MySQL 5.7开始）：在服务器初始启动时，如果服务器的数据目录为空，则会发生以下情况：</li>
+</ol>
+<ul>
+<li>服务器初始化</li>
+<li>在数据目录中生成SSL证书和密钥文件。</li>
+<li>该validate_password插件安装并启用。</li>
+<li>创建超级用户‘root’@’localhost’,超级用户的密码被设置并存储在错误日志文件中。</li>
+</ul>
+<p>查询超级用户的密码</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token function">sudo</span> <span class="token function">grep</span> </code></pre>
+<p>修改密码</p>
+<pre class=" language-sql"><code class="language-sql"><span class="token comment" spellcheck="true">-- 先登陆</span>
+mysql <span class="token operator">-</span>uroot <span class="token operator">-</span>p123456
+<span class="token comment" spellcheck="true">-- 修改密码</span>
+<span class="token keyword">alter</span> <span class="token keyword">user</span> <span class="token string">'root'</span>@'localhost<span class="token string">' identified by '</span><span class="token number">123456</span>'<span class="token punctuation">;</span>
+flush <span class="token keyword">all</span> <span class="token keyword">privileges</span></code></pre>
+<ol start="3">
+<li>修改密码出现simple password not pass<br>ERROR 1820 (HY000): You must reset your password using ALTER USER statement before executing this statement.</li>
+</ol>
+<p>解决方法,先修改密码策略</p>
+<pre class=" language-sql"><code class="language-sql"><span class="token keyword">show</span> variables <span class="token operator">like</span> <span class="token string">'%password%'</span><span class="token punctuation">;</span>
+<span class="token keyword">set</span> <span class="token keyword">global</span> validate_password_policy<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token keyword">set</span> <span class="token keyword">global</span> validate_password_length<span class="token operator">=</span><span class="token number">4</span><span class="token punctuation">;</span></code></pre>
+<ol start="4">
+<li>忘记登陆密码</li>
+</ol>
+<p>解决方法:</p>
+<pre class=" language-sql"><code class="language-sql"><span class="token comment" spellcheck="true">-- 关闭mysql</span>
+systemctl stop mysqld
+<span class="token comment" spellcheck="true">-- 在/etc/my.conf中添加</span>
+在<span class="token punctuation">[</span>mysqld<span class="token punctuation">]</span>的段中加上一句：skip<span class="token operator">-</span><span class="token keyword">grant</span><span class="token operator">-</span><span class="token keyword">tables</span>
+
+<span class="token comment" spellcheck="true">-- 重启</span>
+systemctl restart mysqld
+
+<span class="token comment" spellcheck="true">-- 进入mysql</span>
+
+mysql
+
+<span class="token comment" spellcheck="true">-- 设置密码</span>
+
+<span class="token comment" spellcheck="true">-- 5.6更新的方式</span>
+<span class="token keyword">update</span> <span class="token keyword">user</span> <span class="token keyword">set</span> Password<span class="token operator">=</span>password<span class="token punctuation">(</span><span class="token string">'123456'</span><span class="token punctuation">)</span> <span class="token keyword">where</span> <span class="token keyword">user</span><span class="token operator">=</span><span class="token string">'root'</span><span class="token punctuation">;</span>
+<span class="token comment" spellcheck="true">-- 这个是5.7版本的更新方式</span>
+<span class="token keyword">update</span> <span class="token keyword">user</span> <span class="token keyword">set</span> authentication_string<span class="token operator">=</span>password<span class="token punctuation">(</span><span class="token string">'123abc'</span><span class="token punctuation">)</span> <span class="token keyword">where</span> <span class="token keyword">user</span><span class="token operator">=</span><span class="token string">'root'</span><span class="token punctuation">;</span>
+flush <span class="token keyword">all</span> <span class="token keyword">privileges</span><span class="token punctuation">;</span>
+
+<span class="token comment" spellcheck="true">-- 授予主机权限</span>
+<span class="token keyword">grant</span> <span class="token keyword">all</span> pirvileges <span class="token keyword">on</span> <span class="token operator">*</span><span class="token punctuation">.</span><span class="token operator">*</span> <span class="token keyword">to</span> <span class="token string">'root'</span>@'localhost<span class="token string">' identified by '</span>mysqlpassword'<span class="token punctuation">;</span>
+flush <span class="token keyword">all</span> <span class="token keyword">privileges</span><span class="token punctuation">;</span>
+
+<span class="token comment" spellcheck="true">-- 退出mysql 关闭mysql 删除skip-grant-tables  重新启动</span></code></pre>
+<ol start="5">
+<li><p>root用户无法远程登陆</p>
+<pre class=" language-sql"><code class="language-sql"><span class="token keyword">GRANT</span> <span class="token keyword">ALL</span> <span class="token keyword">PRIVILEGES</span> <span class="token keyword">ON</span> <span class="token operator">*</span><span class="token punctuation">.</span><span class="token operator">*</span> <span class="token keyword">TO</span> <span class="token string">'root'</span>@'<span class="token operator">%</span><span class="token string">' IDENTIFIED BY '</span><span class="token number">123456</span>' <span class="token keyword">WITH</span> <span class="token keyword">GRANT</span> <span class="token keyword">OPTION</span><span class="token punctuation">;</span>
+flush <span class="token keyword">privileges</span><span class="token punctuation">;</span></code></pre>
+</li>
+<li><p>mysql无法插入汉字</p>
+</li>
+</ol>
+<p><font color='red'>查看数据库</font></p>
+<pre class=" language-sql"><code class="language-sql"><span class="token keyword">show</span> VARIABLES <span class="token operator">like</span> <span class="token string">"character%"</span><span class="token punctuation">;</span></code></pre>
+<p><img src="http://img.noback.top/2020-02-24-15-09-49.png" alt="2020-02-24-15-09-49"></p>
+<p><font color='red'>如果数据不重要的话，一劳永逸的解决办法是，使用 alert database tuanplus character set utf8 更改数据库的编码格式，再重新建表。</font></p>
+<pre class=" language-sql"><code class="language-sql">alert <span class="token keyword">database</span> tuanplus <span class="token keyword">character set</span> utf8<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">-- 这里tuanplus是数据库</span></code></pre>
+<p><font color='red'>如果项目中的数据是重要数据的话，使用 alter table address convert to character set utf8 转换需要插入汉字的数据表编码为utf8即可（此例中的数据表是address）:</font></p>
+<pre class=" language-sql"><code class="language-sql"><span class="token keyword">alter</span> <span class="token keyword">table</span> address <span class="token keyword">convert</span> <span class="token keyword">to</span> <span class="token keyword">character set</span> utf8<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">-- 这里address 是表</span>
+<span class="token keyword">set</span> character_set_results<span class="token operator">=</span>utf8<span class="token punctuation">;</span>
+<span class="token keyword">set</span> character_set_database<span class="token operator">=</span>utf8<span class="token punctuation">;</span>
+<span class="token keyword">set</span> character_set_server<span class="token operator">=</span>utf8<span class="token punctuation">;</span>
+<span class="token keyword">set</span> character_set_connection<span class="token operator">=</span>utf8<span class="token punctuation">;</span>
+<span class="token keyword">set</span> character_set_client<span class="token operator">=</span>utf8<span class="token punctuation">;</span></code></pre>
+<p>但重启mysql服务后，又还原了，得添加my.ini文件。然后再重启。</p>
+<h2 id="错误-找不到sock文件"><a href="#错误-找不到sock文件" class="headerlink" title="错误 找不到sock文件"></a>错误 找不到sock文件</h2><pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span>root@mysql ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># mysql</span>
+ERROR 2002 <span class="token punctuation">(</span>HY000<span class="token punctuation">)</span>: Can<span class="token string">'t connect to local MySQL server through socket '</span>/data/mysql/my3306/mysql.sock' <span class="token punctuation">(</span>2<span class="token punctuation">)</span></code></pre>
+<p>这是是因为my.cnf这个配置文件中指定的sock文件路径中不存在这个文件 这个文件是s类型的好像还看不来。。<br>配置该路径</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span>client<span class="token punctuation">]</span>
+  port<span class="token operator">=</span>3306
+  socket <span class="token operator">=</span> /var/lib/mysql/mysql.sock</code></pre>
+<p>重启mysqld</p>
+<pre class=" language-bash"><code class="language-bash">systemctl restart mysqld</code></pre>
+<h2 id="版本更新5-7修改密码指令变动"><a href="#版本更新5-7修改密码指令变动" class="headerlink" title="版本更新5.7修改密码指令变动"></a>版本更新5.7修改密码指令变动</h2><pre class=" language-bash"><code class="language-bash">mysql<span class="token operator">></span> update user <span class="token keyword">set</span> password<span class="token operator">=</span>password<span class="token punctuation">(</span><span class="token string">"*******"</span><span class="token punctuation">)</span> where user<span class="token operator">=</span><span class="token string">"*******"</span><span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">#修改密码报错</span>
+ERROR 1054 <span class="token punctuation">(</span>42S22<span class="token punctuation">)</span>: Unknown column <span class="token string">'password'</span> <span class="token keyword">in</span> <span class="token string">'field list'</span>
+mysql<span class="token operator">></span> update mysql.user <span class="token keyword">set</span> authentication_string<span class="token operator">=</span>password<span class="token punctuation">(</span><span class="token string">'*******'</span><span class="token punctuation">)</span> where user<span class="token operator">=</span><span class="token string">'*******'</span><span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">#修改密码成功</span>
+Query OK, 1 row affected, 1 warning <span class="token punctuation">(</span>0.00 sec<span class="token punctuation">)</span></code></pre>
+<h2 id="mysql严格模式"><a href="#mysql严格模式" class="headerlink" title="mysql严格模式"></a>mysql严格模式</h2><p>mysql严格模式，禁止通过insert的方式直接修改mysql库中的user表进行添加新用户。<br>报错内容</p>
+<p><font color='red'>ERROR 1364 (HY000): Field ‘ssl_cipher’ doesn’t have a default value</font></p>
+<p>修改my.cnf上面的内容</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 原来的</span>
+sql-mode<span class="token operator">=</span>STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION
+<span class="token comment" spellcheck="true"># 修改后的</span>
+sql-mode<span class="token operator">=</span>NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION
+
+<span class="token comment" spellcheck="true"># 修改后重启</span>
+
+systemctl restart mysqld</code></pre>
+<h2 id="mysql驱动器报错"><a href="#mysql驱动器报错" class="headerlink" title="mysql驱动器报错"></a>mysql驱动器报错</h2><p>这个报错内容有两种情况</p>
+<ul>
+<li>使用MySql数据库服务为最新版本8.0.11，而在项目开发的过程中使用了低版本的MySql驱动包</li>
+<li>当MySQL的数据库隔离级别为REPEATABLE-READ时，查询一个select语句也算是事物的开始，而且在hibernate里会把以select语句开头的事务标记为只读事务，此时在这个事务里再执行insert、update、delete等DML语句就会出现如上的异常信息。</li>
+</ul>
+<p>报错2解决：<br>查看mysql数据库隔离级别</p>
+<pre class=" language-bash"><code class="language-bash">mysql root@10.0.6.55:mysql<span class="token operator">></span> SHOW VARIABLES LIKE <span class="token string">'%iso%'</span><span class="token punctuation">;</span>
++---------------+-----------------+
+<span class="token operator">|</span> Variable_name <span class="token operator">|</span> Value           <span class="token operator">|</span>
++---------------+-----------------+
+<span class="token operator">|</span> tx_isolation  <span class="token operator">|</span> REPEATABLE-READ <span class="token operator">|</span>
++---------------+-----------------+
+1 row <span class="token keyword">in</span> <span class="token keyword">set</span>
+Time: 0.024s</code></pre>
+<p>查看mysql驱动器版本</p>
+<pre class=" language-bash"><code class="language-bash">mysql root@10.0.6.55:mysql<span class="token operator">></span> <span class="token keyword">select</span> version<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
++-----------+
+<span class="token operator">|</span> version<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">|</span>
++-----------+
+<span class="token operator">|</span> 5.6.46    <span class="token operator">|</span>
++-----------+
+1 row <span class="token keyword">in</span> <span class="token keyword">set</span>
+Time: 0.031s</code></pre>
+<p>修改 REPEATABLE-READ 为READ-COMMITED</p>
+<p><font color='red'> Could not retrieve transaction read-only status from server</font></p>
+<h2 id="mysql远程登录授权错误"><a href="#mysql远程登录授权错误" class="headerlink" title="mysql远程登录授权错误"></a>mysql远程登录授权错误</h2><p><font color='red'>1045-Access denied for user ‘root’@’’(using password:YES)</font> </p>
+<p>这个是因为用户只有在本机登录数据库的权限，没有远程登录的权限，如下</p>
+<pre class=" language-bash"><code class="language-bash">mysql root@10.0.6.55:mysql<span class="token operator">></span> <span class="token keyword">select</span> user,host,password from mysql.user<span class="token punctuation">;</span>
++-------+-----------+-------------------------------------------+
+<span class="token operator">|</span> user  <span class="token operator">|</span> host      <span class="token operator">|</span> password                                  <span class="token operator">|</span>
++-------+-----------+-------------------------------------------+
+<span class="token operator">|</span> root  <span class="token operator">|</span> localhost <span class="token operator">|</span> *6BB4837EB74329105EE4568DDA7DC67ED2CA2AD9 <span class="token operator">|</span>
+<span class="token operator">|</span> root  <span class="token operator">|</span> xxx       <span class="token operator">|</span>                                           <span class="token operator">|</span>
+<span class="token operator">|</span> root  <span class="token operator">|</span> 127.0.0.1 <span class="token operator">|</span>                                           <span class="token operator">|</span>
+<span class="token operator">|</span> root  <span class="token operator">|</span> ::1       <span class="token operator">|</span>                                           <span class="token operator">|</span>
+<span class="token operator">|</span>       <span class="token operator">|</span> localhost <span class="token operator">|</span>                                           <span class="token operator">|</span>
+<span class="token operator">|</span>       <span class="token operator">|</span> xxx       <span class="token operator">|</span>                                           <span class="token operator">|</span>
+<span class="token operator">|</span> root  <span class="token operator">|</span> %         <span class="token operator">|</span> *6BB4837EB74329105EE4568DDA7DC67ED2CA2AD9 <span class="token operator">|</span>
+<span class="token operator">|</span> hzj   <span class="token operator">|</span> %         <span class="token operator">|</span> *05B00DF4BF36116F758117E401D26485E57DB407 <span class="token operator">|</span>
+<span class="token operator">|</span> hzjqq <span class="token operator">|</span> localhost <span class="token operator">|</span> hzjqq12.3                                 <span class="token operator">|</span>
+<span class="token operator">|</span> hzj   <span class="token operator">|</span> localhost <span class="token operator">|</span> *05B00DF4BF36116F758117E401D26485E57DB407 <span class="token operator">|</span>
+<span class="token operator">|</span> zz    <span class="token operator">|</span> localhost <span class="token operator">|</span> *05B00DF4BF36116F758117E401D26485E57DB407 <span class="token operator">|</span>
++-------+-----------+-------------------------------------------+</code></pre>
+<p>这个里面对zz用户名只允许localhost这个IP登录  也就是’127.0.0.1’，如果要开放所有ip，就需要添加一个用户</p>
+<pre class=" language-bash"><code class="language-bash">insert into mysql.user<span class="token punctuation">(</span>host,user,password<span class="token punctuation">)</span> values<span class="token punctuation">(</span><span class="token string">"%"</span>,<span class="token string">"zz"</span>,password<span class="token punctuation">(</span><span class="token string">"upyun123"</span><span class="token punctuation">))</span><span class="token punctuation">;</span>
+<span class="token comment" spellcheck="true"># 刷新权限</span>
+flush privileges<span class="token punctuation">;</span></code></pre>
+<h2 id="用户授权的问题"><a href="#用户授权的问题" class="headerlink" title="用户授权的问题"></a>用户授权的问题</h2><p>我这里用的是mycli来管理服务器，如果要给用户授权的话，需要给登录到本机服务器上去授权</p>
+<pre class=" language-bash"><code class="language-bash">mysql root@10.0.6.55:mysql<span class="token operator">></span> grant all on *.* to <span class="token string">'hzj'</span>@<span class="token string">'localhost'</span><span class="token punctuation">;</span>
+<span class="token punctuation">(</span>1045, <span class="token string">"Access denied for user 'root'@'%' (using password: YES)"</span><span class="token punctuation">)</span></code></pre>
+<p>这里远程连接上去授权直接报错了</p>
+<h2 id="依赖已存在的问题"><a href="#依赖已存在的问题" class="headerlink" title="依赖已存在的问题"></a>依赖已存在的问题</h2><p>mysql安装过程中依赖已存在的问题</p>
+<pre class=" language-bash"><code class="language-bash">Error: mysql80-community-release conflicts with mysql-community-release-el7-5.noarch</code></pre>
+<p>这是因为centos中存在其他mysql的依赖，先删除</p>
+<pre class=" language-bash"><code class="language-bash">
+rpm -qa <span class="token operator">|</span> <span class="token function">grep</span> mysql
+rpm -e --nodeps xxx</code></pre>
+<h2 id="mysql5-7设置简单密码报错"><a href="#mysql5-7设置简单密码报错" class="headerlink" title="mysql5.7设置简单密码报错"></a>mysql5.7设置简单密码报错</h2><pre class=" language-bash"><code class="language-bash">ERROR 1819 <span class="token punctuation">(</span>HY000<span class="token punctuation">)</span>: Your password does not satisfy the current policy requirements</code></pre>
+<p>修改配置文件</p>
+<pre class=" language-bash"><code class="language-bash">vim /etc/my.cnf
+validate_password_policy<span class="token operator">=</span>0
+validate_password_mixed_case_count<span class="token operator">=</span>0
+validate_password_number_count<span class="token operator">=</span>3
+validate_password_special_char_count<span class="token operator">=</span>0
+validate_password_length<span class="token operator">=</span>3</code></pre>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>标签：</span>
+                <span class="tag">
+                    
+                    
+                    <a href="/tags/mysql/"># mysql</a>
+                    
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript：window.history.back();">后退</a>
+                <span>· </span>
+                <a href="/">主页</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            <a class="prev" rel="prev" href="/2020/02/25/blog_back_new/mysql/mysql%E5%AE%89%E8%A3%85/">mysql安装</a>
+            
+            
+            <a class="next" rel="next" href="/2020/02/23/blog_back_new/mysql/mysql%E4%BD%BF%E7%94%A8/">mysql基础</a>
+            
+        </section>
+    </article>
+</div>
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+    </div>
+</footer>
+
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

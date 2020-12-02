@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="hzjsea">
+
+
+
+
+
+
+<title>一些额外的笔记 | hzjsea</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+    <script src="/js/jquery.min.js"></script>
+    
+
+
+
+    
+    
+        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+    
+
+
+
+
+    <script>
+    function searchToggle() {
+        const width = $(document.body).width()
+        if(width > 479) {
+            return;
+        }
+        const search = $('.search');
+        const searchForm = $('.form-search')
+
+        if(!search.hasClass("mobile-search")) {
+            search.addClass("mobile-search");
+        } else {
+            search.removeClass("mobile-search");
+        } 
+    }
+
+    function search(searchInputEl, formEl, flag) {
+        const path = "/" + "search.json"; // 可以在public 下查看这个search.json
+        $(formEl).submit(function(e){
+            e.preventDefault();
+            let target = null
+            if(searchInputEl == null) {
+                const screenWidth = $(document.body).width();
+                target = screenWidth > 479 ? $('#pc-search-input') : $('#mobile-search-input');
+                console.log(target);
+            } else {
+                target = $(searchInputEl)
+            }
+
+            if(!flag && target.val() === '') {
+                return ;
+            }
+
+            $("#u-search").fadeIn(500, function() {
+                $("body > .wrapper").addClass("modal-active");
+
+                $.ajax({
+                    url: path,
+                    dataType: "json",
+                    beforeSend: function (xhr) {
+                        $input = target.val();
+                        $(".form-input").val($input);
+                        const loadingBar = $('.search-loading-bar') 
+                        loadingBar.css({
+                            width:'100%',
+                            display: 'block'
+                        });
+                    },
+                    success: function( datas ) {
+                        console.log(datas);
+                        const $resultPanel = $(".modal-body")[0];
+                        let str = `<ul class="modal-results">`;
+                        var keywords = $(".form-input").val().trim().toLowerCase().split(/[\s\-]+/);
+                        $resultPanel.innerHTML = "";
+                        let hasResult = false
+                        let text = `<div class="no-result">找不到与关键词相关的内容....</div>`;
+
+                        if ($(".form-input").val().trim().length <= 0) {
+                            // 没有结果
+                            $resultPanel.innerHTML = text;
+                            return;
+                        }
+                        datas.forEach(function (data, index) {
+                            var isMatch = true;
+                            if (!data.title || data.title.trim() === '') {
+                                data.title = "Untitled";
+                            }
+                            var data_title = data.title.trim().toLowerCase();
+                            var data_content = data.content && data.content.trim().replace(/<[^>]+>/g, "").toLowerCase() || '';
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            // only match artiles with not empty contents
+                            if (data_content !== '') {
+                                keywords.forEach(function (keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        hasResult = true
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            } else {
+                                isMatch = false;
+                            }
+                            // show search results
+                            if (isMatch) {
+                                str += `<li class='result-item'><a href='${data_url}' class='result-item-detail'> <span class="title">${data_title}</span>`;
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 200 characters
+                                    var start = first_occur - 40;
+                                    var end = first_occur + 160;
+
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+
+                                    if (start == 0) {
+                                        end = 200;
+                                    }
+
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+
+                                    var match_content = content.substring(start, end);
+
+                                    // highlight all keywords
+                                    keywords.forEach(function (keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, `<em class="search-keyword">${keyword}</em>`);
+                                    });
+
+                                    str += `<span class="content"> ${match_content} ...</span></a>`;
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        if(hasResult) {
+                            $resultPanel.innerHTML = str;
+                        } else {
+                            $resultPanel.innerHTML = text;
+                        }
+
+                    },
+                    complete: function() {
+                        setTimeout(() => {
+                                const loadingBar = $('.search-loading-bar') 
+                                loadingBar.css({
+                                    width:'0%',
+                                    display: 'none'
+                                });
+                        }, 300)
+                    }
+                });
+            })
+
+        });
+    }
+
+    $(document).ready(function() {
+        $('.modal-close').click(function () { 
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+
+        $('.modal-overlay').click(function() {
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+        search(null, ".form-search", false)
+        search("#u-search-modal-form .form-input", ".u-search-modal-form", true)
+    })
+</script>
+
+
+
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo"><a href="/">hzjsea</a></div>
+        <div class="menu navbar-right">
+            
+            
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="pc-search-input"/>
+        </form>
+    </div>
+
+
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+            <input id="switch_default" type="checkbox" class="switch_default">
+            <label for="switch_default" class="toggleBtn"></label>
+        </div>
+    </div>
+</nav>
+
+
+<nav class="navbar-mobile" id="nav-mobile">
+    <div class="container">
+        <div class="navbar-header">
+            <div>
+                <a href="/">hzjsea</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+            </div>
+            <div class="navbar-mobile-right">
+                
+                
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="mobile-search-input"/>
+        </form>
+    </div>
+
+
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; 目录</div>
+            </div>
+            
+        </div>
+        <div class="menu" id="mobile-menu">
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+        </div>
+    </div>
+</nav>
+
+        <div class="main">
+			<!-- Chic/layout.ejs -->
+ <div id="u-search">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="container">
+                    <form id="u-search-modal-form" class="u-search-modal-form">
+                        <button type="submit" class="form-submit-btn">
+                            <img src="/image/search.png" class="search-btn-img" />
+                        </button>
+                        <input placeholder="搜索文章。。。" class="form-input" id="modal-form-input">
+                    </form>
+                    <a class="modal-close">x</a>
+                </div>
+                <div class="search-loading">
+                    <div class="search-loading-bar"></div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <!-- ul 格式如下 -->
+                <!-- <ul class="modal-results">
+                    <li class="result-item">
+                        <a class="result-item-detail">
+                            <span class="title">页面配置</span>
+                            <span class="content">
+                                content
+                            </span>
+                        </a>
+                    </li>
+                </ul> -->
+            </div>
+        </div>
+        <div class="modal-overlay"></div>
+    </div>
+            <div class="container">
+    
+    
+    <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">全部展开</a>
+        <a onclick="go_top()">回到顶部</a>
+        <a onclick="go_bottom()">回到底部</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "全部折叠"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "全部展开"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">一些额外的笔记</h1>
+            
+            <div class="post-meta">
+                
+                作者： <a itemprop="author" rel="author" href="/">hzjsea</a>&nbsp;
+                
+
+                
+                <span class="post-time">
+                    创建日期： <a
+                        href="#">April 12, 2020&nbsp;&nbsp;20:36:52</a>
+                </span>&nbsp;
+                
+                
+                <span class="post-category">
+                    分类：
+                    
+                    <a href="/categories/shell/">shell</a>&nbsp;
+                    
+                </span>
+                
+                
+                状态：<a href="#">SNAPSHOT</a>
+                
+            </div>
+            
+        </header>
+
+        <div class="post-content">
+            <p>一些额外的笔记</p>
+<!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+<ul>
+<li><a href="#%E6%9F%A5%E8%AF%A2%E5%AE%89%E8%A3%85%E5%8C%85%E7%9A%84%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6">查询安装包的配置文件</a></li>
+<li><a href="#login-%E4%B8%8Enologin">login 与nologin</a></li>
+<li><a href="#%E5%BF%AB%E6%8D%B7%E9%94%AE">快捷键</a></li>
+<li><a href="#%E5%91%BD%E4%BB%A4">命令</a></li>
+<li><a href="#%E9%87%8D%E5%AE%9A%E5%90%91">重定向</a></li>
+<li><a href="#%E7%AE%A1%E9%81%93%E4%B8%8Etee">管道与tee</a></li>
+<li><a href="#-%E4%B8%8E-">&amp;&amp; 与; ||</a></li>
+<li><a href="#shell%E4%B8%AD%E7%9A%84%E9%80%9A%E9%85%8D%E7%AC%A6">shell中的通配符</a></li>
+<li><a href="#echo-%E7%AC%94%E8%AE%B0">echo 笔记</a></li>
+<li><a href="#type%E5%91%BD%E4%BB%A4">type命令</a></li>
+</ul>
+<!-- /code_chunk_output -->
+
+<a id="more"></a>
+
+<h1 id="查询安装包的配置文件"><a href="#查询安装包的配置文件" class="headerlink" title="查询安装包的配置文件"></a>查询安装包的配置文件</h1><pre class=" language-bash"><code class="language-bash">rpm -qc <span class="token function">bash</span>
+/etc/skel/.bash_logout
+/etc/skel/.bash_profile
+/etc/skel/.bashrc</code></pre>
+<h1 id="login-与nologin"><a href="#login-与nologin" class="headerlink" title="login 与nologin"></a>login 与nologin</h1><p><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1g4411Y75K?p=6">https://www.bilibili.com/video/BV1g4411Y75K?p=6</a></p>
+<h1 id="快捷键"><a href="#快捷键" class="headerlink" title="快捷键"></a>快捷键</h1><pre class=" language-bash"><code class="language-bash">ctrl+R 查询
+ctrl+D <span class="token function">logout</span>
+ctrl+A 光标移动到最前
+ctrl+E 移动到最后
+ctrl+L 清屏
+ctrl+U 向后删除
+ctrl+K 向前删除
+ctrl+S 锁屏幕
+ctrl+Q 退出锁屏幕</code></pre>
+<h1 id="命令"><a href="#命令" class="headerlink" title="命令"></a>命令</h1><pre class=" language-bash"><code class="language-bash"><span class="token operator">&amp;</span> 开启后台进程 ，连接断掉后消失
+<span class="token function">nohup</span> <span class="token operator">&amp;</span> 开启后台进程，一直开着 ，并且将输出放到nohup.out中去</code></pre>
+<h1 id="重定向"><a href="#重定向" class="headerlink" title="重定向"></a>重定向</h1><pre class=" language-bash"><code class="language-bash">0 标准输入
+1 标准输出
+2 标准错误
+<span class="token operator">></span> 覆盖
+<span class="token operator">>></span> 追加
+2<span class="token operator">></span> 错误重定向
+2<span class="token operator">>></span> 错误重定向追加
+2<span class="token operator">></span><span class="token operator">&amp;</span>1 输出错误信息
+/dev/null 空设备，相当于一个黑洞，你丢进去自己会丢掉
+<span class="token function">cat</span> <span class="token operator">&lt;</span> xxx   输入信息
+<span class="token function">cat</span> <span class="token operator">&lt;</span> xx.file <span class="token operator">></span> yy.file 复制
+<span class="token function">cat</span> <span class="token operator">>></span>EOF EOF 输出多行
+<span class="token function">cat</span> <span class="token operator">></span> <span class="token function">file</span> <span class="token operator">&lt;&lt;</span>EOF EOF  多行输入</code></pre>
+<h1 id="管道与tee"><a href="#管道与tee" class="headerlink" title="管道与tee"></a>管道与tee</h1><p>管道就是重定向标准输出给下一个指令的标准输入<br>tee就是在交给下一个标准输入之前复制一份输出到屏幕上面</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span>root@CodeSheep ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># ls | tee file1 | cat -n</span>
+     1  assets
+     2  djangorestframework
+     3  EOF
+     4  file1
+     5  hello
+     6  hzj
+     7  install.sh
+     8  logs.tar
+     9  print
+    10  Project
+    11  Python-3.7.3
+    12  Python-3.7.3.tgz
+    13  rust-pro
+    14  switch_to_cli.py
+    15  test.py
+    16  test.txt
+    17  transmission
+    18  tt
+    19  tt.c
+    20  xx
+    21  xx.sh</code></pre>
+<p>之前到file1这里就结束了，但是又标准输出了一下<br>另外直接tee是覆盖  tee -a 是追加</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token function">cat</span> xx <span class="token operator">|</span> <span class="token function">tee</span> <span class="token function">file</span> <span class="token operator">|</span> <span class="token function">cat</span> -n
+<span class="token function">cat</span> xx <span class="token operator">|</span> <span class="token function">tee</span> -a <span class="token operator">|</span> <span class="token function">cat</span> -n</code></pre>
+<h1 id="amp-amp-与"><a href="#amp-amp-与" class="headerlink" title="&amp;&amp; 与; ||"></a>&amp;&amp; 与; ||</h1><p>和判断 前一个正确则执行后面的<br>;判断，不收局限 顺序执行<br>或判断 前一个错误则执行后面的</p>
+<h1 id="shell中的通配符"><a href="#shell中的通配符" class="headerlink" title="shell中的通配符"></a>shell中的通配符</h1><pre class=" language-bash"><code class="language-bash">* 匹配任意多个字符
+? 匹配任意一个字符
+<span class="token punctuation">[</span><span class="token punctuation">]</span> 匹配括号中的任意一个字符 
+<span class="token punctuation">[</span>^<span class="token punctuation">]</span> 不是括号中的任意一个字符
+<span class="token punctuation">(</span><span class="token punctuation">)</span> 在子shell中执行
+<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;&amp;#125; 集合 touch file&amp;#123;1..9&amp;#125;  </span>
+    <span class="token function">mkdir</span> file1<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;,9&amp;#125; # 创建file1 和file9</span>
+
+
+\ 转义字符，转移元字符，上面的都是元字符</code></pre>
+<h1 id="echo-笔记"><a href="#echo-笔记" class="headerlink" title="echo 笔记"></a>echo 笔记</h1><p>这里要区分mac与centos中的使用场景,其他内容都相同</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># mac</span>
+<span class="token keyword">echo</span> <span class="token string">"\033[1;36mSister Lin Fall from the Sky\033[0m"</span>
+<span class="token comment" spellcheck="true"># centos 需要有空格 echo -e"" 就显示不出来</span>
+<span class="token keyword">echo</span> -e <span class="token string">"\e[1;36mSister Lin Fall from the Sky\e[0m"</span></code></pre>
+<pre class=" language-bash"><code class="language-bash">-n 输出内容后不另起一行
+-e 解析内容  比如制表符 \t  颜色\e<span class="token punctuation">[</span>1<span class="token punctuation">;</span>31m 大红色 \e<span class="token punctuation">[</span>0m 恢复颜色
+-E 不解析内容 默认-E
+
+<span class="token comment" spellcheck="true"># 解析的内容直接man echo 看一下就有了</span></code></pre>
+<p>颜色输出</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token keyword">echo</span> -e <span class="token string">"\033[字背景颜色;字体颜色m字符串\033[控制码"</span></code></pre>
+<p>常用形式</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token keyword">echo</span> -e <span class="token string">'nameserver 192.168.147.20\nnameserver 192.168.21.20\nnameserver 114.114.114.114'</span> <span class="token operator">></span> /etc/resolv.conf
+
+
+<span class="token comment" spellcheck="true"># -------- 颜色输出</span>
+TAG<span class="token operator">=</span><span class="token string">"\n\n\033[0;32m   ### "</span>
+END<span class="token operator">=</span><span class="token string">" ### \033[0m\n"</span>
+
+
+result<span class="token operator">=</span><span class="token string">"命令类型: \n
+ alias 别名 \n
+ Keyword 关键字，shell保留字 \n
+ function 函数 shell函数 \n
+ builtin 内建命令，shell内建命令 \n
+ file 文件，磁盘文件 \n
+ unfound 没有找到"</span>
+
+
+<span class="token keyword">echo</span> -e <span class="token variable">$TAG</span> <span class="token variable">$result</span> <span class="token variable">$END</span></code></pre>
+<p>常用颜色定义</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true">## tip blue</span>
+<span class="token keyword">function</span> blue<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+    <span class="token keyword">echo</span> -e <span class="token string">"\033[34m[ <span class="token variable">$1</span> ]\033[0m"</span>
+<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+
+
+<span class="token comment" spellcheck="true">## success green</span>
+<span class="token keyword">function</span> green<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+    <span class="token keyword">echo</span> -e <span class="token string">"\033[32m[ <span class="token variable">$1</span> ]\033[0m"</span>
+<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+
+<span class="token comment" spellcheck="true">## Error to warning with blink</span>
+<span class="token keyword">function</span> bred<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+    <span class="token keyword">echo</span> -e <span class="token string">"\033[31m\033[01m\033[05m[ <span class="token variable">$1</span> ]\033[0m"</span>
+<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+
+<span class="token comment" spellcheck="true">## Error to warning with blink</span>
+<span class="token keyword">function</span> byellow<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+    <span class="token keyword">echo</span> -e <span class="token string">"\033[33m\033[01m\033[05m[ <span class="token variable">$1</span> ]\033[0m"</span>
+<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+
+
+<span class="token comment" spellcheck="true">## Error</span>
+<span class="token keyword">function</span> bred<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+    <span class="token keyword">echo</span> -e <span class="token string">"\033[31m\033[01m[ <span class="token variable">$1</span> ]\033[0m"</span>
+<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+
+<span class="token comment" spellcheck="true">## warning</span>
+<span class="token keyword">function</span> byellow<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+    <span class="token keyword">echo</span> -e <span class="token string">"\033[33m\033[01m[ <span class="token variable">$1</span> ]\033[0m"</span>
+<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span></code></pre>
+<h1 id="type命令"><a href="#type命令" class="headerlink" title="type命令"></a>type命令</h1><p>type命令用来显示的指定命令的类型，判断给出的指令是内部指令还是外部指令</p>
+<pre class=" language-bash"><code class="language-bash">命令类型:
+ <span class="token function">alias</span> 别名
+ Keyword 关键字，shell保留字
+ <span class="token keyword">function</span> 函数 shell函数
+ <span class="token function">builtin</span> 内建命令，shell内建命令
+ <span class="token function">file</span> 文件，磁盘文件
+ unfound 没有找到
+
+-t：输出“file”、“alias”或者“builtin”，分别表示给定的指令为“外部指令”、“命令别名”或者“内部指令”；
+-p：如果给出的指令为外部指令，则显示其绝对路径；
+-a：在环境变量“PATH”指定的路径中，显示给定指令的信息，包括命令别名。
+</code></pre>
+<p>使用，比如我们在shell语句中的使用的[] 他其实也是一个内建命令</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span>root@CodeSheep ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># type else</span>
+<span class="token keyword">else</span> is a shell keyword
+<span class="token punctuation">[</span>root@CodeSheep ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># type then</span>
+<span class="token keyword">then</span> is a shell keyword
+<span class="token punctuation">[</span>root@CodeSheep ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># type [</span>
+<span class="token punctuation">[</span> is a shell <span class="token function">builtin</span></code></pre>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>标签：</span>
+                <span class="tag">
+                    
+                    
+                    <a href="/tags/shell/"># shell</a>
+                    
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript：window.history.back();">后退</a>
+                <span>· </span>
+                <a href="/">主页</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            <a class="prev" rel="prev" href="/2020/04/15/blog_back_new/mysql/mysql%E6%8C%87%E4%BB%A4/">mysql指令</a>
+            
+            
+            <a class="next" rel="next" href="/2020/04/10/blog_back_new/CDN/CDN%E6%B5%81%E7%A8%8B/">CDN流程</a>
+            
+        </section>
+    </article>
+</div>
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+    </div>
+</footer>
+
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

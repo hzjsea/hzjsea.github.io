@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="hzjsea">
+
+
+
+
+
+
+<title>linux命令iprouter | hzjsea</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+    <script src="/js/jquery.min.js"></script>
+    
+
+
+
+    
+    
+        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+    
+
+
+
+
+    <script>
+    function searchToggle() {
+        const width = $(document.body).width()
+        if(width > 479) {
+            return;
+        }
+        const search = $('.search');
+        const searchForm = $('.form-search')
+
+        if(!search.hasClass("mobile-search")) {
+            search.addClass("mobile-search");
+        } else {
+            search.removeClass("mobile-search");
+        } 
+    }
+
+    function search(searchInputEl, formEl, flag) {
+        const path = "/" + "search.json"; // 可以在public 下查看这个search.json
+        $(formEl).submit(function(e){
+            e.preventDefault();
+            let target = null
+            if(searchInputEl == null) {
+                const screenWidth = $(document.body).width();
+                target = screenWidth > 479 ? $('#pc-search-input') : $('#mobile-search-input');
+                console.log(target);
+            } else {
+                target = $(searchInputEl)
+            }
+
+            if(!flag && target.val() === '') {
+                return ;
+            }
+
+            $("#u-search").fadeIn(500, function() {
+                $("body > .wrapper").addClass("modal-active");
+
+                $.ajax({
+                    url: path,
+                    dataType: "json",
+                    beforeSend: function (xhr) {
+                        $input = target.val();
+                        $(".form-input").val($input);
+                        const loadingBar = $('.search-loading-bar') 
+                        loadingBar.css({
+                            width:'100%',
+                            display: 'block'
+                        });
+                    },
+                    success: function( datas ) {
+                        console.log(datas);
+                        const $resultPanel = $(".modal-body")[0];
+                        let str = `<ul class="modal-results">`;
+                        var keywords = $(".form-input").val().trim().toLowerCase().split(/[\s\-]+/);
+                        $resultPanel.innerHTML = "";
+                        let hasResult = false
+                        let text = `<div class="no-result">找不到与关键词相关的内容....</div>`;
+
+                        if ($(".form-input").val().trim().length <= 0) {
+                            // 没有结果
+                            $resultPanel.innerHTML = text;
+                            return;
+                        }
+                        datas.forEach(function (data, index) {
+                            var isMatch = true;
+                            if (!data.title || data.title.trim() === '') {
+                                data.title = "Untitled";
+                            }
+                            var data_title = data.title.trim().toLowerCase();
+                            var data_content = data.content && data.content.trim().replace(/<[^>]+>/g, "").toLowerCase() || '';
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            // only match artiles with not empty contents
+                            if (data_content !== '') {
+                                keywords.forEach(function (keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        hasResult = true
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            } else {
+                                isMatch = false;
+                            }
+                            // show search results
+                            if (isMatch) {
+                                str += `<li class='result-item'><a href='${data_url}' class='result-item-detail'> <span class="title">${data_title}</span>`;
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 200 characters
+                                    var start = first_occur - 40;
+                                    var end = first_occur + 160;
+
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+
+                                    if (start == 0) {
+                                        end = 200;
+                                    }
+
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+
+                                    var match_content = content.substring(start, end);
+
+                                    // highlight all keywords
+                                    keywords.forEach(function (keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, `<em class="search-keyword">${keyword}</em>`);
+                                    });
+
+                                    str += `<span class="content"> ${match_content} ...</span></a>`;
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        if(hasResult) {
+                            $resultPanel.innerHTML = str;
+                        } else {
+                            $resultPanel.innerHTML = text;
+                        }
+
+                    },
+                    complete: function() {
+                        setTimeout(() => {
+                                const loadingBar = $('.search-loading-bar') 
+                                loadingBar.css({
+                                    width:'0%',
+                                    display: 'none'
+                                });
+                        }, 300)
+                    }
+                });
+            })
+
+        });
+    }
+
+    $(document).ready(function() {
+        $('.modal-close').click(function () { 
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+
+        $('.modal-overlay').click(function() {
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+        search(null, ".form-search", false)
+        search("#u-search-modal-form .form-input", ".u-search-modal-form", true)
+    })
+</script>
+
+
+
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo"><a href="/">hzjsea</a></div>
+        <div class="menu navbar-right">
+            
+            
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="pc-search-input"/>
+        </form>
+    </div>
+
+
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+            <input id="switch_default" type="checkbox" class="switch_default">
+            <label for="switch_default" class="toggleBtn"></label>
+        </div>
+    </div>
+</nav>
+
+
+<nav class="navbar-mobile" id="nav-mobile">
+    <div class="container">
+        <div class="navbar-header">
+            <div>
+                <a href="/">hzjsea</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+            </div>
+            <div class="navbar-mobile-right">
+                
+                
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="mobile-search-input"/>
+        </form>
+    </div>
+
+
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; 目录</div>
+            </div>
+            
+        </div>
+        <div class="menu" id="mobile-menu">
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+        </div>
+    </div>
+</nav>
+
+        <div class="main">
+			<!-- Chic/layout.ejs -->
+ <div id="u-search">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="container">
+                    <form id="u-search-modal-form" class="u-search-modal-form">
+                        <button type="submit" class="form-submit-btn">
+                            <img src="/image/search.png" class="search-btn-img" />
+                        </button>
+                        <input placeholder="搜索文章。。。" class="form-input" id="modal-form-input">
+                    </form>
+                    <a class="modal-close">x</a>
+                </div>
+                <div class="search-loading">
+                    <div class="search-loading-bar"></div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <!-- ul 格式如下 -->
+                <!-- <ul class="modal-results">
+                    <li class="result-item">
+                        <a class="result-item-detail">
+                            <span class="title">页面配置</span>
+                            <span class="content">
+                                content
+                            </span>
+                        </a>
+                    </li>
+                </ul> -->
+            </div>
+        </div>
+        <div class="modal-overlay"></div>
+    </div>
+            <div class="container">
+    
+    
+    <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">全部展开</a>
+        <a onclick="go_top()">回到顶部</a>
+        <a onclick="go_bottom()">回到底部</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "全部折叠"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "全部展开"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">linux命令iprouter</h1>
+            
+            <div class="post-meta">
+                
+                作者： <a itemprop="author" rel="author" href="/">hzjsea</a>&nbsp;
+                
+
+                
+                <span class="post-time">
+                    创建日期： <a
+                        href="#">November 30, 2020&nbsp;&nbsp;10:21:45</a>
+                </span>&nbsp;
+                
+                
+                <span class="post-category">
+                    分类：
+                    
+                    <a href="/categories/linux/">linux</a>&nbsp;
+                    
+                </span>
+                
+                
+                状态：<a href="#">SNAPSHOT</a>
+                
+            </div>
+            
+        </header>
+
+        <div class="post-content">
+            <a id="more"></a>
+
+<h1 id="linux命令iprouter"><a href="#linux命令iprouter" class="headerlink" title="linux命令iprouter"></a>linux命令iprouter</h1><p>之前使用的网络命令可能是ifconfig,在后面随着linux版本的迭代,iproute是一个新的网络工具包,简称<code>ip命令</code></p>
+<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 查看iproute包是否已经安装,正常情况下在centos7下面会自带安装的</span>
+rpm -qa<span class="token operator">|</span><span class="token function">grep</span> iproute
+iproute-3.10.0-54.el7_2.1.x86_64 
+
+<span class="token comment" spellcheck="true"># 查看iproute生成的文件</span>
+rpm -ql iproute
+
+<span class="token comment" spellcheck="true"># 查看iproute配置文件</span>
+rpm -qc iproute
+
+<span class="token comment" spellcheck="true"># 查看iproute包生成的二进制文件</span>
+rpm -ql iproute <span class="token operator">|</span> <span class="token function">grep</span> <span class="token string">"bin"</span></code></pre>
+<h2 id="功能模块"><a href="#功能模块" class="headerlink" title="功能模块"></a>功能模块</h2><pre class=" language-bash"><code class="language-bash">ip <span class="token function">link</span>
+        网络设备配置命令，如可以启用/禁用某个网络设备，改变mtu及mac地址等
+<span class="token punctuation">[</span>root@ops-2 ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># ip link</span>
+1: lo: <span class="token operator">&lt;</span>LOOPBACK,UP,LOWER_UP<span class="token operator">></span> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+2: eth0: <span class="token operator">&lt;</span>BROADCAST,MULTICAST,UP,LOWER_UP<span class="token operator">></span> mtu 9000 qdisc pfifo_fast state UP mode DEFAULT qlen 1000
+    link/ether fa:16:3e:8d:cc:28 brd ff:ff:ff:ff:ff:ff
+3: docker0: <span class="token operator">&lt;</span>NO-CARRIER,BROADCAST,MULTICAST,UP<span class="token operator">></span> mtu 1500 qdisc noqueue state DOWN mode DEFAULT
+    link/ether 02:42:7a:21:f8:fa brd ff:ff:ff:ff:ff:ff
+
+
+ip addr
+        用于管理某个网络设备与协议<span class="token punctuation">(</span>ip或ipv6<span class="token punctuation">)</span>有关的地址。
+        与ip link类似，不过增加了协议有关的管理<span class="token punctuation">(</span>ip地址管理<span class="token punctuation">)</span>
+<span class="token punctuation">[</span>root@ops-2 ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># ip addr</span>
+1: lo: <span class="token operator">&lt;</span>LOOPBACK,UP,LOWER_UP<span class="token operator">></span> mtu 65536 qdisc noqueue state UNKNOWN
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host
+       valid_lft forever preferred_lft forever
+2: eth0: <span class="token operator">&lt;</span>BROADCAST,MULTICAST,UP,LOWER_UP<span class="token operator">></span> mtu 9000 qdisc pfifo_fast state UP qlen 1000
+    link/ether fa:16:3e:8d:cc:28 brd ff:ff:ff:ff:ff:ff
+    inet 10.0.6.39/20 brd 10.0.6.127 scope global dynamic eth0
+       valid_lft 114sec preferred_lft 114sec
+    inet6 fe80::f816:3eff:fe8d:cc28/64 scope <span class="token function">link</span> tentative dadfailed
+       valid_lft forever preferred_lft forever
+3: docker0: <span class="token operator">&lt;</span>NO-CARRIER,BROADCAST,MULTICAST,UP<span class="token operator">></span> mtu 1500 qdisc noqueue state DOWN
+    link/ether 02:42:7a:21:f8:fa brd ff:ff:ff:ff:ff:ff
+    inet 172.17.0.1/16 brd 172.17.255.255 scope global docker0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::42:7aff:fe21:f8fa/64 scope <span class="token function">link</span>
+       valid_lft forever preferred_lft forever
+
+ip addrlabel 
+        ipv6的地址标签，主要用于RFC3484中描述的ipv6地址的选择。
+        RFC3484主要介绍了2个算法，用于ipv6地址<span class="token punctuation">(</span>源地址和目标地址<span class="token punctuation">)</span>的选择策略
+<span class="token punctuation">[</span>root@ops-2 ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># ip addrlabel</span>
+prefix ::1/128 label 0
+prefix ::/96 label 3
+prefix ::ffff:0.0.0.0/96 label 4
+prefix 2001::/32 label 6
+prefix 2001:10::/28 label 7
+prefix 3ffe::/16 label 12
+prefix 2002::/16 label 2
+prefix fec0::/10 label 11
+prefix fc00::/7 label 5
+prefix ::/0 label 1
+
+ip route    
+        管理路由，如添加，删除
+<span class="token punctuation">[</span>root@ops-2 ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># ip route</span>
+default via 10.0.0.130 dev eth0
+10.0.0.0/20 dev eth0  proto kernel  scope <span class="token function">link</span>  src 10.0.6.39
+172.17.0.0/16 dev docker0  proto kernel  scope <span class="token function">link</span>  src 172.17.0.1
+
+ip rule    
+        管理路由策略数据库。这里边有一个算法，用来控制路由的选择策略
+<span class="token punctuation">[</span>root@ops-2 ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># ip rule</span>
+0:      from all lookup local
+32766:  from all lookup main
+32767:  from all lookup default
+
+ip neigh    
+        用于neighbor/ARP表的管理，如显示，插入，删除等
+<span class="token punctuation">[</span>root@ops-2 ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># ip neigh</span>
+172.17.0.4 dev docker0 lladdr 02:42:ac:11:00:04 STALE
+10.0.1.142 dev eth0 lladdr 94:8b:03:01:01:1d STALE
+10.0.6.12 dev eth0 lladdr 00:1b:21:8d:4d:81 STALE
+10.0.6.55 dev eth0 lladdr fa:16:3e:15:1c:43 STALE
+10.0.6.3 dev eth0 lladdr 00:1b:21:8d:4c:a5 STALE
+10.0.6.250 dev eth0 lladdr 00:1b:21:8d:4c:a5 STALE
+10.0.2.17 dev eth0 lladdr 00:0e:c6:d3:91:d4 STALE
+10.0.2.128 dev eth0 lladdr d0:17:c2:9b:71:45 STALE
+172.17.0.3 dev docker0 lladdr 02:42:ac:11:00:03 STALE
+10.0.5.201 dev eth0 lladdr e4:3a:6e:2d:5f:12 STALE
+172.17.0.2 dev docker0 lladdr 02:42:ac:11:00:02 STALE
+10.0.0.130 dev eth0 lladdr 84:d9:31:7f:57:c4 DELAY
+
+ip tunel
+        隧道配置
+        隧道的作用是将数据<span class="token punctuation">(</span>可以是不同协议<span class="token punctuation">)</span>封装成ip包然后再互联网传输
+
+ip monitor
+        状态监控。如可以持续监控ip地址和路由的状态</code></pre>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>标签：</span>
+                <span class="tag">
+                    
+                    
+                    <a href="/tags/linuxcc/"># linuxcc</a>
+                    
+                    <a href="/tags/linux/"># linux</a>
+                    
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript：window.history.back();">后退</a>
+                <span>· </span>
+                <a href="/">主页</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            <a class="prev" rel="prev" href="/2020/11/30/blog_back_new/linux/linux%E5%91%BD%E4%BB%A4firewalld/">linux命令firewalld</a>
+            
+            
+            <a class="next" rel="next" href="/2020/11/26/blog_back_new/linux/linux%E5%91%BD%E4%BB%A4iptables/">linux命令iptables</a>
+            
+        </section>
+    </article>
+</div>
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+    </div>
+</footer>
+
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

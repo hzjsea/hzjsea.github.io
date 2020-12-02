@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="hzjsea">
+
+
+
+
+
+
+<title>mysql指令 | hzjsea</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+    <script src="/js/jquery.min.js"></script>
+    
+
+
+
+    
+    
+        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+    
+
+
+
+
+    <script>
+    function searchToggle() {
+        const width = $(document.body).width()
+        if(width > 479) {
+            return;
+        }
+        const search = $('.search');
+        const searchForm = $('.form-search')
+
+        if(!search.hasClass("mobile-search")) {
+            search.addClass("mobile-search");
+        } else {
+            search.removeClass("mobile-search");
+        } 
+    }
+
+    function search(searchInputEl, formEl, flag) {
+        const path = "/" + "search.json"; // 可以在public 下查看这个search.json
+        $(formEl).submit(function(e){
+            e.preventDefault();
+            let target = null
+            if(searchInputEl == null) {
+                const screenWidth = $(document.body).width();
+                target = screenWidth > 479 ? $('#pc-search-input') : $('#mobile-search-input');
+                console.log(target);
+            } else {
+                target = $(searchInputEl)
+            }
+
+            if(!flag && target.val() === '') {
+                return ;
+            }
+
+            $("#u-search").fadeIn(500, function() {
+                $("body > .wrapper").addClass("modal-active");
+
+                $.ajax({
+                    url: path,
+                    dataType: "json",
+                    beforeSend: function (xhr) {
+                        $input = target.val();
+                        $(".form-input").val($input);
+                        const loadingBar = $('.search-loading-bar') 
+                        loadingBar.css({
+                            width:'100%',
+                            display: 'block'
+                        });
+                    },
+                    success: function( datas ) {
+                        console.log(datas);
+                        const $resultPanel = $(".modal-body")[0];
+                        let str = `<ul class="modal-results">`;
+                        var keywords = $(".form-input").val().trim().toLowerCase().split(/[\s\-]+/);
+                        $resultPanel.innerHTML = "";
+                        let hasResult = false
+                        let text = `<div class="no-result">找不到与关键词相关的内容....</div>`;
+
+                        if ($(".form-input").val().trim().length <= 0) {
+                            // 没有结果
+                            $resultPanel.innerHTML = text;
+                            return;
+                        }
+                        datas.forEach(function (data, index) {
+                            var isMatch = true;
+                            if (!data.title || data.title.trim() === '') {
+                                data.title = "Untitled";
+                            }
+                            var data_title = data.title.trim().toLowerCase();
+                            var data_content = data.content && data.content.trim().replace(/<[^>]+>/g, "").toLowerCase() || '';
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            // only match artiles with not empty contents
+                            if (data_content !== '') {
+                                keywords.forEach(function (keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        hasResult = true
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            } else {
+                                isMatch = false;
+                            }
+                            // show search results
+                            if (isMatch) {
+                                str += `<li class='result-item'><a href='${data_url}' class='result-item-detail'> <span class="title">${data_title}</span>`;
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 200 characters
+                                    var start = first_occur - 40;
+                                    var end = first_occur + 160;
+
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+
+                                    if (start == 0) {
+                                        end = 200;
+                                    }
+
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+
+                                    var match_content = content.substring(start, end);
+
+                                    // highlight all keywords
+                                    keywords.forEach(function (keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, `<em class="search-keyword">${keyword}</em>`);
+                                    });
+
+                                    str += `<span class="content"> ${match_content} ...</span></a>`;
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        if(hasResult) {
+                            $resultPanel.innerHTML = str;
+                        } else {
+                            $resultPanel.innerHTML = text;
+                        }
+
+                    },
+                    complete: function() {
+                        setTimeout(() => {
+                                const loadingBar = $('.search-loading-bar') 
+                                loadingBar.css({
+                                    width:'0%',
+                                    display: 'none'
+                                });
+                        }, 300)
+                    }
+                });
+            })
+
+        });
+    }
+
+    $(document).ready(function() {
+        $('.modal-close').click(function () { 
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+
+        $('.modal-overlay').click(function() {
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+        search(null, ".form-search", false)
+        search("#u-search-modal-form .form-input", ".u-search-modal-form", true)
+    })
+</script>
+
+
+
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo"><a href="/">hzjsea</a></div>
+        <div class="menu navbar-right">
+            
+            
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="pc-search-input"/>
+        </form>
+    </div>
+
+
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+            <input id="switch_default" type="checkbox" class="switch_default">
+            <label for="switch_default" class="toggleBtn"></label>
+        </div>
+    </div>
+</nav>
+
+
+<nav class="navbar-mobile" id="nav-mobile">
+    <div class="container">
+        <div class="navbar-header">
+            <div>
+                <a href="/">hzjsea</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+            </div>
+            <div class="navbar-mobile-right">
+                
+                
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="mobile-search-input"/>
+        </form>
+    </div>
+
+
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; 目录</div>
+            </div>
+            
+        </div>
+        <div class="menu" id="mobile-menu">
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+        </div>
+    </div>
+</nav>
+
+        <div class="main">
+			<!-- Chic/layout.ejs -->
+ <div id="u-search">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="container">
+                    <form id="u-search-modal-form" class="u-search-modal-form">
+                        <button type="submit" class="form-submit-btn">
+                            <img src="/image/search.png" class="search-btn-img" />
+                        </button>
+                        <input placeholder="搜索文章。。。" class="form-input" id="modal-form-input">
+                    </form>
+                    <a class="modal-close">x</a>
+                </div>
+                <div class="search-loading">
+                    <div class="search-loading-bar"></div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <!-- ul 格式如下 -->
+                <!-- <ul class="modal-results">
+                    <li class="result-item">
+                        <a class="result-item-detail">
+                            <span class="title">页面配置</span>
+                            <span class="content">
+                                content
+                            </span>
+                        </a>
+                    </li>
+                </ul> -->
+            </div>
+        </div>
+        <div class="modal-overlay"></div>
+    </div>
+            <div class="container">
+    
+    
+    <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">全部展开</a>
+        <a onclick="go_top()">回到顶部</a>
+        <a onclick="go_bottom()">回到底部</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "全部折叠"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "全部展开"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">mysql指令</h1>
+            
+            <div class="post-meta">
+                
+                作者： <a itemprop="author" rel="author" href="/">hzjsea</a>&nbsp;
+                
+
+                
+                <span class="post-time">
+                    创建日期： <a
+                        href="#">April 15, 2020&nbsp;&nbsp;18:31:17</a>
+                </span>&nbsp;
+                
+                
+                <span class="post-category">
+                    分类：
+                    
+                    <a href="/categories/mysql/">mysql</a>&nbsp;
+                    
+                </span>
+                
+                
+                状态：<a href="#">SNAPSHOT</a>
+                
+            </div>
+            
+        </header>
+
+        <div class="post-content">
+            <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+<ul>
+<li><a href="#mysql%E6%8C%87%E4%BB%A4">mysql指令</a><ul>
+<li><a href="#mysql%E5%88%9B%E5%BB%BA%E7%94%A8%E6%88%B7%E4%B8%8E%E5%88%B7%E6%96%B0%E6%9D%83%E9%99%9056">mysql创建用户与刷新权限(5.6)</a></li>
+<li><a href="#mysql56%E6%9B%B4%E6%96%B0%E7%94%A8%E6%88%B7%E5%AF%86%E7%A0%81">mysql5.6更新用户密码</a></li>
+<li><a href="#%E6%98%BE%E7%A4%BA%E5%BD%93%E5%89%8D%E7%99%BB%E5%BD%95%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E7%94%A8%E6%88%B7">显示当前登录数据库的用户</a></li>
+<li><a href="#mysql%E6%9D%83%E9%99%90%E7%AE%A1%E7%90%86-56">mysql权限管理 (5.6)</a><ul>
+<li><a href="#%E6%9F%A5%E7%9C%8B%E5%BD%93%E5%89%8D%E7%94%A8%E6%88%B7%E7%9A%84%E6%9D%83%E9%99%90">查看当前用户的权限</a></li>
+<li><a href="#%E6%9F%A5%E7%9C%8B%E6%8C%87%E5%AE%9A%E7%94%A8%E4%BA%8E%E6%9D%83%E9%99%90">查看指定用于权限</a></li>
+<li><a href="#%E7%94%A8%E6%88%B7%E5%88%9B%E5%BB%BA%E6%8E%88%E6%9D%83">用户创建授权</a></li>
+</ul>
+</li>
+<li><a href="#mysql-%E8%A1%A8%E6%93%8D%E4%BD%9C">mysql 表操作</a><ul>
+<li><a href="#%E6%9F%A5%E7%9C%8B%E8%A1%A8%E7%94%9F%E6%88%90%E7%9A%84ddl">查看表生成的DDL</a></li>
+</ul>
+</li>
+<li><a href="#%E7%9C%8B%E7%9C%8B%E5%85%B6%E4%BB%96%E4%BA%BA%E7%9A%84%E5%8D%9A%E5%AE%A2">看看其他人的博客</a></li>
+</ul>
+</li>
+</ul>
+<!-- /code_chunk_output -->
+
+<a id="more"></a>
+
+
+
+<h1 id="mysql指令"><a href="#mysql指令" class="headerlink" title="mysql指令"></a>mysql指令</h1><p><font color='red'>在mysql5.7中用户表password已经变成了authentication_string</font> </p>
+<p>修改密码指令改成</p>
+<pre class=" language-bash"><code class="language-bash">update mysql.user <span class="token keyword">set</span> authentication_string<span class="token operator">=</span>password<span class="token punctuation">(</span><span class="token string">'*******'</span><span class="token punctuation">)</span> where user<span class="token operator">=</span><span class="token string">'*******'</span><span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">#修改密码成功</span></code></pre>
+<h2 id="mysql创建用户与刷新权限-5-6"><a href="#mysql创建用户与刷新权限-5-6" class="headerlink" title="mysql创建用户与刷新权限(5.6)"></a>mysql创建用户与刷新权限(5.6)</h2><pre class=" language-sql"><code class="language-sql"><span class="token comment" spellcheck="true">-- 插入数据表</span>
+<span class="token keyword">insert</span> <span class="token keyword">into</span> mysql<span class="token punctuation">.</span><span class="token keyword">user</span><span class="token punctuation">(</span>host<span class="token punctuation">,</span><span class="token keyword">user</span><span class="token punctuation">,</span>password<span class="token punctuation">)</span> <span class="token keyword">values</span><span class="token punctuation">(</span><span class="token string">"localhost"</span><span class="token punctuation">,</span><span class="token string">"hzj"</span><span class="token punctuation">,</span>password<span class="token punctuation">(</span><span class="token string">"upyun123"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment" spellcheck="true">-- 刷新权限表</span>
+flush <span class="token keyword">privileges</span><span class="token punctuation">;</span></code></pre>
+<h2 id="mysql5-6更新用户密码"><a href="#mysql5-6更新用户密码" class="headerlink" title="mysql5.6更新用户密码"></a>mysql5.6更新用户密码</h2><pre class=" language-sql"><code class="language-sql"><span class="token comment" spellcheck="true">-- 记住要加password</span>
+<span class="token keyword">update</span> <span class="token keyword">user</span> <span class="token keyword">set</span> password<span class="token operator">=</span>password<span class="token punctuation">(</span><span class="token string">"upyun123"</span><span class="token punctuation">)</span> <span class="token keyword">where</span> <span class="token keyword">user</span><span class="token operator">=</span><span class="token string">"hzj"</span> <span class="token operator">and</span> host<span class="token operator">=</span><span class="token string">"localhost"</span><span class="token punctuation">;</span></code></pre>
+<h2 id="显示当前登录数据库的用户"><a href="#显示当前登录数据库的用户" class="headerlink" title="显示当前登录数据库的用户"></a>显示当前登录数据库的用户</h2><pre class=" language-bash"><code class="language-bash">mysql root@10.0.6.55:mysql<span class="token operator">></span> <span class="token keyword">select</span> user<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
++-----------------+
+<span class="token operator">|</span> user<span class="token punctuation">(</span><span class="token punctuation">)</span>          <span class="token operator">|</span>
++-----------------+
+<span class="token operator">|</span> root@10.0.28.50 <span class="token operator">|</span>
++-----------------+
+1 row <span class="token keyword">in</span> <span class="token keyword">set</span>
+Time: 0.027s
+
+
+<span class="token comment" spellcheck="true"># 两种形式</span>
+
+mysql root@10.0.6.55:mysql<span class="token operator">></span> <span class="token keyword">select</span> current_user<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
++----------------+
+<span class="token operator">|</span> current_user<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">|</span>
++----------------+
+<span class="token operator">|</span> root@%         <span class="token operator">|</span>
++----------------+
+1 row <span class="token keyword">in</span> <span class="token keyword">set</span>
+Time: 0.024s</code></pre>
+<h2 id="mysql权限管理-5-6"><a href="#mysql权限管理-5-6" class="headerlink" title="mysql权限管理 (5.6)"></a>mysql权限管理 (5.6)</h2><h3 id="查看当前用户的权限"><a href="#查看当前用户的权限" class="headerlink" title="查看当前用户的权限"></a>查看当前用户的权限</h3><pre class=" language-bash"><code class="language-bash">mysql root@10.0.6.55:mysql<span class="token operator">></span> show grants
++--------------------------------------------------------------------------------------------------------------+
+<span class="token operator">|</span> Grants <span class="token keyword">for</span> root@%                                                                                            <span class="token operator">|</span>
++--------------------------------------------------------------------------------------------------------------+
+<span class="token operator">|</span> GRANT ALL PRIVILEGES ON *.* TO <span class="token string">'root'</span>@<span class="token string">'%'</span> IDENTIFIED BY PASSWORD <span class="token string">'*6BB4837EB74329105EE4568DDA7DC67ED2CA2AD9'</span> <span class="token operator">|</span>
++--------------------------------------------------------------------------------------------------------------+
+1 row <span class="token keyword">in</span> <span class="token keyword">set</span>
+Time: 0.028s</code></pre>
+<h3 id="查看指定用于权限"><a href="#查看指定用于权限" class="headerlink" title="查看指定用于权限"></a>查看指定用于权限</h3><p>这里分为登录的形式 一个是localhost,一个是%</p>
+<pre class=" language-bash"><code class="language-bash">mysql root@10.0.6.55:mysql<span class="token operator">></span> show grants <span class="token keyword">for</span> <span class="token string">'hzj'</span>@<span class="token string">'%'</span>
++-------------------------------------------------------------------------------------------------------------+
+<span class="token operator">|</span> Grants <span class="token keyword">for</span> hzj@%                                                                                            <span class="token operator">|</span>
++-------------------------------------------------------------------------------------------------------------+
+<span class="token operator">|</span> GRANT ALL PRIVILEGES ON *.* TO <span class="token string">'hzj'</span>@<span class="token string">'%'</span> IDENTIFIED BY PASSWORD <span class="token string">'*05B00DF4BF36116F758117E401D26485E57DB407'</span> <span class="token operator">|</span>
++-------------------------------------------------------------------------------------------------------------+
+1 row <span class="token keyword">in</span> <span class="token keyword">set</span>
+Time: 0.029s
+mysql root@10.0.6.55:mysql<span class="token operator">></span> show grants <span class="token keyword">for</span> <span class="token string">'zz'</span>@<span class="token string">'localhost'</span>
++-----------------------------------------------------------------------------------------------------------+
+<span class="token operator">|</span> Grants <span class="token keyword">for</span> zz@localhost                                                                                   <span class="token operator">|</span>
++-----------------------------------------------------------------------------------------------------------+
+<span class="token operator">|</span> GRANT USAGE ON *.* TO <span class="token string">'zz'</span>@<span class="token string">'localhost'</span> IDENTIFIED BY PASSWORD <span class="token string">'*05B00DF4BF36116F758117E401D26485E57DB407'</span> <span class="token operator">|</span>
++-----------------------------------------------------------------------------------------------------------+
+1 row <span class="token keyword">in</span> <span class="token keyword">set</span>
+Time: 0.019s
+mysql root@10.0.6.55:mysql<span class="token operator">></span> show grants <span class="token keyword">for</span> <span class="token string">'hzj'</span>@<span class="token string">'localhost'</span>
++---------------------------------------------------------------------------------------------------------------------+
+<span class="token operator">|</span> Grants <span class="token keyword">for</span> hzj@localhost                                                                                            <span class="token operator">|</span>
++---------------------------------------------------------------------------------------------------------------------+
+<span class="token operator">|</span> GRANT ALL PRIVILEGES ON *.* TO <span class="token string">'hzj'</span>@<span class="token string">'localhost'</span> IDENTIFIED BY PASSWORD <span class="token string">'*05B00DF4BF36116F758117E401D26485E57DB407'</span> <span class="token operator">|</span>
++---------------------------------------------------------------------------------------------------------------------+
+1 row <span class="token keyword">in</span> <span class="token keyword">set</span>
+Time: 0.021s</code></pre>
+<h3 id="用户创建授权"><a href="#用户创建授权" class="headerlink" title="用户创建授权"></a>用户创建授权</h3><pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 为本地的hzj用户开放权限</span>
+mysql<span class="token operator">></span> grant all on *.* to <span class="token string">'hzj'</span>@<span class="token string">'localhost'</span><span class="token punctuation">;</span>
+<span class="token comment" spellcheck="true"># 为远程主机的hzj用户开放权限</span>
+mysql<span class="token operator">></span> grant all on *.* to <span class="token string">'hzj'</span>@<span class="token string">'%'</span><span class="token punctuation">;</span>
+<span class="token comment" spellcheck="true"># 为指定IP主机登录的hzj用户开放权限</span>
+mysql<span class="token operator">></span> grant all on *.* to <span class="token string">'hzj'</span>@<span class="token string">'192.168.20.1'</span><span class="token punctuation">;</span></code></pre>
+<h2 id="mysql-表操作"><a href="#mysql-表操作" class="headerlink" title="mysql 表操作"></a>mysql 表操作</h2><pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 查看表结构</span>
+mysql root@10.0.6.55:mysql<span class="token operator">></span> desc user<span class="token punctuation">;</span>
++------------------------+-----------------------------------+------+-----+-----------------------+-------+
+<span class="token operator">|</span> Field                  <span class="token operator">|</span> Type                              <span class="token operator">|</span> Null <span class="token operator">|</span> Key <span class="token operator">|</span> Default               <span class="token operator">|</span> Extra <span class="token operator">|</span>
++------------------------+-----------------------------------+------+-----+-----------------------+-------+
+<span class="token operator">|</span> Host                   <span class="token operator">|</span> char<span class="token punctuation">(</span>60<span class="token punctuation">)</span>                          <span class="token operator">|</span> NO   <span class="token operator">|</span> PRI <span class="token operator">|</span>                       <span class="token operator">|</span>       <span class="token operator">|</span>
+<span class="token operator">|</span> User                   <span class="token operator">|</span> char<span class="token punctuation">(</span>16<span class="token punctuation">)</span>                          <span class="token operator">|</span> NO   <span class="token operator">|</span> PRI <span class="token operator">|</span>                       <span class="token operator">|</span>       <span class="token operator">|</span>
+<span class="token operator">|</span> Password               <span class="token operator">|</span> char<span class="token punctuation">(</span>41<span class="token punctuation">)</span>                          <span class="token operator">|</span> NO   <span class="token operator">|</span>     <span class="token operator">|</span>                       <span class="token operator">|</span>       <span class="token operator">|</span>
+<span class="token operator">|</span> Select_priv            <span class="token operator">|</span> enum<span class="token punctuation">(</span><span class="token string">'N'</span>,<span class="token string">'Y'</span><span class="token punctuation">)</span>                     <span class="token operator">|</span> NO   <span class="token operator">|</span>     <span class="token operator">|</span> N                     <span class="token operator">|</span>       <span class="token operator">|</span>
+<span class="token operator">|</span> Insert_priv            <span class="token operator">|</span> enum<span class="token punctuation">(</span><span class="token string">'N'</span>,<span class="token string">'Y'</span><span class="token punctuation">)</span>                     <span class="token operator">|</span> NO   <span class="token operator">|</span>     <span class="token operator">|</span> N                     <span class="token operator">|</span>       <span class="token operator">|</span></code></pre>
+<h3 id="查看表生成的DDL"><a href="#查看表生成的DDL" class="headerlink" title="查看表生成的DDL"></a>查看表生成的DDL</h3><pre class=" language-bash"><code class="language-bash">mysql root@10.0.6.55:mysql<span class="token operator">></span> show create table user
++-------+---------------------------------------------------------------------------------------------+
+<span class="token operator">|</span> Table <span class="token operator">|</span> Create Table                                                                                <span class="token operator">|</span>
++-------+---------------------------------------------------------------------------------------------+
+<span class="token operator">|</span> user  <span class="token operator">|</span> CREATE TABLE <span class="token variable"><span class="token variable">`</span>user<span class="token variable">`</span></span> <span class="token punctuation">(</span>                                                                       <span class="token operator">|</span>
+<span class="token operator">|</span>       <span class="token operator">|</span>   <span class="token variable"><span class="token variable">`</span>Host<span class="token variable">`</span></span> char<span class="token punctuation">(</span>60<span class="token punctuation">)</span> COLLATE utf8_bin NOT NULL DEFAULT <span class="token string">''</span>,                                     <span class="token operator">|</span>
+<span class="token operator">|</span>       <span class="token operator">|</span>   <span class="token variable"><span class="token variable">`</span>User<span class="token variable">`</span></span> char<span class="token punctuation">(</span>16<span class="token punctuation">)</span> COLLATE utf8_bin NOT NULL DEFAULT <span class="token string">''</span>,                                     <span class="token operator">|</span>
+<span class="token operator">|</span>       <span class="token operator">|</span>   <span class="token variable"><span class="token variable">`</span>Password<span class="token variable">`</span></span> char<span class="token punctuation">(</span>41<span class="token punctuation">)</span> CHARACTER SET latin1 COLLATE latin1_bin NOT NULL DEFAULT <span class="token string">''</span>,</code></pre>
+<h3 id="修改数据库字符集-5-6"><a href="#修改数据库字符集-5-6" class="headerlink" title="修改数据库字符集(5.6)"></a>修改数据库字符集(5.6)</h3><p>默认情况下数据库的字符集是<code>latin1</code>,我们需要修改成utf8mb4;</p>
+<pre class=" language-sql"><code class="language-sql"><span class="token keyword">ALTER</span> <span class="token keyword">DATABASE</span> <span class="token punctuation">`</span>switch_instance<span class="token punctuation">`</span>
+<span class="token keyword">DEFAULT</span> <span class="token keyword">CHARACTER SET</span> utf8mb4
+<span class="token keyword">DEFAULT</span> <span class="token keyword">COLLATE</span> utf8mb4_general_ci<span class="token punctuation">;</span></code></pre>
+<p>创建的时候，直接初始化数据库为utf8mb4</p>
+<pre class=" language-sql"><code class="language-sql"><span class="token keyword">CREATE</span> <span class="token keyword">DATABASE</span> select_test <span class="token keyword">character set</span> utf8mb4<span class="token punctuation">;</span></code></pre>
+<h2 id="使用shell操作数据库"><a href="#使用shell操作数据库" class="headerlink" title="使用shell操作数据库"></a>使用shell操作数据库</h2><pre class=" language-bash"><code class="language-bash"><span class="token shebang important">#!/bin/bash</span>
+<span class="token comment" spellcheck="true"># 连接数据库</span>
+mysql_instance<span class="token operator">=</span><span class="token string">"mysql -uroot -p123456 -A -N --default-character-set=utf8mb4"</span>
+<span class="token comment" spellcheck="true"># 操作数据库</span>
+sql_get_data<span class="token operator">=</span><span class="token string">"select * from mysql.user"</span>
+<span class="token comment" spellcheck="true"># 执行命令返回结果</span>
+result<span class="token operator">=</span><span class="token string">"$(<span class="token variable">$mysql_instance</span> -e "</span><span class="token variable">$sql_get_data</span><span class="token string">")"</span>
+
+<span class="token comment" spellcheck="true"># 按照格式输出</span>
+<span class="token keyword">echo</span> -e <span class="token string">"<span class="token variable">$result</span>"</span></code></pre>
+<p>看看别人的写法</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token shebang important">#!/bin/bash</span>
+HOSTNAME<span class="token operator">=</span><span class="token string">"192.168.111.84"</span> <span class="token comment" spellcheck="true">#数据库信息</span>
+PORT<span class="token operator">=</span><span class="token string">"3306"</span>
+USERNAME<span class="token operator">=</span><span class="token string">"root"</span>
+PASSWORD<span class="token operator">=</span><span class="token string">""</span>
+DBNAME<span class="token operator">=</span><span class="token string">"test_db_test"</span> <span class="token comment" spellcheck="true">#数据库名称</span>
+TABLENAME<span class="token operator">=</span><span class="token string">"test_table_test"</span> <span class="token comment" spellcheck="true">#数据库中表的名称</span>
+<span class="token comment" spellcheck="true">#创建数据库</span>
+create_db_sql<span class="token operator">=</span><span class="token string">"create database $&amp;#123;DBNAME&amp;#125; IF NOT EXISTS $&amp;#123;DBNAME&amp;#125;"</span>
+mysql -h$<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;HOSTNAME&amp;#125; -P$&amp;#123;PORT&amp;#125; -u$&amp;#123;USERNAME&amp;#125; -p$&amp;#123;PASSWORD&amp;#125; -e "$&amp;#123;create_db_sql&amp;#125;"</span>
+<span class="token comment" spellcheck="true">#创建表</span>
+create_table_sql<span class="token operator">=</span><span class="token string">"create table $&amp;#123;TABLE&amp;#125; IF NOT EXISTS $&amp;#123;TABLENAME&amp;#125; ( name varchar(20), id int(11) default 0 )"</span>
+mysql -h$<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;HOSTNAME&amp;#125; -P$&amp;#123;PORT&amp;#125; -u$&amp;#123;USERNAME&amp;#125; -p$&amp;#123;PASSWORD&amp;#125; $&amp;#123;DBNAME&amp;#125; -e "$&amp;#123;create_table_sql&amp;#125;"</span>
+<span class="token comment" spellcheck="true">#插入数据</span>
+insert_sql<span class="token operator">=</span><span class="token string">"insert into $&amp;#123;TABLENAME&amp;#125; values('billchen',2)"</span>
+mysql -h$<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;HOSTNAME&amp;#125; -P$&amp;#123;PORT&amp;#125; -u$&amp;#123;USERNAME&amp;#125; -p$&amp;#123;PASSWORD&amp;#125; $&amp;#123;DBNAME&amp;#125; -e "$&amp;#123;insert_sql&amp;#125;"</span>
+<span class="token comment" spellcheck="true">#查询</span>
+select_sql<span class="token operator">=</span><span class="token string">"select * from $&amp;#123;TABLENAME&amp;#125;"</span>
+mysql -h$<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;HOSTNAME&amp;#125; -P$&amp;#123;PORT&amp;#125; -u$&amp;#123;USERNAME&amp;#125; -p$&amp;#123;PASSWORD&amp;#125; $&amp;#123;DBNAME&amp;#125; -e "$&amp;#123;select_sql&amp;#125;"</span>
+<span class="token comment" spellcheck="true">#更新数据</span>
+update_sql<span class="token operator">=</span><span class="token string">"update $&amp;#123;TABLENAME&amp;#125; set id=3"</span>
+mysql -h$<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;HOSTNAME&amp;#125; -P$&amp;#123;PORT&amp;#125; -u$&amp;#123;USERNAME&amp;#125; -p$&amp;#123;PASSWORD&amp;#125; $&amp;#123;DBNAME&amp;#125; -e "$&amp;#123;update_sql&amp;#125;"</span>
+mysql -h$<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;HOSTNAME&amp;#125; -P$&amp;#123;PORT&amp;#125; -u$&amp;#123;USERNAME&amp;#125; -p$&amp;#123;PASSWORD&amp;#125; $&amp;#123;DBNAME&amp;#125; -e "$&amp;#123;select_sql&amp;#125;"</span>
+<span class="token comment" spellcheck="true">#删除数据</span>
+delete_sql<span class="token operator">=</span><span class="token string">"delete from $&amp;#123;TABLENAME&amp;#125;"</span>
+mysql -h$<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;HOSTNAME&amp;#125; -P$&amp;#123;PORT&amp;#125; -u$&amp;#123;USERNAME&amp;#125; -p$&amp;#123;PASSWORD&amp;#125; $&amp;#123;DBNAME&amp;#125; -e "$&amp;#123;delete_sql&amp;#125;"</span>
+mysql -h$<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;HOSTNAME&amp;#125; -P$&amp;#123;PORT&amp;#125; -u$&amp;#123;USERNAME&amp;#125; -p$&amp;#123;PASSWORD&amp;#125; $&amp;#123;DBNAME&amp;#125; -e "$&amp;#123;select_sql&amp;#125;"</span></code></pre>
+<h2 id="看看其他人的博客"><a href="#看看其他人的博客" class="headerlink" title="看看其他人的博客"></a>看看其他人的博客</h2><p><a target="_blank" rel="noopener" href="https://juejin.im/post/5da6e7ec518825527a4ce8d4#heading-19">https://juejin.im/post/5da6e7ec518825527a4ce8d4#heading-19</a></p>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>标签：</span>
+                <span class="tag">
+                    
+                    
+                    <a href="/tags/mysql/"># mysql</a>
+                    
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript：window.history.back();">后退</a>
+                <span>· </span>
+                <a href="/">主页</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            <a class="prev" rel="prev" href="/2020/04/17/blog_back_new/git/git%E5%AE%9E%E6%88%98%E4%BB%A5%E5%8F%8A%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86/">git实战以及错误处理</a>
+            
+            
+            <a class="next" rel="next" href="/2020/04/12/blog_back_new/shell/shell%E8%84%9A%E6%9C%AC/">一些额外的笔记</a>
+            
+        </section>
+    </article>
+</div>
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+    </div>
+</footer>
+
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

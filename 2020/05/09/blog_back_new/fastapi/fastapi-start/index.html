@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="hzjsea">
+
+
+
+
+
+
+<title>fastapi | hzjsea</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+    <script src="/js/jquery.min.js"></script>
+    
+
+
+
+    
+    
+        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+    
+
+
+
+
+    <script>
+    function searchToggle() {
+        const width = $(document.body).width()
+        if(width > 479) {
+            return;
+        }
+        const search = $('.search');
+        const searchForm = $('.form-search')
+
+        if(!search.hasClass("mobile-search")) {
+            search.addClass("mobile-search");
+        } else {
+            search.removeClass("mobile-search");
+        } 
+    }
+
+    function search(searchInputEl, formEl, flag) {
+        const path = "/" + "search.json"; // 可以在public 下查看这个search.json
+        $(formEl).submit(function(e){
+            e.preventDefault();
+            let target = null
+            if(searchInputEl == null) {
+                const screenWidth = $(document.body).width();
+                target = screenWidth > 479 ? $('#pc-search-input') : $('#mobile-search-input');
+                console.log(target);
+            } else {
+                target = $(searchInputEl)
+            }
+
+            if(!flag && target.val() === '') {
+                return ;
+            }
+
+            $("#u-search").fadeIn(500, function() {
+                $("body > .wrapper").addClass("modal-active");
+
+                $.ajax({
+                    url: path,
+                    dataType: "json",
+                    beforeSend: function (xhr) {
+                        $input = target.val();
+                        $(".form-input").val($input);
+                        const loadingBar = $('.search-loading-bar') 
+                        loadingBar.css({
+                            width:'100%',
+                            display: 'block'
+                        });
+                    },
+                    success: function( datas ) {
+                        console.log(datas);
+                        const $resultPanel = $(".modal-body")[0];
+                        let str = `<ul class="modal-results">`;
+                        var keywords = $(".form-input").val().trim().toLowerCase().split(/[\s\-]+/);
+                        $resultPanel.innerHTML = "";
+                        let hasResult = false
+                        let text = `<div class="no-result">找不到与关键词相关的内容....</div>`;
+
+                        if ($(".form-input").val().trim().length <= 0) {
+                            // 没有结果
+                            $resultPanel.innerHTML = text;
+                            return;
+                        }
+                        datas.forEach(function (data, index) {
+                            var isMatch = true;
+                            if (!data.title || data.title.trim() === '') {
+                                data.title = "Untitled";
+                            }
+                            var data_title = data.title.trim().toLowerCase();
+                            var data_content = data.content && data.content.trim().replace(/<[^>]+>/g, "").toLowerCase() || '';
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            // only match artiles with not empty contents
+                            if (data_content !== '') {
+                                keywords.forEach(function (keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        hasResult = true
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            } else {
+                                isMatch = false;
+                            }
+                            // show search results
+                            if (isMatch) {
+                                str += `<li class='result-item'><a href='${data_url}' class='result-item-detail'> <span class="title">${data_title}</span>`;
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 200 characters
+                                    var start = first_occur - 40;
+                                    var end = first_occur + 160;
+
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+
+                                    if (start == 0) {
+                                        end = 200;
+                                    }
+
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+
+                                    var match_content = content.substring(start, end);
+
+                                    // highlight all keywords
+                                    keywords.forEach(function (keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, `<em class="search-keyword">${keyword}</em>`);
+                                    });
+
+                                    str += `<span class="content"> ${match_content} ...</span></a>`;
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        if(hasResult) {
+                            $resultPanel.innerHTML = str;
+                        } else {
+                            $resultPanel.innerHTML = text;
+                        }
+
+                    },
+                    complete: function() {
+                        setTimeout(() => {
+                                const loadingBar = $('.search-loading-bar') 
+                                loadingBar.css({
+                                    width:'0%',
+                                    display: 'none'
+                                });
+                        }, 300)
+                    }
+                });
+            })
+
+        });
+    }
+
+    $(document).ready(function() {
+        $('.modal-close').click(function () { 
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+
+        $('.modal-overlay').click(function() {
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+        search(null, ".form-search", false)
+        search("#u-search-modal-form .form-input", ".u-search-modal-form", true)
+    })
+</script>
+
+
+
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo"><a href="/">hzjsea</a></div>
+        <div class="menu navbar-right">
+            
+            
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="pc-search-input"/>
+        </form>
+    </div>
+
+
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+            <input id="switch_default" type="checkbox" class="switch_default">
+            <label for="switch_default" class="toggleBtn"></label>
+        </div>
+    </div>
+</nav>
+
+
+<nav class="navbar-mobile" id="nav-mobile">
+    <div class="container">
+        <div class="navbar-header">
+            <div>
+                <a href="/">hzjsea</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+            </div>
+            <div class="navbar-mobile-right">
+                
+                
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="mobile-search-input"/>
+        </form>
+    </div>
+
+
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; 目录</div>
+            </div>
+            
+        </div>
+        <div class="menu" id="mobile-menu">
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+        </div>
+    </div>
+</nav>
+
+        <div class="main">
+			<!-- Chic/layout.ejs -->
+ <div id="u-search">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="container">
+                    <form id="u-search-modal-form" class="u-search-modal-form">
+                        <button type="submit" class="form-submit-btn">
+                            <img src="/image/search.png" class="search-btn-img" />
+                        </button>
+                        <input placeholder="搜索文章。。。" class="form-input" id="modal-form-input">
+                    </form>
+                    <a class="modal-close">x</a>
+                </div>
+                <div class="search-loading">
+                    <div class="search-loading-bar"></div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <!-- ul 格式如下 -->
+                <!-- <ul class="modal-results">
+                    <li class="result-item">
+                        <a class="result-item-detail">
+                            <span class="title">页面配置</span>
+                            <span class="content">
+                                content
+                            </span>
+                        </a>
+                    </li>
+                </ul> -->
+            </div>
+        </div>
+        <div class="modal-overlay"></div>
+    </div>
+            <div class="container">
+    
+    
+    <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">全部展开</a>
+        <a onclick="go_top()">回到顶部</a>
+        <a onclick="go_bottom()">回到底部</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "全部折叠"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "全部展开"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">fastapi</h1>
+            
+            <div class="post-meta">
+                
+                作者： <a itemprop="author" rel="author" href="/">hzjsea</a>&nbsp;
+                
+
+                
+                <span class="post-time">
+                    创建日期： <a
+                        href="#">May 9, 2020&nbsp;&nbsp;10:24:17</a>
+                </span>&nbsp;
+                
+                
+                <span class="post-category">
+                    分类：
+                    
+                    <a href="/categories/fastapi/">fastapi</a>&nbsp;
+                    
+                </span>
+                
+                
+                状态：<a href="#">SNAPSHOT</a>
+                
+            </div>
+            
+        </header>
+
+        <div class="post-content">
+            <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+<ul>
+<li><a href="#fastapi%E4%BB%8B%E7%BB%8D">Fastapi介绍</a><ul>
+<li><a href="#fastapi%E4%B8%8E%E5%85%B6%E4%BB%96python-web%E6%A1%86%E6%9E%B6%E7%9A%84%E5%8C%BA%E5%88%AB">fastapi与其他python-web框架的区别</a></li>
+<li><a href="#fastapi-%E5%AE%98%E6%96%B9%E5%AE%9A%E4%BD%8D">fastapi 官方定位</a></li>
+<li><a href="#framework-benchmarks">Framework Benchmarks</a></li>
+<li><a href="#start-demo">start demo</a></li>
+<li><a href="#fastapi%E6%9C%8D%E5%8A%A1%E4%BA%8Eapi">fastapi服务于API</a><ul>
+<li><a href="#%E8%AE%BE%E7%BD%AE%E6%A0%B9%E7%9B%AE%E5%BD%95">设置根目录</a></li>
+<li><a href="#%E5%AF%B9%E8%B7%AF%E5%BE%84%E5%8F%82%E6%95%B0%E8%BF%9B%E8%A1%8C%E9%99%90%E5%88%B6">对路径参数进行限制</a></li>
+<li><a href="#%E5%AF%B9%E6%9F%A5%E8%AF%A2%E5%8F%82%E6%95%B0%E5%81%9A%E9%99%90%E5%88%B6">对查询参数做限制</a></li>
+<li><a href="#%E8%AE%BE%E7%BD%AE%E8%AF%B7%E6%B1%82%E4%BD%93">设置请求体</a></li>
+<li><a href="#%E8%AF%B7%E6%B1%82%E4%BD%93%E5%B5%8C%E5%A5%97">请求体嵌套</a></li>
+<li><a href="#%E8%AE%BE%E7%BD%AE%E5%93%8D%E5%BA%94%E4%BD%93">设置响应体</a></li>
+<li><a href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E5%93%8D%E5%BA%94%E7%A0%81">自定义响应码</a></li>
+<li><a href="#%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5">依赖注入</a></li>
+<li><a href="#fastapi-login-demo">fastapi login demo</a></li>
+</ul>
+</li>
+<li><a href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BB%A5%E5%8F%8Aorm%E7%9A%84%E9%80%89%E6%8B%A9">数据库以及orm的选择</a><ul>
+<li><a href="#sqlalchemy%E5%AE%9E%E4%BE%8B">sqlalchemy实例</a></li>
+<li><a href="#tortoise-orm%E5%AE%9E%E4%BE%8B">tortoise-orm实例</a></li>
+</ul>
+</li>
+<li><a href="#%E9%83%A8%E7%BD%B2">部署</a><ul>
+<li><a href="#dockerfile">dockerfile</a></li>
+<li><a href="#%E5%8D%95%E6%9C%BA%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2">单机本地部署</a></li>
+<li><a href="#supervisor%E9%A1%B9%E7%9B%AE%E6%89%98%E7%AE%A1">supervisor项目托管</a></li>
+<li><a href="#gunicorn%E9%83%A8%E7%BD%B2asgi%E6%9C%8D%E5%8A%A1">gunicorn部署asgi服务</a></li>
+<li><a href="#%E9%83%A8%E7%BD%B2%E5%AE%8C%E6%95%B4%E7%A4%BA%E4%BE%8B">部署完整示例</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<!-- /code_chunk_output -->
+
+
+<a id="more"></a>
+
+<h1 id="Fastapi介绍"><a href="#Fastapi介绍" class="headerlink" title="Fastapi介绍"></a>Fastapi介绍</h1><p><img src="https://fastapi.tiangolo.com/img/logo-margin/logo-teal.png" alt="fastapi"></p>
+<p>Documentation: <a target="_blank" rel="noopener" href="https://fastapi.tiangolo.com/">https://fastapi.tiangolo.com</a></p>
+<p>Source Code: <a target="_blank" rel="noopener" href="https://github.com/tiangolo/fastapi">https://github.com/tiangolo/fastapi</a></p>
+<h2 id="fastapi与其他python-web框架的区别"><a href="#fastapi与其他python-web框架的区别" class="headerlink" title="fastapi与其他python-web框架的区别"></a>fastapi与其他python-web框架的区别</h2><p>在fastapi之前，python的web框架使用的是django falsk tornado 三种web框架。</p>
+<ul>
+<li>django 自带admin ,快速构建  但是太重，虽然很多都封装好了，如果是mvc形式的开发，这样的确蛮合适的，但是restful风格设计，则django就显得有一些笨重</li>
+<li>flask 快速构建，自由度高。因为他十分轻盈，插件即插即用，很适合用来做restful风格的设计</li>
+<li>tornado python web框架和异步网络库，它执行非阻塞I/O ,<br>没有对REST API的内置支持，但是用户可以手动实现REST API</li>
+<li>fastapi 快速构建，异步IO,自带Swagger作为API文档，不用后续去内嵌Swagger-Ui<br>在我用来，我感觉fastapi是一个专门为restful风格设计的web框架，全面服务于api形式web后端</li>
+</ul>
+<p>fastapi的设计还是很符合restful的，用到的技术也都是很多新技术,同时也没有抛弃之前一些比较好用的内容，包括类型注释、依赖注入，websocket，swaggerui等等，以及其他的一些注释，比如GraphQL</p>
+<h2 id="fastapi-官方定位"><a href="#fastapi-官方定位" class="headerlink" title="fastapi 官方定位"></a>fastapi 官方定位</h2><p>在fastapi 官方文档中，可以看到官方对fastapi做的一些定位</p>
+<ul>
+<li>快速：非常高的性能，看齐的NodeJS和go（感谢Starlette和Pydantic) </li>
+<li>快速编码：将功能开发速度提高约200％至300％*。</li>
+<li>错误更少：减少约40％的人为错误（开发人员）。*  (fastapi内置很多python高版本的语法 比如类型注释，typing库等等，因此他被要求的python版本为3.6+)</li>
+<li>简易：旨在易于使用和学习。减少阅读文档的时间。</li>
+<li>功能完善: 自带Swagger作为API文档</li>
+</ul>
+<h2 id="Framework-Benchmarks"><a href="#Framework-Benchmarks" class="headerlink" title="Framework Benchmarks"></a>Framework Benchmarks</h2><p><a target="_blank" rel="noopener" href="https://www.techempower.com/benchmarks/#section=data-r19&amp;hw=ph&amp;test=fortune">https://www.techempower.com/benchmarks/#section=data-r19&amp;hw=ph&amp;test=fortune</a><br><img src="http://img.noback.top/2020-06-03-21-21-22.png" alt="2020-06-03-21-21-22"><br><img src="http://img.noback.top/2020-06-03-21-21-47.png" alt="2020-06-03-21-21-47"><br><img src="http://img.noback.top/2020-06-03-21-23-11.png" alt="2020-06-03-21-23-11"><br><img src="http://img.noback.top/2020-06-03-21-23-24.png" alt="2020-06-03-21-23-24"><br>可以看出在高并发下的排名情况，当然web框架如果单纯是性能之间的比较是没用的，还要看业务上的需求和使用场景。最适合的才是最好的，这里只介绍fastapi的一些用法和特性.</p>
+<h2 id="start-demo"><a href="#start-demo" class="headerlink" title="start demo"></a>start demo</h2><pre class=" language-py"><code class="language-py">pip install fastapi  # fastapi 库
+pip install uvicorn  # Asgi server</code></pre>
+<pre class=" language-py"><code class="language-py"># main.py
+from fastapi import FastAPI
+
+app = FastAPI()
+
+@app.get("/")
+def read_root():
+    return &#123;"Hello": "World"&#125;
+
+@app.get("/items/&#123;item_id&#125;")
+def read_item(item_id: int, q: str = None):
+    return &#123;"item_id": item_id, "q": q&#125;
+
+# 启动
+uvicorn main:app 
+# 支持自定义host和端口
+uvicorn main:app  --host 0.0.0.0 --port 8080
+# 支持热更新
+uvicorn main:app --reload --host 0.0.0.0 --port 8080</code></pre>
+<p>同样的fastpai支持异步请求</p>
+<pre class=" language-py"><code class="language-py">from fastapi import FastAPI
+
+app = FastAPI()
+
+@app.get("/")
+async def read_root():
+    return &#123;"Hello": "World"&#125;
+
+@app.get("/items/&#123;item_id&#125;")
+async def read_item(item_id: int, q: str = None):
+    return &#123;"item_id": item_id, "q": q&#125;</code></pre>
+<p><img src="http://img.noback.top/2020-05-11-10-53-49.png" alt="2020-05-11-10-53-49"><br><img src="http://img.noback.top/2020-05-11-10-56-24.png" alt="2020-05-11-10-56-24"><br>项目浏览地址<br><a target="_blank" rel="noopener" href="http://127.0.0.1:8000/">http://127.0.0.1:8000</a><br>交互式文档地址<br><a target="_blank" rel="noopener" href="http://127.0.0.1:8000/docs">http://127.0.0.1:8000/docs</a><br>redoc地址<br><a target="_blank" rel="noopener" href="http://127.0.0.1:8000/redoc">http://127.0.0.1:8000/redoc</a></p>
+<h2 id="fastapi服务于API"><a href="#fastapi服务于API" class="headerlink" title="fastapi服务于API"></a>fastapi服务于API</h2><p>在我使用的情况中，我的感受是，fastapi主要受众群体应该是web-api开发者，对于前后端不分离的项目，也就是mvc设计模式，fastapi很明显是不受用的，并且他也没有提供这方面的解决方案。</p>
+<h3 id="设置根目录"><a href="#设置根目录" class="headerlink" title="设置根目录"></a>设置根目录</h3><pre class=" language-py"><code class="language-py"># main.py
+# 设置路由
+from fastapi import FastAPI
+import users
+app = FastAPI()
+app.include_router(
+    users.router,
+    prefix="/fastapi/play/v1/users", # 路由前缀
+    tags=['users'] # 路由接口类别
+)
+
+# routers/users.py
+from fastapi import FastAPI,APIRouter
+from datetime import datetime,timedelta
+router = APIRouter()
+@router.get("/get/users/")
+async def get_users():
+    return &#123;
+        "desc":"Return to user list"
+    &#125;</code></pre>
+<p><img src="http://img.noback.top/2020-06-03-21-35-53.png" alt="2020-06-03-21-35-53"></p>
+<h3 id="对路径参数进行限制"><a href="#对路径参数进行限制" class="headerlink" title="对路径参数进行限制"></a>对路径参数进行限制</h3><pre class=" language-py"><code class="language-py"># 根据名字获取列表
+@router.get("/get/user/&#123;username&#125;")
+async def get_user_by_username(username :str):
+    """
+        - username: 用户名
+    """
+    return &#123;
+       "desc":"this username is "+ username 
+    &#125;
+</code></pre>
+<p><img src="http://img.noback.top/2020-06-03-21-39-37.png" alt="2020-06-03-21-39-37"></p>
+<p>上面只是实现了一个简单的路径参数查找<br>使用枚举做限制</p>
+<pre class=" language-py"><code class="language-py">from enum import Enum
+class type_enum(str,Enum):
+    woman="alice"
+    man = "hzj"
+    dog = "hhh"
+# 路径参数+ 枚举
+@router.get("/username/&#123;username_type&#125;")
+async def get_user_by_type(username_type : str):
+    result = ""
+    if username_type == type_enum.alice:
+        result = "ok, i am &#123;&#125;".format(type_enum.woman)
+    elif username_type == type_enum.hzj:
+        result = "ok , i am &#123;&#125;".format(type_enum.man)
+    else:
+        result = "None"
+    return &#123;
+        "desc":result
+    &#125;</code></pre>
+<h3 id="对查询参数做限制"><a href="#对查询参数做限制" class="headerlink" title="对查询参数做限制"></a>对查询参数做限制</h3><pre class=" language-py"><code class="language-py">test_json = [
+    &#123;
+        "id":1,
+        "name":"hzj"
+    &#125;,
+    &#123;
+        "id":2,
+        "name":"app"
+    &#125;,
+    &#123;
+        "id":3,
+        "name":"小敏"
+    &#125;,
+    &#123;
+        "id":4,
+        "name":"小红"
+    &#125;,
+    &#123;
+        "id":5,
+        "name":"晓晓"
+    &#125;,
+    &#123;
+        "id":6,
+        "name":"cy"
+    &#125;,
+]
+import json
+# 对查询参数做限制
+@router.get("/friends/")
+async def get_friends_by_id(id :int):
+    for item in test_json:
+        if item['id'] == id:
+            return item
+        else:
+            return &#123;
+                "desc": "no this id"
+            &#125;</code></pre>
+<pre class=" language-py"><code class="language-py">import json
+# 对查询参数做限制
+@router.get("/friends/")
+# 设置为None的时候，默认不可以不填
+async def get_friends_by_id(id :int=None):
+    for item in test_json:
+        if item['id'] == id:
+            return item
+        else:
+            return &#123;
+                "desc": "no this id"
+            &#125;</code></pre>
+<p><font color='red'>对查询参数做进一步的限制</font></p>
+<pre class=" language-py"><code class="language-py">@router.get("/friends/"&#123;id&#125;)
+async def get_friends_by_id(id :int= Query(None, gt=0)):
+    for item in test_json:
+        if item['id'] == id:
+            return item
+        else:
+            return &#123;
+                "desc": "no this id"
+            &#125;
+
+# 多参数请求查询
+from typing import List
+@router.get("/items/")
+async def read_items(q: List[str] = Query(["foo", "bar"])):
+    query_items = &#123;"q": q&#125;
+    return query_items</code></pre>
+<h3 id="设置请求体"><a href="#设置请求体" class="headerlink" title="设置请求体"></a>设置请求体</h3><pre class=" language-py"><code class="language-py"># 设置请求实体
+
+from pydantic import BaseModel,Field
+class requestModel(BaseModel):
+    name :str
+    age : int = Field(..., gt=0, description="The age must be greater than zero")
+    desc: str
+
+
+@router.post("/post/UserInfo/")
+async def post_UserInfo(item: requestModel):
+    return item
+</code></pre>
+<p><img src="http://img.noback.top/2020-06-03-22-19-53.png" alt="2020-06-03-22-19-53"></p>
+<h3 id="请求体嵌套"><a href="#请求体嵌套" class="headerlink" title="请求体嵌套"></a>请求体嵌套</h3><pre class=" language-py"><code class="language-py">from pydantic import BaseModel,Field
+
+class levelInfoModel(BaseModel):
+    id:int = None
+    info: str = None
+
+class ClassInfo(BaseModel):
+    id: int = None
+    name: str = Field(..., max_length=20, min_length=10,
+                      description="The necessary fields")
+    desc: str = Field(None, max_length=30, min_length=10)
+    levelInfo: List[levelInfoModel]
+
+    class Config:
+        schema_extra = &#123;
+            "example": &#123;
+                "id": 1,
+                "name": "Foo",
+                "desc": "A very nice Item",
+                "levelInfo": [&#123;
+                    "id": 1,
+                    "info": "一级"
+                &#125;]
+            &#125;
+        &#125;
+
+@router.post("/info/")
+async def get_classInfo(item:ClassInfo):
+    return item</code></pre>
+<p><img src="http://img.noback.top/2020-06-03-22-29-20.png" alt="2020-06-03-22-29-20"></p>
+<h3 id="设置响应体"><a href="#设置响应体" class="headerlink" title="设置响应体"></a>设置响应体</h3><pre class=" language-py"><code class="language-py">test_json = &#123;
+    "code": 0,
+    "status": "success",
+    "data":[
+        &#123;
+        "id": 1,
+        "age": 2,
+        "name":"hzj"
+    &#125;
+    ]
+&#125;
+@router.get("/get/UserInfo",response_model=responseModel)
+async def get_UserInfo(id :int):
+    return test_json
+</code></pre>
+<h3 id="自定义响应码"><a href="#自定义响应码" class="headerlink" title="自定义响应码"></a>自定义响应码</h3><pre class=" language-py"><code class="language-py">
+@router.post("/items/", status_code=201)
+async def create_item(name: str):
+    return &#123;"name": name&#125;
+
+from fastapi import FastAPI, status
+
+
+@app.post("/items/", status_code=status.HTTP_201_CREATED)
+async def create_item(name: str):
+    return &#123;"name": name&#125;</code></pre>
+<h3 id="依赖注入"><a href="#依赖注入" class="headerlink" title="依赖注入"></a>依赖注入</h3><pre class=" language-py"><code class="language-py">from fastapi import Depends, FastAPI
+
+async def common_parameters(q: str = None, skip: int = 0, limit: int = 100):
+    return &#123;"q": q, "skip": skip, "limit": limit&#125;
+
+@router.get("/items/")
+async def read_items(commons: dict = Depends(common_parameters)):
+    return commons
+
+@router.get("/users/")
+async def read_users(commons: dict = Depends(common_parameters)):
+    return commons</code></pre>
+<p>支持多层嵌套依赖注入</p>
+<h3 id="fastapi-login-demo"><a href="#fastapi-login-demo" class="headerlink" title="fastapi login demo"></a>fastapi login demo</h3><pre class=" language-python"><code class="language-python"><span class="token comment" spellcheck="true"># 安装环境</span>
+mkdir fastapi<span class="token operator">-</span>demo <span class="token operator">&amp;</span><span class="token operator">&amp;</span> cd fastapi<span class="token operator">-</span>demo
+virtualenv env
+source env<span class="token operator">/</span>bin<span class="token operator">/</span>active
+
+<span class="token comment" spellcheck="true"># 下载项目</span>
+git clone https<span class="token punctuation">:</span><span class="token operator">//</span>github<span class="token punctuation">.</span>com<span class="token operator">/</span>hzjsea<span class="token operator">/</span>BaseFastapi 
+cd BaseFastapi<span class="token operator">/</span> 
+pip install <span class="token operator">-</span>r requirements<span class="token punctuation">.</span>txt
+<span class="token comment" spellcheck="true"># 开启项目</span>
+uvicorn main<span class="token punctuation">:</span>app <span class="token operator">-</span><span class="token operator">-</span>reload 
+<span class="token comment" spellcheck="true"># uvicorn main:app --host 0.0.0.0 --port 80 --reload</span></code></pre>
+<h2 id="数据库以及orm的选择"><a href="#数据库以及orm的选择" class="headerlink" title="数据库以及orm的选择"></a>数据库以及orm的选择</h2><p>上面的案例都没有用到数据库，数据库的选择现在无非就是mysql PostgreSQL redis<br>但是对于orm来说fastapi有好几种选择</p>
+<ul>
+<li>sqlalchemy 但是不支持异步，不过貌似可以扩展成异步</li>
+<li>tortoise-orm 类django-orm的异步orm，不过正在起步过程中，有些功能还没有完成。</li>
+</ul>
+<h3 id="sqlalchemy实例"><a href="#sqlalchemy实例" class="headerlink" title="sqlalchemy实例"></a>sqlalchemy实例</h3><pre class=" language-py"><code class="language-py">from typing import List
+
+import databases
+import sqlalchemy
+from fastapi import FastAPI
+from pydantic import BaseModel
+
+# SQLAlchemy specific code, as with any other app
+DATABASE_URL = "sqlite:///./test.db"
+# DATABASE_URL = "postgresql://user:password@postgresserver/db"
+
+database = databases.Database(DATABASE_URL)
+
+metadata = sqlalchemy.MetaData()
+
+notes = sqlalchemy.Table(
+    "notes",
+    metadata,
+    sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True),
+    sqlalchemy.Column("text", sqlalchemy.String),
+    sqlalchemy.Column("completed", sqlalchemy.Boolean),
+)
+
+
+engine = sqlalchemy.create_engine(
+    DATABASE_URL, connect_args=&#123;"check_same_thread": False&#125;
+)
+metadata.create_all(engine)
+
+
+class NoteIn(BaseModel):
+    text: str
+    completed: bool
+
+
+class Note(BaseModel):
+    id: int
+    text: str
+    completed: bool
+
+
+app = FastAPI()
+
+
+@app.on_event("startup")
+async def startup():
+    await database.connect()
+
+
+@app.on_event("shutdown")
+async def shutdown():
+    await database.disconnect()
+
+
+@app.get("/notes/", response_model=List[Note])
+async def read_notes():
+    query = notes.select()
+    return await database.fetch_all(query)
+
+
+@app.post("/notes/", response_model=Note)
+async def create_note(note: NoteIn):
+    query = notes.insert().values(text=note.text, completed=note.completed)
+    last_record_id = await database.execute(query)
+    return &#123;**note.dict(), "id": last_record_id&#125;</code></pre>
+<h3 id="tortoise-orm实例"><a href="#tortoise-orm实例" class="headerlink" title="tortoise-orm实例"></a>tortoise-orm实例</h3><pre class=" language-bash"><code class="language-bash">pip <span class="token function">install</span> tortoise-orm</code></pre>
+<pre class=" language-py"><code class="language-py">
+# main.py
+from tortoise.contrib.fastapi import HTTPNotFoundError, register_tortois
+# 创建的数据表
+models = [
+    "app.Users.models",
+    "app.Face.models",
+    "app.Roster.models",
+    "app.Statistical.models",
+    "app.pay.models"
+]
+
+register_tortoise(
+    app,
+    db_url="mysql://username:password@ip:port/yydb",
+    modules=&#123;"models": models&#125;,
+    generate_schemas=True,
+    add_exception_handlers=True,
+)
+
+# models.py
+from tortoise import fields,models
+from tortoise.contrib.pydantic import pydantic_queryset_creator
+from pydantic import BaseModel
+class RosterGroupTable(models.Model):
+    id = fields.IntField(pk=True)
+    phone = fields.CharField(max_length=20,blank=True,null=True)
+    name = fields.CharField(max_length=20)
+
+    class Meta:
+        db = "RosterGroupTable"
+
+class RosterTabel(models.Model):
+    id = fields.IntField(pk=True)
+    phone = fields.CharField(max_length=20,blank=True,null=True)
+    name = fields.CharField(max_length=20)
+    group_id = fields.ForeignKeyField(model_name='models.RosterGroupTable',on_delete=fields.CASCADE,related_name="events",blank=True,null=True)
+
+    class Meta:
+        db = "RosterTabel"
+
+RosterGroupTable_desc = pydantic_queryset_creator(RosterGroupTable)
+RosterTabel_desc = pydantic_queryset_creator(RosterTabel)
+
+
+
+# roster.py
+@router.post("/roster_statistics/add")
+async def roster_add_statics(*,item:RosterItem,token :str):
+    res = await RosterTabel.filter(id=item['memberId']).first()
+    if res:
+        await StatisticalRosterTable.create(
+            phone = current_user.Phone,
+            date = item['date'],
+            time = item['time'],
+            data = item['data'],
+            name_id_id = item['memberId'],
+            temp_type = item['tm_type'],
+            today_num = item['todayNum'],
+            group_id_id = res.group_id_id,
+            name = res.name
+        )
+    else:
+        return rp_faildMessage(msg="名单不存在",code=-1)
+    return rp_successMessage(msg="名单创建成功",code=0)</code></pre>
+<h2 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h2><h3 id="dockerfile"><a href="#dockerfile" class="headerlink" title="dockerfile"></a>dockerfile</h3><pre class=" language-dockerfile"><code class="language-dockerfile">#================================================================================
+#      基于python3.7的创建fastapi的dockerfile文件
+#      fastapi + python3.7 + guvicorn
+#================================================================================
+
+FROM python:3.7
+LABEL version="v1" \
+    description="fastapi" \
+    maintainer="hzjsea" \
+    using="fastapi & python3.7 office image & gunicorn"
+WORKDIR /root/code
+COPY  . .
+RUN pip install -r requirements.txt
+EXPOSE 8889
+CMD ["gunicorn","-c","guvicorn.conf","main:app"]
+</code></pre>
+<h3 id="单机本地部署"><a href="#单机本地部署" class="headerlink" title="单机本地部署"></a>单机本地部署</h3><pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true">#!/usr/bin/bash</span>
+<span class="token comment" spellcheck="true"># 测试用脚本部署</span>
+
+<span class="token comment" spellcheck="true"># 开启的端口</span>
+port<span class="token operator">=</span>80
+host<span class="token operator">=</span>0.0.0.0
+
+<span class="token comment" spellcheck="true"># 删除旧的文件</span>
+<span class="token function">rm</span> -rf /root/hzj/fastapi_play
+<span class="token comment" spellcheck="true"># 拷贝新的文件</span>
+<span class="token function">cp</span> -r /root/fastapi_play/ /root/hzj/
+<span class="token comment" spellcheck="true"># 切换workdir</span>
+<span class="token function">cd</span> /root/hzj/fastapi_play/
+<span class="token comment" spellcheck="true"># 开启python虚拟环境</span>
+<span class="token function">source</span> /root/hzj/pro_env_all/venv/bin/activate
+<span class="token comment" spellcheck="true"># 安装依赖</span>
+pip <span class="token function">install</span> -r requirements.txt
+<span class="token comment" spellcheck="true"># 关闭之前运行的进程  </span>
+<span class="token function">lsof</span> -i:<span class="token variable">$port</span> <span class="token operator">|</span> <span class="token function">awk</span> <span class="token string">'&amp;#123;getline; print <span class="token variable">$2</span> &amp;#125;'</span> <span class="token operator">|</span> <span class="token function">xargs</span> -t -I <span class="token operator">&amp;</span>#123<span class="token punctuation">;</span><span class="token operator">&amp;</span>#125<span class="token punctuation">;</span> <span class="token function">kill</span> -9 <span class="token operator">&amp;</span>#123<span class="token punctuation">;</span><span class="token operator">&amp;</span>#125<span class="token punctuation">;</span>
+<span class="token comment" spellcheck="true"># 开启新进程</span>
+<span class="token function">nohup</span> uvicorn --host <span class="token variable">$host</span>  --port <span class="token variable">$port</span>  main:app --reload  <span class="token operator">&amp;</span>
+<span class="token keyword">echo</span> <span class="token string">"success"</span></code></pre>
+<h3 id="supervisor项目托管"><a href="#supervisor项目托管" class="headerlink" title="supervisor项目托管"></a>supervisor项目托管</h3><pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span>program:webserver<span class="token punctuation">]</span>
+directory<span class="token operator">=</span>/root/hzj/fastapi_play
+command<span class="token operator">=</span>/root/hzj/pro_env_all/venv/bin/uvicorn main:app --host 0.0.0.0 --port 8888
+autostart <span class="token operator">=</span> <span class="token boolean">true</span></code></pre>
+<h3 id="gunicorn部署asgi服务"><a href="#gunicorn部署asgi服务" class="headerlink" title="gunicorn部署asgi服务"></a>gunicorn部署asgi服务</h3><pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># gunicorn.conf</span>
+并行工作进程数
+workers <span class="token operator">=</span> 4
+<span class="token comment" spellcheck="true"># 指定每个工作者的线程数</span>
+threads <span class="token operator">=</span> 2
+<span class="token comment" spellcheck="true"># 监听内网端口5000</span>
+bind <span class="token operator">=</span> <span class="token string">'0.0.0.0:8889'</span>
+<span class="token comment" spellcheck="true"># 设置守护进程,将进程交给supervisor管理</span>
+daemon <span class="token operator">=</span> <span class="token string">'false'</span>
+<span class="token comment" spellcheck="true"># 工作模式协程</span>
+worker_class <span class="token operator">=</span> <span class="token string">'uvicorn.workers.UvicornWorker'</span>
+<span class="token comment" spellcheck="true"># 设置最大并发量</span>
+worker_connections <span class="token operator">=</span> 2000
+
+
+<span class="token comment" spellcheck="true">#运行</span>
+gunicorn -c gunicorn.conf</code></pre>
+<h3 id="部署完整示例"><a href="#部署完整示例" class="headerlink" title="部署完整示例"></a>部署完整示例</h3><p>fastapi官方提供了一个前后端分离项目完整示例<br><a target="_blank" rel="noopener" href="https://github.com/tiangolo/full-stack-fastapi-postgresql">https://github.com/tiangolo/full-stack-fastapi-postgresql</a></p>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>标签：</span>
+                <span class="tag">
+                    
+                    
+                    <a href="/tags/fastapi/"># fastapi</a>
+                    
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript：window.history.back();">后退</a>
+                <span>· </span>
+                <a href="/">主页</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            <a class="prev" rel="prev" href="/2020/05/09/blog_back_new/golang/golang%E8%BF%9B%E9%98%B6/">golang进阶</a>
+            
+            
+            <a class="next" rel="next" href="/2020/05/05/blog_back_new/CDN/%E5%8F%88%E6%8B%8D%E4%BA%91CDN%E5%85%A8%E7%AB%99%E5%8A%A0%E9%80%9F/">又拍云CDN全站加速的问题</a>
+            
+        </section>
+    </article>
+</div>
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+    </div>
+</footer>
+
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

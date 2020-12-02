@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="hzjsea">
+
+
+
+
+
+
+<title>python 基础 | hzjsea</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+    <script src="/js/jquery.min.js"></script>
+    
+
+
+
+    
+    
+        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+    
+
+
+
+
+    <script>
+    function searchToggle() {
+        const width = $(document.body).width()
+        if(width > 479) {
+            return;
+        }
+        const search = $('.search');
+        const searchForm = $('.form-search')
+
+        if(!search.hasClass("mobile-search")) {
+            search.addClass("mobile-search");
+        } else {
+            search.removeClass("mobile-search");
+        } 
+    }
+
+    function search(searchInputEl, formEl, flag) {
+        const path = "/" + "search.json"; // 可以在public 下查看这个search.json
+        $(formEl).submit(function(e){
+            e.preventDefault();
+            let target = null
+            if(searchInputEl == null) {
+                const screenWidth = $(document.body).width();
+                target = screenWidth > 479 ? $('#pc-search-input') : $('#mobile-search-input');
+                console.log(target);
+            } else {
+                target = $(searchInputEl)
+            }
+
+            if(!flag && target.val() === '') {
+                return ;
+            }
+
+            $("#u-search").fadeIn(500, function() {
+                $("body > .wrapper").addClass("modal-active");
+
+                $.ajax({
+                    url: path,
+                    dataType: "json",
+                    beforeSend: function (xhr) {
+                        $input = target.val();
+                        $(".form-input").val($input);
+                        const loadingBar = $('.search-loading-bar') 
+                        loadingBar.css({
+                            width:'100%',
+                            display: 'block'
+                        });
+                    },
+                    success: function( datas ) {
+                        console.log(datas);
+                        const $resultPanel = $(".modal-body")[0];
+                        let str = `<ul class="modal-results">`;
+                        var keywords = $(".form-input").val().trim().toLowerCase().split(/[\s\-]+/);
+                        $resultPanel.innerHTML = "";
+                        let hasResult = false
+                        let text = `<div class="no-result">找不到与关键词相关的内容....</div>`;
+
+                        if ($(".form-input").val().trim().length <= 0) {
+                            // 没有结果
+                            $resultPanel.innerHTML = text;
+                            return;
+                        }
+                        datas.forEach(function (data, index) {
+                            var isMatch = true;
+                            if (!data.title || data.title.trim() === '') {
+                                data.title = "Untitled";
+                            }
+                            var data_title = data.title.trim().toLowerCase();
+                            var data_content = data.content && data.content.trim().replace(/<[^>]+>/g, "").toLowerCase() || '';
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            // only match artiles with not empty contents
+                            if (data_content !== '') {
+                                keywords.forEach(function (keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        hasResult = true
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            } else {
+                                isMatch = false;
+                            }
+                            // show search results
+                            if (isMatch) {
+                                str += `<li class='result-item'><a href='${data_url}' class='result-item-detail'> <span class="title">${data_title}</span>`;
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 200 characters
+                                    var start = first_occur - 40;
+                                    var end = first_occur + 160;
+
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+
+                                    if (start == 0) {
+                                        end = 200;
+                                    }
+
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+
+                                    var match_content = content.substring(start, end);
+
+                                    // highlight all keywords
+                                    keywords.forEach(function (keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, `<em class="search-keyword">${keyword}</em>`);
+                                    });
+
+                                    str += `<span class="content"> ${match_content} ...</span></a>`;
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        if(hasResult) {
+                            $resultPanel.innerHTML = str;
+                        } else {
+                            $resultPanel.innerHTML = text;
+                        }
+
+                    },
+                    complete: function() {
+                        setTimeout(() => {
+                                const loadingBar = $('.search-loading-bar') 
+                                loadingBar.css({
+                                    width:'0%',
+                                    display: 'none'
+                                });
+                        }, 300)
+                    }
+                });
+            })
+
+        });
+    }
+
+    $(document).ready(function() {
+        $('.modal-close').click(function () { 
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+
+        $('.modal-overlay').click(function() {
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+        search(null, ".form-search", false)
+        search("#u-search-modal-form .form-input", ".u-search-modal-form", true)
+    })
+</script>
+
+
+
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo"><a href="/">hzjsea</a></div>
+        <div class="menu navbar-right">
+            
+            
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="pc-search-input"/>
+        </form>
+    </div>
+
+
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+            <input id="switch_default" type="checkbox" class="switch_default">
+            <label for="switch_default" class="toggleBtn"></label>
+        </div>
+    </div>
+</nav>
+
+
+<nav class="navbar-mobile" id="nav-mobile">
+    <div class="container">
+        <div class="navbar-header">
+            <div>
+                <a href="/">hzjsea</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+            </div>
+            <div class="navbar-mobile-right">
+                
+                
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="mobile-search-input"/>
+        </form>
+    </div>
+
+
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; 目录</div>
+            </div>
+            
+        </div>
+        <div class="menu" id="mobile-menu">
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+        </div>
+    </div>
+</nav>
+
+        <div class="main">
+			<!-- Chic/layout.ejs -->
+ <div id="u-search">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="container">
+                    <form id="u-search-modal-form" class="u-search-modal-form">
+                        <button type="submit" class="form-submit-btn">
+                            <img src="/image/search.png" class="search-btn-img" />
+                        </button>
+                        <input placeholder="搜索文章。。。" class="form-input" id="modal-form-input">
+                    </form>
+                    <a class="modal-close">x</a>
+                </div>
+                <div class="search-loading">
+                    <div class="search-loading-bar"></div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <!-- ul 格式如下 -->
+                <!-- <ul class="modal-results">
+                    <li class="result-item">
+                        <a class="result-item-detail">
+                            <span class="title">页面配置</span>
+                            <span class="content">
+                                content
+                            </span>
+                        </a>
+                    </li>
+                </ul> -->
+            </div>
+        </div>
+        <div class="modal-overlay"></div>
+    </div>
+            <div class="container">
+    
+    
+    <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">全部展开</a>
+        <a onclick="go_top()">回到顶部</a>
+        <a onclick="go_bottom()">回到底部</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "全部折叠"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "全部展开"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">python 基础</h1>
+            
+            <div class="post-meta">
+                
+                作者： <a itemprop="author" rel="author" href="/">hzjsea</a>&nbsp;
+                
+
+                
+                <span class="post-time">
+                    创建日期： <a
+                        href="#">January 4, 2020&nbsp;&nbsp;15:39:26</a>
+                </span>&nbsp;
+                
+                
+                <span class="post-category">
+                    分类：
+                    
+                    <a href="/categories/python/">python</a>&nbsp;
+                    
+                </span>
+                
+                
+                状态：<a href="#">SNAPSHOT</a>
+                
+            </div>
+            
+        </header>
+
+        <div class="post-content">
+            <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+<ul>
+<li><a href="#python%E5%9F%BA%E7%A1%80">python基础</a><ul>
+<li><a href="#python%E5%88%9B%E5%BB%BA%E8%99%9A%E6%8B%9F%E7%8E%AF%E5%A2%83">python创建虚拟环境</a></li>
+<li><a href="#%E4%BD%BF%E7%94%A8pipenv">使用pipenv</a></li>
+<li><a href="#%E4%BD%BF%E7%94%A8__slot__">使用<strong>slot</strong></a><ul>
+<li><a href="#%E7%BB%99%E7%B1%BB%E7%9A%84%E7%89%B9%E5%AE%9A%E5%AE%9E%E4%BE%8B%E7%BB%91%E5%AE%9A%E5%B1%9E%E6%80%A7">给类的特定实例绑定属性</a></li>
+<li><a href="#%E7%BB%99%E7%B1%BB%E7%9A%84%E7%89%B9%E5%AE%9A%E5%AE%9E%E4%BE%8B%E7%BB%91%E5%AE%9A%E6%96%B9%E6%B3%95">给类的特定实例绑定方法</a></li>
+<li><a href="#%E7%BB%99%E7%B1%BB%E7%9A%84%E6%89%80%E6%9C%89%E5%AE%9E%E4%BE%8B%E7%BB%91%E5%AE%9A%E6%96%B9%E6%B3%95">给类的所有实例绑定方法</a></li>
+<li><a href="#%E9%99%90%E5%88%B6%E5%AE%9E%E4%BE%8B%E7%9A%84%E5%B1%9E%E6%80%A7">限制实例的属性</a></li>
+<li><a href="#__slots__%E7%BB%A7%E6%89%BF">__slots__继承</a></li>
+<li><a href="#%E4%BD%BF%E7%94%A8property">使用@property</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<!-- /code_chunk_output -->
+<a id="more"></a>
+
+<h1 id="python基础"><a href="#python基础" class="headerlink" title="python基础"></a>python基础</h1><h2 id="python创建虚拟环境"><a href="#python创建虚拟环境" class="headerlink" title="python创建虚拟环境"></a>python创建虚拟环境</h2><ul>
+<li>方法1 使用virtualenv<pre class=" language-python"><code class="language-python">pip install virtualenv
+<span class="token comment" spellcheck="true"># 豆瓣源</span>
+<span class="token comment" spellcheck="true"># pip install -i https://pypi.douban.com/simple virtualenv </span>
+</code></pre>
+</li>
+</ul>
+<p>virtualenv env # 创建虚拟环境<br>virtualenv -p /usr/local/bin/python3 venv # 指定解释器安装<br>source env/bin/active # 激活虚拟环境<br>deactivate # 退出虚拟环境<br>rm -rf ./venv # 删除虚拟环境</p>
+<pre><code>
+## 使用pipenv
+https://juejin.im/post/5ca4be8bf265da30b160de27
+
+
+## 使用__slot__
+python是一门动态语言，创建class的实例之后，我们可以给该实例绑定任何属性和方法
+
+举例:
+
+### 给类的特定实例绑定属性
+```py
+  class student(object):
+      pass
+
+  if __name__ == &quot;__main__&quot;:
+      # 尝试给实例绑定动态变量
+      s = student()
+      s.name = &#39;hzj&#39;
+      print(s.name)</code></pre>
+<h3 id="给类的特定实例绑定方法"><a href="#给类的特定实例绑定方法" class="headerlink" title="给类的特定实例绑定方法"></a>给类的特定实例绑定方法</h3><pre class=" language-py"><code class="language-py">class student(object):
+    pass
+
+
+def set_age(self,age):
+    self.age = age
+
+if __name__ == "__main__":
+    s = student() # 创建实例
+    from types import MethodType
+    s.set_age = MethodType(set_age,s) # 绑定方法
+    s.set_age(25)
+    print(s.age)</code></pre>
+<p>但是给一个实例绑定的方法对另一个实例是不起作用的</p>
+<pre class=" language-py"><code class="language-py">  class student(object):
+      pass
+
+  def set_age(self,age):
+      self.age = age
+
+
+  if __name__ == "__main__":
+      s = student()
+      from types import MethodType
+      s.set_age = MethodType(set_age,s)
+      s.set_age(25)
+
+      s2 = student() # 新的实例
+      s2.set_age(50)
+      print(s2.age)
+
+# 报错
+# Traceback (most recent call last):
+#   File "slots_py.py", line 15, in <module>
+#     s2.set_age(50)
+# AttributeError: 'student' object has no attribute 'set_age'</code></pre>
+<h3 id="给类的所有实例绑定方法"><a href="#给类的所有实例绑定方法" class="headerlink" title="给类的所有实例绑定方法"></a>给类的所有实例绑定方法</h3><pre class=" language-py"><code class="language-py">  class student():
+      pass
+
+  def set_age(self,age):
+      self.age = age
+
+
+  if __name__ == "__main__":
+      student.set_age = set_age
+      s = student()
+      s.set_age(10)
+      print(s.age)
+
+      s2 = student()
+      s2.set_age(20)
+      print(s2.age)
+</code></pre>
+<h3 id="限制实例的属性"><a href="#限制实例的属性" class="headerlink" title="限制实例的属性"></a>限制实例的属性</h3><p>上来的三例都是给实例扩展属性，在某些情况下我们可以用<strong>slots</strong> = (‘x’,’y’) 的形式来定义绑定的属性名称</p>
+<pre class=" language-py"><code class="language-py">  class student():
+      __slots__ = ('name','age')
+
+  if __name__ == "__main__":
+      s1 = student() # 声明实例
+      s1.age = 2
+      print(s1.age)
+
+      # 声明不允许的变量
+      s2 = student()
+      s2.hobit = "swimming"
+      print(s2.hobit)</code></pre>
+<p>出现报错</p>
+<pre class=" language-py"><code class="language-py">
+Traceback (most recent call last):
+  File "slots_py.py", line 15, in <module>
+    s2.hobit = "swimming"
+AttributeError: 'student' object has no attribute 'hobit'</code></pre>
+<h3 id="slots-继承"><a href="#slots-继承" class="headerlink" title="__slots__继承"></a>__slots__继承</h3><p>在子类当中，他是不具有父类的属性的，除非在子类中也定义__slots__，这样，子类实例允许定义的属性就是自身的__slots__加上父类的__slots__。</p>
+<pre class=" language-py"><code class="language-py">
+  class student():
+      __slots__ = ('name','age')
+
+
+  class BadStudent(student):
+      __slots__ = ('name','hobit')
+
+
+
+  if __name__ == "__main__":
+      bs = BadStudent()
+      bs.name = "name"
+      bs.hobit = "hobit"
+      bs.age = "age"
+      bs.xx = "xx"
+
+      print(bs.name,bs.hobit,bs.age)
+      print(bs.xx)
+
+Traceback (most recent call last):
+  File "slots_py.py", line 15, in <module>
+    bs.xx = "xx"
+AttributeError: 'BadStudent' object has no attribute 'xx'</code></pre>
+<h3 id="使用-property"><a href="#使用-property" class="headerlink" title="使用@property"></a>使用@property</h3><pre class=" language-py"><code class="language-py"># 使用property
+
+
+## 在绑定属性时，如果我们直接把属性暴露出去，虽然写起来很简单，但是，没办法检查参数，导致可以把成绩随便改：
+
+class student :
+    __slots__ = ('name','age','score')
+
+
+
+class student2:
+    def get_score(self):
+        return self._score
+
+    def set_score(self,value):
+        if not isinstance(value,int):
+            raise ValueError("score must be an integet!")
+        if vlaue < 0 or value > 100:
+            raise ValueError("some must between 0 ~ 100!")
+        self._score = value
+
+class student3(object):
+    @property
+    def score(self):
+        return self._score
+
+    @score.setter
+    def score(self,value):
+        if not isinstance(value,int):
+            raise ValueError("score must be an integet!")
+        if vlaue < 0 or value > 100:
+            raise ValueError("some must between 0 ~ 100!")
+        self._score = value
+
+
+
+if __name__ == "__main__":
+    s = student()
+    s.score = 10
+    print(s.score)
+
+
+    s2 = student2()
+    s2.set_score(20)
+    print(s2.get_score())
+
+
+    s3 = student3()
+    s3.score = 30 # @property =  set_score
+    print(s3.score) #@score.setter = get_score
+
+
+## 只用了property的话就是只读属性
+## 用了property和setter的话就是可读写属性
+</code></pre>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>标签：</span>
+                <span class="tag">
+                    
+                    
+                    <a href="/tags/python/"># python</a>
+                    
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript：window.history.back();">后退</a>
+                <span>· </span>
+                <a href="/">主页</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            <a class="prev" rel="prev" href="/2020/01/12/blog_back_new/NetWord/%E4%BA%A4%E6%8D%A2%E6%9C%BA%E4%BA%8C%E5%B1%82%E4%B8%8E%E4%B8%89%E5%B1%82/">交换机二层与三层</a>
+            
+            
+            <a class="next" rel="next" href="/2020/01/04/blog_back_new/NetWord/%E7%BD%91%E7%BB%9C%E9%83%A8%E7%BD%B2%E9%9C%80%E6%B1%82%E5%88%86%E6%9E%90/">网络部署需求分析</a>
+            
+        </section>
+    </article>
+</div>
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+    </div>
+</footer>
+
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

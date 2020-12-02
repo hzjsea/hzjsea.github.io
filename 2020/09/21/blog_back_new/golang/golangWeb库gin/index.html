@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="hzjsea">
+
+
+
+
+
+
+<title>golangWeb库gin | hzjsea</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+    <script src="/js/jquery.min.js"></script>
+    
+
+
+
+    
+    
+        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+    
+
+
+
+
+    <script>
+    function searchToggle() {
+        const width = $(document.body).width()
+        if(width > 479) {
+            return;
+        }
+        const search = $('.search');
+        const searchForm = $('.form-search')
+
+        if(!search.hasClass("mobile-search")) {
+            search.addClass("mobile-search");
+        } else {
+            search.removeClass("mobile-search");
+        } 
+    }
+
+    function search(searchInputEl, formEl, flag) {
+        const path = "/" + "search.json"; // 可以在public 下查看这个search.json
+        $(formEl).submit(function(e){
+            e.preventDefault();
+            let target = null
+            if(searchInputEl == null) {
+                const screenWidth = $(document.body).width();
+                target = screenWidth > 479 ? $('#pc-search-input') : $('#mobile-search-input');
+                console.log(target);
+            } else {
+                target = $(searchInputEl)
+            }
+
+            if(!flag && target.val() === '') {
+                return ;
+            }
+
+            $("#u-search").fadeIn(500, function() {
+                $("body > .wrapper").addClass("modal-active");
+
+                $.ajax({
+                    url: path,
+                    dataType: "json",
+                    beforeSend: function (xhr) {
+                        $input = target.val();
+                        $(".form-input").val($input);
+                        const loadingBar = $('.search-loading-bar') 
+                        loadingBar.css({
+                            width:'100%',
+                            display: 'block'
+                        });
+                    },
+                    success: function( datas ) {
+                        console.log(datas);
+                        const $resultPanel = $(".modal-body")[0];
+                        let str = `<ul class="modal-results">`;
+                        var keywords = $(".form-input").val().trim().toLowerCase().split(/[\s\-]+/);
+                        $resultPanel.innerHTML = "";
+                        let hasResult = false
+                        let text = `<div class="no-result">找不到与关键词相关的内容....</div>`;
+
+                        if ($(".form-input").val().trim().length <= 0) {
+                            // 没有结果
+                            $resultPanel.innerHTML = text;
+                            return;
+                        }
+                        datas.forEach(function (data, index) {
+                            var isMatch = true;
+                            if (!data.title || data.title.trim() === '') {
+                                data.title = "Untitled";
+                            }
+                            var data_title = data.title.trim().toLowerCase();
+                            var data_content = data.content && data.content.trim().replace(/<[^>]+>/g, "").toLowerCase() || '';
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            // only match artiles with not empty contents
+                            if (data_content !== '') {
+                                keywords.forEach(function (keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        hasResult = true
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            } else {
+                                isMatch = false;
+                            }
+                            // show search results
+                            if (isMatch) {
+                                str += `<li class='result-item'><a href='${data_url}' class='result-item-detail'> <span class="title">${data_title}</span>`;
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 200 characters
+                                    var start = first_occur - 40;
+                                    var end = first_occur + 160;
+
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+
+                                    if (start == 0) {
+                                        end = 200;
+                                    }
+
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+
+                                    var match_content = content.substring(start, end);
+
+                                    // highlight all keywords
+                                    keywords.forEach(function (keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, `<em class="search-keyword">${keyword}</em>`);
+                                    });
+
+                                    str += `<span class="content"> ${match_content} ...</span></a>`;
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        if(hasResult) {
+                            $resultPanel.innerHTML = str;
+                        } else {
+                            $resultPanel.innerHTML = text;
+                        }
+
+                    },
+                    complete: function() {
+                        setTimeout(() => {
+                                const loadingBar = $('.search-loading-bar') 
+                                loadingBar.css({
+                                    width:'0%',
+                                    display: 'none'
+                                });
+                        }, 300)
+                    }
+                });
+            })
+
+        });
+    }
+
+    $(document).ready(function() {
+        $('.modal-close').click(function () { 
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+
+        $('.modal-overlay').click(function() {
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+        search(null, ".form-search", false)
+        search("#u-search-modal-form .form-input", ".u-search-modal-form", true)
+    })
+</script>
+
+
+
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo"><a href="/">hzjsea</a></div>
+        <div class="menu navbar-right">
+            
+            
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="pc-search-input"/>
+        </form>
+    </div>
+
+
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+            <input id="switch_default" type="checkbox" class="switch_default">
+            <label for="switch_default" class="toggleBtn"></label>
+        </div>
+    </div>
+</nav>
+
+
+<nav class="navbar-mobile" id="nav-mobile">
+    <div class="container">
+        <div class="navbar-header">
+            <div>
+                <a href="/">hzjsea</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+            </div>
+            <div class="navbar-mobile-right">
+                
+                
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="mobile-search-input"/>
+        </form>
+    </div>
+
+
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; 目录</div>
+            </div>
+            
+        </div>
+        <div class="menu" id="mobile-menu">
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+        </div>
+    </div>
+</nav>
+
+        <div class="main">
+			<!-- Chic/layout.ejs -->
+ <div id="u-search">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="container">
+                    <form id="u-search-modal-form" class="u-search-modal-form">
+                        <button type="submit" class="form-submit-btn">
+                            <img src="/image/search.png" class="search-btn-img" />
+                        </button>
+                        <input placeholder="搜索文章。。。" class="form-input" id="modal-form-input">
+                    </form>
+                    <a class="modal-close">x</a>
+                </div>
+                <div class="search-loading">
+                    <div class="search-loading-bar"></div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <!-- ul 格式如下 -->
+                <!-- <ul class="modal-results">
+                    <li class="result-item">
+                        <a class="result-item-detail">
+                            <span class="title">页面配置</span>
+                            <span class="content">
+                                content
+                            </span>
+                        </a>
+                    </li>
+                </ul> -->
+            </div>
+        </div>
+        <div class="modal-overlay"></div>
+    </div>
+            <div class="container">
+    
+    
+    <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">全部展开</a>
+        <a onclick="go_top()">回到顶部</a>
+        <a onclick="go_bottom()">回到底部</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "全部折叠"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "全部展开"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">golangWeb库gin</h1>
+            
+            <div class="post-meta">
+                
+                作者： <a itemprop="author" rel="author" href="/">hzjsea</a>&nbsp;
+                
+
+                
+                <span class="post-time">
+                    创建日期： <a
+                        href="#">September 21, 2020&nbsp;&nbsp;12:05:07</a>
+                </span>&nbsp;
+                
+                
+                <span class="post-category">
+                    分类：
+                    
+                    <a href="/categories/golang/">golang</a>&nbsp;
+                    
+                </span>
+                
+                
+                状态：<a href="#">SNAPSHOT</a>
+                
+            </div>
+            
+        </header>
+
+        <div class="post-content">
+            <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+<ul>
+<li><a href="#golangweb%E5%BA%93gin">golangWeb库gin</a><ul>
+<li><a href="#%E9%A1%B9%E7%9B%AE%E5%88%9D%E5%A7%8B%E5%8C%96">项目初始化</a></li>
+<li><a href="#%E7%83%AD%E6%9B%B4%E6%96%B0">热更新</a></li>
+<li><a href="#%E8%B7%AF%E7%94%B1%E5%AF%B9%E8%B1%A1">路由对象</a></li>
+<li><a href="#%E8%B7%AF%E7%94%B1%E5%8F%82%E6%95%B0">路由参数</a></li>
+<li><a href="#%E6%9F%A5%E8%AF%A2%E5%8F%82%E6%95%B0">查询参数</a></li>
+<li><a href="#%E8%A1%A8%E5%8D%95">表单</a></li>
+<li><a href="#%E6%9F%A5%E8%AF%A2%E5%8F%82%E6%95%B0%E4%B8%8E%E8%A1%A8%E5%8D%95%E9%AA%8C%E8%AF%81">查询参数与表单验证</a></li>
+<li><a href="#%E6%9F%A5%E8%AF%A2%E5%8F%82%E6%95%B0%E4%B8%8E%E8%A1%A8%E5%8D%95%E9%AA%8C%E8%AF%81-map">查询参数与表单验证 map</a></li>
+<li><a href="#%E4%B8%8A%E4%BC%A0%E6%96%87%E4%BB%B6">上传文件</a></li>
+<li><a href="#%E4%B8%8A%E4%BC%A0%E5%90%84%E7%B1%BB%E6%96%87%E4%BB%B6">上传各类文件</a></li>
+<li><a href="#%E8%B7%AF%E7%94%B1%E5%88%86%E7%BB%84">路由分组</a></li>
+<li><a href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E4%B8%AD%E9%97%B4%E4%BB%B6">自定义中间件</a><ul>
+<li><a href="#%E5%85%A8%E5%B1%80%E6%97%A5%E5%BF%97%E6%96%87%E4%BB%B6">全局日志文件</a></li>
+<li><a href="#%E5%B1%80%E9%83%A8%E4%B8%AD%E9%97%B4%E4%BB%B6">局部中间件</a></li>
+</ul>
+</li>
+<li><a href="#%E6%97%A5%E5%BF%97%E5%A4%84%E7%90%86">日志处理</a><ul>
+<li><a href="#%E6%97%A5%E5%BF%97%E8%BE%93%E5%87%BA%E6%A0%BC%E5%BC%8F%E5%8C%96">日志输出格式化</a></li>
+<li><a href="#%E5%8F%96%E6%B6%88%E5%92%8C%E5%BC%80%E5%90%AF%E6%97%A5%E5%BF%97%E9%A2%9C%E8%89%B2">取消和开启日志颜色</a></li>
+</ul>
+</li>
+<li><a href="#model%E7%BB%91%E5%AE%9A">Model绑定</a></li>
+<li><a href="#%E4%BD%BF%E7%94%A8swagger%E6%96%87%E6%A1%A3">使用swagger文档</a></li>
+<li><a href="#gin%E8%BF%9E%E6%8E%A5mysql">gin连接mysql</a></li>
+<li><a href="#%E5%A6%82%E4%BD%95%E5%AF%BC%E5%85%A5%E6%9C%AC%E5%9C%B0%E5%8C%85">如何导入本地包</a></li>
+</ul>
+</li>
+</ul>
+<!-- /code_chunk_output -->
+
+<a id="more"></a>
+
+
+<h1 id="golangWeb库gin"><a href="#golangWeb库gin" class="headerlink" title="golangWeb库gin"></a>golangWeb库gin</h1><h2 id="项目初始化"><a href="#项目初始化" class="headerlink" title="项目初始化"></a>项目初始化</h2><p>gin没有现成的初始化web工具，在创建过程中可能会出现没有智能提示的问题<br>在golnd的中解决方法是用module创建<br><img src="http://img.noback.top/2020-10-20-17-26-00.png" alt="2020-10-20-17-26-00"></p>
+<pre class=" language-go"><code class="language-go"><span class="token comment" spellcheck="true">// get框架</span>
+<span class="token keyword">go</span> get github<span class="token punctuation">.</span>com<span class="token operator">/</span>gin<span class="token operator">-</span>gonic<span class="token operator">/</span>gin
+<span class="token comment" spellcheck="true">// 同步</span>
+<span class="token keyword">go</span> mod tidy</code></pre>
+<h2 id="热更新"><a href="#热更新" class="headerlink" title="热更新"></a>热更新</h2><ul>
+<li>fresh </li>
+<li>gin</li>
+</ul>
+<p>两个都是热更新 原理应该都是监督文件变化重启来做到热更新的<br>主要是把颜色去掉了，感觉灵魂么得了。。。</p>
+<pre class=" language-go"><code class="language-go"># 安装 fresh
+$ <span class="token keyword">go</span> get github<span class="token punctuation">.</span>com<span class="token operator">/</span>pilu<span class="token operator">/</span>fresh
+
+# 跳转到项目目录<span class="token punctuation">,</span>例如项目名为‘myapp’
+$ cd <span class="token operator">/</span>path<span class="token operator">/</span>to<span class="token operator">/</span>myapp
+
+# 启动
+$ fresh
+</code></pre>
+<p>fresh 是根据配置文件来格式化输出内容的我们可以修改配置文件</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token function">touch</span> runner.conf
+<span class="token function">cat</span> <span class="token operator">&lt;&lt;</span> EOF <span class="token operator">></span> ./runner.conf
+root:              <span class="token keyword">.</span>   
+tmp_path:          ./tmp
+build_name:        runner-build
+build_log:         runner-build-errors.log
+valid_ext:         .go, .tpl, .tmpl, .html
+no_rebuild_ext:    .tpl, .tmpl, .html
+ignored:           assets, tmp
+build_delay:       600
+colors:            1
+log_color_main:    cyan
+log_color_build:   yellow
+log_color_runner:  green
+log_color_watcher: magenta
+log_color_app:
+EOF</code></pre>
+<pre class=" language-go"><code class="language-go"># 安装 fresh
+$ <span class="token keyword">go</span> get github<span class="token punctuation">.</span>com<span class="token operator">/</span>codegangsta<span class="token operator">/</span>gin
+
+# 验证gin是否安装成功
+$ gin <span class="token operator">-</span>h
+
+# 启动
+$ gin run main<span class="token punctuation">.</span><span class="token keyword">go</span></code></pre>
+<h2 id="路由对象"><a href="#路由对象" class="headerlink" title="路由对象"></a>路由对象</h2><p>创建路由对象</p>
+<pre class=" language-go"><code class="language-go"><span class="token keyword">package</span> main
+
+<span class="token keyword">import</span> <span class="token string">"github.com/gin-gonic/gin"</span>
+
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+
+    <span class="token comment" spellcheck="true">// 创建默认路由对象</span>
+    router <span class="token operator">:=</span> gin<span class="token punctuation">.</span><span class="token function">Default</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+
+    <span class="token comment" spellcheck="true">// 路径+方法</span>
+    router<span class="token punctuation">.</span><span class="token function">GET</span><span class="token punctuation">(</span><span class="token string">"/ping"</span><span class="token punctuation">,</span> <span class="token keyword">func</span><span class="token punctuation">(</span>c <span class="token operator">*</span>gin<span class="token punctuation">.</span>Context<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        c<span class="token punctuation">.</span><span class="token function">JSON</span><span class="token punctuation">(</span><span class="token number">200</span><span class="token punctuation">,</span> gin<span class="token punctuation">.</span>H<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+            <span class="token string">"message"</span><span class="token punctuation">:</span> <span class="token string">"pong"</span><span class="token punctuation">,</span>
+        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span>
+
+    <span class="token comment" spellcheck="true">// 运行程序</span>
+    router<span class="token punctuation">.</span><span class="token function">Run</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")</span>
+    <span class="token comment" spellcheck="true">// 修改端口</span>
+    <span class="token comment" spellcheck="true">// router.Run(":9999")</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span></code></pre>
+<p>::: tip<br>源码部分<br>:::</p>
+<ul>
+<li><p>首先是<code>Default</code>创建了一个<code>type Engine struct</code>的结构体实例，该结构体实现了各种各样的接口。作为路由对象</p>
+</li>
+<li><p>GET 方法</p>
+<pre class=" language-go"><code class="language-go"><span class="token comment" spellcheck="true">// GET is a shortcut for router.Handle("GET", path, handle).</span>
+<span class="token keyword">func</span> <span class="token punctuation">(</span>group <span class="token operator">*</span>RouterGroup<span class="token punctuation">)</span> <span class="token function">GET</span><span class="token punctuation">(</span>relativePath <span class="token builtin">string</span><span class="token punctuation">,</span> handlers <span class="token operator">...</span>HandlerFunc<span class="token punctuation">)</span> IRoutes <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span> group<span class="token punctuation">.</span><span class="token function">handle</span><span class="token punctuation">(</span>http<span class="token punctuation">.</span>MethodGet<span class="token punctuation">,</span> relativePath<span class="token punctuation">,</span> handlers<span class="token punctuation">)</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span></code></pre>
+<p>接收一个相对路径，以及一个匿名函数</p>
+</li>
+<li><p>RUN函数</p>
+<pre class=" language-go"><code class="language-go"><span class="token keyword">func</span> <span class="token punctuation">(</span>engine <span class="token operator">*</span>Engine<span class="token punctuation">)</span> <span class="token function">Run</span><span class="token punctuation">(</span>addr <span class="token operator">...</span><span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token punctuation">(</span>err <span class="token builtin">error</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+  <span class="token keyword">defer</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span> <span class="token function">debugPrintError</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+  address <span class="token operator">:=</span> <span class="token function">resolveAddress</span><span class="token punctuation">(</span>addr<span class="token punctuation">)</span>
+  <span class="token function">debugPrint</span><span class="token punctuation">(</span><span class="token string">"Listening and serving HTTP on %s\n"</span><span class="token punctuation">,</span> address<span class="token punctuation">)</span>
+  err <span class="token operator">=</span> http<span class="token punctuation">.</span><span class="token function">ListenAndServe</span><span class="token punctuation">(</span>address<span class="token punctuation">,</span> engine<span class="token punctuation">)</span>
+  <span class="token keyword">return</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+</code></pre>
+</li>
+</ul>
+<p>func resolveAddress(addr []string) string {<br>    switch len(addr) {<br>    case 0:<br>        if port := os.Getenv(“PORT”); port != “” {<br>            debugPrint(“Environment variable PORT=&quot;%s&quot;“, port)<br>            return “:” + port<br>        }<br>        debugPrint(“Environment variable PORT is undefined. Using port :8080 by default”)<br>        return “:8080”<br>    case 1:<br>        return addr[0]<br>    default:<br>        panic(“too many parameters”)<br>    }<br>}</p>
+<pre><code>接收IP+PORT的地址形式或者是`:8080`单端口的形式
+
+
+## 路由参数
+```go
+package main
+
+import (
+    &quot;github.com/gin-gonic/gin&quot;
+    &quot;net/http&quot;
+)
+
+func main() &#123;
+    router := gin.Default()
+
+    // 这个handler 将会匹配 /user/john 但不会匹配 /user/ 或者 /user
+    router.GET(&quot;/user/:name&quot;, func(c *gin.Context) &#123;
+        name := c.Param(&quot;name&quot;) // 获取参数，这里name=john
+        c.String(http.StatusOK, &quot;Hello name is %s&quot;, name)
+    &#125;)
+
+    // 给多余参数一个值 action
+    // /user/hzj/helloworld/xx  res = /helloworld/xx
+    router.GET(&quot;/user/:name/*action&quot;, func(c *gin.Context) &#123;
+        name := c.Param(&quot;name&quot;)
+        action := c.Param(&quot;action&quot;)
+        message := name + &quot; is &quot; + action
+        c.String(http.StatusOK, message)
+    &#125;)
+
+    //// 对于每个匹配的请求，上下文将保留路由定义
+    //router.POST(&quot;/user/:name/*action&quot;, func(c *gin.Context) &#123;
+    //    c.FullPath() == &quot;/user/:name/*action&quot; // true
+    //&#125;)
+
+    router.Run(&quot;:8080&quot;)
+&#125;</code></pre>
+<h2 id="查询参数"><a href="#查询参数" class="headerlink" title="查询参数"></a>查询参数</h2><pre class=" language-go"><code class="language-go"><span class="token keyword">package</span> main
+
+<span class="token keyword">import</span> <span class="token punctuation">(</span>
+    <span class="token string">"github.com/gin-gonic/gin"</span>
+    <span class="token string">"net/http"</span>
+<span class="token punctuation">)</span>
+
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    router <span class="token operator">:=</span> gin<span class="token punctuation">.</span><span class="token function">Default</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+    <span class="token comment" spellcheck="true">// Query string parameters are parsed using the existing underlying request object.</span>
+    <span class="token comment" spellcheck="true">// The request responds to a url matching:  /welcome?firstname=Jane&amp;lastname=Doe</span>
+    router<span class="token punctuation">.</span><span class="token function">GET</span><span class="token punctuation">(</span><span class="token string">"/welcome"</span><span class="token punctuation">,</span> <span class="token keyword">func</span><span class="token punctuation">(</span>c <span class="token operator">*</span>gin<span class="token punctuation">.</span>Context<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        firstname <span class="token operator">:=</span> c<span class="token punctuation">.</span><span class="token function">DefaultQuery</span><span class="token punctuation">(</span><span class="token string">"firstname"</span><span class="token punctuation">,</span> <span class="token string">"Guest"</span><span class="token punctuation">)</span>   
+        midname <span class="token operator">:=</span> c<span class="token punctuation">.</span><span class="token function">DefaultQuery</span><span class="token punctuation">(</span><span class="token string">"your real name"</span><span class="token punctuation">,</span><span class="token string">"hzj"</span><span class="token punctuation">)</span>
+        lastname <span class="token operator">:=</span> c<span class="token punctuation">.</span><span class="token function">Query</span><span class="token punctuation">(</span><span class="token string">"lastname"</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// shortcut for c.Request.URL.Query().Get("lastname")</span>
+
+        c<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span>http<span class="token punctuation">.</span>StatusOK<span class="token punctuation">,</span> <span class="token string">"Hello %s %s %s"</span><span class="token punctuation">,</span> firstname<span class="token punctuation">,</span> midname<span class="token punctuation">,</span>lastname<span class="token punctuation">)</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span>
+    router<span class="token punctuation">.</span><span class="token function">Run</span><span class="token punctuation">(</span><span class="token string">":8080"</span><span class="token punctuation">)</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span></code></pre>
+<ul>
+<li>查询参数默认值 DefaultQuery</li>
+<li>设置查询参数值 Query</li>
+<li>查询参数地址值  /welcome?firstname=Jane&amp;lastname=Doe</li>
+</ul>
+<h2 id="表单"><a href="#表单" class="headerlink" title="表单"></a>表单</h2><pre class=" language-go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    router <span class="token operator">:=</span> gin<span class="token punctuation">.</span><span class="token function">Default</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+    router<span class="token punctuation">.</span><span class="token function">POST</span><span class="token punctuation">(</span><span class="token string">"/form_post"</span><span class="token punctuation">,</span> <span class="token keyword">func</span><span class="token punctuation">(</span>c <span class="token operator">*</span>gin<span class="token punctuation">.</span>Context<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        message <span class="token operator">:=</span> c<span class="token punctuation">.</span><span class="token function">PostForm</span><span class="token punctuation">(</span><span class="token string">"message"</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// 表单key</span>
+        nick <span class="token operator">:=</span> c<span class="token punctuation">.</span><span class="token function">DefaultPostForm</span><span class="token punctuation">(</span><span class="token string">"nick"</span><span class="token punctuation">,</span> <span class="token string">"anonymous"</span><span class="token punctuation">)</span>  <span class="token comment" spellcheck="true">// 表单key-value</span>
+
+        c<span class="token punctuation">.</span><span class="token function">JSON</span><span class="token punctuation">(</span><span class="token number">200</span><span class="token punctuation">,</span> gin<span class="token punctuation">.</span>H<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+            <span class="token string">"status"</span><span class="token punctuation">:</span>  <span class="token string">"posted"</span><span class="token punctuation">,</span>
+            <span class="token string">"message"</span><span class="token punctuation">:</span> message<span class="token punctuation">,</span>
+            <span class="token string">"nick"</span><span class="token punctuation">:</span>    nick<span class="token punctuation">,</span>
+        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span>
+    router<span class="token punctuation">.</span><span class="token function">Run</span><span class="token punctuation">(</span><span class="token string">":8080"</span><span class="token punctuation">)</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span></code></pre>
+<p><img src="http://img.noback.top/2020-09-21-16-43-28.png" alt="2020-09-21-16-43-28"></p>
+<h2 id="查询参数与表单验证"><a href="#查询参数与表单验证" class="headerlink" title="查询参数与表单验证"></a>查询参数与表单验证</h2><pre class=" language-go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    router <span class="token operator">:=</span> gin<span class="token punctuation">.</span><span class="token function">Default</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+    router<span class="token punctuation">.</span><span class="token function">POST</span><span class="token punctuation">(</span><span class="token string">"/post"</span><span class="token punctuation">,</span> <span class="token keyword">func</span><span class="token punctuation">(</span>c <span class="token operator">*</span>gin<span class="token punctuation">.</span>Context<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+
+        id <span class="token operator">:=</span> c<span class="token punctuation">.</span><span class="token function">Query</span><span class="token punctuation">(</span><span class="token string">"id"</span><span class="token punctuation">)</span>
+        page <span class="token operator">:=</span> c<span class="token punctuation">.</span><span class="token function">DefaultQuery</span><span class="token punctuation">(</span><span class="token string">"page"</span><span class="token punctuation">,</span> <span class="token string">"0"</span><span class="token punctuation">)</span>
+        name <span class="token operator">:=</span> c<span class="token punctuation">.</span><span class="token function">PostForm</span><span class="token punctuation">(</span><span class="token string">"name"</span><span class="token punctuation">)</span>
+        message <span class="token operator">:=</span> c<span class="token punctuation">.</span><span class="token function">PostForm</span><span class="token punctuation">(</span><span class="token string">"message"</span><span class="token punctuation">)</span>
+
+        fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"id: %s; page: %s; name: %s; message: %s"</span><span class="token punctuation">,</span> id<span class="token punctuation">,</span> page<span class="token punctuation">,</span> name<span class="token punctuation">,</span> message<span class="token punctuation">)</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span>
+    router<span class="token punctuation">.</span><span class="token function">Run</span><span class="token punctuation">(</span><span class="token string">":8080"</span><span class="token punctuation">)</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+</code></pre>
+<pre class=" language-go"><code class="language-go">POST <span class="token operator">/</span>post?id<span class="token operator">=</span><span class="token number">1234</span><span class="token operator">&amp;</span>page<span class="token operator">=</span><span class="token number">1</span> HTTP<span class="token operator">/</span><span class="token number">1.1</span>   <span class="token comment" spellcheck="true">// 查询参数</span>
+Content<span class="token operator">-</span>Type<span class="token punctuation">:</span> application<span class="token operator">/</span>x<span class="token operator">-</span>www<span class="token operator">-</span>form<span class="token operator">-</span>urlencoded
+
+name<span class="token operator">=</span>manu<span class="token operator">&amp;</span>message<span class="token operator">=</span>this_is_great  <span class="token comment" spellcheck="true">// 查询参数</span></code></pre>
+<p><img src="http://img.noback.top/2020-09-21-16-47-53.png" alt="2020-09-21-16-47-53"></p>
+<h2 id="查询参数与表单验证-map"><a href="#查询参数与表单验证-map" class="headerlink" title="查询参数与表单验证 map"></a>查询参数与表单验证 map</h2><pre class=" language-go"><code class="language-go"><span class="token keyword">package</span> main
+
+<span class="token keyword">import</span> <span class="token punctuation">(</span>
+    <span class="token string">"fmt"</span>
+    <span class="token string">"github.com/gin-gonic/gin"</span>
+<span class="token punctuation">)</span>
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    router <span class="token operator">:=</span> gin<span class="token punctuation">.</span><span class="token function">Default</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+    router<span class="token punctuation">.</span><span class="token function">POST</span><span class="token punctuation">(</span><span class="token string">"/post"</span><span class="token punctuation">,</span> <span class="token keyword">func</span><span class="token punctuation">(</span>c <span class="token operator">*</span>gin<span class="token punctuation">.</span>Context<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+
+        ids <span class="token operator">:=</span> c<span class="token punctuation">.</span><span class="token function">QueryMap</span><span class="token punctuation">(</span><span class="token string">"ids"</span><span class="token punctuation">)</span>
+        names <span class="token operator">:=</span> c<span class="token punctuation">.</span><span class="token function">PostFormMap</span><span class="token punctuation">(</span><span class="token string">"names"</span><span class="token punctuation">)</span>
+
+        fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"ids: %v; names: %v"</span><span class="token punctuation">,</span> ids<span class="token punctuation">,</span> names<span class="token punctuation">)</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span>
+    router<span class="token punctuation">.</span><span class="token function">Run</span><span class="token punctuation">(</span><span class="token string">":8080"</span><span class="token punctuation">)</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span></code></pre>
+<p><img src="http://img.noback.top/2020-09-21-16-50-42.png" alt="2020-09-21-16-50-42"></p>
+<h2 id="上传文件"><a href="#上传文件" class="headerlink" title="上传文件"></a>上传文件</h2><pre class=" language-go"><code class="language-go">
+<span class="token keyword">package</span> main
+
+<span class="token keyword">import</span> <span class="token punctuation">(</span>
+    <span class="token string">"fmt"</span>
+    <span class="token string">"github.com/gin-gonic/gin"</span>
+    <span class="token string">"log"</span>
+    <span class="token string">"net/http"</span>
+<span class="token punctuation">)</span>
+
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    router <span class="token operator">:=</span> gin<span class="token punctuation">.</span><span class="token function">Default</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token comment" spellcheck="true">// Set a lower memory limit for multipart forms (default is 32 MiB)</span>
+    router<span class="token punctuation">.</span>MaxMultipartMemory <span class="token operator">=</span> <span class="token number">8</span> <span class="token operator">&lt;&lt;</span> <span class="token number">20</span>  <span class="token comment" spellcheck="true">// 8 MiB</span>
+    router<span class="token punctuation">.</span><span class="token function">POST</span><span class="token punctuation">(</span><span class="token string">"/upload"</span><span class="token punctuation">,</span> <span class="token keyword">func</span><span class="token punctuation">(</span>c <span class="token operator">*</span>gin<span class="token punctuation">.</span>Context<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// single file</span>
+        file<span class="token punctuation">,</span> <span class="token boolean">_</span> <span class="token operator">:=</span> c<span class="token punctuation">.</span><span class="token function">FormFile</span><span class="token punctuation">(</span><span class="token string">"file"</span><span class="token punctuation">)</span>
+        log<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>file<span class="token punctuation">.</span>Filename<span class="token punctuation">)</span>
+
+        <span class="token comment" spellcheck="true">// Upload the file to specific dst.</span>
+        c<span class="token punctuation">.</span><span class="token function">SaveUploadedFile</span><span class="token punctuation">(</span>file<span class="token punctuation">,</span> dst<span class="token punctuation">)</span>
+
+        c<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span>http<span class="token punctuation">.</span>StatusOK<span class="token punctuation">,</span> fmt<span class="token punctuation">.</span><span class="token function">Sprintf</span><span class="token punctuation">(</span><span class="token string">"'%s' uploaded!"</span><span class="token punctuation">,</span> file<span class="token punctuation">.</span>Filename<span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span>
+    router<span class="token punctuation">.</span><span class="token function">Run</span><span class="token punctuation">(</span><span class="token string">":8080"</span><span class="token punctuation">)</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span></code></pre>
+<pre class=" language-bash"><code class="language-bash">curl -X POST http://localhost:8080/upload \
+  -F <span class="token string">"file=@/Users/appleboy/test.zip"</span> \
+  -H <span class="token string">"Content-Type: multipart/form-data"</span></code></pre>
+<h2 id="上传各类文件"><a href="#上传各类文件" class="headerlink" title="上传各类文件"></a>上传各类文件</h2><pre class=" language-go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    router <span class="token operator">:=</span> gin<span class="token punctuation">.</span><span class="token function">Default</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token comment" spellcheck="true">// Set a lower memory limit for multipart forms (default is 32 MiB)</span>
+    router<span class="token punctuation">.</span>MaxMultipartMemory <span class="token operator">=</span> <span class="token number">8</span> <span class="token operator">&lt;&lt;</span> <span class="token number">20</span>  <span class="token comment" spellcheck="true">// 8 MiB</span>
+    router<span class="token punctuation">.</span><span class="token function">POST</span><span class="token punctuation">(</span><span class="token string">"/upload"</span><span class="token punctuation">,</span> <span class="token keyword">func</span><span class="token punctuation">(</span>c <span class="token operator">*</span>gin<span class="token punctuation">.</span>Context<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// Multipart form</span>
+        form<span class="token punctuation">,</span> <span class="token boolean">_</span> <span class="token operator">:=</span> c<span class="token punctuation">.</span><span class="token function">MultipartForm</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+        files <span class="token operator">:=</span> form<span class="token punctuation">.</span>File<span class="token punctuation">[</span><span class="token string">"upload[]"</span><span class="token punctuation">]</span>
+
+        <span class="token keyword">for</span> <span class="token boolean">_</span><span class="token punctuation">,</span> file <span class="token operator">:=</span> <span class="token keyword">range</span> files <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+            log<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>file<span class="token punctuation">.</span>Filename<span class="token punctuation">)</span>
+
+            <span class="token comment" spellcheck="true">// Upload the file to specific dst.</span>
+            c<span class="token punctuation">.</span><span class="token function">SaveUploadedFile</span><span class="token punctuation">(</span>file<span class="token punctuation">,</span> dst<span class="token punctuation">)</span>
+        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+        c<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span>http<span class="token punctuation">.</span>StatusOK<span class="token punctuation">,</span> fmt<span class="token punctuation">.</span><span class="token function">Sprintf</span><span class="token punctuation">(</span><span class="token string">"%d files uploaded!"</span><span class="token punctuation">,</span> <span class="token function">len</span><span class="token punctuation">(</span>files<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span>
+    router<span class="token punctuation">.</span><span class="token function">Run</span><span class="token punctuation">(</span><span class="token string">":8080"</span><span class="token punctuation">)</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span></code></pre>
+<pre class=" language-bash"><code class="language-bash">curl -X POST http://localhost:8080/upload \
+  -F <span class="token string">"upload[]=@/Users/appleboy/test1.zip"</span> \
+  -F <span class="token string">"upload[]=@/Users/appleboy/test2.zip"</span> \
+  -H <span class="token string">"Content-Type: multipart/form-data"</span></code></pre>
+<h2 id="路由分组"><a href="#路由分组" class="headerlink" title="路由分组"></a>路由分组</h2><pre class=" language-go"><code class="language-go"><span class="token keyword">package</span> main
+
+<span class="token keyword">import</span> <span class="token punctuation">(</span>
+    <span class="token string">"fmt"</span>
+    <span class="token string">"github.com/gin-gonic/gin"</span>
+    <span class="token string">"net/http"</span>
+<span class="token punctuation">)</span>
+
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    router <span class="token operator">:=</span> gin<span class="token punctuation">.</span><span class="token function">Default</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+    <span class="token comment" spellcheck="true">// Simple group: v1</span>
+    v1 <span class="token operator">:=</span> router<span class="token punctuation">.</span><span class="token function">Group</span><span class="token punctuation">(</span><span class="token string">"/v1"</span><span class="token punctuation">)</span>
+    <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        v1<span class="token punctuation">.</span><span class="token function">POST</span><span class="token punctuation">(</span><span class="token string">"/login"</span><span class="token punctuation">,</span> loginEndpoint<span class="token punctuation">)</span>
+        v1<span class="token punctuation">.</span><span class="token function">POST</span><span class="token punctuation">(</span><span class="token string">"/submit"</span><span class="token punctuation">,</span> submitEndpoint<span class="token punctuation">)</span>
+        v1<span class="token punctuation">.</span><span class="token function">POST</span><span class="token punctuation">(</span><span class="token string">"/read"</span><span class="token punctuation">,</span> readEndpoint<span class="token punctuation">)</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+
+    <span class="token comment" spellcheck="true">// Simple group: v2</span>
+    v2 <span class="token operator">:=</span> router<span class="token punctuation">.</span><span class="token function">Group</span><span class="token punctuation">(</span><span class="token string">"/v2"</span><span class="token punctuation">)</span>
+    <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        v2<span class="token punctuation">.</span><span class="token function">POST</span><span class="token punctuation">(</span><span class="token string">"/login"</span><span class="token punctuation">,</span> loginEndpoint<span class="token punctuation">)</span>
+        v2<span class="token punctuation">.</span><span class="token function">POST</span><span class="token punctuation">(</span><span class="token string">"/submit"</span><span class="token punctuation">,</span> submitEndpoint<span class="token punctuation">)</span>
+        v2<span class="token punctuation">.</span><span class="token function">POST</span><span class="token punctuation">(</span><span class="token string">"/read"</span><span class="token punctuation">,</span> readEndpoint<span class="token punctuation">)</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+
+    router<span class="token punctuation">.</span><span class="token function">Run</span><span class="token punctuation">(</span><span class="token string">":8080"</span><span class="token punctuation">)</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+
+<span class="token keyword">func</span> <span class="token function">loginEndpoint</span><span class="token punctuation">(</span>c <span class="token operator">*</span>gin<span class="token punctuation">.</span>Context<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">//c.String(http.StatusOK,"helloworld")</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"hellowrld"</span><span class="token punctuation">)</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+
+<span class="token keyword">func</span> <span class="token function">submitEndpoint</span><span class="token punctuation">(</span>c <span class="token operator">*</span>gin<span class="token punctuation">.</span>Context<span class="token punctuation">)</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    c<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span>http<span class="token punctuation">.</span>StatusOK<span class="token punctuation">,</span><span class="token string">"is ok"</span><span class="token punctuation">)</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+
+<span class="token keyword">func</span> <span class="token function">readEndpoint</span><span class="token punctuation">(</span>c <span class="token operator">*</span>gin<span class="token punctuation">.</span>Context<span class="token punctuation">)</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    c<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span>http<span class="token punctuation">.</span>StatusOK<span class="token punctuation">,</span>c<span class="token punctuation">.</span><span class="token function">FullPath</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+</code></pre>
+<h2 id="自定义中间件"><a href="#自定义中间件" class="headerlink" title="自定义中间件"></a>自定义中间件</h2><p>router被定义成为一个结构体，默认可以使用gin.Default()或者gin.New()创建。区别在于gin.Default也适用于gin.New()创建router实例，但是会默认使用logger和Recover中间件</p>
+<ul>
+<li>Logger是负责进行打印并输出日志的中间件，方便开发者进行程序调试</li>
+<li>Recovery中间件的作如果程序执行过程中遇到panc中断了服务,则 Recovery会恢复程序执行,并返回服务器500内误。<br>通常情况下,我们使用默认的gin.Defaul()创建 router实例<pre class=" language-go"><code class="language-go"><span class="token keyword">package</span> main
+</code></pre>
+</li>
+</ul>
+<p>import (<br>    “fmt”<br>    “github.com/gin-gonic/gin”<br>    “io”<br>    “net/http”<br>    “os”<br>    “time”<br>)</p>
+<p>func main() {<br>    // Creates a router without any middleware by default<br>    r := gin.New()</p>
+<pre><code>// Global middleware
+// Logger middleware will write the logs to gin.DefaultWriter even if you set with GIN_MODE=release.
+// By default gin.DefaultWriter = os.Stdout
+r.Use(gin.Logger())
+
+//gin.DefaultErrorWriter = io.MultiWriter(f)
+
+
+r.Use(gin.Recovery())
+
+// Per route middleware, you can add as many as you desire.
+r.GET(&quot;/benchmark&quot;, MyBenchLogger(), benchEndpoint)
+
+// Authorization group
+// authorized := r.Group(&quot;/&quot;, AuthRequired())
+// exactly the same as:
+authorized := r.Group(&quot;/&quot;)
+// per group middleware! in this case we use the custom created
+// AuthRequired() middleware just in the &quot;authorized&quot; group.
+authorized.Use(AuthRequired())
+&#123;
+    authorized.POST(&quot;/login&quot;, loginEndpoint)
+    authorized.POST(&quot;/submit&quot;, submitEndpoint)
+    authorized.POST(&quot;/read&quot;, readEndpoint)
+
+    // nested group
+    testing := authorized.Group(&quot;testing&quot;)
+    testing.GET(&quot;/analytics&quot;, analyticsEndpoint)
+&#125;
+
+// Listen and serve on 0.0.0.0:8080
+r.Run(&quot;:8080&quot;)</code></pre>
+<p>}</p>
+<p>func analyticsEndpoint(context *gin.Context) {<br>    context.String(http.StatusOK,”qqq”)<br>}</p>
+<p>func benchEndpoint(context *gin.Context) {<br>    context.String(http.StatusOK,”xxx”)<br>}</p>
+<p>// 中间件2  返回body<br>func MyBenchLogger() gin.HandlerFunc {<br>    return func(cc *gin.Context){<br>        fmt.Println(cc.Request.Body)<br>    }<br>}</p>
+<p>// 中间件1 返回各类信息<br>func AuthRequired() gin.HandlerFunc {<br>    return func(context *gin.Context) {<br>        host := context.Request.Host<br>        url := context.Request.URL<br>        method := context.Request.Method<br>        fmt.Println(“—————————–”)<br>        fmt.Printf(“%s::%s \t %s \t %s “, time.Now().Format(“2006-01-02 15:04:05”), host, url, method)<br>        context.Next()<br>        fmt.Println(“——————————“)<br>        fmt.Println(context.Writer.Status())<br>    }<br>}</p>
+<p>// 路由<br>func loginEndpoint(c *gin.Context){<br>    c.String(http.StatusOK,”helloworld”)<br>}<br>// 路由<br>func submitEndpoint(c *gin.Context){<br>    c.String(http.StatusOK,”word”)<br>}<br>// 路由<br>func readEndpoint(c *gin.Context){<br>    c.String(http.StatusOK,”xx”)<br>}</p>
+<pre><code>
+如上 `MyBenchLogger` `AuthRequired` 是两个中间件
+中间件有两种使用方法，分别是
+给单独一个Api使用
+```go
+r.GET(&quot;/benchmark&quot;, MyBenchLogger(), benchEndpoint)</code></pre>
+<p>给一个API组使用</p>
+<pre class=" language-go"><code class="language-go">authorized <span class="token operator">:=</span> r<span class="token punctuation">.</span><span class="token function">Group</span><span class="token punctuation">(</span><span class="token string">"/"</span><span class="token punctuation">)</span>
+    <span class="token comment" spellcheck="true">// per group middleware! in this case we use the custom created</span>
+    <span class="token comment" spellcheck="true">// AuthRequired() middleware just in the "authorized" group.</span>
+authorized<span class="token punctuation">.</span><span class="token function">Use</span><span class="token punctuation">(</span><span class="token function">AuthRequired</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    authorized<span class="token punctuation">.</span><span class="token function">POST</span><span class="token punctuation">(</span><span class="token string">"/login"</span><span class="token punctuation">,</span> loginEndpoint<span class="token punctuation">)</span>
+    authorized<span class="token punctuation">.</span><span class="token function">POST</span><span class="token punctuation">(</span><span class="token string">"/submit"</span><span class="token punctuation">,</span> submitEndpoint<span class="token punctuation">)</span>
+    authorized<span class="token punctuation">.</span><span class="token function">POST</span><span class="token punctuation">(</span><span class="token string">"/read"</span><span class="token punctuation">,</span> readEndpoint<span class="token punctuation">)</span>
+    <span class="token comment" spellcheck="true">// nested group</span>
+    testing <span class="token operator">:=</span> authorized<span class="token punctuation">.</span><span class="token function">Group</span><span class="token punctuation">(</span><span class="token string">"testing"</span><span class="token punctuation">)</span>
+    testing<span class="token punctuation">.</span><span class="token function">GET</span><span class="token punctuation">(</span><span class="token string">"/analytics"</span><span class="token punctuation">,</span> analyticsEndpoint<span class="token punctuation">)</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span></code></pre>
+<h3 id="全局日志文件"><a href="#全局日志文件" class="headerlink" title="全局日志文件"></a>全局日志文件</h3><pre class=" language-go"><code class="language-go">
+router <span class="token operator">:=</span> gin<span class="token punctuation">.</span><span class="token function">New</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token comment" spellcheck="true">// 添加自定义的 logger 中间件</span>
+router<span class="token punctuation">.</span><span class="token function">Use</span><span class="token punctuation">(</span>middleware<span class="token punctuation">.</span><span class="token function">Logger</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> gin<span class="token punctuation">.</span><span class="token function">Recovery</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+
+<span class="token keyword">func</span> <span class="token function">Logger</span><span class="token punctuation">(</span><span class="token punctuation">)</span> gin<span class="token punctuation">.</span>HandlerFunc <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token keyword">func</span><span class="token punctuation">(</span>cc <span class="token operator">*</span>gin<span class="token punctuation">.</span>Context<span class="token punctuation">)</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>cc<span class="token punctuation">.</span>Request<span class="token punctuation">.</span>Body<span class="token punctuation">)</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+</code></pre>
+<h3 id="局部中间件"><a href="#局部中间件" class="headerlink" title="局部中间件"></a>局部中间件</h3><p>主要用于权限操作</p>
+<pre class=" language-go"><code class="language-go"><span class="token keyword">package</span> middleware
+
+<span class="token keyword">import</span> <span class="token string">"github.com/gin-gonic/gin"</span>
+
+<span class="token comment" spellcheck="true">// 定义中间件</span>
+<span class="token keyword">func</span> <span class="token function">Auth</span><span class="token punctuation">(</span><span class="token punctuation">)</span> gin<span class="token punctuation">.</span>HandlerFunc <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token keyword">func</span><span class="token punctuation">(</span>context <span class="token operator">*</span>gin<span class="token punctuation">.</span>Context<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"已经授权"</span><span class="token punctuation">)</span>
+        context<span class="token punctuation">.</span><span class="token function">Next</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+
+<span class="token comment" spellcheck="true">// 在执行某个接口的使用 执行中间街</span>
+userRouter<span class="token punctuation">.</span><span class="token function">GET</span><span class="token punctuation">(</span><span class="token string">"/profile/"</span><span class="token punctuation">,</span> middleware<span class="token punctuation">.</span><span class="token function">Auth</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> handler<span class="token punctuation">.</span>UserProfile<span class="token punctuation">)</span>
+userRouter<span class="token punctuation">.</span><span class="token function">POST</span><span class="token punctuation">(</span><span class="token string">"/update"</span><span class="token punctuation">,</span> middleware<span class="token punctuation">.</span><span class="token function">Auth</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> handler<span class="token punctuation">.</span>UpdateUserProfile<span class="token punctuation">)</span></code></pre>
+<h2 id="日志处理"><a href="#日志处理" class="headerlink" title="日志处理"></a>日志处理</h2><pre class=" language-go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">// Creates a router without any middleware by default</span>
+    r <span class="token operator">:=</span> gin<span class="token punctuation">.</span><span class="token function">New</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+    <span class="token comment" spellcheck="true">// Global middleware</span>
+    <span class="token comment" spellcheck="true">// Logger middleware will write the logs to gin.DefaultWriter even if you set with GIN_MODE=release.</span>
+    <span class="token comment" spellcheck="true">// By default gin.DefaultWriter = os.Stdout</span>
+    <span class="token comment" spellcheck="true">//r.Use(gin.Logger())</span>
+
+    <span class="token comment" spellcheck="true">// Recovery middleware recovers from any panics and writes a 500 if there was one.</span>
+    gin<span class="token punctuation">.</span><span class="token function">DisableConsoleColor</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+    f<span class="token punctuation">,</span><span class="token boolean">_</span><span class="token operator">:=</span> os<span class="token punctuation">.</span><span class="token function">Create</span><span class="token punctuation">(</span><span class="token string">"gin.log"</span><span class="token punctuation">)</span>
+    gin<span class="token punctuation">.</span>DefaultWriter <span class="token operator">=</span> io<span class="token punctuation">.</span><span class="token function">MultiWriter</span><span class="token punctuation">(</span>f<span class="token punctuation">)</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span></code></pre>
+<p>这时候会将输出日志输出到gin.log下面</p>
+<h3 id="日志输出格式化"><a href="#日志输出格式化" class="headerlink" title="日志输出格式化"></a>日志输出格式化</h3><pre class=" language-go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    router <span class="token operator">:=</span> gin<span class="token punctuation">.</span><span class="token function">New</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+    <span class="token comment" spellcheck="true">// LoggerWithFormatter middleware will write the logs to gin.DefaultWriter</span>
+    <span class="token comment" spellcheck="true">// By default gin.DefaultWriter = os.Stdout</span>
+    router<span class="token punctuation">.</span><span class="token function">Use</span><span class="token punctuation">(</span>gin<span class="token punctuation">.</span><span class="token function">LoggerWithFormatter</span><span class="token punctuation">(</span><span class="token keyword">func</span><span class="token punctuation">(</span>param gin<span class="token punctuation">.</span>LogFormatterParams<span class="token punctuation">)</span> <span class="token builtin">string</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+
+        <span class="token comment" spellcheck="true">// your custom format</span>
+        <span class="token keyword">return</span> fmt<span class="token punctuation">.</span><span class="token function">Sprintf</span><span class="token punctuation">(</span><span class="token string">"%s - [%s] \"%s %s %s %d %s \"%s\" %s\"\n"</span><span class="token punctuation">,</span>
+                param<span class="token punctuation">.</span>ClientIP<span class="token punctuation">,</span>  <span class="token comment" spellcheck="true">// 客户端地址</span>
+                param<span class="token punctuation">.</span>TimeStamp<span class="token punctuation">.</span><span class="token function">Format</span><span class="token punctuation">(</span>time<span class="token punctuation">.</span>RFC1123<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token comment" spellcheck="true">// 时间格式化</span>
+                param<span class="token punctuation">.</span>Method<span class="token punctuation">,</span> <span class="token comment" spellcheck="true">// 请求方法</span>
+                param<span class="token punctuation">.</span>Path<span class="token punctuation">,</span> <span class="token comment" spellcheck="true">// 请求路径</span>
+                param<span class="token punctuation">.</span>Request<span class="token punctuation">.</span>Proto<span class="token punctuation">,</span> <span class="token comment" spellcheck="true">// 请求协议</span>
+                param<span class="token punctuation">.</span>StatusCode<span class="token punctuation">,</span> <span class="token comment" spellcheck="true">// 状态码</span>
+                param<span class="token punctuation">.</span>Latency<span class="token punctuation">,</span> <span class="token comment" spellcheck="true">// 请求时间</span>
+                param<span class="token punctuation">.</span>Request<span class="token punctuation">.</span><span class="token function">UserAgent</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token comment" spellcheck="true">// 代理</span>
+                param<span class="token punctuation">.</span>ErrorMessage<span class="token punctuation">,</span> <span class="token comment" spellcheck="true">// 错误信息</span>
+        <span class="token punctuation">)</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    router<span class="token punctuation">.</span><span class="token function">Use</span><span class="token punctuation">(</span>gin<span class="token punctuation">.</span><span class="token function">Recovery</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+    router<span class="token punctuation">.</span><span class="token function">GET</span><span class="token punctuation">(</span><span class="token string">"/ping"</span><span class="token punctuation">,</span> <span class="token keyword">func</span><span class="token punctuation">(</span>c <span class="token operator">*</span>gin<span class="token punctuation">.</span>Context<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        c<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token number">200</span><span class="token punctuation">,</span> <span class="token string">"pong"</span><span class="token punctuation">)</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span>
+
+    router<span class="token punctuation">.</span><span class="token function">Run</span><span class="token punctuation">(</span><span class="token string">":8080"</span><span class="token punctuation">)</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span></code></pre>
+<h3 id="取消和开启日志颜色"><a href="#取消和开启日志颜色" class="headerlink" title="取消和开启日志颜色"></a>取消和开启日志颜色</h3><pre class=" language-go"><code class="language-go">gin<span class="token punctuation">.</span><span class="token function">ForceConsoleColor</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+gin<span class="token punctuation">.</span><span class="token function">DisableConsoleColor</span><span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre>
+<h2 id="Model绑定"><a href="#Model绑定" class="headerlink" title="Model绑定"></a>Model绑定</h2><pre class=" language-go"><code class="language-go"><span class="token keyword">package</span> main
+
+<span class="token keyword">import</span> <span class="token punctuation">(</span>
+    <span class="token string">"github.com/gin-gonic/gin"</span>
+    <span class="token string">"net/http"</span>
+<span class="token punctuation">)</span>
+
+
+<span class="token keyword">type</span> Login <span class="token keyword">struct</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">// 字段  字段类型 数据表字段  json小写 xml小写 必要字段</span>
+    User <span class="token builtin">string</span> <span class="token string">`from:"user" json:"user" xml:"user" binding:"required"`</span>
+    Password <span class="token builtin">string</span> <span class="token string">`from:"password" json:"password" xml:"password" binding:"required"`</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+
+
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    router <span class="token operator">:=</span> gin<span class="token punctuation">.</span><span class="token function">Default</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token comment" spellcheck="true">// 绑定json  JSON (&amp;#123;"user": "manu", "password": "123"&amp;#125;)</span>
+    router<span class="token punctuation">.</span><span class="token function">POST</span><span class="token punctuation">(</span><span class="token string">"/loginJSON"</span><span class="token punctuation">,</span> <span class="token keyword">func</span><span class="token punctuation">(</span>c <span class="token operator">*</span>gin<span class="token punctuation">.</span>Context<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token keyword">var</span> json Login
+        <span class="token comment" spellcheck="true">// json格式检查</span>
+        <span class="token keyword">if</span> err <span class="token operator">:=</span> c<span class="token punctuation">.</span><span class="token function">ShouldBindJSON</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>json<span class="token punctuation">)</span><span class="token punctuation">;</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+            c<span class="token punctuation">.</span><span class="token function">JSON</span><span class="token punctuation">(</span>http<span class="token punctuation">.</span>StatusBadRequest<span class="token punctuation">,</span> gin<span class="token punctuation">.</span>H<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span><span class="token string">"error"</span><span class="token punctuation">:</span> err<span class="token punctuation">.</span><span class="token function">Error</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span>
+            <span class="token keyword">return</span>
+        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 如果账号密码不对</span>
+        <span class="token keyword">if</span> json<span class="token punctuation">.</span>User <span class="token operator">!=</span> <span class="token string">"manu"</span> <span class="token operator">||</span> json<span class="token punctuation">.</span>Password <span class="token operator">!=</span> <span class="token string">"123"</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+            c<span class="token punctuation">.</span><span class="token function">JSON</span><span class="token punctuation">(</span>http<span class="token punctuation">.</span>StatusUnauthorized<span class="token punctuation">,</span> gin<span class="token punctuation">.</span>H<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span><span class="token string">"status"</span><span class="token punctuation">:</span> <span class="token string">"unauthorized"</span><span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span>
+            <span class="token keyword">return</span>
+        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+
+        c<span class="token punctuation">.</span><span class="token function">JSON</span><span class="token punctuation">(</span>http<span class="token punctuation">.</span>StatusOK<span class="token punctuation">,</span> gin<span class="token punctuation">.</span>H<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span><span class="token string">"status"</span><span class="token punctuation">:</span> <span class="token string">"you are logged in"</span><span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span>
+
+    <span class="token comment" spellcheck="true">// 绑定xml</span>
+    router<span class="token punctuation">.</span><span class="token function">POST</span><span class="token punctuation">(</span><span class="token string">"/loginxml"</span><span class="token punctuation">,</span><span class="token keyword">func</span><span class="token punctuation">(</span>c <span class="token operator">*</span>gin<span class="token punctuation">.</span>Context<span class="token punctuation">)</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token keyword">var</span> xml Login
+        <span class="token keyword">if</span> err <span class="token operator">:=</span> c<span class="token punctuation">.</span><span class="token function">ShouldBindXML</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>xml<span class="token punctuation">)</span><span class="token punctuation">;</span>err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+            c<span class="token punctuation">.</span><span class="token function">JSON</span><span class="token punctuation">(</span>http<span class="token punctuation">.</span>StatusBadRequest<span class="token punctuation">,</span>gin<span class="token punctuation">.</span>H<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span><span class="token string">"error"</span><span class="token punctuation">:</span>err<span class="token punctuation">.</span><span class="token function">Error</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span>
+            <span class="token keyword">return</span>
+        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+
+        <span class="token keyword">if</span> xml<span class="token punctuation">.</span>User <span class="token operator">!=</span> <span class="token string">"manu"</span> <span class="token operator">||</span> xml<span class="token punctuation">.</span>Password <span class="token operator">!=</span> <span class="token string">"123"</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+            c<span class="token punctuation">.</span><span class="token function">JSON</span><span class="token punctuation">(</span>http<span class="token punctuation">.</span>StatusUnauthorized<span class="token punctuation">,</span>gin<span class="token punctuation">.</span>H<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span><span class="token string">"status"</span><span class="token punctuation">:</span><span class="token string">"unauthorized"</span><span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span>
+            <span class="token keyword">return</span>
+        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+        c<span class="token punctuation">.</span><span class="token function">JSON</span><span class="token punctuation">(</span>http<span class="token punctuation">.</span>StatusOK<span class="token punctuation">,</span>gin<span class="token punctuation">.</span>H<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span><span class="token string">"status"</span><span class="token punctuation">:</span><span class="token string">"you are logged in"</span><span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span>
+
+    <span class="token comment" spellcheck="true">// 绑定表单</span>
+    router<span class="token punctuation">.</span><span class="token function">POST</span><span class="token punctuation">(</span><span class="token string">"/loginForm"</span><span class="token punctuation">,</span> <span class="token keyword">func</span><span class="token punctuation">(</span>c <span class="token operator">*</span>gin<span class="token punctuation">.</span>Context<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token keyword">var</span> form Login
+        <span class="token comment" spellcheck="true">// This will infer what binder to use depending on the content-type header.</span>
+        <span class="token keyword">if</span> err <span class="token operator">:=</span> c<span class="token punctuation">.</span><span class="token function">ShouldBind</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>form<span class="token punctuation">)</span><span class="token punctuation">;</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+            c<span class="token punctuation">.</span><span class="token function">JSON</span><span class="token punctuation">(</span>http<span class="token punctuation">.</span>StatusBadRequest<span class="token punctuation">,</span> gin<span class="token punctuation">.</span>H<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span><span class="token string">"error"</span><span class="token punctuation">:</span> err<span class="token punctuation">.</span><span class="token function">Error</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span>
+            <span class="token keyword">return</span>
+        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+
+        <span class="token keyword">if</span> form<span class="token punctuation">.</span>User <span class="token operator">!=</span> <span class="token string">"manu"</span> <span class="token operator">||</span> form<span class="token punctuation">.</span>Password <span class="token operator">!=</span> <span class="token string">"123"</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+            c<span class="token punctuation">.</span><span class="token function">JSON</span><span class="token punctuation">(</span>http<span class="token punctuation">.</span>StatusUnauthorized<span class="token punctuation">,</span> gin<span class="token punctuation">.</span>H<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span><span class="token string">"status"</span><span class="token punctuation">:</span> <span class="token string">"unauthorized"</span><span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span>
+            <span class="token keyword">return</span>
+        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+
+        c<span class="token punctuation">.</span><span class="token function">JSON</span><span class="token punctuation">(</span>http<span class="token punctuation">.</span>StatusOK<span class="token punctuation">,</span> gin<span class="token punctuation">.</span>H<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span><span class="token string">"status"</span><span class="token punctuation">:</span> <span class="token string">"you are logged in"</span><span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span>
+
+
+
+    router<span class="token punctuation">.</span><span class="token function">Run</span><span class="token punctuation">(</span>"</code></pre>
+<pre class=" language-go"><code class="language-go"><span class="token keyword">package</span> main
+
+
+<span class="token comment" spellcheck="true">// 启动文件</span>
+<span class="token keyword">import</span> <span class="token punctuation">(</span>
+    <span class="token string">"fmt"</span>
+    <span class="token string">"github.com/gin-gonic/gin"</span>
+    <span class="token string">"log"</span>
+<span class="token punctuation">)</span>
+
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">// 创建默认路由</span>
+    router <span class="token operator">:=</span> gin<span class="token punctuation">.</span><span class="token function">Default</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token comment" spellcheck="true">// 默认路由</span>
+    router<span class="token punctuation">.</span><span class="token function">GET</span><span class="token punctuation">(</span><span class="token string">"/"</span><span class="token punctuation">,</span>rootPath<span class="token punctuation">)</span>
+    <span class="token comment" spellcheck="true">// ping server</span>
+    router<span class="token punctuation">.</span><span class="token function">GET</span><span class="token punctuation">(</span><span class="token string">"/ping"</span><span class="token punctuation">,</span>pingServer<span class="token punctuation">)</span>
+    <span class="token comment" spellcheck="true">// name</span>
+    <span class="token comment" spellcheck="true">// get xx/v1/version/hzj</span>
+    router<span class="token punctuation">.</span><span class="token function">GET</span><span class="token punctuation">(</span><span class="token string">"/v1/version/name/:name"</span><span class="token punctuation">,</span>GetName<span class="token punctuation">)</span>
+    <span class="token comment" spellcheck="true">// query name</span>
+    <span class="token comment" spellcheck="true">// get xx/v1/version/?name=hzj</span>
+    router<span class="token punctuation">.</span><span class="token function">GET</span><span class="token punctuation">(</span><span class="token string">"/v1/version/"</span><span class="token punctuation">,</span>getQueryName<span class="token punctuation">)</span>
+    <span class="token comment" spellcheck="true">// post username form</span>
+    router<span class="token punctuation">.</span><span class="token function">POST</span><span class="token punctuation">(</span><span class="token string">"/v1/version/login/"</span><span class="token punctuation">,</span>postFormByLogin<span class="token punctuation">)</span>
+    <span class="token comment" spellcheck="true">// get many</span>
+    router<span class="token punctuation">.</span><span class="token function">GET</span><span class="token punctuation">(</span><span class="token string">"/v1/version/many/"</span><span class="token punctuation">,</span>getNameAndClassid<span class="token punctuation">)</span>
+    <span class="token comment" spellcheck="true">// post many</span>
+    router<span class="token punctuation">.</span><span class="token function">POST</span><span class="token punctuation">(</span><span class="token string">"/v1/version/many"</span><span class="token punctuation">,</span>postNameAndClassid<span class="token punctuation">)</span>
+
+    <span class="token comment" spellcheck="true">// 返回byte类型数组</span>
+    router<span class="token punctuation">.</span><span class="token function">GET</span><span class="token punctuation">(</span><span class="token string">"/v1/version/byte"</span><span class="token punctuation">,</span>getfullpathBybytes<span class="token punctuation">)</span>
+    <span class="token comment" spellcheck="true">// 返回json类型</span>
+    router<span class="token punctuation">.</span><span class="token function">GET</span><span class="token punctuation">(</span><span class="token string">"/v1/version/json"</span><span class="token punctuation">,</span>getfullpathByJson<span class="token punctuation">)</span>
+
+
+    <span class="token comment" spellcheck="true">// 启动 默认路由为8080</span>
+    router<span class="token punctuation">.</span><span class="token function">Run</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+
+
+<span class="token comment" spellcheck="true">// 路由</span>
+<span class="token keyword">func</span> <span class="token function">rootPath</span><span class="token punctuation">(</span>context <span class="token operator">*</span>gin<span class="token punctuation">.</span>Context<span class="token punctuation">)</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    context<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token number">200</span><span class="token punctuation">,</span><span class="token string">"helloworld"</span><span class="token punctuation">)</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<span class="token comment" spellcheck="true">// 测试服务器</span>
+<span class="token keyword">func</span> <span class="token function">pingServer</span><span class="token punctuation">(</span>context <span class="token operator">*</span>gin<span class="token punctuation">.</span>Context<span class="token punctuation">)</span>  <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    context<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token number">200</span><span class="token punctuation">,</span><span class="token string">"pong"</span><span class="token punctuation">)</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+
+<span class="token comment" spellcheck="true">// 带路由参数</span>
+<span class="token keyword">func</span> <span class="token function">GetName</span><span class="token punctuation">(</span>context <span class="token operator">*</span>gin<span class="token punctuation">.</span>Context<span class="token punctuation">)</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    name <span class="token operator">:=</span> context<span class="token punctuation">.</span><span class="token function">Param</span><span class="token punctuation">(</span><span class="token string">"name"</span><span class="token punctuation">)</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"返回名字"</span><span class="token operator">+</span>name<span class="token punctuation">)</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"返回全路径:"</span><span class="token operator">+</span>context<span class="token punctuation">.</span><span class="token function">FullPath</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    context<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token number">200</span><span class="token punctuation">,</span><span class="token string">"返回名字"</span><span class="token operator">+</span>name<span class="token operator">+</span><span class="token string">"\n"</span><span class="token punctuation">)</span>
+    context<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token number">200</span><span class="token punctuation">,</span><span class="token string">"返回全路径"</span><span class="token operator">+</span>context<span class="token punctuation">.</span><span class="token function">FullPath</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<span class="token comment" spellcheck="true">// 查询参数</span>
+<span class="token keyword">func</span> <span class="token function">getQueryName</span><span class="token punctuation">(</span>context <span class="token operator">*</span>gin<span class="token punctuation">.</span>Context<span class="token punctuation">)</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    name <span class="token operator">:=</span> context<span class="token punctuation">.</span><span class="token function">Query</span><span class="token punctuation">(</span><span class="token string">"name"</span><span class="token punctuation">)</span>
+    context<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token number">200</span><span class="token punctuation">,</span><span class="token string">"返回查询参数中的name"</span><span class="token operator">+</span>name<span class="token punctuation">)</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+
+<span class="token comment" spellcheck="true">// 获取表单</span>
+<span class="token keyword">func</span> <span class="token function">postFormByLogin</span><span class="token punctuation">(</span>context <span class="token operator">*</span>gin<span class="token punctuation">.</span>Context<span class="token punctuation">)</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>context<span class="token punctuation">.</span><span class="token function">FullPath</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    username<span class="token punctuation">,</span> exist <span class="token operator">:=</span> context<span class="token punctuation">.</span><span class="token function">GetPostForm</span><span class="token punctuation">(</span><span class="token string">"username"</span><span class="token punctuation">)</span>
+    <span class="token keyword">if</span> exist  <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        context<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token number">200</span><span class="token punctuation">,</span>username<span class="token punctuation">)</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+
+
+<span class="token comment" spellcheck="true">// 创建json实例</span>
+<span class="token keyword">type</span> Student <span class="token keyword">struct</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    Name    <span class="token builtin">string</span> <span class="token string">`form:"name"`</span>
+    Classes <span class="token builtin">string</span> <span class="token string">`form:"classes"`</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<span class="token comment" spellcheck="true">// get query绑定实例</span>
+<span class="token comment" spellcheck="true">//http://127.0.0.1:8080/v1/version/many/?name=hzj&amp;classes=123</span>
+<span class="token keyword">func</span> <span class="token function">getNameAndClassid</span><span class="token punctuation">(</span>context <span class="token operator">*</span>gin<span class="token punctuation">.</span>Context<span class="token punctuation">)</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    context<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token number">200</span><span class="token punctuation">,</span>context<span class="token punctuation">.</span><span class="token function">FullPath</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token keyword">var</span> student Student
+    err <span class="token operator">:=</span> context<span class="token punctuation">.</span><span class="token function">ShouldBindQuery</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>student<span class="token punctuation">)</span>
+    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        log<span class="token punctuation">.</span><span class="token function">Fatal</span><span class="token punctuation">(</span>err<span class="token punctuation">.</span><span class="token function">Error</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        <span class="token keyword">return</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    msg <span class="token operator">:=</span> <span class="token string">"\nhello"</span><span class="token operator">+</span>student<span class="token punctuation">.</span>Name<span class="token operator">+</span>student<span class="token punctuation">.</span>Classes
+    context<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token number">200</span><span class="token punctuation">,</span>msg<span class="token punctuation">)</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+
+<span class="token comment" spellcheck="true">// post绑定</span>
+<span class="token comment" spellcheck="true">// post http://127.0.0.1:8080/v1/version/many/</span>
+<span class="token keyword">func</span> <span class="token function">postNameAndClassid</span><span class="token punctuation">(</span>context <span class="token operator">*</span>gin<span class="token punctuation">.</span>Context<span class="token punctuation">)</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    context<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token number">200</span><span class="token punctuation">,</span>context<span class="token punctuation">.</span><span class="token function">FullPath</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token keyword">var</span> student Student
+    err <span class="token operator">:=</span> context<span class="token punctuation">.</span><span class="token function">ShouldBind</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>student<span class="token punctuation">)</span>
+    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+        <span class="token keyword">return</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>student<span class="token punctuation">)</span>
+    msg <span class="token operator">:=</span> <span class="token string">"\nhello"</span><span class="token operator">+</span>student<span class="token punctuation">.</span>Name<span class="token operator">+</span>student<span class="token punctuation">.</span>Classes
+    context<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token number">200</span><span class="token punctuation">,</span>msg<span class="token punctuation">)</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+
+<span class="token comment" spellcheck="true">// 返回切片类型</span>
+<span class="token comment" spellcheck="true">// get http://127.0.0.1:8080/v1/version/byte</span>
+<span class="token keyword">func</span>  <span class="token function">getfullpathBybytes</span><span class="token punctuation">(</span>context <span class="token operator">*</span>gin<span class="token punctuation">.</span>Context<span class="token punctuation">)</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    fullpath <span class="token operator">:=</span> context<span class="token punctuation">.</span><span class="token function">FullPath</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    context<span class="token punctuation">.</span>Writer<span class="token punctuation">.</span><span class="token function">Write</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token function">byte</span><span class="token punctuation">(</span>fullpath<span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+
+
+<span class="token comment" spellcheck="true">// 返回json类型</span>
+<span class="token comment" spellcheck="true">//</span>
+<span class="token keyword">type</span> Fullp <span class="token keyword">struct</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    Fullpath <span class="token builtin">string</span> <span class="token string">`from:"fullpath"`</span>
+    Name <span class="token builtin">string</span> <span class="token string">`from:name"`</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+
+<span class="token keyword">func</span> <span class="token function">getfullpathByJson</span><span class="token punctuation">(</span>context <span class="token operator">*</span>gin<span class="token punctuation">.</span>Context<span class="token punctuation">)</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    f <span class="token operator">:=</span> context<span class="token punctuation">.</span><span class="token function">FullPath</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token keyword">var</span> fp Fullp
+    fp<span class="token punctuation">.</span>Fullpath <span class="token operator">=</span> f
+    fp<span class="token punctuation">.</span>Name <span class="token operator">=</span> <span class="token string">"1"</span>
+    context<span class="token punctuation">.</span><span class="token function">JSON</span><span class="token punctuation">(</span><span class="token number">200</span><span class="token punctuation">,</span><span class="token operator">&amp;</span>fp<span class="token punctuation">)</span>
+    context<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token number">200</span><span class="token punctuation">,</span><span class="token string">"xx"</span><span class="token punctuation">)</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span></code></pre>
+<pre class=" language-go"><code class="language-go"><span class="token keyword">package</span> main
+
+
+<span class="token comment" spellcheck="true">// 启动文件</span>
+<span class="token keyword">import</span> <span class="token punctuation">(</span>
+    <span class="token string">"github.com/gin-gonic/gin"</span>
+<span class="token punctuation">)</span>
+
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+
+    <span class="token comment" spellcheck="true">//  创建默认路由</span>
+    router <span class="token operator">:=</span> gin<span class="token punctuation">.</span><span class="token function">Default</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+    <span class="token comment" spellcheck="true">// 创建分组</span>
+    UserRouter <span class="token operator">:=</span> router<span class="token punctuation">.</span><span class="token function">Group</span><span class="token punctuation">(</span><span class="token string">"/v1/version/user"</span><span class="token punctuation">)</span>
+    UserRouter<span class="token punctuation">.</span><span class="token function">GET</span><span class="token punctuation">(</span><span class="token string">"/:userinfo"</span><span class="token punctuation">,</span>getUserInfo<span class="token punctuation">)</span>
+    <span class="token comment" spellcheck="true">// 创建分组</span>
+    LoginRouter <span class="token operator">:=</span> router<span class="token punctuation">.</span><span class="token function">Group</span><span class="token punctuation">(</span><span class="token string">"/v1/version/login"</span><span class="token punctuation">)</span>
+    LoginRouter<span class="token punctuation">.</span><span class="token function">POST</span><span class="token punctuation">(</span><span class="token string">"/"</span><span class="token punctuation">,</span>postLogin<span class="token punctuation">)</span>
+    <span class="token comment" spellcheck="true">// 创建货物分组</span>
+    <span class="token comment" spellcheck="true">//GoodsRouter := router.Group("/v1/vesion/goods")</span>
+
+
+    <span class="token comment" spellcheck="true">// 启动 默认路由为8080</span>
+    router<span class="token punctuation">.</span><span class="token function">Run</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+
+<span class="token comment" spellcheck="true">// ======== UserRouter</span>
+
+<span class="token comment" spellcheck="true">// 获取用户信息</span>
+<span class="token keyword">func</span> <span class="token function">getUserInfo</span><span class="token punctuation">(</span>context <span class="token operator">*</span>gin<span class="token punctuation">.</span>Context<span class="token punctuation">)</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    userinfo <span class="token operator">:=</span> context<span class="token punctuation">.</span><span class="token function">Param</span><span class="token punctuation">(</span><span class="token string">"userinfo"</span><span class="token punctuation">)</span>
+    context<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token number">200</span><span class="token punctuation">,</span>userinfo<span class="token punctuation">)</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+
+<span class="token comment" spellcheck="true">// 登录</span>
+<span class="token keyword">func</span> <span class="token function">postLogin</span><span class="token punctuation">(</span>context <span class="token operator">*</span>gin<span class="token punctuation">.</span>Context<span class="token punctuation">)</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    username <span class="token operator">:=</span> context<span class="token punctuation">.</span><span class="token function">PostForm</span><span class="token punctuation">(</span><span class="token string">"username"</span><span class="token punctuation">)</span>
+    password <span class="token operator">:=</span> context<span class="token punctuation">.</span><span class="token function">PostForm</span><span class="token punctuation">(</span><span class="token string">"password"</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">if</span> username <span class="token operator">==</span> <span class="token string">"hzj"</span> <span class="token operator">&amp;&amp;</span> password <span class="token operator">==</span> <span class="token string">"123"</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        context<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token number">200</span><span class="token punctuation">,</span><span class="token string">"success"</span><span class="token punctuation">)</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token keyword">else</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        context<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token number">404</span><span class="token punctuation">,</span><span class="token string">"faild"</span><span class="token punctuation">)</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+</code></pre>
+<h2 id="使用swagger文档"><a href="#使用swagger文档" class="headerlink" title="使用swagger文档"></a>使用swagger文档</h2><p><a target="_blank" rel="noopener" href="https://www.liwenzhou.com/posts/Go/gin_swagger/">https://www.liwenzhou.com/posts/Go/gin_swagger/</a></p>
+<h2 id="gin连接mysql"><a href="#gin连接mysql" class="headerlink" title="gin连接mysql"></a>gin连接mysql</h2><p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/108317058">https://zhuanlan.zhihu.com/p/108317058</a></p>
+<h2 id="如何导入本地包"><a href="#如何导入本地包" class="headerlink" title="如何导入本地包"></a>如何导入本地包</h2><p><a target="_blank" rel="noopener" href="https://www.liwenzhou.com/posts/Go/import_local_package_in_go_module/">https://www.liwenzhou.com/posts/Go/import_local_package_in_go_module/</a></p>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>标签：</span>
+                <span class="tag">
+                    
+                    
+                    <a href="/tags/golang/"># golang</a>
+                    
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript：window.history.back();">后退</a>
+                <span>· </span>
+                <a href="/">主页</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            <a class="prev" rel="prev" href="/2020/09/23/blog_back_new/leetcode/%E5%A0%86%E6%A0%88%E9%98%9F%E5%88%97/">堆栈队列</a>
+            
+            
+            <a class="next" rel="next" href="/2020/09/17/blog_back_new/golang/golang%E8%81%8A%E5%A4%A9%E5%AE%A4%E9%A1%B9%E7%9B%AE/">golang聊天室项目</a>
+            
+        </section>
+    </article>
+</div>
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+    </div>
+</footer>
+
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="hzjsea">
+
+
+
+
+
+
+<title>Strings, bytes, runes and characters in Go | hzjsea</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+    <script src="/js/jquery.min.js"></script>
+    
+
+
+
+    
+    
+        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+    
+
+
+
+
+    <script>
+    function searchToggle() {
+        const width = $(document.body).width()
+        if(width > 479) {
+            return;
+        }
+        const search = $('.search');
+        const searchForm = $('.form-search')
+
+        if(!search.hasClass("mobile-search")) {
+            search.addClass("mobile-search");
+        } else {
+            search.removeClass("mobile-search");
+        } 
+    }
+
+    function search(searchInputEl, formEl, flag) {
+        const path = "/" + "search.json"; // 可以在public 下查看这个search.json
+        $(formEl).submit(function(e){
+            e.preventDefault();
+            let target = null
+            if(searchInputEl == null) {
+                const screenWidth = $(document.body).width();
+                target = screenWidth > 479 ? $('#pc-search-input') : $('#mobile-search-input');
+                console.log(target);
+            } else {
+                target = $(searchInputEl)
+            }
+
+            if(!flag && target.val() === '') {
+                return ;
+            }
+
+            $("#u-search").fadeIn(500, function() {
+                $("body > .wrapper").addClass("modal-active");
+
+                $.ajax({
+                    url: path,
+                    dataType: "json",
+                    beforeSend: function (xhr) {
+                        $input = target.val();
+                        $(".form-input").val($input);
+                        const loadingBar = $('.search-loading-bar') 
+                        loadingBar.css({
+                            width:'100%',
+                            display: 'block'
+                        });
+                    },
+                    success: function( datas ) {
+                        console.log(datas);
+                        const $resultPanel = $(".modal-body")[0];
+                        let str = `<ul class="modal-results">`;
+                        var keywords = $(".form-input").val().trim().toLowerCase().split(/[\s\-]+/);
+                        $resultPanel.innerHTML = "";
+                        let hasResult = false
+                        let text = `<div class="no-result">找不到与关键词相关的内容....</div>`;
+
+                        if ($(".form-input").val().trim().length <= 0) {
+                            // 没有结果
+                            $resultPanel.innerHTML = text;
+                            return;
+                        }
+                        datas.forEach(function (data, index) {
+                            var isMatch = true;
+                            if (!data.title || data.title.trim() === '') {
+                                data.title = "Untitled";
+                            }
+                            var data_title = data.title.trim().toLowerCase();
+                            var data_content = data.content && data.content.trim().replace(/<[^>]+>/g, "").toLowerCase() || '';
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            // only match artiles with not empty contents
+                            if (data_content !== '') {
+                                keywords.forEach(function (keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        hasResult = true
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            } else {
+                                isMatch = false;
+                            }
+                            // show search results
+                            if (isMatch) {
+                                str += `<li class='result-item'><a href='${data_url}' class='result-item-detail'> <span class="title">${data_title}</span>`;
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 200 characters
+                                    var start = first_occur - 40;
+                                    var end = first_occur + 160;
+
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+
+                                    if (start == 0) {
+                                        end = 200;
+                                    }
+
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+
+                                    var match_content = content.substring(start, end);
+
+                                    // highlight all keywords
+                                    keywords.forEach(function (keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, `<em class="search-keyword">${keyword}</em>`);
+                                    });
+
+                                    str += `<span class="content"> ${match_content} ...</span></a>`;
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        if(hasResult) {
+                            $resultPanel.innerHTML = str;
+                        } else {
+                            $resultPanel.innerHTML = text;
+                        }
+
+                    },
+                    complete: function() {
+                        setTimeout(() => {
+                                const loadingBar = $('.search-loading-bar') 
+                                loadingBar.css({
+                                    width:'0%',
+                                    display: 'none'
+                                });
+                        }, 300)
+                    }
+                });
+            })
+
+        });
+    }
+
+    $(document).ready(function() {
+        $('.modal-close').click(function () { 
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+
+        $('.modal-overlay').click(function() {
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+        search(null, ".form-search", false)
+        search("#u-search-modal-form .form-input", ".u-search-modal-form", true)
+    })
+</script>
+
+
+
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo"><a href="/">hzjsea</a></div>
+        <div class="menu navbar-right">
+            
+            
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="pc-search-input"/>
+        </form>
+    </div>
+
+
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+            <input id="switch_default" type="checkbox" class="switch_default">
+            <label for="switch_default" class="toggleBtn"></label>
+        </div>
+    </div>
+</nav>
+
+
+<nav class="navbar-mobile" id="nav-mobile">
+    <div class="container">
+        <div class="navbar-header">
+            <div>
+                <a href="/">hzjsea</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+            </div>
+            <div class="navbar-mobile-right">
+                
+                
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="mobile-search-input"/>
+        </form>
+    </div>
+
+
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; 目录</div>
+            </div>
+            
+        </div>
+        <div class="menu" id="mobile-menu">
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+        </div>
+    </div>
+</nav>
+
+        <div class="main">
+			<!-- Chic/layout.ejs -->
+ <div id="u-search">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="container">
+                    <form id="u-search-modal-form" class="u-search-modal-form">
+                        <button type="submit" class="form-submit-btn">
+                            <img src="/image/search.png" class="search-btn-img" />
+                        </button>
+                        <input placeholder="搜索文章。。。" class="form-input" id="modal-form-input">
+                    </form>
+                    <a class="modal-close">x</a>
+                </div>
+                <div class="search-loading">
+                    <div class="search-loading-bar"></div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <!-- ul 格式如下 -->
+                <!-- <ul class="modal-results">
+                    <li class="result-item">
+                        <a class="result-item-detail">
+                            <span class="title">页面配置</span>
+                            <span class="content">
+                                content
+                            </span>
+                        </a>
+                    </li>
+                </ul> -->
+            </div>
+        </div>
+        <div class="modal-overlay"></div>
+    </div>
+            <div class="container">
+    
+    
+    <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">全部展开</a>
+        <a onclick="go_top()">回到顶部</a>
+        <a onclick="go_bottom()">回到底部</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "全部折叠"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "全部展开"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">Strings, bytes, runes and characters in Go</h1>
+            
+            <div class="post-meta">
+                
+                作者： <a itemprop="author" rel="author" href="/">hzjsea</a>&nbsp;
+                
+
+                
+                <span class="post-time">
+                    创建日期： <a
+                        href="#">September 7, 2020&nbsp;&nbsp;14:27:31</a>
+                </span>&nbsp;
+                
+                
+                <span class="post-category">
+                    分类：
+                    
+                    <a href="/categories/golang/">golang</a>&nbsp;
+                    
+                </span>
+                
+                
+                状态：<a href="#">SNAPSHOT</a>
+                
+            </div>
+            
+        </header>
+
+        <div class="post-content">
+            <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+<ul>
+<li><a href="#strings-bytes-runes-and-characters-in-go">Strings, bytes, runes and characters in Go</a><ul>
+<li><a href="#ascii-%E7%A0%81">ASCII 码</a></li>
+<li><a href="#%E9%9D%9Eascii%E7%BC%96%E7%A0%81">非ASCII编码</a></li>
+<li><a href="#unicode">Unicode</a></li>
+<li><a href="#utf-8">UTF-8</a></li>
+<li><a href="#%E7%BC%96%E7%A0%81%E8%BD%AC%E6%8D%A2">编码转换</a></li>
+<li><a href="#%E6%A0%BC%E5%BC%8F%E5%8C%96%E8%BE%93%E5%87%BA%E8%A7%84%E5%AE%9A%E7%AC%A6">格式化输出规定符</a></li>
+<li><a href="#golang%E4%B8%AD%E7%9A%84%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%AD%97%E8%8A%82%E7%AC%A6%E6%96%87%E5%92%8C%E5%AD%97%E7%AC%A6">golang中的字符串字节符文和字符</a></li>
+<li><a href="#golang%E5%90%84%E4%B8%AA%E5%AD%97%E7%AC%A6%E7%B1%BB%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%8C%BA%E5%88%AB">golang各个字符类数据类型区别</a></li>
+<li><a href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0%E5%A6%82%E4%B8%8B">参考文章如下</a></li>
+</ul>
+</li>
+</ul>
+<!-- /code_chunk_output -->
+<a id="more"></a>
+
+<h1 id="Strings-bytes-runes-and-characters-in-Go"><a href="#Strings-bytes-runes-and-characters-in-Go" class="headerlink" title="Strings, bytes, runes and characters in Go"></a>Strings, bytes, runes and characters in Go</h1><p>Stirngs,bytes,runes,characters四个数据类型在golang中有很大的区别，官方有一篇文章专门来讲这四个数据类型在go中的区别<br><a target="_blank" rel="noopener" href="https://blog.golang.org/strings">https://blog.golang.org/strings</a><br><a target="_blank" rel="noopener" href="https://www.joelonsoftware.com/2003/10/08/the-absolute-minimum-every-software-developer-absolutely-positively-must-know-about-unicode-and-character-sets-no-excuses/">https://www.joelonsoftware.com/2003/10/08/the-absolute-minimum-every-software-developer-absolutely-positively-must-know-about-unicode-and-character-sets-no-excuses/</a></p>
+<p>::: tip<br>什么是 位(bit) 字节(byte) 字(word)<br>:::</p>
+<ul>
+<li>位(bit)   音译为比特  表示二进制位，位是计算机中最小的存储单位 11010100是一个8位二进制数。一个二进制位只可以表示0和1两种状态（2^1）；两个二进制位可以表示00、01、10、11四种（2^2）状态；三位二进制数可表示八种状态（2^3）……</li>
+<li>字节（byte） 字节来自英文Byte，音译为“拜特”，习惯上用大写的“B”表示。 字节是计算机中数据处理的基本单位。计算机中以字节为单位存储和解释信息，规定一个字节由八个二进制位构成，即1个字节等于8个比特（1Byte=8bit）。八位二进制数最小为00000000，最大为11111111；通常1个字节可以存入一个ASCII码，2个字节可以存放一个汉字国标码。</li>
+<li>字 计算机进行数据处理时，一次存取、加工和传送的数据长度称为字（word）。一个字通常由一个或多个（一般是字节的整数位）字节构成。例如286微机的字由2个字节组成，它的字长为16；486微机的字由4个字节组成，它的字长为32位机。 计算机的字长决定了其CPU一次操作处理实际位数的多少，由此可见计算机的字长越大，其性能越优越。</li>
+</ul>
+<p>换算单位  <code>1word</code> = <code>n*1byte</code> = <code>n*8bit</code> </p>
+<p>::: tip<br>不同长度的整型出现的原因<br>:::<br><img src="http://img.noback.top/2020-10-22-10-54-16.png" alt="2020-10-22-10-54-16"><br>主要还是因为历史原因，历史上，不是所有计算机都是一个字节 8 个 bit 的。只是由于一系列优势 (比如刚好能容纳下 ASCII 码 + 1 位校验位)，因为这一优势，最后形成了现在常见的架构，也就是1个byte 表示8个bite的架构<br>于是后面的int8 int16 int32都是在这之上扩展的，这样的做的主要原因是，可以节省内存。如果想Python这样不考虑省内存， 32/64位之内都用int ,超过就用long。如果所有语言都选择使用了long 这样就比较占内存的了。</p>
+<h2 id="ASCII-码"><a href="#ASCII-码" class="headerlink" title="ASCII 码"></a>ASCII 码</h2><p>位(bit)是计算机最小存储单位， 8个bit组成1个字节，也就是由0和1组成256种不同的状态。每一个状态对应一个符号<br>上个世界60年代，美国指定了一套字符编码，对英文字符与二进制位之间的关系，做了统一的规定，被叫做ASCII码<br>ASCII 码一共规定了128个字符的编码，比如空格SPACE是32（二进制00100000），大写的字母A是65（二进制01000001）。这128个符号（包括32个不能打印出来的控制符号），只占用了一个字节的后面7位，最前面的一位统一规定为0。<br>ASCII码查询 <a target="_blank" rel="noopener" href="https://tool.oschina.net/commons?type=4">https://tool.oschina.net/commons?type=4</a></p>
+<h2 id="非ASCII编码"><a href="#非ASCII编码" class="headerlink" title="非ASCII编码"></a>非ASCII编码</h2><p>英语有128个符号编码就可以解决了，但是用来表示其他语言，128个符号是不够的。比如，在法语中，字母上方有注音符号，它就无法用 ASCII 码表示。于是，一些欧洲国家就决定，利用字节中闲置的最高位编入新的符号。比如，法语中的é的编码为130（二进制10000010）。这样一来，这些欧洲国家使用的编码体系，可以表示最多256个符号。但是，这里又出现了新的问题。不同的国家有不同的字母，因此，哪怕它们都使用256个符号的编码方式，代表的字母却不一样。比如，130在法语编码中代表了é，在希伯来语编码中却代表了字母Gimel (ג)，在俄语编码中又会代表另一个符号。但是不管怎样，所有这些编码方式中，0–127表示的符号是一样的，不一样的只是128–255的这一段。<br>到了中国，中华文化博大精深，文字也很多，256个字符完全无法表达所有的汉字， 于是简体中文采用了GB2312 ，使用两个字节来表示一个汉字 ，也就是256*256= 65536g个字符</p>
+<h2 id="Unicode"><a href="#Unicode" class="headerlink" title="Unicode"></a>Unicode</h2><p>因为非ASCII编码的出现，破幻了字符之间的统一，同一个二进制数字可以被解释成为不同的符号，不同国家在交换文件的时候，首先要解决的就是编码问题。于是后面就有了Unicode，他是一个很大的集合，可以容纳100W+个符号，每个符号的编码都不一一样。+0639表示阿拉伯字母Ain，U+0041表示英语的大写字母A，U+4E25表示汉字严</p>
+<p>::: tip<br>Unicode的问题<br>:::<br>Unicode的出现解决了世界上符号不统一的问题，但同时也带了其他的问题，他只规定了符号的二进制代码，却没有规定这个二进制代码应该如何存储。<br>比如，汉字严的 Unicode 是十六进制数4E25，转换成二进制数足足有15位（100111000100101），也就是说，这个符号的表示至少需要2个字节。表示其他更大的符号，可能需要3个字节或者4个字节，甚至更多。<br>它们造成的结果是 </p>
+<ul>
+<li>出现了 Unicode 的多种存储方式，也就是说有许多种不同的二进制格式，可以用来表示 Unicode</li>
+<li>Unicode 在很长一段时间内无法推广，直到互联网的出现。</li>
+</ul>
+<h2 id="UTF-8"><a href="#UTF-8" class="headerlink" title="UTF-8"></a>UTF-8</h2><p>UTF-8 展开的意思就是 8-bit Unicode Transformation Format，它只是Unicode展现的一种形式，另外还有UTF-16(字符用两个字节或四个字节表示) 等等都没有能够普及<br>UTF-8 最大的一个特点，就是它是一种变长的编码方式。它可以使用1~4个字节表示一个符号，根据不同的符号而变化字节长度。</p>
+<ul>
+<li>对于单字节的符号，字节的第一位设为0，后面7位为这个符号的 Unicode 码。因此对于英语字母，UTF-8 编码和 ASCII 码是相同的。</li>
+<li>对于n字节的符号（n &gt; 1），第一个字节的前n位都设为1，第n + 1位设为0，后面字节的前两位一律设为10。剩下的没有提及的二进制位，全部为这个符号的 Unicode 码。</li>
+<li><img src="http://img.noback.top/2020-10-22-14-10-24.png" alt="2020-10-22-14-10-24"></li>
+</ul>
+<p>于是我们可以用每组开头的内容来判断是多少字节的，如果第一组开头是0 则是单字符，  如果第一组开头是1 则连续有多少个1，当前字符就占用多少个字节。  另外对于单字符来说，前面第一个是0 后面的7个所组成的内容和ASCII相同</p>
+<p>举例<br>严的 Unicode 是4E25（100111000100101），根据上表，可以发现4E25处在第三行的范围内（0000 0800 - 0000 FFFF），因此严的 UTF-8 编码需要三个字节，即格式是1110xxxx 10xxxxxx 10xxxxxx。然后，从严的最后一个二进制位开始，依次从后向前填入格式中的x，多出的位补0。这样就得到了，严的 UTF-8 编码是11100100 10111000 10100101，转换成十六进制就是E4B8A5</p>
+<p>::: tip<br>顺便提一句，中文windows下面，默认使用的是GB2312编码，Linux下面的是UTF-8编码<br>:::</p>
+<h2 id="编码转换"><a href="#编码转换" class="headerlink" title="编码转换"></a>编码转换</h2><p>编码查看<br><code>file filename</code><br>或者在vim中查看编码</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token function">vi</span> xx.txt
+<span class="token keyword">set</span> fileencoding
+<span class="token comment" spellcheck="true"># 设置编码</span>
+<span class="token keyword">set</span> fileencoding<span class="token operator">=</span>utf-8</code></pre>
+<p>在<code>.vimrc</code>中设置编码格式，这样vim在打开的时候回自动判断编码，保证不会出现乱码</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token string">" 设置新文件的编码为iUTF-8"</span>
+<span class="token keyword">set</span> encoding<span class="token operator">=</span>utf-8
+<span class="token string">" 自动判断编码时，依次尝试一下的编码"</span>
+<span class="token keyword">set</span> fileencodings<span class="token operator">=</span>usc-bom,utf-8,cp936,gb18030,big5,euc-jp,euc-kr,latin1</code></pre>
+<p>跨平台之间难免会存在一些编码问题，在linux下可以使用iconv转换编码<br><img src="http://img.noback.top/2020-10-22-14-31-16.png" alt="2020-10-22-14-31-16"><br>批量处理</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token shebang important">#!/bin/bash</span>
+<span class="token comment" spellcheck="true"># 功能：将GB2312文件 转换成 UTF-8【解决Windows文件复制到Linux之后乱码问题】</span>
+<span class="token comment" spellcheck="true">#read -p "Input Path:" SPATH</span>
+SPATH<span class="token operator">=</span><span class="token string">"."</span>
+<span class="token comment" spellcheck="true">#echo $SPATH</span>
+POSTFIX<span class="token operator">=</span><span class="token string">"m"</span>
+param1<span class="token operator">=</span><span class="token string">"<span class="token variable">$1</span>"</span>
+<span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token string">"<span class="token variable">$param1</span>"</span> <span class="token operator">==</span> <span class="token string">"win"</span> <span class="token punctuation">]</span><span class="token punctuation">;</span><span class="token keyword">then</span>
+   sys1<span class="token operator">=</span><span class="token string">"Linux"</span>
+   sys2<span class="token operator">=</span><span class="token string">"Windows"</span>
+   format1<span class="token operator">=</span><span class="token string">"UTF-8"</span>
+   format2<span class="token operator">=</span><span class="token string">"GB2312"</span>
+<span class="token keyword">elif</span> <span class="token punctuation">[</span> <span class="token string">"<span class="token variable">$param1</span>"</span> <span class="token operator">==</span> <span class="token string">"linux"</span> <span class="token punctuation">]</span><span class="token punctuation">;</span><span class="token keyword">then</span>
+   sys1<span class="token operator">=</span><span class="token string">"Windows"</span>
+   sys2<span class="token operator">=</span><span class="token string">"Linux"</span>
+   format1<span class="token operator">=</span><span class="token string">"GB2312"</span>
+   format2<span class="token operator">=</span><span class="token string">"UTF-8"</span>
+<span class="token keyword">else</span>
+   <span class="token keyword">echo</span> <span class="token string">"************** 功能 ************"</span>
+   <span class="token keyword">echo</span> <span class="token string">"  解决matlab脚本文件在Windows和Linux中移动时出现的乱码问题！"</span>
+   <span class="token keyword">echo</span> <span class="token string">"  将该脚本复制到程序文件夹中，运行该脚本，它会对当前文件夹及子文件夹中的所有*.m文件进行格式转换，解决乱码问题。"</span>
+   <span class="token keyword">echo</span> <span class="token string">"  转换到 Linux 的命令: <span class="token variable">$0</span> linux"</span>
+   <span class="token keyword">echo</span> <span class="token string">"  转换到 Window的命令: <span class="token variable">$0</span> win"</span>
+   <span class="token keyword">exit</span>
+<span class="token keyword">fi</span>
+
+<span class="token keyword">echo</span> <span class="token string">"********************************"</span>
+<span class="token keyword">echo</span> <span class="token string">"  格式转换中......"</span>
+<span class="token keyword">echo</span> <span class="token string">"  从"</span><span class="token variable">$sys1</span><span class="token string">"("</span><span class="token variable">$format1</span><span class="token string">") 转换到 "</span><span class="token variable">$sys2</span><span class="token string">"("</span><span class="token variable">$format2</span><span class="token string">")"</span>
+<span class="token keyword">echo</span> <span class="token string">"********************************"</span>
+
+
+FILELIST<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+filelist<span class="token operator">=</span><span class="token variable"><span class="token variable">`</span><span class="token function">ls</span> $SPATH <span class="token variable">`</span></span>
+<span class="token keyword">for</span> filename <span class="token keyword">in</span> <span class="token variable">$filelist</span><span class="token punctuation">;</span> <span class="token keyword">do</span>
+    <span class="token keyword">if</span> <span class="token punctuation">[</span> -f <span class="token variable">$filename</span> <span class="token punctuation">]</span><span class="token punctuation">;</span><span class="token keyword">then</span>
+        <span class="token comment" spellcheck="true">#echo File:$filename</span>
+        <span class="token comment" spellcheck="true">#echo "$&amp;#123;filename#*.&amp;#125;"</span>
+        EXTENSION<span class="token operator">=</span><span class="token string">"$&amp;#123;filename#*.&amp;#125;"</span>
+        <span class="token comment" spellcheck="true">#echo $EXTENSION</span>
+        <span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token string">"<span class="token variable">$EXTENSION</span>"</span> <span class="token operator">==</span> <span class="token string">"<span class="token variable">$POSTFIX</span>"</span> <span class="token punctuation">]</span><span class="token punctuation">;</span><span class="token keyword">then</span>
+           <span class="token comment" spellcheck="true">#echo "$&amp;#123;filename%%.*&amp;#125;"</span>
+           <span class="token keyword">echo</span> Processing: <span class="token variable">$filename</span>
+           <span class="token function">iconv</span> -f <span class="token variable">$format1</span> -t <span class="token variable">$format2</span> <span class="token variable">$filename</span> -o <span class="token variable">$filename</span>
+           <span class="token comment" spellcheck="true">#iconv -f GB2312 -t UTF-8 $filename -o $filename</span>
+        <span class="token keyword">fi</span>
+
+    <span class="token keyword">elif</span> <span class="token punctuation">[</span> -d <span class="token variable">$filename</span> <span class="token punctuation">]</span><span class="token punctuation">;</span><span class="token keyword">then</span>
+        <span class="token function">cd</span> <span class="token variable">$filename</span>
+        SPATH<span class="token operator">=</span><span class="token variable"><span class="token variable">`</span><span class="token function">pwd</span><span class="token variable">`</span></span>
+        <span class="token comment" spellcheck="true">#echo $SPATH</span>
+        FILELIST
+        <span class="token function">cd</span> <span class="token punctuation">..</span>
+    <span class="token keyword">else</span>
+        <span class="token keyword">echo</span> <span class="token string">"<span class="token variable">$SPATH</span>/<span class="token variable">$filename</span> is not a common file."</span>
+    <span class="token keyword">fi</span>
+<span class="token keyword">done</span>
+<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+<span class="token function">cd</span> <span class="token variable">$SPATH</span>
+FILELIST
+<span class="token keyword">echo</span> <span class="token string">"======== Convert Done. ========"</span></code></pre>
+<h2 id="格式化输出规定符"><a href="#格式化输出规定符" class="headerlink" title="格式化输出规定符"></a>格式化输出规定符</h2><p>格式化输出固定符号，基本每个语言都是相同的<br>%d 十进制有符号整数<br>%u 十进制无符号整数<br>%f 浮点数<br>%s 字符串<br>%c 单个字符<br>%p 指针的值<br>%e 指数形式的浮点数<br>%x, %X 无符号以十六进制表示的整数<br>%0 无符号以八进制表示的整数<br>/n 换行<br>/f 清屏并换页<br>/r 回车<br>/t Tab符</p>
+<h2 id="golang中的字符串字节符文和字符"><a href="#golang中的字符串字节符文和字符" class="headerlink" title="golang中的字符串字节符文和字符"></a>golang中的字符串字节符文和字符</h2><p><a target="_blank" rel="noopener" href="https://blog.golang.org/strings">https://blog.golang.org/strings</a></p>
+<h2 id="golang各个字符类数据类型区别"><a href="#golang各个字符类数据类型区别" class="headerlink" title="golang各个字符类数据类型区别"></a>golang各个字符类数据类型区别</h2><p>首先来看单字节的 byte 和unit8，他们是一样都，都是8个bite位 ，表示1个byte。单字节的字符遵守ASCII码表的内容，于是内容如下</p>
+<pre class=" language-go"><code class="language-go"><span class="token keyword">var</span> a <span class="token builtin">byte</span> <span class="token operator">=</span> <span class="token number">65</span>
+<span class="token comment" spellcheck="true">// 8进制写法</span>
+<span class="token keyword">var</span> c <span class="token builtin">byte</span> <span class="token operator">=</span> <span class="token string">'\101'</span>
+<span class="token comment" spellcheck="true">// 16进制写法</span>
+<span class="token keyword">var</span> d <span class="token builtin">byte</span> <span class="token operator">=</span> <span class="token string">'\x41'</span>
+<span class="token keyword">var</span> b <span class="token builtin">uint8</span> <span class="token operator">=</span> <span class="token number">66</span>
+fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"65 is %c, 66 is %c\n"</span><span class="token punctuation">,</span> a<span class="token punctuation">,</span> b<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// 65 is A , 66 is B</span>
+fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"%c,%c\n"</span><span class="token punctuation">,</span> c<span class="token punctuation">,</span> d<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// A,A</span></code></pre>
+<p>接下来是4个byte的内容，也就是uint32的内容，他们表示用来表示Unicode字符<br>如何区分Unicode与ASCII 就看第一组的前缀是否为0</p>
+<pre class=" language-go"><code class="language-go"><span class="token keyword">var</span> xx <span class="token builtin">rune</span> <span class="token operator">=</span> <span class="token string">'A'</span>
+<span class="token keyword">var</span> yy <span class="token builtin">rune</span> <span class="token operator">=</span> <span class="token string">'B'</span>
+<span class="token keyword">var</span> qq <span class="token operator">=</span> <span class="token string">'C'</span>
+fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"x占用字节数为%d"</span><span class="token punctuation">,</span> unsafe<span class="token punctuation">.</span><span class="token function">Sizeof</span><span class="token punctuation">(</span>x<span class="token punctuation">)</span><span class="token punctuation">)</span>                            <span class="token comment" spellcheck="true">// 4</span>
+fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"xx,yy占用字节数为%d,%d"</span><span class="token punctuation">,</span> unsafe<span class="token punctuation">.</span><span class="token function">Sizeof</span><span class="token punctuation">(</span>xx<span class="token punctuation">)</span><span class="token punctuation">,</span> unsafe<span class="token punctuation">.</span><span class="token function">Sizeof</span><span class="token punctuation">(</span>yy<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// 4,4</span>
+fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"x占用字节数为%d"</span><span class="token punctuation">,</span> unsafe<span class="token punctuation">.</span><span class="token function">Sizeof</span><span class="token punctuation">(</span>qq<span class="token punctuation">)</span><span class="token punctuation">)</span>                           <span class="token comment" spellcheck="true">// 4</span></code></pre>
+<p>默认情况下字符都是以rune的形式出现的 ，也就是表示为 uint32<br>使用rune的好处就是可以保存更多的字符类型，包括中文，内容如下</p>
+<pre class=" language-go"><code class="language-go"><span class="token keyword">var</span> qqxx <span class="token builtin">rune</span> <span class="token operator">=</span> <span class="token string">'中'</span>
+fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"qqxx size is %d\n"</span><span class="token punctuation">,</span> unsafe<span class="token punctuation">.</span><span class="token function">Sizeof</span><span class="token punctuation">(</span>qqxx<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// 4</span>
+<span class="token comment" spellcheck="true">//var qqxxx byte = '中' // 这里报错 超出字节大小   constant 20013 overflows byte</span>
+<span class="token comment" spellcheck="true">//fmt.Println(unsafe.Sizeof(qqxxx))</span>
+
+
+<span class="token keyword">var</span> xx <span class="token keyword">interface</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span><span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span> <span class="token operator">=</span> <span class="token string">"hellowrold"</span>  <span class="token comment" spellcheck="true">// is string</span>
+<span class="token keyword">var</span> xxx <span class="token keyword">interface</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span><span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span> <span class="token operator">=</span> <span class="token string">'x'</span> <span class="token comment" spellcheck="true">// is rune</span>
+<span class="token keyword">switch</span> xxx<span class="token punctuation">.</span><span class="token punctuation">(</span><span class="token keyword">type</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+<span class="token keyword">case</span> <span class="token builtin">string</span><span class="token punctuation">:</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"is string"</span><span class="token punctuation">)</span>
+<span class="token keyword">case</span> <span class="token builtin">rune</span><span class="token punctuation">:</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"is rune"</span><span class="token punctuation">)</span>
+<span class="token keyword">case</span> <span class="token builtin">byte</span><span class="token punctuation">:</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"is byte"</span><span class="token punctuation">)</span>
+<span class="token keyword">default</span><span class="token punctuation">:</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"dont know"</span><span class="token punctuation">)</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+
+</code></pre>
+<p>接下来是字符串，上面讲的都是字符，也就是用单引号包裹起来的，但是字符串则是用双引号包裹起来的。字符串的字节数为16</p>
+<pre class=" language-go"><code class="language-go">fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"-------"</span><span class="token punctuation">)</span>
+<span class="token keyword">var</span> zz <span class="token builtin">string</span> <span class="token operator">=</span> <span class="token string">"hello,中国"</span>
+<span class="token keyword">var</span> zzz <span class="token builtin">string</span> <span class="token operator">=</span> <span class="token string">"中"</span>
+fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token function">len</span><span class="token punctuation">(</span>zzz<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// 3</span>
+fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token function">len</span><span class="token punctuation">(</span>zz<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// 12</span>
+fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>unsafe<span class="token punctuation">.</span><span class="token function">Sizeof</span><span class="token punctuation">(</span>zz<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// 16</span>
+fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>unsafe<span class="token punctuation">.</span><span class="token function">Sizeof</span><span class="token punctuation">(</span>zzz<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// 16</span>
+<span class="token keyword">var</span> zzbyte <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span> <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token function">byte</span><span class="token punctuation">(</span>zz<span class="token punctuation">)</span>  
+<span class="token keyword">var</span> zzzbyte <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span> <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token function">byte</span><span class="token punctuation">(</span>zzz<span class="token punctuation">)</span>
+fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>zzbyte<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// [104 101 108 108 111 44 228 184 173 229 155 189] 12</span>
+fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>zzzbyte<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// [228 184 173] 3</span></code></pre>
+<p>golang中<code>len()</code>计算的是字符串的字节的长度</p>
+<p>为什么有了uint8 和 uint32 还要出现byte和rune 这样比较好识别？<br>golang字符串可以表示为[]byte 和[]rune,因此很多方法也都类似。<br>比如</p>
+<pre class=" language-go"><code class="language-go"><span class="token comment" spellcheck="true">// 将 s 中的所有字符修改为大写格式返回</span>
+<span class="token keyword">var</span> xx <span class="token operator">=</span> <span class="token string">"helloworld"</span><span class="token punctuation">;</span>
+xx <span class="token operator">=</span> strings<span class="token punctuation">.</span><span class="token function">ToUpper</span><span class="token punctuation">(</span>xx<span class="token punctuation">)</span>
+fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>xx<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// HELLOWORLD</span>
+<span class="token keyword">var</span> ll <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span> <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span><span class="token string">'h'</span><span class="token punctuation">,</span><span class="token string">'e'</span><span class="token punctuation">,</span><span class="token string">'l'</span><span class="token punctuation">,</span><span class="token string">'l'</span><span class="token punctuation">,</span><span class="token string">'o'</span><span class="token punctuation">,</span><span class="token string">'w'</span><span class="token punctuation">,</span><span class="token string">'o'</span><span class="token punctuation">,</span><span class="token string">'r'</span><span class="token punctuation">,</span><span class="token string">'l'</span><span class="token punctuation">,</span><span class="token string">'d'</span><span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+ll <span class="token operator">=</span> bytes<span class="token punctuation">.</span><span class="token function">ToUpper</span><span class="token punctuation">(</span>ll<span class="token punctuation">)</span>
+fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token function">string</span><span class="token punctuation">(</span>ll<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// HELLOWORLD</span></code></pre>
+<p>Fprintf使用<br>将内容写入到一个实现了Writer接口的变量当中 比如os.stadin</p>
+<pre class=" language-go"><code class="language-go">fmt<span class="token punctuation">.</span><span class="token function">Fprint</span><span class="token punctuation">(</span>os<span class="token punctuation">.</span>Stdin<span class="token punctuation">,</span><span class="token string">"helloworld"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>os<span class="token punctuation">.</span>Stdin<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// helloworld</span></code></pre>
+<h2 id="参考文章如下"><a href="#参考文章如下" class="headerlink" title="参考文章如下"></a>参考文章如下</h2><p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/mp/appmsgalbum?__biz=MzU1NzU1MTM2NA==&amp;action=getalbum&amp;album_id=1337200768771866624&amp;scene=173&amp;from_msgid=2247483669&amp;from_itemidx=1&amp;count=3#wechat_redirect">https://mp.weixin.qq.com/mp/appmsgalbum?__biz=MzU1NzU1MTM2NA==&amp;action=getalbum&amp;album_id=1337200768771866624&amp;scene=173&amp;from_msgid=2247483669&amp;from_itemidx=1&amp;count=3#wechat_redirect</a><br><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzU1NzU1MTM2NA==&amp;mid=2247483673&amp;idx=1&amp;sn=09cc98b3f0b0e89e28c40a5f096c0d73&amp;chksm=fc355b72cb42d26426bd4ae986ea46284b89d3bdf78465686a799684ddfc5f48f128382cc1ae&amp;scene=21#wechat_redirect">https://mp.weixin.qq.com/s?__biz=MzU1NzU1MTM2NA==&amp;mid=2247483673&amp;idx=1&amp;sn=09cc98b3f0b0e89e28c40a5f096c0d73&amp;chksm=fc355b72cb42d26426bd4ae986ea46284b89d3bdf78465686a799684ddfc5f48f128382cc1ae&amp;scene=21#wechat_redirect</a></p>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>标签：</span>
+                <span class="tag">
+                    
+                    
+                    <a href="/tags/golang/"># golang</a>
+                    
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript：window.history.back();">后退</a>
+                <span>· </span>
+                <a href="/">主页</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            <a class="prev" rel="prev" href="/2020/09/09/blog_back_new/golang/golang%E6%96%87%E6%9C%AC%E6%93%8D%E4%BD%9C/">golang文本操作</a>
+            
+            
+            <a class="next" rel="next" href="/2020/09/07/blog_back_new/golang/golang%E6%A0%87%E5%87%86%E5%BA%93Io/">golang标准库io</a>
+            
+        </section>
+    </article>
+</div>
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+    </div>
+</footer>
+
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

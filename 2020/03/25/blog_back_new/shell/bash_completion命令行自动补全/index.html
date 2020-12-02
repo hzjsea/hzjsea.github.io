@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="hzjsea">
+
+
+
+
+
+
+<title>手动编写bash-completion | hzjsea</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+    <script src="/js/jquery.min.js"></script>
+    
+
+
+
+    
+    
+        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+    
+
+
+
+
+    <script>
+    function searchToggle() {
+        const width = $(document.body).width()
+        if(width > 479) {
+            return;
+        }
+        const search = $('.search');
+        const searchForm = $('.form-search')
+
+        if(!search.hasClass("mobile-search")) {
+            search.addClass("mobile-search");
+        } else {
+            search.removeClass("mobile-search");
+        } 
+    }
+
+    function search(searchInputEl, formEl, flag) {
+        const path = "/" + "search.json"; // 可以在public 下查看这个search.json
+        $(formEl).submit(function(e){
+            e.preventDefault();
+            let target = null
+            if(searchInputEl == null) {
+                const screenWidth = $(document.body).width();
+                target = screenWidth > 479 ? $('#pc-search-input') : $('#mobile-search-input');
+                console.log(target);
+            } else {
+                target = $(searchInputEl)
+            }
+
+            if(!flag && target.val() === '') {
+                return ;
+            }
+
+            $("#u-search").fadeIn(500, function() {
+                $("body > .wrapper").addClass("modal-active");
+
+                $.ajax({
+                    url: path,
+                    dataType: "json",
+                    beforeSend: function (xhr) {
+                        $input = target.val();
+                        $(".form-input").val($input);
+                        const loadingBar = $('.search-loading-bar') 
+                        loadingBar.css({
+                            width:'100%',
+                            display: 'block'
+                        });
+                    },
+                    success: function( datas ) {
+                        console.log(datas);
+                        const $resultPanel = $(".modal-body")[0];
+                        let str = `<ul class="modal-results">`;
+                        var keywords = $(".form-input").val().trim().toLowerCase().split(/[\s\-]+/);
+                        $resultPanel.innerHTML = "";
+                        let hasResult = false
+                        let text = `<div class="no-result">找不到与关键词相关的内容....</div>`;
+
+                        if ($(".form-input").val().trim().length <= 0) {
+                            // 没有结果
+                            $resultPanel.innerHTML = text;
+                            return;
+                        }
+                        datas.forEach(function (data, index) {
+                            var isMatch = true;
+                            if (!data.title || data.title.trim() === '') {
+                                data.title = "Untitled";
+                            }
+                            var data_title = data.title.trim().toLowerCase();
+                            var data_content = data.content && data.content.trim().replace(/<[^>]+>/g, "").toLowerCase() || '';
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            // only match artiles with not empty contents
+                            if (data_content !== '') {
+                                keywords.forEach(function (keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        hasResult = true
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            } else {
+                                isMatch = false;
+                            }
+                            // show search results
+                            if (isMatch) {
+                                str += `<li class='result-item'><a href='${data_url}' class='result-item-detail'> <span class="title">${data_title}</span>`;
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 200 characters
+                                    var start = first_occur - 40;
+                                    var end = first_occur + 160;
+
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+
+                                    if (start == 0) {
+                                        end = 200;
+                                    }
+
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+
+                                    var match_content = content.substring(start, end);
+
+                                    // highlight all keywords
+                                    keywords.forEach(function (keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, `<em class="search-keyword">${keyword}</em>`);
+                                    });
+
+                                    str += `<span class="content"> ${match_content} ...</span></a>`;
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        if(hasResult) {
+                            $resultPanel.innerHTML = str;
+                        } else {
+                            $resultPanel.innerHTML = text;
+                        }
+
+                    },
+                    complete: function() {
+                        setTimeout(() => {
+                                const loadingBar = $('.search-loading-bar') 
+                                loadingBar.css({
+                                    width:'0%',
+                                    display: 'none'
+                                });
+                        }, 300)
+                    }
+                });
+            })
+
+        });
+    }
+
+    $(document).ready(function() {
+        $('.modal-close').click(function () { 
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+
+        $('.modal-overlay').click(function() {
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+        search(null, ".form-search", false)
+        search("#u-search-modal-form .form-input", ".u-search-modal-form", true)
+    })
+</script>
+
+
+
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo"><a href="/">hzjsea</a></div>
+        <div class="menu navbar-right">
+            
+            
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="pc-search-input"/>
+        </form>
+    </div>
+
+
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+            <input id="switch_default" type="checkbox" class="switch_default">
+            <label for="switch_default" class="toggleBtn"></label>
+        </div>
+    </div>
+</nav>
+
+
+<nav class="navbar-mobile" id="nav-mobile">
+    <div class="container">
+        <div class="navbar-header">
+            <div>
+                <a href="/">hzjsea</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+            </div>
+            <div class="navbar-mobile-right">
+                
+                
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="mobile-search-input"/>
+        </form>
+    </div>
+
+
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; 目录</div>
+            </div>
+            
+        </div>
+        <div class="menu" id="mobile-menu">
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+        </div>
+    </div>
+</nav>
+
+        <div class="main">
+			<!-- Chic/layout.ejs -->
+ <div id="u-search">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="container">
+                    <form id="u-search-modal-form" class="u-search-modal-form">
+                        <button type="submit" class="form-submit-btn">
+                            <img src="/image/search.png" class="search-btn-img" />
+                        </button>
+                        <input placeholder="搜索文章。。。" class="form-input" id="modal-form-input">
+                    </form>
+                    <a class="modal-close">x</a>
+                </div>
+                <div class="search-loading">
+                    <div class="search-loading-bar"></div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <!-- ul 格式如下 -->
+                <!-- <ul class="modal-results">
+                    <li class="result-item">
+                        <a class="result-item-detail">
+                            <span class="title">页面配置</span>
+                            <span class="content">
+                                content
+                            </span>
+                        </a>
+                    </li>
+                </ul> -->
+            </div>
+        </div>
+        <div class="modal-overlay"></div>
+    </div>
+            <div class="container">
+    
+    
+    <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">全部展开</a>
+        <a onclick="go_top()">回到顶部</a>
+        <a onclick="go_bottom()">回到底部</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "全部折叠"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "全部展开"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">手动编写bash-completion</h1>
+            
+            <div class="post-meta">
+                
+                作者： <a itemprop="author" rel="author" href="/">hzjsea</a>&nbsp;
+                
+
+                
+                <span class="post-time">
+                    创建日期： <a
+                        href="#">March 25, 2020&nbsp;&nbsp;11:37:02</a>
+                </span>&nbsp;
+                
+                
+                <span class="post-category">
+                    分类：
+                    
+                    <a href="/categories/shell/">shell</a>&nbsp;
+                    
+                </span>
+                
+                
+                状态：<a href="#">SNAPSHOT</a>
+                
+            </div>
+            
+        </header>
+
+        <div class="post-content">
+            <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+<ul>
+<li><a href="#%E6%89%8B%E5%8A%A8%E7%BC%96%E5%86%99bash-completion">手动编写bash-completion</a><ul>
+<li><a href="#%E5%87%86%E5%A4%87%E9%98%B6%E6%AE%B5">准备阶段</a><ul>
+<li><a href="#complete%E5%91%BD%E4%BB%A4">complete命令</a></li>
+<li><a href="#compgen-%E7%AD%9B%E9%80%89%E5%91%BD%E4%BB%A4">compgen 筛选命令</a></li>
+<li><a href="#compopt-%E4%BF%AE%E6%94%B9%E8%A1%A5%E5%85%A8%E5%91%BD%E4%BB%A4%E8%AE%BE%E7%BD%AE">compopt 修改补全命令设置</a></li>
+<li><a href="#%E5%86%85%E7%BD%AE%E8%A1%A5%E5%85%A8%E5%91%BD%E4%BB%A4">内置补全命令</a></li>
+</ul>
+</li>
+<li><a href="#%E6%9E%84%E5%BB%BA%E4%B8%80%E4%B8%AA%E8%87%AA%E5%8A%A8%E5%AE%8C%E6%88%90%E7%9A%84%E6%9B%BF%E8%A1%A5%E5%B7%A5%E5%85%B7">构建一个自动完成的替补工具</a><ul>
+<li><a href="#%E8%87%AA%E5%8A%A8%E8%A1%A5%E5%85%A8%E6%A8%A1%E6%9D%BF">自动补全模板</a></li>
+</ul>
+</li>
+<li><a href="#%E6%9E%84%E5%BB%BA%E4%B8%80%E4%B8%AA%E6%96%87%E6%9C%AC%E7%AD%9B%E9%80%89%E7%B3%BB%E7%BB%9F">构建一个文本筛选系统</a></li>
+<li><a href="#%E6%9B%B4%E9%AB%98%E7%BA%A7%E7%9A%84%E5%86%99%E6%B3%95">更高级的写法</a></li>
+<li><a href="#%E8%87%AA%E5%8A%A8%E5%AE%8C%E6%88%90%E8%84%9A%E6%9C%AC%E5%AE%9E%E4%BE%8B">自动完成脚本实例</a></li>
+<li><a href="#sws%E5%AE%9E%E4%BE%8B">sws实例</a></li>
+</ul>
+</li>
+</ul>
+<!-- /code_chunk_output -->
+<a id="more"></a>
+<h1 id="手动编写bash-completion"><a href="#手动编写bash-completion" class="headerlink" title="手动编写bash-completion"></a>手动编写bash-completion</h1><p>bash提供了一个complete内建命令，它的用途是规定参数怎么自动补全。 有了它，第三方开发的命令就可以根据自己的实际情况指定自动提示功能了！<br>具体的，我们可以用man来查看这个内建命令</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token function">man</span> complete</code></pre>
+<p>同样的，我们也可以编写自己的补全命令脚本，通过bash_completion这个包来完成，<br>首先安装这个包</p>
+<pre class=" language-bash"><code class="language-bash">yum <span class="token function">install</span> bash-completion -y</code></pre>
+<p>安装完成之后，我们来看一下他安装的目录环境</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span>root@node bash_completion.d<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># rpm -ql bash-completion</span>
+/etc/bash_completion.d
+/etc/bash_completion.d/redefine_filedir
+/etc/profile.d/bash_completion.sh
+/usr/share/bash-completion</code></pre>
+<p>其中<code>/etc/bash_completion.d/</code>下面是用来放这些自动化补全脚本的， 然后通过<code>/etc/profile.d/bash_completion.sh</code>这个脚本来引入，其中/etc/profile.d下面的sh脚本是对系统中的所有用户都适用的<br>,并且在每次登录的时候都会加载</p>
+<p>然后这个<code>redefine_filedir</code>貌似是一个读取文件的脚本<br>然后这个<code>bash_completion</code>会去读取/etc/bash_completion.d/下面的脚本文件</p>
+<pre class=" language-bash"><code class="language-bash">  <span class="token comment" spellcheck="true"># Check for interactive bash and that we haven't already been sourced.</span>
+  <span class="token punctuation">[</span> -z <span class="token string">"<span class="token variable">$BASH_VERSION</span>"</span> -o -z <span class="token string">"<span class="token variable">$PS1</span>"</span> -o -n <span class="token string">"<span class="token variable">$BASH_COMPLETION_COMPAT_DIR</span>"</span> <span class="token punctuation">]</span> <span class="token operator">&amp;&amp;</span> <span class="token keyword">return</span>
+
+  <span class="token comment" spellcheck="true"># Check for recent enough version of bash.</span>
+  bash<span class="token operator">=</span>$<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;BASH_VERSION%.*&amp;#125;; bmajor=$&amp;#123;bash%.*&amp;#125;; bminor=$&amp;#123;bash#*.&amp;#125;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token variable">$bmajor</span> -gt 4 <span class="token punctuation">]</span> <span class="token operator">||</span> <span class="token punctuation">[</span> <span class="token variable">$bmajor</span> -eq 4 -a <span class="token variable">$bminor</span> -ge 1 <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
+      <span class="token punctuation">[</span> -r <span class="token string">"$&amp;#123;XDG_CONFIG_HOME:-<span class="token variable">$HOME</span>/.config&amp;#125;/bash_completion"</span> <span class="token punctuation">]</span> <span class="token operator">&amp;&amp;</span> \
+          <span class="token keyword">.</span> <span class="token string">"$&amp;#123;XDG_CONFIG_HOME:-<span class="token variable">$HOME</span>/.config&amp;#125;/bash_completion"</span>
+      <span class="token keyword">if</span> <span class="token function">shopt</span> -q progcomp <span class="token operator">&amp;&amp;</span> <span class="token punctuation">[</span> -r /usr/share/bash-completion/bash_completion <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
+          <span class="token comment" spellcheck="true"># Source completion code.</span>
+          <span class="token keyword">.</span> /usr/share/bash-completion/bash_completion
+      <span class="token keyword">fi</span>
+  <span class="token keyword">fi</span>
+  unset <span class="token function">bash</span> bmajor bminor</code></pre>
+<h2 id="准备阶段"><a href="#准备阶段" class="headerlink" title="准备阶段"></a>准备阶段</h2><p>首先完成这个自动补全命令需要一些其他命令来做补充</p>
+<h3 id="complete命令"><a href="#complete命令" class="headerlink" title="complete命令"></a>complete命令</h3><p>这个命令是一个补全命令</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span>root@node ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># help complete</span>
+complete: complete <span class="token punctuation">[</span>-abcdefgjksuv<span class="token punctuation">]</span> <span class="token punctuation">[</span>-pr<span class="token punctuation">]</span> <span class="token punctuation">[</span>-DE<span class="token punctuation">]</span> <span class="token punctuation">[</span>-o option<span class="token punctuation">]</span> <span class="token punctuation">[</span>-A action<span class="token punctuation">]</span> <span class="token punctuation">[</span>-G globpat<span class="token punctuation">]</span> <span class="token punctuation">[</span>-W wordlist<span class="token punctuation">]</span>  <span class="token punctuation">[</span>-F function<span class="token punctuation">]</span> <span class="token punctuation">[</span>-C command<span class="token punctuation">]</span> <span class="token punctuation">[</span>-X filterpat<span class="token punctuation">]</span> <span class="token punctuation">[</span>-P prefix<span class="token punctuation">]</span> <span class="token punctuation">[</span>-S suffix<span class="token punctuation">]</span> <span class="token punctuation">[</span>name <span class="token punctuation">..</span>.<span class="token punctuation">]</span>
+    Specify how arguments are to be completed by Readline.
+    指明
+    For each NAME, specify how arguments are to be completed.  If no options
+    are supplied, existing completion specifications are printed <span class="token keyword">in</span> a way that
+    allows them to be reused as input.
+
+    Options:
+      -p        print existing completion specifications <span class="token keyword">in</span> a reusable <span class="token function">format</span>
+      -r        remove a completion specification <span class="token keyword">for</span> each NAME, or, <span class="token keyword">if</span> no
+        NAMEs are supplied, all completion specifications
+      -D        apply the completions and actions as the default <span class="token keyword">for</span> commands
+        without any specific completion defined
+      -E        apply the completions and actions to <span class="token string">"empty"</span> commands --
+        completion attempted on a blank line
+
+    When completion is attempted, the actions are applied <span class="token keyword">in</span> the order the
+    uppercase-letter options are listed above.  The -D option takes
+    precedence over -E.
+
+    Exit Status:
+    Returns success unless an invalid option is supplied or an error occurs.</code></pre>
+<h3 id="compgen-筛选命令"><a href="#compgen-筛选命令" class="headerlink" title="compgen 筛选命令"></a>compgen 筛选命令</h3><p>用来筛选生成匹配的候选补全结果<br>就是用来</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span>root@node ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># help compgen</span>
+compgen: compgen <span class="token punctuation">[</span>-abcdefgjksuv<span class="token punctuation">]</span> <span class="token punctuation">[</span>-o option<span class="token punctuation">]</span>  <span class="token punctuation">[</span>-A action<span class="token punctuation">]</span> <span class="token punctuation">[</span>-G globpat<span class="token punctuation">]</span> <span class="token punctuation">[</span>-W wordlist<span class="token punctuation">]</span>  <span class="token punctuation">[</span>-F function<span class="token punctuation">]</span> <span class="token punctuation">[</span>-C command<span class="token punctuation">]</span> <span class="token punctuation">[</span>-X filterpat<span class="token punctuation">]</span> <span class="token punctuation">[</span>-P prefix<span class="token punctuation">]</span> <span class="token punctuation">[</span>-S suffix<span class="token punctuation">]</span> <span class="token punctuation">[</span>word<span class="token punctuation">]</span>
+    Display possible completions depending on the options.
+
+    Intended to be used from within a shell <span class="token keyword">function</span> generating possible
+    completions.  If the optional WORD argument is supplied, matches against
+    WORD are generated.
+
+    Exit Status:
+    Returns success unless an invalid option is supplied or an error occurs.</code></pre>
+<p><code>- W wordlist</code> 分割wordlist中的单词，生成候选补全列表<br><code>compgen -w &quot;aa ab ac ad ae&quot; -- &quot;a&quot;</code> 这个表示从”aa ab ac ad ae”中匹配出”a”开头的单词</p>
+<h3 id="compopt-修改补全命令设置"><a href="#compopt-修改补全命令设置" class="headerlink" title="compopt 修改补全命令设置"></a>compopt 修改补全命令设置</h3><p>用于修改补全命令设置，这个命令必须在补全函数中使用，否则会报错。</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span>root@node ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># help compopt</span>
+compopt: compopt <span class="token punctuation">[</span>-o<span class="token operator">|</span>+o option<span class="token punctuation">]</span> <span class="token punctuation">[</span>-DE<span class="token punctuation">]</span> <span class="token punctuation">[</span>name <span class="token punctuation">..</span>.<span class="token punctuation">]</span>
+    Modify or display completion options.
+
+    Modify the completion options <span class="token keyword">for</span> each NAME, or, <span class="token keyword">if</span> no NAMEs are supplied,
+    the completion currently being executed.  If no OPTIONs are given, print
+    the completion options <span class="token keyword">for</span> each NAME or the current completion specification.
+
+    Options:
+        -o option       Set completion option OPTION <span class="token keyword">for</span> each NAME
+        -D              Change options <span class="token keyword">for</span> the <span class="token string">"default"</span> <span class="token function">command</span> completion
+        -E              Change options <span class="token keyword">for</span> the <span class="token string">"empty"</span> <span class="token function">command</span> completion</code></pre>
+<p><code>+o option 启用option配置</code><br><code>-o option 弃用option配置</code></p>
+<h3 id="内置补全命令"><a href="#内置补全命令" class="headerlink" title="内置补全命令"></a>内置补全命令</h3><table>
+<thead>
+<tr>
+<th>variable</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>COMP_WORDS</td>
+<td>类型为数组，存放当前命令行中输入的所有单词</td>
+</tr>
+<tr>
+<td>COMP_CWORD</td>
+<td>类型为整数，当前输入的单词在COMP_WORDS中的索引</td>
+</tr>
+<tr>
+<td>COMPREPLY</td>
+<td>类型为数组，候选的补全结果</td>
+</tr>
+<tr>
+<td>COMP_WORDBREAKS</td>
+<td>类型为字符串，表示单词之间的分隔符</td>
+</tr>
+<tr>
+<td>COMP_LINE</td>
+<td>类型为字符串，表示当前的命令行输入字符</td>
+</tr>
+<tr>
+<td>COMP_POINT</td>
+<td>类型为整数，表示光标在当前命令行的哪个位置</td>
+</tr>
+</tbody></table>
+<h2 id="构建一个自动完成的替补工具"><a href="#构建一个自动完成的替补工具" class="headerlink" title="构建一个自动完成的替补工具"></a>构建一个自动完成的替补工具</h2><p>自动补全脚本</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># vi /etc/completion.d/ws</span>
+_start<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+    <span class="token comment" spellcheck="true"># 数组，又来收集提醒的内容</span>
+    COMPREPLY<span class="token operator">=</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+    <span class="token comment" spellcheck="true"># 返回当前输入的参数</span>
+    local cur<span class="token operator">=</span>$<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;COMP_WORDS[COMP_CWORD]&amp;#125;</span>
+    <span class="token comment" spellcheck="true"># 返回当前输入的</span>
+    local cmd<span class="token operator">=</span>$<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;COMP_WORDS[COMP_CWORD-1]&amp;#125;</span>
+    <span class="token keyword">case</span> <span class="token variable">$cmd</span>  <span class="token keyword">in</span> 
+        <span class="token string">'ws'</span><span class="token punctuation">)</span>
+        COMPREPLY<span class="token operator">=</span><span class="token punctuation">(</span><span class="token punctuation">$(</span>compgen -W <span class="token string">'--word1 --word2 --word3'</span> -- <span class="token variable">$cur</span><span class="token punctuation">))</span>
+        <span class="token punctuation">;</span><span class="token punctuation">;</span>
+        <span class="token string">'--word1'</span><span class="token punctuation">)</span>
+        COMPREPLY<span class="token operator">=</span><span class="token punctuation">(</span><span class="token punctuation">$(</span>compgen -W <span class="token string">'--exec1 --exec2 --exec3'</span> -- <span class="token variable">$cur</span><span class="token punctuation">))</span>
+        <span class="token punctuation">;</span><span class="token punctuation">;</span>
+    esac
+    <span class="token keyword">return</span> 0
+
+<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+complete -F _start ws</code></pre>
+<p>启动命令 ，或者重新登录一下，反正放在这个文件夹下面的脚本都会在用户登录的时候去加载<br><code>source ws</code></p>
+<p>使用命令</p>
+<pre class=" language-bash"><code class="language-bash">ws <span class="token punctuation">[</span>TAb<span class="token punctuation">]</span><span class="token punctuation">[</span>TAb<span class="token punctuation">]</span> <span class="token comment" spellcheck="true">#就会有提示出来了</span></code></pre>
+<h3 id="自动补全模板"><a href="#自动补全模板" class="headerlink" title="自动补全模板"></a>自动补全模板</h3><pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># vi /etc/completion.d/&amp;#123;&amp;#123;name&amp;#125;&amp;#125;</span>
+_start<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+    <span class="token comment" spellcheck="true"># 数组，又来收集提醒的内容</span>
+    COMPREPLY<span class="token operator">=</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token comment" spellcheck="true"># 返回当前输入的参数</span>
+    local cur<span class="token operator">=</span>$<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;COMP_WORDS[COMP_CWORD]&amp;#125;</span>
+    <span class="token comment" spellcheck="true"># 返回当前输入的</span>
+    local cmd<span class="token operator">=</span>$<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;COMP_WORDS[COMP_CWORD-1]&amp;#125;</span>
+    <span class="token keyword">case</span> <span class="token variable">$cmd</span>  <span class="token keyword">in</span> 
+        <span class="token string">'arg1'</span><span class="token punctuation">)</span>
+        COMPREPLY<span class="token operator">=</span><span class="token punctuation">(</span><span class="token punctuation">$(</span>compgen -W <span class="token string">'&amp;#123;&amp;#123;argument&amp;#125;&amp;#125;'</span> -- <span class="token variable">$cur</span><span class="token punctuation">))</span>
+        <span class="token punctuation">;</span><span class="token punctuation">;</span>
+        <span class="token string">'arg2'</span><span class="token punctuation">)</span>
+        COMPREPLY<span class="token operator">=</span><span class="token punctuation">(</span><span class="token punctuation">$(</span>compgen -W <span class="token string">'&amp;#123;&amp;#123;argument&amp;#125;&amp;#125;'</span> -- <span class="token variable">$cur</span><span class="token punctuation">))</span>
+        <span class="token punctuation">;</span><span class="token punctuation">;</span>
+    esac
+    <span class="token keyword">return</span> 0
+
+<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+complete -F _start <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;&amp;#123;name&amp;#125;&amp;#125;</span></code></pre>
+<h2 id="构建一个文本筛选系统"><a href="#构建一个文本筛选系统" class="headerlink" title="构建一个文本筛选系统"></a>构建一个文本筛选系统</h2><p>同Upai里面的一个sws 自动补全工具</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 创建过滤文本 类似如下</span>
+<span class="token punctuation">[</span>EDGE-SWITCH<span class="token punctuation">]</span>
+ZEN-CN-HKG-S01 ansible_ssh_<span class="token operator">=</span>ip_host_example T1/0/22
+CMN-SC-CTU4-S01 ansible_ssh_<span class="token operator">=</span>ip_host_example T1/0/48
+CUN-FJ-XMN-S01 ansible_ssh_<span class="token operator">=</span>ip_host_example uplink<span class="token operator">=</span>T2/0/49
+CUN-SD-DEZ-S01 ansible_ssh_<span class="token operator">=</span>ip_host_example uplink<span class="token operator">=</span>T1/0/49
+CTN-SN-XIY-S01 ansible_ssh_<span class="token operator">=</span>ip_host_example uplink<span class="token operator">=</span>B100
+CTN-JS-TAZ-S01 ansible_ssh_<span class="token operator">=</span>ip_host_example uplink<span class="token operator">=</span>B100
+GWN-BJ-PEK-S01 ansible_ssh_<span class="token operator">=</span>ip_host_example uplink<span class="token operator">=</span>T1/0/24
+CTN-FJ-FOC-S01 ansible_ssh_<span class="token operator">=</span>ip_host_example uplink<span class="token operator">=</span>B110
+CMN-JS-CZX-S01 ansible_ssh_<span class="token operator">=</span>ip_host_example uplink<span class="token operator">=</span>B100
+CMN-JS-CZX-S02 ansible_ssh_<span class="token operator">=</span>ip_host_example uplink<span class="token operator">=</span>B100
+CTN-ZJ-JGH-S01 ansible_ssh_<span class="token operator">=</span>ip_host_example uplink<span class="token operator">=</span>T1/0/49
+CMN-HA-CGO1-S01 ansible_ssh_<span class="token operator">=</span>ip_host_example uplink<span class="token operator">=</span>T1/0/46,T1/0/47,T1/0/48
+CTN-GD-JIM2-S01 ansible_ssh_<span class="token operator">=</span>ip_host_example uplink<span class="token operator">=</span>B100
+CTN-LN-ENX-S01 ansible_ssh_<span class="token operator">=</span>ip_host_example uplink<span class="token operator">=</span>T1/0/49
+CUN-ZJ-HUZ-S01 ansible_ssh_<span class="token operator">=</span>ip_host_example uplink<span class="token operator">=</span>T1/0/52
+GWN-SH-SHA-S01 ansible_ssh_<span class="token operator">=</span>ip_host_example uplink<span class="token operator">=</span>T1/0/48
+<span class="token comment" spellcheck="true">#CTN-SN-TOC-S01 ansible_ssh_=ip_host_example uplink=B110</span>
+NTT-US-LAX-S01 ansible_ssh_<span class="token operator">=</span>ip_host_example uplink<span class="token operator">=</span>B100
+CMN-SD-TNA-S01 ansible_ssh_<span class="token operator">=</span>ip_host_example uplink<span class="token operator">=</span>B130
+CMN-GD-CAN-S01 ansible_ssh_<span class="token operator">=</span>ip_host_example uplink<span class="token operator">=</span>B1
+GTT-DE-FRA-S01 ansible_ssh_<span class="token operator">=</span>ip_host_example uplink<span class="token operator">=</span>T1/0/49
+SGT-SG-SIN-S01 ansible_ssh_<span class="token operator">=</span>ip_host_example uplink<span class="token operator">=</span>T1/0/49
+CUN-SD-LYI-S02 ansible_ssh_<span class="token operator">=</span>ip_host_example uplink<span class="token operator">=</span>B200
+PCW-CN-HKG-S01 ansible_ssh_<span class="token operator">=</span>ip_host_example uplink<span class="token operator">=</span>T1/0/48
+NTT-CN-HKG-S01 ansible_ssh_<span class="token operator">=</span>ip_host_example uplink<span class="token operator">=</span>T1/0/48
+NTT-CN-HKG-S02 ansible_ssh_<span class="token operator">=</span>ip_host_example uplink<span class="token operator">=</span>T1/0/52</code></pre>
+<p>创建自动补全脚本</p>
+<pre class=" language-bash"><code class="language-bash">  <span class="token comment" spellcheck="true"># vi /etc/completion.d/sws</span>
+  target_file<span class="token operator">=</span><span class="token string">"/root/hzj/pro_shell/sws/inventory"</span>
+  _start<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+      <span class="token comment" spellcheck="true"># 数组，用来收集提醒的内容</span>
+      COMPREPLY<span class="token operator">=</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+      <span class="token comment" spellcheck="true"># 返回当前输入的参数</span>
+      local cur<span class="token operator">=</span>$<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;COMP_WORDS[COMP_CWORD]&amp;#125;</span>
+      <span class="token comment" spellcheck="true"># 返回当前输入的</span>
+      local cmd<span class="token operator">=</span>$<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;COMP_WORDS[COMP_CWORD-1]&amp;#125;</span>
+  ▏       ▏       <span class="token comment" spellcheck="true"># 做参数整理</span>
+  ▏         cur<span class="token operator">=</span><span class="token punctuation">$(</span>echo <span class="token variable">$cur</span> <span class="token operator">|</span><span class="token function">tr</span> <span class="token string">'[:lower:]'</span> <span class="token string">'[:upper:]'</span><span class="token operator">|</span> <span class="token function">tr</span> <span class="token string">'.'</span> <span class="token string">'-'</span><span class="token punctuation">)</span>
+  ▏       ▏       <span class="token comment" spellcheck="true">#输出参数</span>
+  ▏       ▏       <span class="token keyword">if</span> <span class="token punctuation">[</span> $<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;cur&amp;#125;  ]</span>
+  ▏       ▏       <span class="token keyword">then</span>
+  ▏       ▏       ▏       machines<span class="token operator">=</span><span class="token punctuation">$(</span>grep -e <span class="token string">"^$&amp;#123;cur&amp;#125;"</span> <span class="token variable">$target_file</span> <span class="token punctuation">)</span>
+  ▏       ▏       ▏       COMPREPLY<span class="token operator">=</span><span class="token punctuation">(</span><span class="token punctuation">$(</span>compgen -W <span class="token string">'<span class="token variable">$machines</span>'</span> -- <span class="token variable">$cur</span><span class="token punctuation">))</span>
+  ▏       ▏       ▏       <span class="token keyword">return</span> 0
+  ▏       ▏       <span class="token keyword">fi</span>
+
+  <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+  complete -F _start sws</code></pre>
+<p>创建脚本</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token keyword">echo</span> <span class="token string">'echo echo "hello world"'</span> <span class="token operator">></span> /hzj/pro_shell/sws</code></pre>
+<h2 id="更高级的写法"><a href="#更高级的写法" class="headerlink" title="更高级的写法"></a>更高级的写法</h2><p>如果你用的是zsh，那么补全命令应该在/root/.zsh/completion/下面<br>上面只是一些小小的个例写法，另外高级的可以抛弃他给的那些内建函数，自己写,比如upssh</p>
+<h2 id="自动完成脚本实例"><a href="#自动完成脚本实例" class="headerlink" title="自动完成脚本实例"></a>自动完成脚本实例</h2><pre class=" language-bash"><code class="language-bash"><span class="token shebang important">#!/bin/bash</span>
+
+_start<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+    <span class="token comment" spellcheck="true"># 数组，又来收集提醒的内容</span>
+    COMPREPLY<span class="token operator">=</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+    local cur<span class="token operator">=</span>$<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;COMP_WORDS[COMP_CWORD]&amp;#125;</span>
+    <span class="token keyword">echo</span> <span class="token variable">$cur</span>
+    local cmd<span class="token operator">=</span>$<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;COMP_WORDS[COMP_CWORD-1]&amp;#125;</span>
+    <span class="token keyword">echo</span> <span class="token variable">$cmd</span>
+    <span class="token keyword">case</span> <span class="token variable">$cmd</span>  <span class="token keyword">in</span> 
+        <span class="token string">'./06_sws.sh'</span><span class="token punctuation">)</span>
+        COMPREPLY<span class="token operator">=</span><span class="token punctuation">(</span><span class="token punctuation">$(</span>compgen -W <span class="token string">'--word1 --word2 --word3'</span> -- <span class="token variable">$cur</span><span class="token punctuation">))</span>
+        <span class="token punctuation">;</span><span class="token punctuation">;</span>
+        <span class="token string">'--word1'</span><span class="token punctuation">)</span>
+        COMPREPLY<span class="token operator">=</span><span class="token punctuation">(</span><span class="token punctuation">$(</span>compgen -W <span class="token string">'--exec1 --exec2 --exec3'</span> -- <span class="token variable">$cur</span><span class="token punctuation">))</span>
+        <span class="token punctuation">;</span><span class="token punctuation">;</span>
+    esac
+    <span class="token keyword">return</span> 0
+
+<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+complete -F _start ./06_sws.sh
+</code></pre>
+<h2 id="sws实例"><a href="#sws实例" class="headerlink" title="sws实例"></a>sws实例</h2><pre class=" language-bash"><code class="language-bash"><span class="token shebang important">#!/bin/bash</span>
+usage<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+<span class="token keyword">echo</span>  <span class="token string">"Usage:  -p port [ default: 22 ]
+        -u user [ default: admin ]
+        &lt;-i> [ default: /root/.ssh/swmgmt ]"</span>
+<span class="token keyword">exit</span> 1
+<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+
+<span class="token keyword">while</span> <span class="token function">getopts</span> <span class="token string">"p:u:i:"</span> OPT <span class="token operator">></span> /dev/null 2<span class="token operator">></span><span class="token operator">&amp;</span>1
+    <span class="token keyword">do</span>
+        <span class="token keyword">case</span> <span class="token variable">$OPT</span> <span class="token keyword">in</span>
+            p<span class="token punctuation">)</span>
+             PORT<span class="token operator">=</span><span class="token variable">$OPTARG</span>
+              <span class="token punctuation">;</span><span class="token punctuation">;</span>
+            u<span class="token punctuation">)</span>
+              USER<span class="token operator">=</span><span class="token variable">$OPTARG</span>
+              <span class="token punctuation">;</span><span class="token punctuation">;</span>
+            i<span class="token punctuation">)</span>
+              IDY_FILE<span class="token operator">=</span><span class="token variable">$OPTARG</span>
+              <span class="token punctuation">;</span><span class="token punctuation">;</span>
+            *<span class="token punctuation">)</span>
+              usage
+              <span class="token punctuation">;</span><span class="token punctuation">;</span>
+         esac
+<span class="token keyword">done</span>
+
+
+<span class="token function">shift</span> <span class="token variable"><span class="token variable">$((</span>$OPTIND <span class="token operator">-</span> <span class="token number">1</span><span class="token variable">))</span></span>
+
+
+<span class="token comment" spellcheck="true"># 匹配IP</span>
+<span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token variable">$@</span> <span class="token punctuation">]</span>
+   <span class="token keyword">then</span>
+      IP<span class="token operator">=</span>$<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;@#*/&amp;#125;</span>
+<span class="token keyword">else</span>
+    usage
+<span class="token keyword">fi</span>
+
+<span class="token comment" spellcheck="true"># 匹配端口</span>
+PORT<span class="token operator">=</span>$<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;PORT:=22&amp;#125;</span>
+
+<span class="token comment" spellcheck="true"># 匹配用户</span>
+USER<span class="token operator">=</span>admin
+
+<span class="token comment" spellcheck="true"># 匹配秘钥</span>
+IDY_FILE<span class="token operator">=</span>$<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;IDY_FILE:=/root/.ssh/swmgmt&amp;#125;</span>
+
+
+
+OPTIONS<span class="token operator">=</span><span class="token string">"-p $&amp;#123;PORT&amp;#125;"</span>
+
+<span class="token punctuation">[</span> -e $<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;IDY_FILE&amp;#125; ] &amp;&amp; OPTIONS="$&amp;#123;OPTIONS&amp;#125; -i $&amp;#123;IDY_FILE&amp;#125;"</span>
+
+<span class="token function">ssh</span> $<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;OPTIONS&amp;#125; $&amp;#123;USER&amp;#125;@$&amp;#123;IP&amp;#125;</span></code></pre>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>标签：</span>
+                <span class="tag">
+                    
+                    
+                    <a href="/tags/shell/"># shell</a>
+                    
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript：window.history.back();">后退</a>
+                <span>· </span>
+                <a href="/">主页</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            <a class="prev" rel="prev" href="/2020/03/26/blog_back_new/shell/linuxtr%E5%91%BD%E4%BB%A4%E4%BD%BF%E7%94%A8/">tr命令</a>
+            
+            
+            <a class="next" rel="next" href="/2020/03/23/blog_back_new/Python/vscode%E4%B8%AD%E6%B7%BB%E5%8A%A0python%E8%99%9A%E6%8B%9F%E7%8E%AF%E5%A2%83/">vscode中添加python虚拟环境</a>
+            
+        </section>
+    </article>
+</div>
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+    </div>
+</footer>
+
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

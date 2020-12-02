@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="hzjsea">
+
+
+
+
+
+
+<title>flag库 | hzjsea</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+    <script src="/js/jquery.min.js"></script>
+    
+
+
+
+    
+    
+        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+    
+
+
+
+
+    <script>
+    function searchToggle() {
+        const width = $(document.body).width()
+        if(width > 479) {
+            return;
+        }
+        const search = $('.search');
+        const searchForm = $('.form-search')
+
+        if(!search.hasClass("mobile-search")) {
+            search.addClass("mobile-search");
+        } else {
+            search.removeClass("mobile-search");
+        } 
+    }
+
+    function search(searchInputEl, formEl, flag) {
+        const path = "/" + "search.json"; // 可以在public 下查看这个search.json
+        $(formEl).submit(function(e){
+            e.preventDefault();
+            let target = null
+            if(searchInputEl == null) {
+                const screenWidth = $(document.body).width();
+                target = screenWidth > 479 ? $('#pc-search-input') : $('#mobile-search-input');
+                console.log(target);
+            } else {
+                target = $(searchInputEl)
+            }
+
+            if(!flag && target.val() === '') {
+                return ;
+            }
+
+            $("#u-search").fadeIn(500, function() {
+                $("body > .wrapper").addClass("modal-active");
+
+                $.ajax({
+                    url: path,
+                    dataType: "json",
+                    beforeSend: function (xhr) {
+                        $input = target.val();
+                        $(".form-input").val($input);
+                        const loadingBar = $('.search-loading-bar') 
+                        loadingBar.css({
+                            width:'100%',
+                            display: 'block'
+                        });
+                    },
+                    success: function( datas ) {
+                        console.log(datas);
+                        const $resultPanel = $(".modal-body")[0];
+                        let str = `<ul class="modal-results">`;
+                        var keywords = $(".form-input").val().trim().toLowerCase().split(/[\s\-]+/);
+                        $resultPanel.innerHTML = "";
+                        let hasResult = false
+                        let text = `<div class="no-result">找不到与关键词相关的内容....</div>`;
+
+                        if ($(".form-input").val().trim().length <= 0) {
+                            // 没有结果
+                            $resultPanel.innerHTML = text;
+                            return;
+                        }
+                        datas.forEach(function (data, index) {
+                            var isMatch = true;
+                            if (!data.title || data.title.trim() === '') {
+                                data.title = "Untitled";
+                            }
+                            var data_title = data.title.trim().toLowerCase();
+                            var data_content = data.content && data.content.trim().replace(/<[^>]+>/g, "").toLowerCase() || '';
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            // only match artiles with not empty contents
+                            if (data_content !== '') {
+                                keywords.forEach(function (keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        hasResult = true
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            } else {
+                                isMatch = false;
+                            }
+                            // show search results
+                            if (isMatch) {
+                                str += `<li class='result-item'><a href='${data_url}' class='result-item-detail'> <span class="title">${data_title}</span>`;
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 200 characters
+                                    var start = first_occur - 40;
+                                    var end = first_occur + 160;
+
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+
+                                    if (start == 0) {
+                                        end = 200;
+                                    }
+
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+
+                                    var match_content = content.substring(start, end);
+
+                                    // highlight all keywords
+                                    keywords.forEach(function (keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, `<em class="search-keyword">${keyword}</em>`);
+                                    });
+
+                                    str += `<span class="content"> ${match_content} ...</span></a>`;
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        if(hasResult) {
+                            $resultPanel.innerHTML = str;
+                        } else {
+                            $resultPanel.innerHTML = text;
+                        }
+
+                    },
+                    complete: function() {
+                        setTimeout(() => {
+                                const loadingBar = $('.search-loading-bar') 
+                                loadingBar.css({
+                                    width:'0%',
+                                    display: 'none'
+                                });
+                        }, 300)
+                    }
+                });
+            })
+
+        });
+    }
+
+    $(document).ready(function() {
+        $('.modal-close').click(function () { 
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+
+        $('.modal-overlay').click(function() {
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+        search(null, ".form-search", false)
+        search("#u-search-modal-form .form-input", ".u-search-modal-form", true)
+    })
+</script>
+
+
+
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo"><a href="/">hzjsea</a></div>
+        <div class="menu navbar-right">
+            
+            
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="pc-search-input"/>
+        </form>
+    </div>
+
+
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+            <input id="switch_default" type="checkbox" class="switch_default">
+            <label for="switch_default" class="toggleBtn"></label>
+        </div>
+    </div>
+</nav>
+
+
+<nav class="navbar-mobile" id="nav-mobile">
+    <div class="container">
+        <div class="navbar-header">
+            <div>
+                <a href="/">hzjsea</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+            </div>
+            <div class="navbar-mobile-right">
+                
+                
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="mobile-search-input"/>
+        </form>
+    </div>
+
+
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; 目录</div>
+            </div>
+            
+        </div>
+        <div class="menu" id="mobile-menu">
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+        </div>
+    </div>
+</nav>
+
+        <div class="main">
+			<!-- Chic/layout.ejs -->
+ <div id="u-search">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="container">
+                    <form id="u-search-modal-form" class="u-search-modal-form">
+                        <button type="submit" class="form-submit-btn">
+                            <img src="/image/search.png" class="search-btn-img" />
+                        </button>
+                        <input placeholder="搜索文章。。。" class="form-input" id="modal-form-input">
+                    </form>
+                    <a class="modal-close">x</a>
+                </div>
+                <div class="search-loading">
+                    <div class="search-loading-bar"></div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <!-- ul 格式如下 -->
+                <!-- <ul class="modal-results">
+                    <li class="result-item">
+                        <a class="result-item-detail">
+                            <span class="title">页面配置</span>
+                            <span class="content">
+                                content
+                            </span>
+                        </a>
+                    </li>
+                </ul> -->
+            </div>
+        </div>
+        <div class="modal-overlay"></div>
+    </div>
+            <div class="container">
+    
+    
+    <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">全部展开</a>
+        <a onclick="go_top()">回到顶部</a>
+        <a onclick="go_bottom()">回到底部</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "全部折叠"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "全部展开"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">flag库</h1>
+            
+            <div class="post-meta">
+                
+                作者： <a itemprop="author" rel="author" href="/">hzjsea</a>&nbsp;
+                
+
+                
+                <span class="post-time">
+                    创建日期： <a
+                        href="#">August 21, 2020&nbsp;&nbsp;15:55:48</a>
+                </span>&nbsp;
+                
+                
+                <span class="post-category">
+                    分类：
+                    
+                    <a href="/categories/golang/">golang</a>&nbsp;
+                    
+                </span>
+                
+                
+                状态：<a href="#">SNAPSHOT</a>
+                
+            </div>
+            
+        </header>
+
+        <div class="post-content">
+            <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+<ul>
+<li><a href="#golang%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%A4%84%E7%90%86">golang命令行处理</a><ul>
+<li><a href="#os%E5%BA%93">os库</a></li>
+<li><a href="#flag%E5%BA%93">flag库</a><ul>
+<li><a href="#example">example</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<!-- /code_chunk_output -->
+<a id="more"></a>
+
+
+<h1 id="golang命令行处理"><a href="#golang命令行处理" class="headerlink" title="golang命令行处理"></a>golang命令行处理</h1><p>golang命令行处理有三种常用的方法</p>
+<ul>
+<li>不带参数标签直接接上参数值 使用os包解决</li>
+<li>带有标签的参数解析 使用flag包解决</li>
+</ul>
+<h2 id="os库"><a href="#os库" class="headerlink" title="os库"></a>os库</h2><pre class=" language-go"><code class="language-go"><span class="token keyword">package</span> main
+
+<span class="token keyword">import</span> <span class="token punctuation">(</span>
+    <span class="token string">"fmt"</span>
+    <span class="token string">"os"</span>
+<span class="token punctuation">)</span>
+
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    args <span class="token operator">:=</span> os<span class="token punctuation">.</span>Args
+    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>args<span class="token punctuation">)</span>
+    argsUserful <span class="token operator">:=</span> os<span class="token punctuation">.</span>Args<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">:</span><span class="token punctuation">]</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>argsUserful<span class="token punctuation">)</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span></code></pre>
+<p>运行<code>go run qq.go</code> 返回 <code>[/var/folders/1s/j9mtgsg14jv_xdqhrt1j42l80000gn/T/go-build977927048/b001/exe/qq] []</code><br>运行<code>go run qq.go ls</code> 返回 <code>[/var/folders/1s/j9mtgsg14jv_xdqhrt1j42l80000gn/T/go-build977927048/b001/exe/qq] [ls]</code></p>
+<h2 id="flag库"><a href="#flag库" class="headerlink" title="flag库"></a>flag库</h2><p>flag库主要是一个命令行参数的库</p>
+<h3 id="example"><a href="#example" class="headerlink" title="example"></a>example</h3><pre class=" language-go"><code class="language-go"><span class="token keyword">package</span> main
+
+<span class="token keyword">import</span> <span class="token punctuation">(</span>
+    <span class="token string">"flag"</span>
+    <span class="token string">"fmt"</span>
+    <span class="token string">"os"</span>
+<span class="token punctuation">)</span>
+
+<span class="token comment" spellcheck="true">// 创建变量</span>
+<span class="token keyword">var</span> <span class="token punctuation">(</span>
+    h <span class="token builtin">bool</span>
+
+    v<span class="token punctuation">,</span> V <span class="token builtin">bool</span>
+    t<span class="token punctuation">,</span> T <span class="token builtin">bool</span>
+    q    <span class="token operator">*</span><span class="token builtin">bool</span>
+
+    s <span class="token builtin">string</span>
+    p <span class="token builtin">string</span>
+    c <span class="token builtin">string</span>
+    g <span class="token builtin">string</span>
+<span class="token punctuation">)</span>
+
+
+<span class="token comment" spellcheck="true">// 初始化内容</span>
+<span class="token keyword">func</span> <span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    flag<span class="token punctuation">.</span><span class="token function">BoolVar</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>h<span class="token punctuation">,</span> <span class="token string">"h"</span><span class="token punctuation">,</span> <span class="token boolean">false</span><span class="token punctuation">,</span> <span class="token string">"this help"</span><span class="token punctuation">)</span>
+
+    flag<span class="token punctuation">.</span><span class="token function">BoolVar</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>v<span class="token punctuation">,</span> <span class="token string">"v"</span><span class="token punctuation">,</span> <span class="token boolean">false</span><span class="token punctuation">,</span> <span class="token string">"show version and exit"</span><span class="token punctuation">)</span>
+    flag<span class="token punctuation">.</span><span class="token function">BoolVar</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>V<span class="token punctuation">,</span> <span class="token string">"V"</span><span class="token punctuation">,</span> <span class="token boolean">false</span><span class="token punctuation">,</span> <span class="token string">"show version and configure options then exit"</span><span class="token punctuation">)</span>
+
+    flag<span class="token punctuation">.</span><span class="token function">BoolVar</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>t<span class="token punctuation">,</span> <span class="token string">"t"</span><span class="token punctuation">,</span> <span class="token boolean">false</span><span class="token punctuation">,</span> <span class="token string">"test configuration and exit"</span><span class="token punctuation">)</span>
+    flag<span class="token punctuation">.</span><span class="token function">BoolVar</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>T<span class="token punctuation">,</span> <span class="token string">"T"</span><span class="token punctuation">,</span> <span class="token boolean">false</span><span class="token punctuation">,</span> <span class="token string">"test configuration, dump it and exit"</span><span class="token punctuation">)</span>
+
+    <span class="token comment" spellcheck="true">// 另一种绑定方式</span>
+    q <span class="token operator">=</span> flag<span class="token punctuation">.</span><span class="token function">Bool</span><span class="token punctuation">(</span><span class="token string">"q"</span><span class="token punctuation">,</span> <span class="token boolean">false</span><span class="token punctuation">,</span> <span class="token string">"suppress non-error messages during configuration testing"</span><span class="token punctuation">)</span>
+
+    <span class="token comment" spellcheck="true">// 注意 `signal`。默认是 -s string，有了 `signal` 之后，变为 -s signal</span>
+    flag<span class="token punctuation">.</span><span class="token function">StringVar</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>s<span class="token punctuation">,</span> <span class="token string">"s"</span><span class="token punctuation">,</span> <span class="token string">""</span><span class="token punctuation">,</span> <span class="token string">"send `signal` to a master process: stop, quit, reopen, reload"</span><span class="token punctuation">)</span>
+    flag<span class="token punctuation">.</span><span class="token function">StringVar</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>p<span class="token punctuation">,</span> <span class="token string">"p"</span><span class="token punctuation">,</span> <span class="token string">"/usr/local/nginx/"</span><span class="token punctuation">,</span> <span class="token string">"set `prefix` path"</span><span class="token punctuation">)</span>
+    flag<span class="token punctuation">.</span><span class="token function">StringVar</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>c<span class="token punctuation">,</span> <span class="token string">"c"</span><span class="token punctuation">,</span> <span class="token string">"conf/nginx.conf"</span><span class="token punctuation">,</span> <span class="token string">"set configuration `file`"</span><span class="token punctuation">)</span>
+    flag<span class="token punctuation">.</span><span class="token function">StringVar</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>g<span class="token punctuation">,</span> <span class="token string">"g"</span><span class="token punctuation">,</span> <span class="token string">"conf/nginx.conf"</span><span class="token punctuation">,</span> <span class="token string">"set global `directives` out of configuration file"</span><span class="token punctuation">)</span>
+
+    <span class="token comment" spellcheck="true">// 改变默认的 Usage，flag包中的Usage 其实是一个函数类型。这里是覆盖默认函数实现，具体见后面Usage部分的分析</span>
+    flag<span class="token punctuation">.</span>Usage <span class="token operator">=</span> usage
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    flag<span class="token punctuation">.</span><span class="token function">Parse</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">if</span> h <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        flag<span class="token punctuation">.</span><span class="token function">Usage</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+
+<span class="token keyword">func</span> <span class="token function">usage</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>os<span class="token punctuation">.</span>Stderr<span class="token punctuation">,</span><span class="token string">`nginx version: nginx/1.10.0
+Usage: nginx [-hvVtTq] [-s signal] [-c filename] [-p prefix] [-g directives]
+
+Options:`</span><span class="token punctuation">)</span>
+    flag<span class="token punctuation">.</span><span class="token function">PrintDefaults</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span></code></pre>
+<p>一个一个来看</p>
+<pre class=" language-go"><code class="language-go"><span class="token comment" spellcheck="true">// 创建变量</span>
+<span class="token keyword">var</span> <span class="token punctuation">(</span>
+    h <span class="token builtin">bool</span>
+
+    v<span class="token punctuation">,</span> V <span class="token builtin">bool</span>
+    t<span class="token punctuation">,</span> T <span class="token builtin">bool</span>
+    q    <span class="token operator">*</span><span class="token builtin">bool</span>
+
+    s <span class="token builtin">string</span>
+    p <span class="token builtin">string</span>
+    c <span class="token builtin">string</span>
+    g <span class="token builtin">string</span>
+<span class="token punctuation">)</span></code></pre>
+<p>首先这一段是创建多个零值变量，是后面用来识别命令行参数的必要内容</p>
+<pre class=" language-go"><code class="language-go">
+<span class="token comment" spellcheck="true">// 初始化内容</span>
+<span class="token keyword">func</span> <span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    flag<span class="token punctuation">.</span><span class="token function">BoolVar</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>h<span class="token punctuation">,</span> <span class="token string">"h"</span><span class="token punctuation">,</span> <span class="token boolean">false</span><span class="token punctuation">,</span> <span class="token string">"this help"</span><span class="token punctuation">)</span>
+
+    flag<span class="token punctuation">.</span><span class="token function">BoolVar</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>v<span class="token punctuation">,</span> <span class="token string">"v"</span><span class="token punctuation">,</span> <span class="token boolean">false</span><span class="token punctuation">,</span> <span class="token string">"show version and exit"</span><span class="token punctuation">)</span>
+    flag<span class="token punctuation">.</span><span class="token function">BoolVar</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>V<span class="token punctuation">,</span> <span class="token string">"V"</span><span class="token punctuation">,</span> <span class="token boolean">false</span><span class="token punctuation">,</span> <span class="token string">"show version and configure options then exit"</span><span class="token punctuation">)</span>
+
+    flag<span class="token punctuation">.</span><span class="token function">BoolVar</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>t<span class="token punctuation">,</span> <span class="token string">"t"</span><span class="token punctuation">,</span> <span class="token boolean">false</span><span class="token punctuation">,</span> <span class="token string">"test configuration and exit"</span><span class="token punctuation">)</span>
+    flag<span class="token punctuation">.</span><span class="token function">BoolVar</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>T<span class="token punctuation">,</span> <span class="token string">"T"</span><span class="token punctuation">,</span> <span class="token boolean">false</span><span class="token punctuation">,</span> <span class="token string">"test configuration, dump it and exit"</span><span class="token punctuation">)</span>
+
+    <span class="token comment" spellcheck="true">// 另一种绑定方式</span>
+    q <span class="token operator">=</span> flag<span class="token punctuation">.</span><span class="token function">Bool</span><span class="token punctuation">(</span><span class="token string">"q"</span><span class="token punctuation">,</span> <span class="token boolean">false</span><span class="token punctuation">,</span> <span class="token string">"suppress non-error messages during configuration testing"</span><span class="token punctuation">)</span>
+
+    <span class="token comment" spellcheck="true">// 注意 `signal`。默认是 -s string，有了 `signal` 之后，变为 -s signal</span>
+    flag<span class="token punctuation">.</span><span class="token function">StringVar</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>s<span class="token punctuation">,</span> <span class="token string">"s"</span><span class="token punctuation">,</span> <span class="token string">""</span><span class="token punctuation">,</span> <span class="token string">"send `signal` to a master process: stop, quit, reopen, reload"</span><span class="token punctuation">)</span>
+    flag<span class="token punctuation">.</span><span class="token function">StringVar</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>p<span class="token punctuation">,</span> <span class="token string">"p"</span><span class="token punctuation">,</span> <span class="token string">"/usr/local/nginx/"</span><span class="token punctuation">,</span> <span class="token string">"set `prefix` path"</span><span class="token punctuation">)</span>
+    flag<span class="token punctuation">.</span><span class="token function">StringVar</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>c<span class="token punctuation">,</span> <span class="token string">"c"</span><span class="token punctuation">,</span> <span class="token string">"conf/nginx.conf"</span><span class="token punctuation">,</span> <span class="token string">"set configuration `file`"</span><span class="token punctuation">)</span>
+    flag<span class="token punctuation">.</span><span class="token function">StringVar</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>g<span class="token punctuation">,</span> <span class="token string">"g"</span><span class="token punctuation">,</span> <span class="token string">"conf/nginx.conf"</span><span class="token punctuation">,</span> <span class="token string">"set global `directives` out of configuration file"</span><span class="token punctuation">)</span>
+
+    <span class="token comment" spellcheck="true">// 改变默认的 Usage，flag包中的Usage 其实是一个函数类型。这里是覆盖默认函数实现，具体见后面Usage部分的分析</span>
+    flag<span class="token punctuation">.</span>Usage <span class="token operator">=</span> usage
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span></code></pre>
+<p>这一段是固定命令行参数中的内容。init() 在main() 之前执行。<br>固定参数的形式有如下两种</p>
+<ul>
+<li>使用BoolVar 或者StringVar这种格式<br>先来看看他们的源码<pre class=" language-go"><code class="language-go"><span class="token comment" spellcheck="true">// BoolVar defines a bool flag with specified name, default value, and usage string.</span>
+<span class="token comment" spellcheck="true">// The argument p points to a bool variable in which to store the value of the flag.</span>
+<span class="token keyword">func</span> <span class="token function">BoolVar</span><span class="token punctuation">(</span>p <span class="token operator">*</span><span class="token builtin">bool</span><span class="token punctuation">,</span> name <span class="token builtin">string</span><span class="token punctuation">,</span> value <span class="token builtin">bool</span><span class="token punctuation">,</span> usage <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+  CommandLine<span class="token punctuation">.</span><span class="token function">Var</span><span class="token punctuation">(</span><span class="token function">newBoolValue</span><span class="token punctuation">(</span>value<span class="token punctuation">,</span> p<span class="token punctuation">)</span><span class="token punctuation">,</span> name<span class="token punctuation">,</span> usage<span class="token punctuation">)</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+</code></pre>
+</li>
+</ul>
+<p>// StringVar defines a string flag with specified name, default value, and usage string.<br>// The argument p points to a string variable in which to store the value of the flag.<br>func StringVar(p *string, name string, value string, usage string) {<br>    CommandLine.Var(newStringValue(value, p), name, usage)<br>}</p>
+<pre><code>接收一个bool或者String类型的函数,关键字为name ,值为value，提示为usage
+
+```go
+    // 改变默认的 Usage，flag包中的Usage 其实是一个函数类型。这里是覆盖默认函数实现，具体见后面Usage部分的分析
+    flag.Usage = usage
+&#125;
+
+func main() &#123;
+    flag.Parse()
+
+    if h &#123;
+        flag.Usage()
+    &#125;
+&#125;
+
+func usage()&#123;
+    fmt.Println(os.Stderr,`nginx version: nginx/1.10.0Usage: nginx [-hvVtTq] [-s signal] [-c filename] [-p prefix] [-g directives] Options:`)    
+    flag.PrintDefaults()
+&#125;</code></pre>
+<p><code>flag.Usage</code>修改默认Usage，默认usage如下</p>
+<pre class=" language-go"><code class="language-go">Usage of <span class="token operator">/</span><span class="token keyword">var</span><span class="token operator">/</span>folders<span class="token operator">/</span>1s<span class="token operator">/</span>j9mtgsg14jv_xdqhrt1j42l80000gn<span class="token operator">/</span>T<span class="token operator">/</span><span class="token keyword">go</span><span class="token operator">-</span>build913932346<span class="token operator">/</span>b001<span class="token operator">/</span>exe<span class="token operator">/</span>flagdemo2<span class="token punctuation">:</span></code></pre>
+<p>修改后的usage 如下</p>
+<pre class=" language-go"><code class="language-go">Usage<span class="token punctuation">:</span> nginx <span class="token punctuation">[</span><span class="token operator">-</span>hvVtTq<span class="token punctuation">]</span> <span class="token punctuation">[</span><span class="token operator">-</span>s signal<span class="token punctuation">]</span> <span class="token punctuation">[</span><span class="token operator">-</span>c filename<span class="token punctuation">]</span> <span class="token punctuation">[</span><span class="token operator">-</span>p prefix<span class="token punctuation">]</span> <span class="token punctuation">[</span><span class="token operator">-</span>g directives<span class="token punctuation">]</span>
+Options<span class="token punctuation">:</span></code></pre>
+<p><code>flag.Usage</code>用来解析上面初始化的内容</p>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>标签：</span>
+                <span class="tag">
+                    
+                    
+                    <a href="/tags/golang/"># golang</a>
+                    
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript：window.history.back();">后退</a>
+                <span>· </span>
+                <a href="/">主页</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            <a class="prev" rel="prev" href="/2020/08/23/blog_back_new/golang/go%E5%BA%93json/">go库json</a>
+            
+            
+            <a class="next" rel="next" href="/2020/08/17/blog_back_new/Rust/%E6%9D%A5%E7%9C%8B%E7%9C%8Btrait%E7%9A%84%E6%80%BB%E7%BB%93%E6%95%B4%E7%90%86/">来看看trait的总结整理</a>
+            
+        </section>
+    </article>
+</div>
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+    </div>
+</footer>
+
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

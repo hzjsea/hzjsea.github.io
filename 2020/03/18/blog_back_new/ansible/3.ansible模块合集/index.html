@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="hzjsea">
+
+
+
+
+
+
+<title>ansible模块合集 | hzjsea</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+    <script src="/js/jquery.min.js"></script>
+    
+
+
+
+    
+    
+        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+    
+
+
+
+
+    <script>
+    function searchToggle() {
+        const width = $(document.body).width()
+        if(width > 479) {
+            return;
+        }
+        const search = $('.search');
+        const searchForm = $('.form-search')
+
+        if(!search.hasClass("mobile-search")) {
+            search.addClass("mobile-search");
+        } else {
+            search.removeClass("mobile-search");
+        } 
+    }
+
+    function search(searchInputEl, formEl, flag) {
+        const path = "/" + "search.json"; // 可以在public 下查看这个search.json
+        $(formEl).submit(function(e){
+            e.preventDefault();
+            let target = null
+            if(searchInputEl == null) {
+                const screenWidth = $(document.body).width();
+                target = screenWidth > 479 ? $('#pc-search-input') : $('#mobile-search-input');
+                console.log(target);
+            } else {
+                target = $(searchInputEl)
+            }
+
+            if(!flag && target.val() === '') {
+                return ;
+            }
+
+            $("#u-search").fadeIn(500, function() {
+                $("body > .wrapper").addClass("modal-active");
+
+                $.ajax({
+                    url: path,
+                    dataType: "json",
+                    beforeSend: function (xhr) {
+                        $input = target.val();
+                        $(".form-input").val($input);
+                        const loadingBar = $('.search-loading-bar') 
+                        loadingBar.css({
+                            width:'100%',
+                            display: 'block'
+                        });
+                    },
+                    success: function( datas ) {
+                        console.log(datas);
+                        const $resultPanel = $(".modal-body")[0];
+                        let str = `<ul class="modal-results">`;
+                        var keywords = $(".form-input").val().trim().toLowerCase().split(/[\s\-]+/);
+                        $resultPanel.innerHTML = "";
+                        let hasResult = false
+                        let text = `<div class="no-result">找不到与关键词相关的内容....</div>`;
+
+                        if ($(".form-input").val().trim().length <= 0) {
+                            // 没有结果
+                            $resultPanel.innerHTML = text;
+                            return;
+                        }
+                        datas.forEach(function (data, index) {
+                            var isMatch = true;
+                            if (!data.title || data.title.trim() === '') {
+                                data.title = "Untitled";
+                            }
+                            var data_title = data.title.trim().toLowerCase();
+                            var data_content = data.content && data.content.trim().replace(/<[^>]+>/g, "").toLowerCase() || '';
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            // only match artiles with not empty contents
+                            if (data_content !== '') {
+                                keywords.forEach(function (keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        hasResult = true
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            } else {
+                                isMatch = false;
+                            }
+                            // show search results
+                            if (isMatch) {
+                                str += `<li class='result-item'><a href='${data_url}' class='result-item-detail'> <span class="title">${data_title}</span>`;
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 200 characters
+                                    var start = first_occur - 40;
+                                    var end = first_occur + 160;
+
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+
+                                    if (start == 0) {
+                                        end = 200;
+                                    }
+
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+
+                                    var match_content = content.substring(start, end);
+
+                                    // highlight all keywords
+                                    keywords.forEach(function (keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, `<em class="search-keyword">${keyword}</em>`);
+                                    });
+
+                                    str += `<span class="content"> ${match_content} ...</span></a>`;
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        if(hasResult) {
+                            $resultPanel.innerHTML = str;
+                        } else {
+                            $resultPanel.innerHTML = text;
+                        }
+
+                    },
+                    complete: function() {
+                        setTimeout(() => {
+                                const loadingBar = $('.search-loading-bar') 
+                                loadingBar.css({
+                                    width:'0%',
+                                    display: 'none'
+                                });
+                        }, 300)
+                    }
+                });
+            })
+
+        });
+    }
+
+    $(document).ready(function() {
+        $('.modal-close').click(function () { 
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+
+        $('.modal-overlay').click(function() {
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+        search(null, ".form-search", false)
+        search("#u-search-modal-form .form-input", ".u-search-modal-form", true)
+    })
+</script>
+
+
+
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo"><a href="/">hzjsea</a></div>
+        <div class="menu navbar-right">
+            
+            
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="pc-search-input"/>
+        </form>
+    </div>
+
+
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+            <input id="switch_default" type="checkbox" class="switch_default">
+            <label for="switch_default" class="toggleBtn"></label>
+        </div>
+    </div>
+</nav>
+
+
+<nav class="navbar-mobile" id="nav-mobile">
+    <div class="container">
+        <div class="navbar-header">
+            <div>
+                <a href="/">hzjsea</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+            </div>
+            <div class="navbar-mobile-right">
+                
+                
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="mobile-search-input"/>
+        </form>
+    </div>
+
+
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; 目录</div>
+            </div>
+            
+        </div>
+        <div class="menu" id="mobile-menu">
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+        </div>
+    </div>
+</nav>
+
+        <div class="main">
+			<!-- Chic/layout.ejs -->
+ <div id="u-search">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="container">
+                    <form id="u-search-modal-form" class="u-search-modal-form">
+                        <button type="submit" class="form-submit-btn">
+                            <img src="/image/search.png" class="search-btn-img" />
+                        </button>
+                        <input placeholder="搜索文章。。。" class="form-input" id="modal-form-input">
+                    </form>
+                    <a class="modal-close">x</a>
+                </div>
+                <div class="search-loading">
+                    <div class="search-loading-bar"></div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <!-- ul 格式如下 -->
+                <!-- <ul class="modal-results">
+                    <li class="result-item">
+                        <a class="result-item-detail">
+                            <span class="title">页面配置</span>
+                            <span class="content">
+                                content
+                            </span>
+                        </a>
+                    </li>
+                </ul> -->
+            </div>
+        </div>
+        <div class="modal-overlay"></div>
+    </div>
+            <div class="container">
+    
+    
+    <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">全部展开</a>
+        <a onclick="go_top()">回到顶部</a>
+        <a onclick="go_bottom()">回到底部</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "全部折叠"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "全部展开"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">ansible模块合集</h1>
+            
+            <div class="post-meta">
+                
+                作者： <a itemprop="author" rel="author" href="/">hzjsea</a>&nbsp;
+                
+
+                
+                <span class="post-time">
+                    创建日期： <a
+                        href="#">March 18, 2020&nbsp;&nbsp;15:49:13</a>
+                </span>&nbsp;
+                
+                
+                <span class="post-category">
+                    分类：
+                    
+                    <a href="/categories/ansible/">ansible</a>&nbsp;
+                    
+                </span>
+                
+                
+                状态：<a href="#">SNAPSHOT</a>
+                
+            </div>
+            
+        </header>
+
+        <div class="post-content">
+            <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+<ul>
+<li><a href="#ansible%E6%A8%A1%E5%9D%97%E5%90%88%E9%9B%86">ansible模块合集</a><ul>
+<li><a href="#file%E6%A8%A1%E5%9D%97">file模块</a><ul>
+<li><a href="#%E5%8F%82%E6%95%B0">参数</a></li>
+</ul>
+</li>
+<li><a href="#unarchive-%E8%A7%A3%E5%8E%8B%E7%BC%A9">unarchive 解压缩</a><ul>
+<li><a href="#%E5%8F%82%E6%95%B0-1">参数</a></li>
+</ul>
+</li>
+<li><a href="#fetch%E6%A8%A1%E5%9D%97-%E8%BF%9C%E7%A8%8B%E6%96%87%E4%BB%B6copy%E5%88%B0%E6%9C%AC%E5%9C%B0">fetch模块 远程文件copy到本地</a><ul>
+<li><a href="#%E5%AE%9E%E4%BE%8B">实例</a></li>
+</ul>
+</li>
+<li><a href="#copy%E6%A8%A1%E5%9D%97">copy模块</a><ul>
+<li><a href="#%E5%8F%82%E6%95%B0-2">参数</a></li>
+<li><a href="#%E5%AE%9E%E4%BE%8B-1">实例</a></li>
+</ul>
+</li>
+<li><a href="#synchronize%E6%A8%A1%E5%9D%97-%E5%A4%9A%E7%BA%A7%E7%9B%AE%E5%BD%95%E6%8B%B7%E8%B4%9D">synchronize模块 多级目录拷贝</a><ul>
+<li><a href="#%E5%8F%82%E6%95%B0-3">参数</a></li>
+<li><a href="#%E5%AE%9E%E4%BE%8B-2">实例</a></li>
+</ul>
+</li>
+<li><a href="#blockinfile%E6%A8%A1%E5%9D%97">blockinfile模块</a></li>
+<li><a href="#lineinfile%E6%A8%A1%E5%9D%97">lineinfile模块</a></li>
+<li><a href="#yum%E6%A8%A1%E5%9D%97">yum模块</a><ul>
+<li><a href="#%E5%8F%82%E6%95%B0-4">参数</a></li>
+<li><a href="#%E5%AE%9E%E4%BE%8B-3">实例</a></li>
+</ul>
+</li>
+<li><a href="#git%E6%A8%A1%E5%9D%97">git模块</a><ul>
+<li><a href="#%E5%8F%82%E6%95%B0-5">参数</a></li>
+<li><a href="#%E5%AE%9E%E4%BE%8B-4">实例</a></li>
+</ul>
+</li>
+<li><a href="#ansible-playbook%E5%8F%82%E6%95%B0">ansible-playbook参数</a></li>
+<li><a href="#playbook%E8%AF%AD%E6%B3%95%E6%A3%80%E6%9F%A5">playbook语法检查</a></li>
+</ul>
+</li>
+</ul>
+<!-- /code_chunk_output -->
+
+
+<p>ansible模块</p>
+<a id="more"></a>
+<h1 id="ansible模块合集"><a href="#ansible模块合集" class="headerlink" title="ansible模块合集"></a>ansible模块合集</h1><p><a target="_blank" rel="noopener" href="https://www.zsythink.net/archives/2542">https://www.zsythink.net/archives/2542</a><br><a target="_blank" rel="noopener" href="https://handerfly.github.io/ansible/2019/07/06/Ansible%E5%B8%B8%E7%94%A8%E6%A8%A1%E5%9D%97/">https://handerfly.github.io/ansible/2019/07/06/Ansible%E5%B8%B8%E7%94%A8%E6%A8%A1%E5%9D%97/</a></p>
+<h2 id="file模块"><a href="#file模块" class="headerlink" title="file模块"></a>file模块</h2><p>file模块可以帮助我们完成一些对文件的基本操作，比如，创建文件或目录、删除文件或目录、修改文件权限等</p>
+<h3 id="参数"><a href="#参数" class="headerlink" title="参数"></a>参数</h3><pre class=" language-bash"><code class="language-bash">- path参数 ：必须参数，用于指定要操作的文件或目录。
+- state参数 ：
+    - 创建文件夹，需要将state的值设置为directory，
+    - 创建文件时，需要将state的值设置为touch，
+    - 创建连接文件是，需将state设置为link，
+    - 创建硬连接文件，需要将state设置为hard，
+    - 当我们想要删除一个文件时，需要将state的值设置为absent
+- src参数 ：当state设置为link或者hard时，表示我们想要创建一个软链或者硬链，所以，我们必须指明软链或硬链链接的哪个文件，通过src参数即可指定链接源。
+- force参数  <span class="token keyword">:</span>  当state<span class="token operator">=</span>link的时候，可配合此参数强制创建链接文件，当force<span class="token operator">=</span>yes时，表示强制创建链接文件，不过强制创建链接文件分为两种情况，情况一：当你要创建的链接文件指向的源文件并不存在时，使用此参数，可以先强制创建出链接文件。情况二：当你要创建链接文件的目录中已经存在与链接文件同名的文件时，将force设置为yes，回将同名文件覆盖为链接文件，相当于删除同名文件，创建链接文件。情况三：当你要创建链接文件的目录中已经存在与链接文件同名的文件，并且链接文件指向的源文件也不存在，这时会强制替换同名文件为链接文件。
+- owner参数 ：用于指定被操作文件的属主，属主对应的用户必须在远程主机中存在，否则会报错。
+- group参数 ：用于指定被操作文件的属组，属组对应的组必须在远程主机中存在，否则会报错。
+mode参数：用于指定被操作文件的权限，比如，如果想要将文件权限设置为<span class="token string">"rw-r-x---"</span>，则可以使用
+- mode<span class="token operator">=</span>650进行设置，或者使用mode<span class="token operator">=</span>0650，效果也是相同的，如果你想要设置特殊权限，比如为二进制文件设置suid，则可以使用mode<span class="token operator">=</span>4700，很方便吧。
+- recurse参数：当要操作的文件为目录，将recurse设置为yes，可以递归的修改目录中文件的属性</code></pre>
+<h2 id="unarchive-解压缩"><a href="#unarchive-解压缩" class="headerlink" title="unarchive 解压缩"></a>unarchive 解压缩</h2><h3 id="参数-1"><a href="#参数-1" class="headerlink" title="参数"></a>参数</h3><pre class=" language-bash"><code class="language-bash">- src 需要解压文件夹路径
+- copy <span class="token function">yes</span><span class="token operator">|</span>no  如果是yes 会拷贝文件到目标机器，否则会在目标机器上面找需要解压的文件
+- creates  如果指定的文件存在则不执行该任务。可用于实现幂等性
+- dest 解压文件夹后存放路径 需要绝对路径
+- group 
+- mode
+- owner
+- exclude 解包时忽略部分目录和文件
+</code></pre>
+<p>实例</p>
+<pre class=" language-bash"><code class="language-bash">- unarchive: src<span class="token operator">=</span>foo.tgz dest<span class="token operator">=</span>/var/lib/foo
+- unarchive: src<span class="token operator">=</span>/tmp/foo.zip dest<span class="token operator">=</span>/usr/local/bin copy<span class="token operator">=</span>no
+- unarchive: src<span class="token operator">=</span>/tmp/test.tar.gz dest<span class="token operator">=</span>/opt/tmp/ creates<span class="token operator">=</span>/opt/tmp/ copy<span class="token operator">=</span>no</code></pre>
+<h2 id="fetch模块-远程文件copy到本地"><a href="#fetch模块-远程文件copy到本地" class="headerlink" title="fetch模块 远程文件copy到本地"></a>fetch模块 远程文件copy到本地</h2><h3 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h3><pre class=" language-bash"><code class="language-bash">- fetch: src<span class="token operator">=</span>/tmp/somefile dest<span class="token operator">=</span>/tmp/fetched
+- fetch: src<span class="token operator">=</span>/tmp/somefile dest<span class="token operator">=</span>/tmp/prefix-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;&amp;#123; ansible_hostname &amp;#125;&amp;#125; flat=yes</span>
+- fetch: src<span class="token operator">=</span>/tmp/uniquefile dest<span class="token operator">=</span>/tmp/special/ flat<span class="token operator">=</span>yes
+- fetch: src<span class="token operator">=</span>/tmp/uniquefile dest<span class="token operator">=</span>special/prefix-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;&amp;#123; ansible_hostname &amp;#125;&amp;#125; flat=yes</span></code></pre>
+<h2 id="copy模块"><a href="#copy模块" class="headerlink" title="copy模块"></a>copy模块</h2><h3 id="参数-2"><a href="#参数-2" class="headerlink" title="参数"></a>参数</h3><ul>
+<li>src参数    :用于指定需要copy的文件或目录</li>
+<li>dest参数  :用于指定文件将被拷贝到远程主机的哪个目录中，dest为必须参数</li>
+<li>content参数  :当不使用src指定拷贝的文件时，可以使用content直接指定文件内容，src与content两个参数必有其一，否则会报错。</li>
+<li>force参数  :  当远程主机的目标路径中已经存在同名文件，并且与ansible主机中的文件内容不同时，是否强制覆盖，可选值有yes和no，默认值为yes，表示覆盖，如果设置为no，则不会执行覆盖拷贝操作，远程主机中的文件保持不变。</li>
+<li>backup参数 :  当远程主机的目标路径中已经存在同名文件，并且与ansible主机中的文件内容不同时，是否对远程主机的文件进行备份，可选值有yes和no，当设置为yes时，会先备份远程主机中的文件，然后再将ansible主机中的文件拷贝到远程主机。</li>
+<li>owner参数 : 指定文件拷贝到远程主机后的属主，但是远程主机上必须有对应的用户，否则会报错。</li>
+<li>group参数 : 指定文件拷贝到远程主机后的属组，但是远程主机上必须有对应的组，否则会报错。</li>
+<li>mode参数 : 指定文件拷贝到远程主机后的权限，如果你想将权限设置为”rw-r–r–”，则可以使用mode=0644表示，如果你想要在user对应的权限位上添加执行权限，则可以使用mode=u+x表示。</li>
+</ul>
+<h3 id="实例-1"><a href="#实例-1" class="headerlink" title="实例"></a>实例</h3><pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 拷贝文件</span>
+ansible nameserver -m copy -a <span class="token string">"src=/testdir/copytest dest=/opt/"</span>
+<span class="token comment" spellcheck="true"># 在文件中添加内容</span>
+ansible test70 -m copy -a <span class="token string">'content="aaa\nbbb\n" dest=/opt/test'</span>
+<span class="token comment" spellcheck="true"># 拷贝过程中是否覆盖</span>
+ansible test70 -m copy -a <span class="token string">"src=/testdir/copytest dest=/opt/ force=no"</span>
+<span class="token comment" spellcheck="true"># 是否备份</span>
+ansible test70 -m copy -a <span class="token string">"src=/testdir/copytest dest=/opt/ backup=no"</span>
+<span class="token comment" spellcheck="true"># 拷贝之后修改权限</span>
+ansible test70 -m copy -a <span class="token string">"src=/testdir/copytest dest=/opt/ owner=zsy"</span>
+<span class="token comment" spellcheck="true"># 修改组</span>
+ansible test70 -m copy -a <span class="token string">"src=/testdir/copytest dest=/opt/ group=zsy"</span>
+<span class="token comment" spellcheck="true"># 指定权限</span>
+ansible test70 -m copy -a <span class="token string">"src=/testdir/copytest dest=/opt/ mode=0640"</span></code></pre>
+<h2 id="synchronize模块-多级目录拷贝"><a href="#synchronize模块-多级目录拷贝" class="headerlink" title="synchronize模块 多级目录拷贝"></a>synchronize模块 多级目录拷贝</h2><p>synchronize模块与copy模块一样，都是将本机文件拷贝到对端机器上面，但是在拷贝多层级深层级目录的时候，synchronize模块的速度更快</p>
+<h3 id="参数-3"><a href="#参数-3" class="headerlink" title="参数"></a>参数</h3><ul>
+<li>src 传送的本机文件地址</li>
+<li>archive: 归档，相当于同时开启recursive(递归)、links、perms、times、owner、group、-D选项都为yes ，默认该项为开启</li>
+<li>checksum: 跳过检测sum值，默认关闭</li>
+<li>compress:是否开启压缩</li>
+<li>copy_links：复制链接文件，默认为no ，注意后面还有一个links参数</li>
+<li>delete: 删除不存在的文件，默认no</li>
+<li>dest：目录路径</li>
+<li>dest_port：默认目录主机上的端口 ，默认是22，走的ssh协议</li>
+<li>dirs：传速目录不进行递归，默认为no，即进行目录递归</li>
+<li>rsync_opts：使用rsync参数部分</li>
+<li>rsync_path: 服务的路径，指定rsync在远程服务器上执行</li>
+<li>rsync_remote_user: 设置远程用户名</li>
+<li>–exclude=*.log: 忽略同步以.log结尾的文件<code>这个是rsync的参数，必须开启rsync 比如rsync_opts=--exclude=*.txt</code><br><code>开启rsync_opts必须要两机之间使用秘药登陆</code></li>
+<li>set_remote_user：主要用于/etc/ansible/hosts中定义或默认使用的用户与rsync使用的用户不同的情况</li>
+<li>mode: push或pull 模块，push模的话，一般用于从本机向远程主机上传文件，pull 模式用于从远程主机上取文件，默认为push</li>
+</ul>
+<h3 id="实例-2"><a href="#实例-2" class="headerlink" title="实例"></a>实例</h3><pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 拉取文件</span>
+ansible -i /root/ansible_copy/hosts backup -m synchronize -a <span class="token string">'src=/tmp/svr_01/backup/ dest=/tmp/svr_02/backup/'</span>
+ansible -i /root/ansible_copy/hosts backup -m synchronize -a <span class="token string">'mode=push src=/tmp/svr_01/backup/ dest=/tmp/svr_02/backup/'</span>
+<span class="token comment" spellcheck="true"># 收取文件</span>
+ansible -i /root/ansible_copy/hosts backup -m synchronize -a <span class="token string">'mode=pull src=/tmp/svr_01/backup/ dest=/tmp/svr_02/backup/'</span>
+<span class="token comment" spellcheck="true"># 上传文件，且过滤.txt</span>
+ansible -i /root/ansible_copy/hosts backup -m synchronize -a <span class="token string">'mode=push src=/tmp/svr_01/backup/ dest=/tmp/svr_02/backup/ rsync_opts=--exclude=*.txt'</span> </code></pre>
+<h2 id="blockinfile模块"><a href="#blockinfile模块" class="headerlink" title="blockinfile模块"></a>blockinfile模块</h2><h2 id="lineinfile模块"><a href="#lineinfile模块" class="headerlink" title="lineinfile模块"></a>lineinfile模块</h2><h2 id="yum模块"><a href="#yum模块" class="headerlink" title="yum模块"></a>yum模块</h2><h3 id="参数-4"><a href="#参数-4" class="headerlink" title="参数"></a>参数</h3><ul>
+<li>name参数：必须参数，用于指定需要管理的软件包，比如nginx</li>
+<li>state参数：用于指定软件包的状态 ，默认值为present，表示确保软件包已经安装，除了present，其他可用值有installed、latest、absent、removed，其中installed与present等效，latest表示安装yum中最新的版本，absent和removed等效，表示删除对应的软件包。</li>
+<li>disable_gpg_check参数：用于禁用对rpm包的公钥gpg验证，默认值为no，表示不禁用验证，设置为yes表示禁用验证，即不验证包，直接安装，在对应的yum源没有开启gpg验证的情况下，需要将此参数的值设置为yes，否则会报错而无法进行安装。</li>
+<li>enablerepo参数：用于指定安装软件包时临时启用的yum源，假如你想要从A源中安装软件，但是你不确定A源是否启用了，你可以在安装软件包时将此参数的值设置为yes，即使A源的设置是未启用，也可以在安装软件包时临时启用A源。</li>
+<li>disablerepo参数：用于指定安装软件包时临时禁用的yum源，某些场景下需要此参数，比如，当多个yum源中同时存在要安装的软件包时，你可以使用此参数临时禁用某个源，这样设置后，在安装软件包时则不会从对应的源中选择安装包。</li>
+<li>enablerepo参数和disablerepo参数可以同时使用<h3 id="实例-3"><a href="#实例-3" class="headerlink" title="实例"></a>实例</h3><pre class=" language-bash"><code class="language-bash">ansible test70 -m yum -a <span class="token string">'name=nginx disable_gpg_check=yes'</span>
+ansible test70 -m yum -a <span class="token string">'name=nginx state=present disable_gpg_check=yes'</span>
+ansible test70 -m yum -a <span class="token string">'name=nginx state=installed disable_gpg_check=yes'</span></code></pre>
+</li>
+</ul>
+<h2 id="git模块"><a href="#git模块" class="headerlink" title="git模块"></a>git模块</h2><p>就是我们平常用的git，从远程仓库拉项目</p>
+<h3 id="参数-5"><a href="#参数-5" class="headerlink" title="参数"></a>参数</h3><pre class=" language-bash"><code class="language-bash">archive 使用扩展名指定存档文件路径。 如果指定，则创建包含源树树结构的指定格式的存档文件。 允许的存档格式<span class="token punctuation">[</span>“zip”，“tar.gz”，“tar”，“tgz”<span class="token punctuation">]</span>
+这将从本地目录克隆并执行git archive
+
+bare 如果yes，则将创建存储库作为裸存储库，否则它将是具有工作空间的标准存储库。
+
+depth clone的深度，最小值为1
+
+repo git的仓库路径
+version 项目版本号
+dest 克隆项目存放地址
+remote 远程仓库名
+</code></pre>
+<h3 id="实例-4"><a href="#实例-4" class="headerlink" title="实例"></a>实例</h3><pre class=" language-yml"><code class="language-yml"># git项目到本地
+---
+  - name: clone project or file
+    local_action: git repo=&#123;&#123; conf_repo &#125;&#125; dest=&#123;&#123; conf_path &#125;&#125; version=&#123;&#123; conf_hash | default('master') &#125;&#125;
+    run_once: true
+
+---
+  - name: clone project with version
+    local_action: git repo=&#123;&#123; pro_repo &#125;&#125; dest=&#123;&#123; dest_repo &#125;&#125; version=&#123;&#123; conf_hash &#125;&#125;
+
+---
+  - name: just ensuring the project checkout exists
+    local_action: git repo=&#123;&#123; pro_repo &#125;&#125; dest=&#123;&#123; dest_repo &#125;&#125; update=no
+
+---
+  - name: Example Create git project and  archive from repo
+    local_action: git repo=&#123;&#123; pro_repo &#125;&#125; dest=&#123;&#123; dest_repo &#125;&#125;  archive=&#123;&#123; dest_repo&#125;&#125;.zip
+</code></pre>
+<p>存在的问题git的dest文件需要是一个空文件夹</p>
+<h2 id="ansible-playbook参数"><a href="#ansible-playbook参数" class="headerlink" title="ansible-playbook参数"></a>ansible-playbook参数</h2><ul>
+<li>local_action 从本地运行当前模块<pre class=" language-bash"><code class="language-bash">local_action: <span class="token function">command</span> <span class="token function">ping</span> -c 1 <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;&amp;#123; inventory_hostname &amp;#125;&amp;#125;</span>
+<span class="token comment" spellcheck="true"># 从本地ping 主机列表中的所有主机</span>
+local_action: <span class="token function">git</span> repo<span class="token operator">=</span><span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;&amp;#123; conf_repo &amp;#125;&amp;#125; dest=&amp;#123;&amp;#123; conf_path &amp;#125;&amp;#125; version&amp;#123;&amp;#123; conf_hash | default('master') &amp;#125;&amp;#125;</span>
+<span class="token comment" spellcheck="true"># 克隆项目到本地,如果去掉local_action 则会克隆项目到远程主机</span></code></pre>
+</li>
+<li>run_once 只执行一次</li>
+</ul>
+<h2 id="playbook语法检查"><a href="#playbook语法检查" class="headerlink" title="playbook语法检查"></a>playbook语法检查</h2><p>ansible-playbook –syntax-check /testdir/ansible/test.yml</p>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>标签：</span>
+                <span class="tag">
+                    
+                    
+                    <a href="/tags/ansible/"># ansible</a>
+                    
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript：window.history.back();">后退</a>
+                <span>· </span>
+                <a href="/">主页</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            <a class="prev" rel="prev" href="/2020/03/19/blog_back_new/nginx/nginx%E4%BC%98%E5%8C%96/">nginx优化配置</a>
+            
+            
+            <a class="next" rel="next" href="/2020/03/17/blog_back_new/ansible/8.%E5%BC%80%E5%8F%91ansible%E6%A8%A1%E5%9D%97/">开发ansible模块</a>
+            
+        </section>
+    </article>
+</div>
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+    </div>
+</footer>
+
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

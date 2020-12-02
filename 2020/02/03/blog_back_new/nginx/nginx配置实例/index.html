@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="hzjsea">
+
+
+
+
+
+
+<title>nginx配置实例 | hzjsea</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+    <script src="/js/jquery.min.js"></script>
+    
+
+
+
+    
+    
+        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+    
+
+
+
+
+    <script>
+    function searchToggle() {
+        const width = $(document.body).width()
+        if(width > 479) {
+            return;
+        }
+        const search = $('.search');
+        const searchForm = $('.form-search')
+
+        if(!search.hasClass("mobile-search")) {
+            search.addClass("mobile-search");
+        } else {
+            search.removeClass("mobile-search");
+        } 
+    }
+
+    function search(searchInputEl, formEl, flag) {
+        const path = "/" + "search.json"; // 可以在public 下查看这个search.json
+        $(formEl).submit(function(e){
+            e.preventDefault();
+            let target = null
+            if(searchInputEl == null) {
+                const screenWidth = $(document.body).width();
+                target = screenWidth > 479 ? $('#pc-search-input') : $('#mobile-search-input');
+                console.log(target);
+            } else {
+                target = $(searchInputEl)
+            }
+
+            if(!flag && target.val() === '') {
+                return ;
+            }
+
+            $("#u-search").fadeIn(500, function() {
+                $("body > .wrapper").addClass("modal-active");
+
+                $.ajax({
+                    url: path,
+                    dataType: "json",
+                    beforeSend: function (xhr) {
+                        $input = target.val();
+                        $(".form-input").val($input);
+                        const loadingBar = $('.search-loading-bar') 
+                        loadingBar.css({
+                            width:'100%',
+                            display: 'block'
+                        });
+                    },
+                    success: function( datas ) {
+                        console.log(datas);
+                        const $resultPanel = $(".modal-body")[0];
+                        let str = `<ul class="modal-results">`;
+                        var keywords = $(".form-input").val().trim().toLowerCase().split(/[\s\-]+/);
+                        $resultPanel.innerHTML = "";
+                        let hasResult = false
+                        let text = `<div class="no-result">找不到与关键词相关的内容....</div>`;
+
+                        if ($(".form-input").val().trim().length <= 0) {
+                            // 没有结果
+                            $resultPanel.innerHTML = text;
+                            return;
+                        }
+                        datas.forEach(function (data, index) {
+                            var isMatch = true;
+                            if (!data.title || data.title.trim() === '') {
+                                data.title = "Untitled";
+                            }
+                            var data_title = data.title.trim().toLowerCase();
+                            var data_content = data.content && data.content.trim().replace(/<[^>]+>/g, "").toLowerCase() || '';
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            // only match artiles with not empty contents
+                            if (data_content !== '') {
+                                keywords.forEach(function (keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        hasResult = true
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            } else {
+                                isMatch = false;
+                            }
+                            // show search results
+                            if (isMatch) {
+                                str += `<li class='result-item'><a href='${data_url}' class='result-item-detail'> <span class="title">${data_title}</span>`;
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 200 characters
+                                    var start = first_occur - 40;
+                                    var end = first_occur + 160;
+
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+
+                                    if (start == 0) {
+                                        end = 200;
+                                    }
+
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+
+                                    var match_content = content.substring(start, end);
+
+                                    // highlight all keywords
+                                    keywords.forEach(function (keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, `<em class="search-keyword">${keyword}</em>`);
+                                    });
+
+                                    str += `<span class="content"> ${match_content} ...</span></a>`;
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        if(hasResult) {
+                            $resultPanel.innerHTML = str;
+                        } else {
+                            $resultPanel.innerHTML = text;
+                        }
+
+                    },
+                    complete: function() {
+                        setTimeout(() => {
+                                const loadingBar = $('.search-loading-bar') 
+                                loadingBar.css({
+                                    width:'0%',
+                                    display: 'none'
+                                });
+                        }, 300)
+                    }
+                });
+            })
+
+        });
+    }
+
+    $(document).ready(function() {
+        $('.modal-close').click(function () { 
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+
+        $('.modal-overlay').click(function() {
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+        search(null, ".form-search", false)
+        search("#u-search-modal-form .form-input", ".u-search-modal-form", true)
+    })
+</script>
+
+
+
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo"><a href="/">hzjsea</a></div>
+        <div class="menu navbar-right">
+            
+            
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="pc-search-input"/>
+        </form>
+    </div>
+
+
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+            <input id="switch_default" type="checkbox" class="switch_default">
+            <label for="switch_default" class="toggleBtn"></label>
+        </div>
+    </div>
+</nav>
+
+
+<nav class="navbar-mobile" id="nav-mobile">
+    <div class="container">
+        <div class="navbar-header">
+            <div>
+                <a href="/">hzjsea</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+            </div>
+            <div class="navbar-mobile-right">
+                
+                
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="mobile-search-input"/>
+        </form>
+    </div>
+
+
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; 目录</div>
+            </div>
+            
+        </div>
+        <div class="menu" id="mobile-menu">
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+        </div>
+    </div>
+</nav>
+
+        <div class="main">
+			<!-- Chic/layout.ejs -->
+ <div id="u-search">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="container">
+                    <form id="u-search-modal-form" class="u-search-modal-form">
+                        <button type="submit" class="form-submit-btn">
+                            <img src="/image/search.png" class="search-btn-img" />
+                        </button>
+                        <input placeholder="搜索文章。。。" class="form-input" id="modal-form-input">
+                    </form>
+                    <a class="modal-close">x</a>
+                </div>
+                <div class="search-loading">
+                    <div class="search-loading-bar"></div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <!-- ul 格式如下 -->
+                <!-- <ul class="modal-results">
+                    <li class="result-item">
+                        <a class="result-item-detail">
+                            <span class="title">页面配置</span>
+                            <span class="content">
+                                content
+                            </span>
+                        </a>
+                    </li>
+                </ul> -->
+            </div>
+        </div>
+        <div class="modal-overlay"></div>
+    </div>
+            <div class="container">
+    
+    
+    <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">全部展开</a>
+        <a onclick="go_top()">回到顶部</a>
+        <a onclick="go_bottom()">回到底部</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "全部折叠"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "全部展开"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">nginx配置实例</h1>
+            
+            <div class="post-meta">
+                
+                作者： <a itemprop="author" rel="author" href="/">hzjsea</a>&nbsp;
+                
+
+                
+                <span class="post-time">
+                    创建日期： <a
+                        href="#">February 3, 2020&nbsp;&nbsp;14:03:46</a>
+                </span>&nbsp;
+                
+                
+                <span class="post-category">
+                    分类：
+                    
+                    <a href="/categories/nginx/">nginx</a>&nbsp;
+                    
+                </span>
+                
+                
+                状态：<a href="#">SNAPSHOT</a>
+                
+            </div>
+            
+        </header>
+
+        <div class="post-content">
+            <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+<ul>
+<li><a href="#nginx%E9%85%8D%E7%BD%AE%E5%AE%9E%E4%BE%8B">nginx配置实例</a><ul>
+<li><a href="#nginx%E9%85%8D%E7%BD%AE%E5%AE%9E%E4%BE%8B-%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%861">nginx配置实例–反向代理1</a></li>
+<li><a href="#nginx%E9%85%8D%E7%BD%AE-%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%862">nginx配置–反向代理2</a></li>
+<li><a href="#nginx%E9%85%8D%E7%BD%AE-%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1">nginx配置–负载均衡</a><ul>
+<li><a href="#%E7%AD%96%E7%95%A5">策略：</a></li>
+</ul>
+</li>
+<li><a href="#nginx%E9%85%8D%E7%BD%AE%E5%AE%9E%E4%BE%8B-%E5%8A%A8%E9%9D%99%E5%88%86%E7%A6%BB">nginx配置实例–动静分离</a></li>
+<li><a href="#nginx%E9%85%8D%E7%BD%AE%E5%AE%9E%E4%BE%8B-%E9%AB%98%E5%8F%AF%E7%94%A8%E9%9B%86%E7%BE%A4">nginx配置实例–高可用集群</a></li>
+<li><a href="#nginx%E5%8E%9F%E7%90%86">nginx原理</a></li>
+</ul>
+</li>
+</ul>
+<!-- /code_chunk_output -->
+
+
+<a id="more"></a>
+
+
+
+<h1 id="nginx配置实例"><a href="#nginx配置实例" class="headerlink" title="nginx配置实例"></a>nginx配置实例</h1><h2 id="nginx配置实例–反向代理1"><a href="#nginx配置实例–反向代理1" class="headerlink" title="nginx配置实例–反向代理1"></a>nginx配置实例–反向代理1</h2><p>配置内容<br>1台Nginx代理服务器(10.0.5.233)、一个网页<br>效果: 客户机在浏览器中输入<a target="_blank" rel="noopener" href="http://www.123.com/">www.123.com</a> 由nginx代理进行转发到我们自己的网页上</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 首先 在客户机端做域名与ip的映射</span>
+<span class="token keyword">echo</span> <span class="token string">"10.0.5.255 www.123.com"</span> <span class="token operator">>></span> /etc/hosts
+<span class="token comment" spellcheck="true"># 配置nginx文件 /etc/nginx/nginx.conf</span>
+server <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+        listen       80<span class="token punctuation">;</span>
+        server_name  10.0.5.233<span class="token punctuation">;</span>
+        root         /usr/share/nginx/html<span class="token punctuation">;</span>
+
+        <span class="token comment" spellcheck="true"># Load configuration files for the default server block.</span>
+        include /etc/nginx/default.d/*.conf<span class="token punctuation">;</span>
+
+        location / <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+           root html<span class="token punctuation">;</span>
+           proxy_pass http://127.0.0.1:8001<span class="token punctuation">;</span>
+           index index.html index.htm<span class="token punctuation">;</span>
+        <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+    <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125; </span>
+<span class="token comment" spellcheck="true"># 上面是nginx服务器的配置，表示的是监听10.0.5.233:80 将收到的请求转发到 http://127.0.0.1:8001本地端口</span>
+<span class="token comment" spellcheck="true"># 当我们在浏览器输入www.123.com:80 --> 10.0.5.233:80 --> server127.0.0.1:8001</span></code></pre>
+<h2 id="nginx配置–反向代理2"><a href="#nginx配置–反向代理2" class="headerlink" title="nginx配置–反向代理2"></a>nginx配置–反向代理2</h2><p>配置内容<br>1台Nginx代理服务器(10.0.5.233)、2个网页<br>效果: 客户机在浏览器中输入<a target="_blank" rel="noopener" href="http://www.123.com/web1/">www.123.com/web1/</a> 跳转到第一个web页面 ; 输入<a target="_blank" rel="noopener" href="http://www.123.com/web2/">www.123.com/web2/</a> 跳转到第二个web页面</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># web页面自行配置,分别是</span>
+<span class="token comment" spellcheck="true"># 127.0.0.1:8080/web1/ -> web1</span>
+<span class="token comment" spellcheck="true"># 127.0.0.1:8081/web2/ -> web2</span>
+<span class="token comment" spellcheck="true"># 配置nginx文件 /etc/nginx/nginx.conf</span>
+server <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+        listen       80<span class="token punctuation">;</span>
+        server_name  10.0.5.233<span class="token punctuation">;</span>
+        root         /usr/share/nginx/html<span class="token punctuation">;</span>
+
+        <span class="token comment" spellcheck="true"># Load configuration files for the default server block.</span>
+        include /etc/nginx/default.d/*.conf<span class="token punctuation">;</span>
+
+        <span class="token comment" spellcheck="true"># ～ 表示后面的为正则表达式</span>
+        location ~ /web1/ <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+           proxy_pass http://127.0.0.1:8080<span class="token punctuation">;</span>
+        <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125; </span>
+        location ~ /web2/ <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+            proxy_pass http://127.0.0.1:8081<span class="token punctuation">;</span>
+        <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+    <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125; </span></code></pre>
+<h2 id="nginx配置–负载均衡"><a href="#nginx配置–负载均衡" class="headerlink" title="nginx配置–负载均衡"></a>nginx配置–负载均衡</h2><p>配置内容<br>1台Nginx代理服务器(10.0.5.233) 2个web服务器</p>
+<pre class=" language-bash"><code class="language-bash">upstream myserver <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+    server 10.0.5.197:8001<span class="token punctuation">;</span>
+    server 10.0.5.198:8001<span class="token punctuation">;</span>
+<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125; </span>
+server <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+        listen       80<span class="token punctuation">;</span>
+        server_name  10.0.5.233<span class="token punctuation">;</span>
+        root         /usr/share/nginx/html<span class="token punctuation">;</span>
+
+        <span class="token comment" spellcheck="true"># Load configuration files for the default server block.</span>
+        include /etc/nginx/default.d/*.conf<span class="token punctuation">;</span>
+
+        <span class="token comment" spellcheck="true"># ～ 表示后面的为正则表达式</span>
+        location  / <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+           proxy_pass http://myserver<span class="token punctuation">;</span>
+        <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125; </span>
+    <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125; </span></code></pre>
+<h3 id="策略："><a href="#策略：" class="headerlink" title="策略："></a>策略：</h3><ol>
+<li>默认策略为轮询<br>每个请求按时间顺序逐一分配到后端服务器，如果后端服务器down掉，能自动剔除</li>
+<li>权重策略<br>weight代表权重，权重默认为1，权重越高被分配的用户越多<pre class=" language-bash"><code class="language-bash">upstream myserver <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+ server 10.0.5.197:8001 weight<span class="token operator">=</span>10<span class="token punctuation">;</span>
+ server 10.0.5.198:8001 weight<span class="token operator">=</span>20<span class="token punctuation">;</span>
+<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125; </span></code></pre>
+</li>
+<li>ip_hash策略<br>每个请求按照按访问ip的hash结果分配，每个访客固定访问一个后端服务器，可以解决session的问题<pre class=" language-bash"><code class="language-bash">upstream myserver <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+ ip_hash<span class="token punctuation">;</span>
+ server 10.0.5.197:8001<span class="token punctuation">;</span>
+ server 10.0.5.198:8001<span class="token punctuation">;</span>
+<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;  </span></code></pre>
+</li>
+<li>fair策略<br>科举服务器响应时间来分配，响应的越快则优先分配<pre class=" language-bash"><code class="language-bash">upstream myserver <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+ server 10.0.5.197:8001<span class="token punctuation">;</span>
+ server 10.0.5.198:8001<span class="token punctuation">;</span>
+ fair<span class="token punctuation">;</span>
+<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;  </span></code></pre>
+</li>
+</ol>
+<h2 id="nginx配置实例–动静分离"><a href="#nginx配置实例–动静分离" class="headerlink" title="nginx配置实例–动静分离"></a>nginx配置实例–动静分离</h2><p>动态请求与静态请求分开，用nginx处理静态页面，django处理动态页面</p>
+<ul>
+<li>静态文件放在静态资源管理服务器上，动态资源放在另外的服务器上，有Nginx做转发</li>
+<li>静态文件和动态资源一起发布在同一个服务器上，由nginx做分离</li>
+</ul>
+<pre class=" language-bash"><code class="language-bash">server <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+        listen       80<span class="token punctuation">;</span>
+        server_name  10.0.5.233<span class="token punctuation">;</span>
+        root         /usr/share/nginx/html<span class="token punctuation">;</span>
+
+        <span class="token comment" spellcheck="true"># Load configuration files for the default server block.</span>
+        include /etc/nginx/default.d/*.conf<span class="token punctuation">;</span>
+
+        location /image/ <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+           root /image/<span class="token punctuation">;</span>  <span class="token comment" spellcheck="true"># 静态文件路径</span>
+           index index.html index.htm<span class="token punctuation">;</span>
+        <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+        location /data/ <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+            root /data/<span class="token punctuation">;</span>  <span class="token comment" spellcheck="true"># 静态文件路径</span>
+            autoindex on<span class="token punctuation">;</span> <span class="token comment" spellcheck="true"># 自动列出目录</span>
+        <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+    <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;  </span></code></pre>
+<h2 id="nginx配置实例–高可用集群"><a href="#nginx配置实例–高可用集群" class="headerlink" title="nginx配置实例–高可用集群"></a>nginx配置实例–高可用集群</h2><p>keepalived+nginx<br>配置需求：<br>master机器(main nginx) slave机器(backup nginx)  两台web服务器做轮询负载均衡 、 一个虚拟IP+4个机器IP</p>
+<p>nginx活性检测脚本</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token shebang important">#!/bin/bash</span>
+<span class="token comment" spellcheck="true"># 检测nginx进程数量</span>
+status<span class="token operator">=</span><span class="token variable"><span class="token variable">`</span><span class="token function">ps</span> -C nginx --no-header <span class="token operator">|</span> <span class="token function">wc</span> -l<span class="token variable">`</span></span>
+<span class="token comment" spellcheck="true"># 如果没有进程，则重启之后再次检测nginx数量,如果依旧没有则杀掉所有keepalived的进程</span>
+<span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token variable">$status</span> -eq 0 <span class="token punctuation">]</span><span class="token punctuation">;</span><span class="token keyword">then</span>
+    /usr/sbin/nginx
+    <span class="token function">sleep</span> 2
+    <span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token variable"><span class="token variable">`</span><span class="token function">ps</span> -C nginx --no-header <span class="token operator">|</span> <span class="token function">wc</span> -l <span class="token variable">`</span></span> -eq 0 <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
+        <span class="token function">killall</span> keepalived
+    <span class="token keyword">fi</span>
+<span class="token keyword">fi</span></code></pre>
+<p>keepalived配置,根据主机与从机的不通，只需要修改几个参数即可<br>router_id 、 state 、interface 、 virtual_router_id 、priority</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 安装keepalived</span>
+yum <span class="token function">install</span> keepalived
+<span class="token comment" spellcheck="true"># 修改配置文件</span>
+<span class="token operator">!</span> Configuration File <span class="token keyword">for</span> keepalived
+
+global_defs <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+   notification_email <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+     acassen@firewall.loc
+     failover@firewall.loc
+     sysadmin@firewall.loc
+   <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+   notification_email_from Alexandre.Cassen@firewall.loc
+   smtp_server 192.168.200.1
+   smtp_connect_timeout 30
+   router_id  nginx_master
+   vrrp_skip_check_adv_addr
+   vrrp_strict
+   vrrp_garp_interval 0
+   vrrp_gna_interval 0
+<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+
+<span class="token comment" spellcheck="true"># nginx活性检测</span>
+vrrp_script chk_http_port<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+    script <span class="token string">"/usr/local/src/nginx_check.sh"</span>
+
+    interval 2 <span class="token comment" spellcheck="true"># 检测脚本执行的间隔</span>
+
+    weight 2 <span class="token comment" spellcheck="true"># 权重</span>
+<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+
+vrrp_instance VI_1 <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+    state BACKUP   <span class="token comment" spellcheck="true"># DS-backup机器 BACKUP MASTER</span>
+    interface eno1 
+    virtual_router_id 51
+    priority 10  <span class="token comment" spellcheck="true"># 优先级别</span>
+    advert_int 1
+    authentication <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+        auth_type PASS
+        auth_pass 1111
+    <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+    virtual_ipaddress <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+        10.0.5.196/20
+    <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125; </span></code></pre>
+<p>nginx配置</p>
+<pre class=" language-bash"><code class="language-bash">upstream myserver <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+    server 10.0.5.197:8001<span class="token punctuation">;</span>
+    server 10.0.5.198:8001<span class="token punctuation">;</span>
+<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125; </span>
+server <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+        listen       80<span class="token punctuation">;</span>
+        server_name  10.0.5.196<span class="token punctuation">;</span>
+        root         /usr/share/nginx/html<span class="token punctuation">;</span>
+
+        <span class="token comment" spellcheck="true"># Load configuration files for the default server block.</span>
+        include /etc/nginx/default.d/*.conf<span class="token punctuation">;</span>
+
+        <span class="token comment" spellcheck="true"># ～ 表示后面的为正则表达式</span>
+        location  / <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+           proxy_pass http://myserver<span class="token punctuation">;</span>
+        <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125; </span>
+    <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;  </span></code></pre>
+<p><img src="http://img.noback.top/2020-02-04-15-41-24.png" alt="2020-02-04-15-41-24"><br>当用户访问10.0.5.196:80端口的时候，由于196是vip 此时正在master主机上面，因此他会读取master主机上面的nginx配置文件，后续因为nginx的负载均衡(轮询的配置)，当你不断的访问10.0.5.196时，页面会在10.0.5.197:8001 与10.0.5.198:8001直接来回的跳动</p>
+<h2 id="nginx原理"><a href="#nginx原理" class="headerlink" title="nginx原理"></a>nginx原理</h2><p><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/av68136734?p=17">https://www.bilibili.com/video/av68136734?p=17</a><br><a target="_blank" rel="noopener" href="https://www.cnblogs.com/dongye95/p/11096785.html#_label0_0">https://www.cnblogs.com/dongye95/p/11096785.html#_label0_0</a></p>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>标签：</span>
+                <span class="tag">
+                    
+                    
+                    <a href="/tags/nginx/"># nginx</a>
+                    
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript：window.history.back();">后退</a>
+                <span>· </span>
+                <a href="/">主页</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            <a class="prev" rel="prev" href="/2020/02/03/blog_back_new/nginx/nginx%E5%9F%BA%E7%A1%80/">nginx基础</a>
+            
+            
+            <a class="next" rel="next" href="/2020/01/29/blog_back_new/shell/linux%E6%96%87%E6%9C%AC%E7%BC%96%E8%BE%91%E4%B8%89%E5%89%91%E5%AE%A2/">linux文本编辑三剑客</a>
+            
+        </section>
+    </article>
+</div>
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+    </div>
+</footer>
+
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

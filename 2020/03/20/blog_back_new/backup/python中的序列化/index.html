@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="hzjsea">
+
+
+
+
+
+
+<title>python中的序列化 | hzjsea</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+    <script src="/js/jquery.min.js"></script>
+    
+
+
+
+    
+    
+        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+    
+
+
+
+
+    <script>
+    function searchToggle() {
+        const width = $(document.body).width()
+        if(width > 479) {
+            return;
+        }
+        const search = $('.search');
+        const searchForm = $('.form-search')
+
+        if(!search.hasClass("mobile-search")) {
+            search.addClass("mobile-search");
+        } else {
+            search.removeClass("mobile-search");
+        } 
+    }
+
+    function search(searchInputEl, formEl, flag) {
+        const path = "/" + "search.json"; // 可以在public 下查看这个search.json
+        $(formEl).submit(function(e){
+            e.preventDefault();
+            let target = null
+            if(searchInputEl == null) {
+                const screenWidth = $(document.body).width();
+                target = screenWidth > 479 ? $('#pc-search-input') : $('#mobile-search-input');
+                console.log(target);
+            } else {
+                target = $(searchInputEl)
+            }
+
+            if(!flag && target.val() === '') {
+                return ;
+            }
+
+            $("#u-search").fadeIn(500, function() {
+                $("body > .wrapper").addClass("modal-active");
+
+                $.ajax({
+                    url: path,
+                    dataType: "json",
+                    beforeSend: function (xhr) {
+                        $input = target.val();
+                        $(".form-input").val($input);
+                        const loadingBar = $('.search-loading-bar') 
+                        loadingBar.css({
+                            width:'100%',
+                            display: 'block'
+                        });
+                    },
+                    success: function( datas ) {
+                        console.log(datas);
+                        const $resultPanel = $(".modal-body")[0];
+                        let str = `<ul class="modal-results">`;
+                        var keywords = $(".form-input").val().trim().toLowerCase().split(/[\s\-]+/);
+                        $resultPanel.innerHTML = "";
+                        let hasResult = false
+                        let text = `<div class="no-result">找不到与关键词相关的内容....</div>`;
+
+                        if ($(".form-input").val().trim().length <= 0) {
+                            // 没有结果
+                            $resultPanel.innerHTML = text;
+                            return;
+                        }
+                        datas.forEach(function (data, index) {
+                            var isMatch = true;
+                            if (!data.title || data.title.trim() === '') {
+                                data.title = "Untitled";
+                            }
+                            var data_title = data.title.trim().toLowerCase();
+                            var data_content = data.content && data.content.trim().replace(/<[^>]+>/g, "").toLowerCase() || '';
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            // only match artiles with not empty contents
+                            if (data_content !== '') {
+                                keywords.forEach(function (keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        hasResult = true
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            } else {
+                                isMatch = false;
+                            }
+                            // show search results
+                            if (isMatch) {
+                                str += `<li class='result-item'><a href='${data_url}' class='result-item-detail'> <span class="title">${data_title}</span>`;
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 200 characters
+                                    var start = first_occur - 40;
+                                    var end = first_occur + 160;
+
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+
+                                    if (start == 0) {
+                                        end = 200;
+                                    }
+
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+
+                                    var match_content = content.substring(start, end);
+
+                                    // highlight all keywords
+                                    keywords.forEach(function (keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, `<em class="search-keyword">${keyword}</em>`);
+                                    });
+
+                                    str += `<span class="content"> ${match_content} ...</span></a>`;
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        if(hasResult) {
+                            $resultPanel.innerHTML = str;
+                        } else {
+                            $resultPanel.innerHTML = text;
+                        }
+
+                    },
+                    complete: function() {
+                        setTimeout(() => {
+                                const loadingBar = $('.search-loading-bar') 
+                                loadingBar.css({
+                                    width:'0%',
+                                    display: 'none'
+                                });
+                        }, 300)
+                    }
+                });
+            })
+
+        });
+    }
+
+    $(document).ready(function() {
+        $('.modal-close').click(function () { 
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+
+        $('.modal-overlay').click(function() {
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+        search(null, ".form-search", false)
+        search("#u-search-modal-form .form-input", ".u-search-modal-form", true)
+    })
+</script>
+
+
+
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo"><a href="/">hzjsea</a></div>
+        <div class="menu navbar-right">
+            
+            
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="pc-search-input"/>
+        </form>
+    </div>
+
+
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+            <input id="switch_default" type="checkbox" class="switch_default">
+            <label for="switch_default" class="toggleBtn"></label>
+        </div>
+    </div>
+</nav>
+
+
+<nav class="navbar-mobile" id="nav-mobile">
+    <div class="container">
+        <div class="navbar-header">
+            <div>
+                <a href="/">hzjsea</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+            </div>
+            <div class="navbar-mobile-right">
+                
+                
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="mobile-search-input"/>
+        </form>
+    </div>
+
+
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; 目录</div>
+            </div>
+            
+        </div>
+        <div class="menu" id="mobile-menu">
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+        </div>
+    </div>
+</nav>
+
+        <div class="main">
+			<!-- Chic/layout.ejs -->
+ <div id="u-search">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="container">
+                    <form id="u-search-modal-form" class="u-search-modal-form">
+                        <button type="submit" class="form-submit-btn">
+                            <img src="/image/search.png" class="search-btn-img" />
+                        </button>
+                        <input placeholder="搜索文章。。。" class="form-input" id="modal-form-input">
+                    </form>
+                    <a class="modal-close">x</a>
+                </div>
+                <div class="search-loading">
+                    <div class="search-loading-bar"></div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <!-- ul 格式如下 -->
+                <!-- <ul class="modal-results">
+                    <li class="result-item">
+                        <a class="result-item-detail">
+                            <span class="title">页面配置</span>
+                            <span class="content">
+                                content
+                            </span>
+                        </a>
+                    </li>
+                </ul> -->
+            </div>
+        </div>
+        <div class="modal-overlay"></div>
+    </div>
+            <div class="container">
+    
+    
+    <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">全部展开</a>
+        <a onclick="go_top()">回到顶部</a>
+        <a onclick="go_bottom()">回到底部</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "全部折叠"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "全部展开"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">python中的序列化</h1>
+            
+            <div class="post-meta">
+                
+                作者： <a itemprop="author" rel="author" href="/">hzjsea</a>&nbsp;
+                
+
+                
+                <span class="post-time">
+                    创建日期： <a
+                        href="#">March 20, 2020&nbsp;&nbsp;14:03:58</a>
+                </span>&nbsp;
+                
+                
+                <span class="post-category">
+                    分类：
+                    
+                    <a href="/categories/python/">python</a>&nbsp;
+                    
+                </span>
+                
+                
+                状态：<a href="#">SNAPSHOT</a>
+                
+            </div>
+            
+        </header>
+
+        <div class="post-content">
+            <p>learn python</p>
+<a id="more"></a>
+
+<h1 id="python中的序列化"><a href="#python中的序列化" class="headerlink" title="python中的序列化"></a>python中的序列化</h1><p>有很多地方我们需要使用到Python的序列化，其中最明显的地方就是web 框架中，这些数据从数据库中拿出来之后，经过orm提取数据，最后序列化成完整的json数据，然后返回给前台</p>
+<h2 id="json数据结构"><a href="#json数据结构" class="headerlink" title="json数据结构"></a>json数据结构</h2><p>序列化与反序列化两个动作作用对象都是对json内容的整理<br>JSON(JavaScript Object Notation) 是一种轻量级的数据交换格式。JSON采用完全独立于语言的文本格式，这些特性使JSON成为理想的数据交换语言。易于人阅读和编写，同时也易于机器解析和生成。</p>
+<pre class=" language-json"><code class="language-json"> &amp;#<span class="token number">123</span><span class="token punctuation">;</span> <span class="token property">"programmers"</span><span class="token operator">:</span> <span class="token punctuation">[</span> &amp;#<span class="token number">123</span><span class="token punctuation">;</span> <span class="token property">"firstName"</span><span class="token operator">:</span> <span class="token string">"Brett"</span><span class="token punctuation">,</span> <span class="token property">"lastName"</span><span class="token operator">:</span><span class="token string">"McLaughlin"</span><span class="token punctuation">,</span> <span class="token property">"email"</span><span class="token operator">:</span> <span class="token string">"aaaa"</span> &amp;#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span>
+&amp;#<span class="token number">123</span><span class="token punctuation">;</span> <span class="token property">"firstName"</span><span class="token operator">:</span> <span class="token string">"Jason"</span><span class="token punctuation">,</span> <span class="token property">"lastName"</span><span class="token operator">:</span><span class="token string">"Hunter"</span><span class="token punctuation">,</span> <span class="token property">"email"</span><span class="token operator">:</span> <span class="token string">"bbbb"</span> &amp;#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span>
+&amp;#<span class="token number">123</span><span class="token punctuation">;</span> <span class="token property">"firstName"</span><span class="token operator">:</span> <span class="token string">"Elliotte"</span><span class="token punctuation">,</span> <span class="token property">"lastName"</span><span class="token operator">:</span><span class="token string">"Harold"</span><span class="token punctuation">,</span> <span class="token property">"email"</span><span class="token operator">:</span> <span class="token string">"cccc"</span> &amp;#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+<span class="token property">"authors"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+&amp;#<span class="token number">123</span><span class="token punctuation">;</span> <span class="token property">"firstName"</span><span class="token operator">:</span> <span class="token string">"Isaac"</span><span class="token punctuation">,</span> <span class="token property">"lastName"</span><span class="token operator">:</span> <span class="token string">"Asimov"</span><span class="token punctuation">,</span> <span class="token property">"genre"</span><span class="token operator">:</span> <span class="token string">"science fiction"</span> &amp;#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span>
+&amp;#<span class="token number">123</span><span class="token punctuation">;</span> <span class="token property">"firstName"</span><span class="token operator">:</span> <span class="token string">"Tad"</span><span class="token punctuation">,</span> <span class="token property">"lastName"</span><span class="token operator">:</span> <span class="token string">"Williams"</span><span class="token punctuation">,</span> <span class="token property">"genre"</span><span class="token operator">:</span> <span class="token string">"fantasy"</span> &amp;#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span>
+&amp;#<span class="token number">123</span><span class="token punctuation">;</span> <span class="token property">"firstName"</span><span class="token operator">:</span> <span class="token string">"Frank"</span><span class="token punctuation">,</span> <span class="token property">"lastName"</span><span class="token operator">:</span> <span class="token string">"Peretti"</span><span class="token punctuation">,</span> <span class="token property">"genre"</span><span class="token operator">:</span> <span class="token string">"christian fiction"</span> &amp;#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+<span class="token property">"musicians"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+&amp;#<span class="token number">123</span><span class="token punctuation">;</span> <span class="token property">"firstName"</span><span class="token operator">:</span> <span class="token string">"Eric"</span><span class="token punctuation">,</span> <span class="token property">"lastName"</span><span class="token operator">:</span> <span class="token string">"Clapton"</span><span class="token punctuation">,</span> <span class="token property">"instrument"</span><span class="token operator">:</span> <span class="token string">"guitar"</span> &amp;#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span>
+&amp;#<span class="token number">123</span><span class="token punctuation">;</span> <span class="token property">"firstName"</span><span class="token operator">:</span> <span class="token string">"Sergei"</span><span class="token punctuation">,</span> <span class="token property">"lastName"</span><span class="token operator">:</span> <span class="token string">"Rachmaninoff"</span><span class="token punctuation">,</span> <span class="token property">"instrument"</span><span class="token operator">:</span> <span class="token string">"piano"</span> &amp;#<span class="token number">125</span><span class="token punctuation">;</span>
+<span class="token punctuation">]</span> &amp;#<span class="token number">125</span><span class="token punctuation">;</span></code></pre>
+<h2 id="序列化的几种方法"><a href="#序列化的几种方法" class="headerlink" title="序列化的几种方法"></a>序列化的几种方法</h2><p>Python序列化有很多的方法</p>
+<ul>
+<li>json<br>用于字符串和python数据类型间进行转换</li>
+<li>pickle<br>用于python特有的类型和python的数据类型间进行转换</li>
+<li>marshal</li>
+</ul>
+<p>Json模块提供了四个功能：dumps、dump、loads、load<br>pickle模块提供了四个功能：dumps、dump、loads、load</p>
+<p>json是可以在不同语言之间交换数据的，而pickle只在python之间使用。json只能序列化最基本的数据类型，josn只能把常用的数据类型序列化（列表、字典、列表、字符串、数字、），比如日期格式、类对象！josn就不行了。而pickle可以序列化所有的数据类型，包括类，函数都可以序列化。</p>
+<h3 id="使用json-序列化"><a href="#使用json-序列化" class="headerlink" title="使用json 序列化"></a>使用json 序列化</h3><p>json </p>
+<ul>
+<li>dumps把字典转换成字符串 </li>
+<li>loads把字符串转换成字典</li>
+<li>dump把数据类型转换成字符串并存储在文件中  </li>
+<li>load把文件打开从字符串转换成数据类型<br>在python中json与dict类似</li>
+</ul>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/yyds/p/6563608.html">https://www.cnblogs.com/yyds/p/6563608.html</a></p>
+<pre class=" language-py"><code class="language-py">import json
+test_dict = &#123;'bigberg': [7600, &#123;1: [['iPhone', 6300], ['Bike', 800], ['shirt', 300]]&#125;]&#125;
+# 转换成字符串 dumps
+test_string = json.dumps(test_dict)
+print(type(test_string))
+
+# 转换成字典
+test_json = json.loads(test_string)
+print(type(test_json))
+
+# 将字典转换成字符串写入文件
+file = open('1.json','w',encoding='utf-8')
+json.dump(test_dict,file)
+
+# 将文件中的字符串转换成字典输出
+file = open('1.json','r',encoding='utf-8')
+info = json.load(file)
+print(info)</code></pre>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>标签：</span>
+                <span class="tag">
+                    
+                    
+                    <a href="/tags/python/"># python</a>
+                    
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript：window.history.back();">后退</a>
+                <span>· </span>
+                <a href="/">主页</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            <a class="prev" rel="prev" href="/2020/03/20/blog_back_new/backup/fastapi%E5%AE%89%E5%85%A8/">fastapi安全</a>
+            
+            
+            <a class="next" rel="next" href="/2020/03/20/blog_back_new/backup/jwtForFastapi/">jwtForFastapi</a>
+            
+        </section>
+    </article>
+</div>
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+    </div>
+</footer>
+
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

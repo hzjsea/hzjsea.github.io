@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="hzjsea">
+
+
+
+
+
+
+<title>常见错误 | hzjsea</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+    <script src="/js/jquery.min.js"></script>
+    
+
+
+
+    
+    
+        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+    
+
+
+
+
+    <script>
+    function searchToggle() {
+        const width = $(document.body).width()
+        if(width > 479) {
+            return;
+        }
+        const search = $('.search');
+        const searchForm = $('.form-search')
+
+        if(!search.hasClass("mobile-search")) {
+            search.addClass("mobile-search");
+        } else {
+            search.removeClass("mobile-search");
+        } 
+    }
+
+    function search(searchInputEl, formEl, flag) {
+        const path = "/" + "search.json"; // 可以在public 下查看这个search.json
+        $(formEl).submit(function(e){
+            e.preventDefault();
+            let target = null
+            if(searchInputEl == null) {
+                const screenWidth = $(document.body).width();
+                target = screenWidth > 479 ? $('#pc-search-input') : $('#mobile-search-input');
+                console.log(target);
+            } else {
+                target = $(searchInputEl)
+            }
+
+            if(!flag && target.val() === '') {
+                return ;
+            }
+
+            $("#u-search").fadeIn(500, function() {
+                $("body > .wrapper").addClass("modal-active");
+
+                $.ajax({
+                    url: path,
+                    dataType: "json",
+                    beforeSend: function (xhr) {
+                        $input = target.val();
+                        $(".form-input").val($input);
+                        const loadingBar = $('.search-loading-bar') 
+                        loadingBar.css({
+                            width:'100%',
+                            display: 'block'
+                        });
+                    },
+                    success: function( datas ) {
+                        console.log(datas);
+                        const $resultPanel = $(".modal-body")[0];
+                        let str = `<ul class="modal-results">`;
+                        var keywords = $(".form-input").val().trim().toLowerCase().split(/[\s\-]+/);
+                        $resultPanel.innerHTML = "";
+                        let hasResult = false
+                        let text = `<div class="no-result">找不到与关键词相关的内容....</div>`;
+
+                        if ($(".form-input").val().trim().length <= 0) {
+                            // 没有结果
+                            $resultPanel.innerHTML = text;
+                            return;
+                        }
+                        datas.forEach(function (data, index) {
+                            var isMatch = true;
+                            if (!data.title || data.title.trim() === '') {
+                                data.title = "Untitled";
+                            }
+                            var data_title = data.title.trim().toLowerCase();
+                            var data_content = data.content && data.content.trim().replace(/<[^>]+>/g, "").toLowerCase() || '';
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            // only match artiles with not empty contents
+                            if (data_content !== '') {
+                                keywords.forEach(function (keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        hasResult = true
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            } else {
+                                isMatch = false;
+                            }
+                            // show search results
+                            if (isMatch) {
+                                str += `<li class='result-item'><a href='${data_url}' class='result-item-detail'> <span class="title">${data_title}</span>`;
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 200 characters
+                                    var start = first_occur - 40;
+                                    var end = first_occur + 160;
+
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+
+                                    if (start == 0) {
+                                        end = 200;
+                                    }
+
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+
+                                    var match_content = content.substring(start, end);
+
+                                    // highlight all keywords
+                                    keywords.forEach(function (keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, `<em class="search-keyword">${keyword}</em>`);
+                                    });
+
+                                    str += `<span class="content"> ${match_content} ...</span></a>`;
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        if(hasResult) {
+                            $resultPanel.innerHTML = str;
+                        } else {
+                            $resultPanel.innerHTML = text;
+                        }
+
+                    },
+                    complete: function() {
+                        setTimeout(() => {
+                                const loadingBar = $('.search-loading-bar') 
+                                loadingBar.css({
+                                    width:'0%',
+                                    display: 'none'
+                                });
+                        }, 300)
+                    }
+                });
+            })
+
+        });
+    }
+
+    $(document).ready(function() {
+        $('.modal-close').click(function () { 
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+
+        $('.modal-overlay').click(function() {
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+        search(null, ".form-search", false)
+        search("#u-search-modal-form .form-input", ".u-search-modal-form", true)
+    })
+</script>
+
+
+
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo"><a href="/">hzjsea</a></div>
+        <div class="menu navbar-right">
+            
+            
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="pc-search-input"/>
+        </form>
+    </div>
+
+
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+            <input id="switch_default" type="checkbox" class="switch_default">
+            <label for="switch_default" class="toggleBtn"></label>
+        </div>
+    </div>
+</nav>
+
+
+<nav class="navbar-mobile" id="nav-mobile">
+    <div class="container">
+        <div class="navbar-header">
+            <div>
+                <a href="/">hzjsea</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+            </div>
+            <div class="navbar-mobile-right">
+                
+                
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="mobile-search-input"/>
+        </form>
+    </div>
+
+
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; 目录</div>
+            </div>
+            
+        </div>
+        <div class="menu" id="mobile-menu">
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+        </div>
+    </div>
+</nav>
+
+        <div class="main">
+			<!-- Chic/layout.ejs -->
+ <div id="u-search">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="container">
+                    <form id="u-search-modal-form" class="u-search-modal-form">
+                        <button type="submit" class="form-submit-btn">
+                            <img src="/image/search.png" class="search-btn-img" />
+                        </button>
+                        <input placeholder="搜索文章。。。" class="form-input" id="modal-form-input">
+                    </form>
+                    <a class="modal-close">x</a>
+                </div>
+                <div class="search-loading">
+                    <div class="search-loading-bar"></div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <!-- ul 格式如下 -->
+                <!-- <ul class="modal-results">
+                    <li class="result-item">
+                        <a class="result-item-detail">
+                            <span class="title">页面配置</span>
+                            <span class="content">
+                                content
+                            </span>
+                        </a>
+                    </li>
+                </ul> -->
+            </div>
+        </div>
+        <div class="modal-overlay"></div>
+    </div>
+            <div class="container">
+    
+    
+    <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">全部展开</a>
+        <a onclick="go_top()">回到顶部</a>
+        <a onclick="go_bottom()">回到底部</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "全部折叠"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "全部展开"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">常见错误</h1>
+            
+            <div class="post-meta">
+                
+                作者： <a itemprop="author" rel="author" href="/">hzjsea</a>&nbsp;
+                
+
+                
+                <span class="post-time">
+                    创建日期： <a
+                        href="#">December 29, 2019&nbsp;&nbsp;13:13:35</a>
+                </span>&nbsp;
+                
+                
+                <span class="post-category">
+                    分类：
+                    
+                    <a href="/categories/linux/">linux</a>&nbsp;
+                    
+                </span>
+                
+                
+                状态：<a href="#">SNAPSHOT</a>
+                
+            </div>
+            
+        </header>
+
+        <div class="post-content">
+            <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+<ul>
+<li><a href="#centos7%E9%94%99%E8%AF%AF%E6%80%BB%E7%BB%93">centos7错误总结</a><ul>
+<li><a href="#yum%E4%B8%8D%E6%94%AF%E6%8C%81python3">yum不支持python3</a></li>
+<li><a href="#%E5%8F%AF%E4%BB%A5%E9%80%9A%E5%A4%96%E7%BD%91%E4%BD%86%E6%98%AF%E6%97%A0%E6%B3%95ping%E7%99%BE%E5%BA%A6">可以通外网，但是无法ping百度</a></li>
+<li><a href="#linux%E4%B8%AD%E5%A6%82%E4%BD%95%E6%81%A2%E5%A4%8D%E5%88%B0%E5%90%8E%E5%8F%B0%E8%BF%9B%E7%A8%8B">linux中如何恢复到后台进程</a></li>
+<li><a href="#ssh%E9%85%8D%E7%BD%AE%E7%9A%84%E9%97%AE%E9%A2%98">ssh配置的问题</a></li>
+</ul>
+</li>
+</ul>
+<!-- /code_chunk_output -->
+
+<a id="more"></a>
+
+<h1 id="centos7错误总结"><a href="#centos7错误总结" class="headerlink" title="centos7错误总结"></a>centos7错误总结</h1><h2 id="yum不支持python3"><a href="#yum不支持python3" class="headerlink" title="yum不支持python3"></a>yum不支持python3</h2><pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span>root@gogogo alpaca<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># yum</span>
+  File <span class="token string">"/bin/yum"</span>, line 30
+    except KeyboardInterrupt, e:
+                            ^
+SyntaxError: invalid syntax
+  File <span class="token string">"/usr/libexec/urlgrabber-ext-down"</span>, line 28
+    except OSError, e:</code></pre>
+<p><strong>解决办法</strong></p>
+<pre class=" language-bash"><code class="language-bash"><span class="token function">sed</span> -i <span class="token string">'s:bin/python:bin/python2.7:'</span> /usr/bin/yum
+<span class="token function">sed</span> -i <span class="token string">'s:bin/python:bin/python2.7:'</span> /usr/libexec/urlgrabber-ext-down</code></pre>
+<h2 id="可以通外网，但是无法ping百度"><a href="#可以通外网，但是无法ping百度" class="headerlink" title="可以通外网，但是无法ping百度"></a>可以通外网，但是无法ping百度</h2><p>包括无法使用yum wget 等下载工具<br>或者报错 cannot find a valid baseurl for repo:base/7/x86_64 的解决方法</p>
+<p><strong>解决办法</strong><br>原因 - &gt; DNS的问题</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token keyword">echo</span> nameserver 114.114.114.114 <span class="token operator">></span> /etc/reslov.conf</code></pre>
+<h2 id="linux中如何恢复到后台进程"><a href="#linux中如何恢复到后台进程" class="headerlink" title="linux中如何恢复到后台进程"></a>linux中如何恢复到后台进程</h2><p>linux 下我们如果想一个任务或者程序进行调度<br>bg 将一个后台暂停的命令，变成继续执行<br>fg 将后台的命令调至前台继续运行<br>jobs 查看当前在后台运行的命令<br>c-z 将前台命令放到后台运行 并且暂停<br>nohup command &amp; 在后台不断运行command命令</p>
+<h2 id="ssh配置的问题"><a href="#ssh配置的问题" class="headerlink" title="ssh配置的问题"></a>ssh配置的问题</h2><p><font color='blue'>这个问题主要是存在于交换机ssh登陆交换机的过程</font><br>ssh配置过程中，配置了密码登陆，但是出现下面的错误</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token operator">&lt;</span>ONI-KC-R01-CR1<span class="token operator">></span>ssh 10.0.0.166
+The server's host key does not match the local cached key. Either the server administrator has changed the host key, or you connected to another server pretending to be this server. Please remove the local cached key, before logging in<span class="token operator">!</span></code></pre>
+<p>主要问题是一开始用ssh登陆交换机的时候，选择了保存key</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token operator">&lt;</span>ONI-KC-R01-CR1<span class="token operator">></span>ssh 10.0.0.166
+Username: tt
+Press CTRL+C to abort.
+Connecting to 10.0.0.166 port 22.
+The server is not authenticated. Continue? <span class="token punctuation">[</span>Y/N<span class="token punctuation">]</span>:y
+Do you want to save the server public key? <span class="token punctuation">[</span>Y/N<span class="token punctuation">]</span>:y</code></pre>
+<p>这样导致的问题就是在当前交换机上会保存一个登陆另一个交换机的key</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true">#</span>
+public-key peer 10.0.0.166
+ public-key-code begin
+   30819F300D06092A864886F70D010101050003818D0030818902818100DF3E1240D158E197
+   CE0712173C8591883F88CC925B1C0CFC63C779E9F531C3B7E409BBB2CCED954C09A339BE78
+   46B1497E4771EDD7E88D2E380C50F37A6EC9254E6B27EC7AFFE6DCDFC1EA230D16C4DC9BB8
+   B831A2F0CB578B736566052E830A582836AA9BFFE0821CE7CB43F74077D38B20437479F260
+   A5D0550CA7D3D0747F020001
+ public-key-code end
+ peer-public-key end
+<span class="token comment" spellcheck="true"># </span></code></pre>
+<p>于是当你下次选择使用ssh+密码登陆交换机的时候就会发现错误</p>
+<p><font color='red'>解决</font><br>删除当前交换机的key  并在下次登陆的时候选择</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token operator">&lt;</span>ONI-KC-R01-CR1<span class="token operator">></span>ssh 10.0.0.166
+Username: tt
+Press CTRL+C to abort.
+Connecting to 10.0.0.166 port 22.
+The server is not authenticated. Continue? <span class="token punctuation">[</span>Y/N<span class="token punctuation">]</span>:y
+Do you want to save the server public key? <span class="token punctuation">[</span>Y/N<span class="token punctuation">]</span>:n</code></pre>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>标签：</span>
+                <span class="tag">
+                    
+                    
+                    <a href="/tags/linux/"># linux</a>
+                    
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript：window.history.back();">后退</a>
+                <span>· </span>
+                <a href="/">主页</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            <a class="prev" rel="prev" href="/2019/12/29/blog_back_new/%E9%94%99%E8%AF%AF%E6%80%BB%E7%BB%93/%E5%8F%88%E6%8B%8D%E4%BA%91/">内容记录</a>
+            
+            
+            <a class="next" rel="next" href="/2019/12/29/blog_back_new/%E9%94%99%E8%AF%AF%E6%80%BB%E7%BB%93/%E8%BD%AF%E4%BB%B6%E9%85%8D%E7%BD%AE/">软件配置</a>
+            
+        </section>
+    </article>
+</div>
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+    </div>
+</footer>
+
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

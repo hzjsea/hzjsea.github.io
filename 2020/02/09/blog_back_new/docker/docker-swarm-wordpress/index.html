@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="hzjsea">
+
+
+
+
+
+
+<title>docker-swarm-wordpress | hzjsea</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+    <script src="/js/jquery.min.js"></script>
+    
+
+
+
+    
+    
+        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+    
+
+
+
+
+    <script>
+    function searchToggle() {
+        const width = $(document.body).width()
+        if(width > 479) {
+            return;
+        }
+        const search = $('.search');
+        const searchForm = $('.form-search')
+
+        if(!search.hasClass("mobile-search")) {
+            search.addClass("mobile-search");
+        } else {
+            search.removeClass("mobile-search");
+        } 
+    }
+
+    function search(searchInputEl, formEl, flag) {
+        const path = "/" + "search.json"; // 可以在public 下查看这个search.json
+        $(formEl).submit(function(e){
+            e.preventDefault();
+            let target = null
+            if(searchInputEl == null) {
+                const screenWidth = $(document.body).width();
+                target = screenWidth > 479 ? $('#pc-search-input') : $('#mobile-search-input');
+                console.log(target);
+            } else {
+                target = $(searchInputEl)
+            }
+
+            if(!flag && target.val() === '') {
+                return ;
+            }
+
+            $("#u-search").fadeIn(500, function() {
+                $("body > .wrapper").addClass("modal-active");
+
+                $.ajax({
+                    url: path,
+                    dataType: "json",
+                    beforeSend: function (xhr) {
+                        $input = target.val();
+                        $(".form-input").val($input);
+                        const loadingBar = $('.search-loading-bar') 
+                        loadingBar.css({
+                            width:'100%',
+                            display: 'block'
+                        });
+                    },
+                    success: function( datas ) {
+                        console.log(datas);
+                        const $resultPanel = $(".modal-body")[0];
+                        let str = `<ul class="modal-results">`;
+                        var keywords = $(".form-input").val().trim().toLowerCase().split(/[\s\-]+/);
+                        $resultPanel.innerHTML = "";
+                        let hasResult = false
+                        let text = `<div class="no-result">找不到与关键词相关的内容....</div>`;
+
+                        if ($(".form-input").val().trim().length <= 0) {
+                            // 没有结果
+                            $resultPanel.innerHTML = text;
+                            return;
+                        }
+                        datas.forEach(function (data, index) {
+                            var isMatch = true;
+                            if (!data.title || data.title.trim() === '') {
+                                data.title = "Untitled";
+                            }
+                            var data_title = data.title.trim().toLowerCase();
+                            var data_content = data.content && data.content.trim().replace(/<[^>]+>/g, "").toLowerCase() || '';
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            // only match artiles with not empty contents
+                            if (data_content !== '') {
+                                keywords.forEach(function (keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        hasResult = true
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            } else {
+                                isMatch = false;
+                            }
+                            // show search results
+                            if (isMatch) {
+                                str += `<li class='result-item'><a href='${data_url}' class='result-item-detail'> <span class="title">${data_title}</span>`;
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 200 characters
+                                    var start = first_occur - 40;
+                                    var end = first_occur + 160;
+
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+
+                                    if (start == 0) {
+                                        end = 200;
+                                    }
+
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+
+                                    var match_content = content.substring(start, end);
+
+                                    // highlight all keywords
+                                    keywords.forEach(function (keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, `<em class="search-keyword">${keyword}</em>`);
+                                    });
+
+                                    str += `<span class="content"> ${match_content} ...</span></a>`;
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        if(hasResult) {
+                            $resultPanel.innerHTML = str;
+                        } else {
+                            $resultPanel.innerHTML = text;
+                        }
+
+                    },
+                    complete: function() {
+                        setTimeout(() => {
+                                const loadingBar = $('.search-loading-bar') 
+                                loadingBar.css({
+                                    width:'0%',
+                                    display: 'none'
+                                });
+                        }, 300)
+                    }
+                });
+            })
+
+        });
+    }
+
+    $(document).ready(function() {
+        $('.modal-close').click(function () { 
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+
+        $('.modal-overlay').click(function() {
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+        search(null, ".form-search", false)
+        search("#u-search-modal-form .form-input", ".u-search-modal-form", true)
+    })
+</script>
+
+
+
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo"><a href="/">hzjsea</a></div>
+        <div class="menu navbar-right">
+            
+            
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="pc-search-input"/>
+        </form>
+    </div>
+
+
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+            <input id="switch_default" type="checkbox" class="switch_default">
+            <label for="switch_default" class="toggleBtn"></label>
+        </div>
+    </div>
+</nav>
+
+
+<nav class="navbar-mobile" id="nav-mobile">
+    <div class="container">
+        <div class="navbar-header">
+            <div>
+                <a href="/">hzjsea</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+            </div>
+            <div class="navbar-mobile-right">
+                
+                
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="mobile-search-input"/>
+        </form>
+    </div>
+
+
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; 目录</div>
+            </div>
+            
+        </div>
+        <div class="menu" id="mobile-menu">
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+        </div>
+    </div>
+</nav>
+
+        <div class="main">
+			<!-- Chic/layout.ejs -->
+ <div id="u-search">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="container">
+                    <form id="u-search-modal-form" class="u-search-modal-form">
+                        <button type="submit" class="form-submit-btn">
+                            <img src="/image/search.png" class="search-btn-img" />
+                        </button>
+                        <input placeholder="搜索文章。。。" class="form-input" id="modal-form-input">
+                    </form>
+                    <a class="modal-close">x</a>
+                </div>
+                <div class="search-loading">
+                    <div class="search-loading-bar"></div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <!-- ul 格式如下 -->
+                <!-- <ul class="modal-results">
+                    <li class="result-item">
+                        <a class="result-item-detail">
+                            <span class="title">页面配置</span>
+                            <span class="content">
+                                content
+                            </span>
+                        </a>
+                    </li>
+                </ul> -->
+            </div>
+        </div>
+        <div class="modal-overlay"></div>
+    </div>
+            <div class="container">
+    
+    
+    <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">全部展开</a>
+        <a onclick="go_top()">回到顶部</a>
+        <a onclick="go_bottom()">回到底部</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "全部折叠"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "全部展开"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">docker-swarm-wordpress</h1>
+            
+            <div class="post-meta">
+                
+                作者： <a itemprop="author" rel="author" href="/">hzjsea</a>&nbsp;
+                
+
+                
+                <span class="post-time">
+                    创建日期： <a
+                        href="#">February 9, 2020&nbsp;&nbsp;17:35:49</a>
+                </span>&nbsp;
+                
+                
+                <span class="post-category">
+                    分类：
+                    
+                    <a href="/categories/docker/">docker</a>&nbsp;
+                    
+                </span>
+                
+                
+                状态：<a href="#">SNAPSHOT</a>
+                
+            </div>
+            
+        </header>
+
+        <div class="post-content">
+            <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+<ul>
+<li><a href="#docker-swarm-wordpress">docker-swarm-wordpress</a><ul>
+<li><a href="#%E5%AE%9E%E6%88%98">实战</a></li>
+<li><a href="#%E9%9B%86%E7%BE%A4%E6%9C%8D%E5%8A%A1%E9%97%B4%E9%80%9A%E4%BF%A1">集群服务间通信</a></li>
+</ul>
+</li>
+</ul>
+<!-- /code_chunk_output -->
+<a id="more"></a>
+
+
+<h1 id="docker-swarm-wordpress"><a href="#docker-swarm-wordpress" class="headerlink" title="docker-swarm-wordpress"></a>docker-swarm-wordpress</h1><p>通过docker + swarm + wordpress 建立集群</p>
+<h2 id="实战"><a href="#实战" class="headerlink" title="实战"></a>实战</h2><p>在不指定同网络组的情况下，docker默认将所有的ip都归类到名字叫做docker0的bridge组里面，但是这样在跨机器的容器中，构建会十分麻烦，无法通过容器名来进行ip通信<br>因此，在创建的过程中需要指定网络组</p>
+<ol>
+<li>创建一个overlay的网络<pre class=" language-bash"><code class="language-bash">docker network create -d overlay demo
+<span class="token comment" spellcheck="true"># 查看是否创建成功 </span>
+<span class="token punctuation">[</span>root@manager55 ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># docker network ls</span>
+NETWORK ID          NAME                DRIVER              SCOPE
+ee5b54750620        bridge              bridge              local
+mxmjjml84ldx        demo                overlay             swarm
+6ad358de8e6b        docker_gwbridge     bridge              local
+f127d4764edd        host                host                local
+ihvz4z5lfwis        ingress             overlay             swarm   <span class="token operator">&lt;</span>----这里
+83efd9726723        none                null                local</code></pre>
+一个manager 两台work都有了这个网络</li>
+<li>创建服务<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># mysql</span>
+docker <span class="token function">service</span> create --name mysql --env MYSQL_ROOT_PASSWORD<span class="token operator">=</span>root --env MYSQL_DATABASE<span class="token operator">=</span>wordpress --network demo --mount type<span class="token operator">=</span>volume,source<span class="token operator">=</span>mysql-data,destination<span class="token operator">=</span>/var/lib/mysql mysql:5.7 
+</code></pre>
+</li>
+</ol>
+<h1 id="wordpress"><a href="#wordpress" class="headerlink" title="wordpress"></a>wordpress</h1><p>docker service create –name wordpress -p 80:80 –env WORDPRESS_DB_PASSWORD=root –env WORDPRESS_DB_HOST=mysql –network demo wordpress</p>
+<pre><code>## 集群服务间通信
+在一个service ,加入到overlay网络的机器都会添加一条DNS,docker基于DNS服务发现记录主机名与ip的对应关系
+但由于docker swarm的横向扩展性，机器的ip随时都会改变，因此记录的并不是容器所在机器的ip，而是一个vip  virtual ip 
+
+
+1. 创建一个overlay的网络
+```bash 
+docker network create -d overylay demo </code></pre>
+<ol start="2">
+<li><p>创建一个web服务,并加入demo这个网络</p>
+<pre class=" language-bash"><code class="language-bash">docker <span class="token function">service</span> create --name <span class="token function">whoami</span> -p 8000:8000 --network demo -d jwilder/whoami </code></pre>
+</li>
+<li><p>查看所建立的service</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span>root@manager55 ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># docker service ls</span>
+ID                  NAME                MODE                REPLICAS            IMAGE                   PORTS
+nnw1gekvbv0t        client              replicated          1/1                 busybox:latest
+3s9kfmq0eo8c        <span class="token function">whoami</span>              replicated          1/1                 jwilder/whoami:latest   *:8000-<span class="token operator">></span>8000/tcp
+<span class="token punctuation">[</span>root@manager55 ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># docker service ps client</span>
+ID                  NAME                IMAGE               NODE                DESIRED STATE       CURRENT STATE            ERROR               PORTS
+t7xe5omklz28        client.1            busybox:latest      work196             Running             Running 15 minutes ago </code></pre>
+<p>可以发现busybox的容器是运行在work196上面的，这个时候我们去busybox ping whoami这个容器名，</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span>root@work196 ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># docker exec bd2b98fdc7f9 ping whoami</span>
+PING <span class="token function">whoami</span> <span class="token punctuation">(</span>10.0.2.2<span class="token punctuation">)</span>: 56 data bytes
+64 bytes from 10.0.2.2: seq<span class="token operator">=</span>0 ttl<span class="token operator">=</span>64 time<span class="token operator">=</span>0.077 ms
+64 bytes from 10.0.2.2: seq<span class="token operator">=</span>1 ttl<span class="token operator">=</span>64 time<span class="token operator">=</span>0.194 ms
+64 bytes from 10.0.2.2: seq<span class="token operator">=</span>2 ttl<span class="token operator">=</span>64 time<span class="token operator">=</span>0.193 ms 
+<span class="token comment" spellcheck="true"># 查看whoami容器的ip</span>
+<span class="token punctuation">[</span>root@manager55 ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># docker ecec dfcd2f4c0396 ip a</span>
+docker: <span class="token string">'ecec'</span> is not a docker command.
+See <span class="token string">'docker --help'</span>
+<span class="token punctuation">[</span>root@manager55 ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># docker exec  dfcd2f4c0396 ip a</span>
+1: lo: <span class="token operator">&lt;</span>LOOPBACK,UP,LOWER_UP<span class="token operator">></span> mtu 65536 qdisc noqueue state UNKNOWN qlen 1000
+ link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+ inet 127.0.0.1/8 scope host lo
+    valid_lft forever preferred_lft forever
+31: eth1@if32: <span class="token operator">&lt;</span>BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN<span class="token operator">></span> mtu 1450 qdisc noqueue state UP
+ link/ether 02:42:0a:00:00:08 brd ff:ff:ff:ff:ff:ff
+ inet 10.0.0.8/24 brd 10.0.0.255 scope global eth1
+    valid_lft forever preferred_lft forever
+33: eth2@if34: <span class="token operator">&lt;</span>BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN<span class="token operator">></span> mtu 1500 qdisc noqueue state UP
+ link/ether 02:42:ac:12:00:03 brd ff:ff:ff:ff:ff:ff
+ inet 172.18.0.3/16 brd 172.18.255.255 scope global eth2
+    valid_lft forever preferred_lft forever
+35: eth0@if36: <span class="token operator">&lt;</span>BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN<span class="token operator">></span> mtu 1450 qdisc noqueue state UP
+ link/ether 02:42:0a:00:02:03 brd ff:ff:ff:ff:ff:ff
+ inet 10.0.2.3/24 brd 10.0.2.255 scope global eth0
+    valid_lft forever preferred_lft forever</code></pre>
+<p>在ping whoami容器时候，并没有其ping他的任何一个ip说明在这之上又做了一层vip，用来统一管理所有容器名为whoami的机器</p>
+</li>
+<li><p>扩展whoamin容器</p>
+<pre class=" language-bash"><code class="language-bash">docker <span class="token function">service</span> scale whami<span class="token operator">=</span>4 </code></pre>
+<p>再次使用ping的时候会发现，同样ping的是这个vip</p>
+</li>
+<li><p>查看虚拟ip下面的ip</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span>root@work196 ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># docker exec bd2b98fdc7f9 nslookup tasks.whoami</span>
+Server:         127.0.0.11
+Address:        127.0.0.11:53
+</code></pre>
+</li>
+</ol>
+<p>Non-authoritative answer:<br>Name:   tasks.whoami<br>Address: 10.0.2.10<br>Name:   tasks.whoami<br>Address: 10.0.2.3<br>Name:   tasks.whoami<br>Address: 10.0.2.9<br>Name:   tasks.whoami<br>Address: 10.0.2.8</p>
+<p>*** Can’t find tasks.whoami: No answer </p>
+<p>```<br>其实这些内容就是vip下面的真正的IP<br>因此service 与service之间是通过vip进行通信的</p>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>标签：</span>
+                <span class="tag">
+                    
+                    
+                    <a href="/tags/docker/"># docker</a>
+                    
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript：window.history.back();">后退</a>
+                <span>· </span>
+                <a href="/">主页</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            <a class="prev" rel="prev" href="/2020/02/10/blog_back_new/docker/docker-ks8/">docker-k8s</a>
+            
+            
+            <a class="next" rel="next" href="/2020/02/07/blog_back_new/docker/docker-swarm/">docker-swarm</a>
+            
+        </section>
+    </article>
+</div>
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+    </div>
+</footer>
+
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>
