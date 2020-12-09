@@ -485,7 +485,7 @@ year<span class="token punctuation">:</span> <span class="token number">2020</sp
 license<span class="token punctuation">:</span>
   header<span class="token punctuation">:</span> This file is part of CLI application foo<span class="token punctuation">.</span>
   text<span class="token punctuation">:</span> <span class="token operator">|</span>
-    <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span> <span class="token punctuation">.</span>copyright <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token punctuation">{</span><span class="token punctuation">{</span> <span class="token punctuation">.</span>copyright <span class="token punctuation">}</span><span class="token punctuation">}</span>
 
     This is my license<span class="token punctuation">.</span> There are many like it<span class="token punctuation">,</span> but this one is mine<span class="token punctuation">.</span>
     My license is my best friend<span class="token punctuation">.</span> It is my life<span class="token punctuation">.</span> I must master it as I must
@@ -501,36 +501,36 @@ license<span class="token punctuation">:</span>
 </blockquote>
 <pre class=" language-go"><code class="language-go"><span class="token keyword">package</span> main
 <span class="token keyword">import</span> <span class="token string">"gocommand/cmd"</span>
-<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     cmd<span class="token punctuation">.</span><span class="token function">Execute</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// 调用了cmd/root.go/Execute(func)</span>
-<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span></code></pre>
+<span class="token punctuation">}</span></code></pre>
 <blockquote>
 <p>cmd/root.go</p>
 </blockquote>
 <pre class=" language-go"><code class="language-go"><span class="token keyword">var</span> cfgFile <span class="token builtin">string</span>
 
 <span class="token comment" spellcheck="true">// rootCmd represents the base command when called without any subcommands</span>
-<span class="token keyword">var</span> rootCmd <span class="token operator">=</span> <span class="token operator">&amp;</span>cobra<span class="token punctuation">.</span>Command<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">// 一个cmd对象</span>
+<span class="token keyword">var</span> rootCmd <span class="token operator">=</span> <span class="token operator">&amp;</span>cobra<span class="token punctuation">.</span>Command<span class="token punctuation">{</span>  <span class="token comment" spellcheck="true">// 一个cmd对象</span>
     Use<span class="token punctuation">:</span>   <span class="token string">"Gocommand"</span><span class="token punctuation">,</span>
     Short<span class="token punctuation">:</span> <span class="token string">"short desc"</span><span class="token punctuation">,</span>
     Long<span class="token punctuation">:</span> <span class="token string">"long desc"</span>
-    <span class="token comment" spellcheck="true">//    Run: func(cmd *cobra.Command, args []string) &amp;#123; &amp;#125;,</span>
-<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">//    Run: func(cmd *cobra.Command, args []string) { },</span>
+<span class="token punctuation">}</span>
 
-<span class="token keyword">func</span> <span class="token function">Execute</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">//被main.go 调用</span>
-    <span class="token keyword">if</span> err <span class="token operator">:=</span> rootCmd<span class="token punctuation">.</span><span class="token function">Execute</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+<span class="token keyword">func</span> <span class="token function">Execute</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>  <span class="token comment" spellcheck="true">//被main.go 调用</span>
+    <span class="token keyword">if</span> err <span class="token operator">:=</span> rootCmd<span class="token punctuation">.</span><span class="token function">Execute</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
         fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
         os<span class="token punctuation">.</span><span class="token function">Exit</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
-<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
 
-<span class="token keyword">func</span> <span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">// 初始化</span>
+<span class="token keyword">func</span> <span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>  <span class="token comment" spellcheck="true">// 初始化</span>
     cobra<span class="token punctuation">.</span><span class="token function">OnInitialize</span><span class="token punctuation">(</span>initConfig<span class="token punctuation">)</span>
     rootCmd<span class="token punctuation">.</span><span class="token function">PersistentFlags</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">StringVar</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>cfgFile<span class="token punctuation">,</span> <span class="token string">"config"</span><span class="token punctuation">,</span> <span class="token string">""</span><span class="token punctuation">,</span> <span class="token string">"config file (default is $HOME/.Gocommand.yaml)"</span><span class="token punctuation">)</span>
     rootCmd<span class="token punctuation">.</span><span class="token function">Flags</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">BoolP</span><span class="token punctuation">(</span><span class="token string">"toggle"</span><span class="token punctuation">,</span> <span class="token string">"t"</span><span class="token punctuation">,</span> <span class="token boolean">false</span><span class="token punctuation">,</span> <span class="token string">"Help message for toggle"</span><span class="token punctuation">)</span>
-<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 
-<span class="token keyword">func</span> <span class="token function">initConfig</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span><span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// 如果没有配置文件的话，可以先不看</span></code></pre>
+<span class="token keyword">func</span> <span class="token function">initConfig</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><span class="token punctuation">}</span> <span class="token comment" spellcheck="true">// 如果没有配置文件的话，可以先不看</span></code></pre>
 <p>上面的执行顺序分别是</p>
 <ol>
 <li>init</li>
@@ -540,47 +540,47 @@ license<span class="token punctuation">:</span>
 <blockquote>
 <p>cmd/run.go</p>
 </blockquote>
-<pre class=" language-go"><code class="language-go"><span class="token keyword">var</span> runCmd <span class="token operator">=</span> <span class="token operator">&amp;</span>cobra<span class="token punctuation">.</span>Command<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+<pre class=" language-go"><code class="language-go"><span class="token keyword">var</span> runCmd <span class="token operator">=</span> <span class="token operator">&amp;</span>cobra<span class="token punctuation">.</span>Command<span class="token punctuation">{</span>
     Use<span class="token punctuation">:</span>   <span class="token string">"run"</span><span class="token punctuation">,</span>
     Short<span class="token punctuation">:</span> <span class="token string">"short desc"</span><span class="token punctuation">,</span>
     Long<span class="token punctuation">:</span> <span class="token string">"long desc"</span>
-    Run<span class="token punctuation">:</span> <span class="token keyword">func</span><span class="token punctuation">(</span>cmd <span class="token operator">*</span>cobra<span class="token punctuation">.</span>Command<span class="token punctuation">,</span> args <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">// 匿名函数，指令所执行的方法</span>
+    Run<span class="token punctuation">:</span> <span class="token keyword">func</span><span class="token punctuation">(</span>cmd <span class="token operator">*</span>cobra<span class="token punctuation">.</span>Command<span class="token punctuation">,</span> args <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>  <span class="token comment" spellcheck="true">// 匿名函数，指令所执行的方法</span>
         fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"run called"</span><span class="token punctuation">)</span>   
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span>
-<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span>
 
-<span class="token keyword">func</span> <span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+<span class="token keyword">func</span> <span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     rootCmd<span class="token punctuation">.</span><span class="token function">AddCommand</span><span class="token punctuation">(</span>runCmd<span class="token punctuation">)</span>  <span class="token comment" spellcheck="true">// rootCmd是root下面声明的结构体 runCmd是run.go下面声明的变量</span>
-<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 </code></pre>
 <h2 id="添加子命令"><a href="#添加子命令" class="headerlink" title="添加子命令"></a>添加子命令</h2><pre class=" language-bash"><code class="language-bash">cobra add run <span class="token comment" spellcheck="true"># 创建子命令</span>
 <span class="token comment" spellcheck="true"># 取消Run的注释</span>
-Run: func<span class="token punctuation">(</span>cmd *cobra.Command, args <span class="token punctuation">[</span><span class="token punctuation">]</span>string<span class="token punctuation">)</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+Run: func<span class="token punctuation">(</span>cmd *cobra.Command, args <span class="token punctuation">[</span><span class="token punctuation">]</span>string<span class="token punctuation">)</span> <span class="token punctuation">{</span>
     fmt.Println<span class="token punctuation">(</span><span class="token string">"run called"</span><span class="token punctuation">)</span>
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+<span class="token punctuation">}</span>
 <span class="token comment" spellcheck="true"># 运行</span>
 go run main.go run</code></pre>
 <h2 id="添加多个命令继承"><a href="#添加多个命令继承" class="headerlink" title="添加多个命令继承"></a>添加多个命令继承</h2><p>命令的继承主要在于<code>init()</code>这个函数下面</p>
-<pre class=" language-bash"><code class="language-bash">func init<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+<pre class=" language-bash"><code class="language-bash">func init<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     rootCmd.AddCommand<span class="token punctuation">(</span>runCmd<span class="token punctuation">)</span> <span class="token comment" spellcheck="true"># 这里表示的是将runCmd 放到rootCmd下面 也就是第一个出来的子命令</span>
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+<span class="token punctuation">}</span>
 <span class="token comment" spellcheck="true">#  创建一个新的子命令</span>
 cobra add child_run
 <span class="token comment" spellcheck="true">#  修改内容如下</span>
-func init<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+func init<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     runCmd.AddCommand<span class="token punctuation">(</span>childRunCmd<span class="token punctuation">)</span>
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+<span class="token punctuation">}</span>
 <span class="token comment" spellcheck="true"># 运行</span>
 go run main.go run childRun
 go run main.go childRun <span class="token comment" spellcheck="true"># 报错</span></code></pre>
-<h2 id="添加Flag"><a href="#添加Flag" class="headerlink" title="添加Flag"></a>添加Flag</h2><pre class=" language-go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+<h2 id="添加Flag"><a href="#添加Flag" class="headerlink" title="添加Flag"></a>添加Flag</h2><pre class=" language-go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     rootCmd<span class="token punctuation">.</span><span class="token function">AddCommand</span><span class="token punctuation">(</span>runCmd<span class="token punctuation">)</span>
     runCmd<span class="token punctuation">.</span><span class="token function">Flags</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token string">"name"</span><span class="token punctuation">,</span><span class="token string">"hello"</span><span class="token punctuation">,</span><span class="token string">"echo "</span><span class="token punctuation">)</span>
-<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 <span class="token comment" spellcheck="true">// 获取写入的数据</span>
-Run<span class="token punctuation">:</span> <span class="token keyword">func</span><span class="token punctuation">(</span>cmd <span class="token operator">*</span>cobra<span class="token punctuation">.</span>Command<span class="token punctuation">,</span> args <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+Run<span class="token punctuation">:</span> <span class="token keyword">func</span><span class="token punctuation">(</span>cmd <span class="token operator">*</span>cobra<span class="token punctuation">.</span>Command<span class="token punctuation">,</span> args <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>cmd<span class="token punctuation">.</span><span class="token function">Flag</span><span class="token punctuation">(</span><span class="token string">"name"</span><span class="token punctuation">)</span><span class="token punctuation">.</span>Value<span class="token punctuation">)</span>
-<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 
 <span class="token comment" spellcheck="true">// 运行程序</span>
 <span class="token keyword">go</span> run main<span class="token punctuation">.</span><span class="token keyword">go</span> run <span class="token operator">--</span>name xxds</code></pre>
@@ -605,18 +605,18 @@ runCmd<span class="token punctuation">.</span><span class="token function">Flags
 <pre class=" language-go"><code class="language-go"><span class="token comment" spellcheck="true">// root.go</span>
 <span class="token keyword">var</span> version <span class="token builtin">string</span>
 <span class="token keyword">var</span> verbose <span class="token builtin">string</span>
-<span class="token keyword">func</span> <span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+<span class="token keyword">func</span> <span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     cobra<span class="token punctuation">.</span><span class="token function">OnInitialize</span><span class="token punctuation">(</span>initConfig<span class="token punctuation">)</span>
     rootCmd<span class="token punctuation">.</span><span class="token function">PersistentFlags</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">StringVarP</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>version<span class="token punctuation">,</span><span class="token string">"version"</span><span class="token punctuation">,</span><span class="token string">"v"</span><span class="token punctuation">,</span><span class="token string">"6.12.1"</span><span class="token punctuation">,</span><span class="token string">"show version"</span><span class="token punctuation">)</span>
     rootCmd<span class="token punctuation">.</span><span class="token function">PersistentFlags</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">StringVar</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>verbose<span class="token punctuation">,</span><span class="token string">"verbose"</span><span class="token punctuation">,</span><span class="token string">"6.12.1"</span><span class="token punctuation">,</span><span class="token string">"show verbose"</span><span class="token punctuation">)</span>
-<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 
-    Run<span class="token punctuation">:</span> <span class="token keyword">func</span><span class="token punctuation">(</span>cmd <span class="token operator">*</span>cobra<span class="token punctuation">.</span>Command<span class="token punctuation">,</span> args <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    Run<span class="token punctuation">:</span> <span class="token keyword">func</span><span class="token punctuation">(</span>cmd <span class="token operator">*</span>cobra<span class="token punctuation">.</span>Command<span class="token punctuation">,</span> args <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
         fstatus<span class="token punctuation">,</span><span class="token boolean">_</span> <span class="token operator">:=</span> cmd<span class="token punctuation">.</span><span class="token function">Flags</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">GetBool</span><span class="token punctuation">(</span><span class="token string">"version"</span><span class="token punctuation">)</span>
-        <span class="token keyword">if</span> fstatus<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> fstatus<span class="token punctuation">{</span>
             fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"version is 20.0.1"</span><span class="token punctuation">)</span>
-        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
 
 
 <span class="token comment" spellcheck="true">// go run main.go run --version</span>
@@ -628,12 +628,12 @@ runCmd<span class="token punctuation">.</span><span class="token function">Flags
 <pre class=" language-go"><code class="language-go"><span class="token comment" spellcheck="true">// 创建一个kubectCmd</span>
 cobra add kubect
 <span class="token comment" spellcheck="true">// 加入补全参数列表</span>
-<span class="token keyword">var</span> valids <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">string</span> <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">string</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span> <span class="token string">"pod"</span><span class="token punctuation">,</span> <span class="token string">"node"</span><span class="token punctuation">,</span> <span class="token string">"service"</span><span class="token punctuation">,</span> <span class="token string">"replicationcontroller"</span> <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> valids <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">string</span> <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">string</span><span class="token punctuation">{</span> <span class="token string">"pod"</span><span class="token punctuation">,</span> <span class="token string">"node"</span><span class="token punctuation">,</span> <span class="token string">"service"</span><span class="token punctuation">,</span> <span class="token string">"replicationcontroller"</span> <span class="token punctuation">}</span>
 
 <span class="token comment" spellcheck="true">// 创建一个completionCmd</span>
 cobra add completion
 <span class="token comment" spellcheck="true">// 复制粘贴 这是cobra官方提供的</span>
-<span class="token keyword">var</span> completionCmd <span class="token operator">=</span> <span class="token operator">&amp;</span>cobra<span class="token punctuation">.</span>Command<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> completionCmd <span class="token operator">=</span> <span class="token operator">&amp;</span>cobra<span class="token punctuation">.</span>Command<span class="token punctuation">{</span>
     Use<span class="token punctuation">:</span>                   <span class="token string">"completion [bash|zsh|fish|powershell]"</span><span class="token punctuation">,</span>
     Short<span class="token punctuation">:</span>                 <span class="token string">"Generate completion script"</span><span class="token punctuation">,</span>
     Long<span class="token punctuation">:</span> <span class="token string">`To load completions:
@@ -656,7 +656,7 @@ Zsh:
 $ echo "autoload -U compinit; compinit" >> ~/.zshrc
 
 # To load completions for each session, execute once:
-$ yourprogram completion zsh > "$&amp;#123;fpath[1]&amp;#125;/_yourprogram"
+$ yourprogram completion zsh > "${fpath[1]}/_yourprogram"
 
 # You will need to start a new shell for this setup to take effect.
 
@@ -668,10 +668,10 @@ $ yourprogram completion fish | source
 $ yourprogram completion fish > ~/.config/fish/completions/yourprogram.fish
 `</span><span class="token punctuation">,</span>
     DisableFlagsInUseLine<span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
-    ValidArgs<span class="token punctuation">:</span>             <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">string</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span><span class="token string">"bash"</span><span class="token punctuation">,</span> <span class="token string">"zsh"</span><span class="token punctuation">,</span> <span class="token string">"fish"</span><span class="token punctuation">,</span> <span class="token string">"powershell"</span><span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span>
+    ValidArgs<span class="token punctuation">:</span>             <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">string</span><span class="token punctuation">{</span><span class="token string">"bash"</span><span class="token punctuation">,</span> <span class="token string">"zsh"</span><span class="token punctuation">,</span> <span class="token string">"fish"</span><span class="token punctuation">,</span> <span class="token string">"powershell"</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
     Args<span class="token punctuation">:</span>                  cobra<span class="token punctuation">.</span><span class="token function">ExactValidArgs</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
-    Run<span class="token punctuation">:</span> <span class="token keyword">func</span><span class="token punctuation">(</span>cmd <span class="token operator">*</span>cobra<span class="token punctuation">.</span>Command<span class="token punctuation">,</span> args <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
-        <span class="token keyword">switch</span> args<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    Run<span class="token punctuation">:</span> <span class="token keyword">func</span><span class="token punctuation">(</span>cmd <span class="token operator">*</span>cobra<span class="token punctuation">.</span>Command<span class="token punctuation">,</span> args <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">switch</span> args<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token punctuation">{</span>
         <span class="token keyword">case</span> <span class="token string">"bash"</span><span class="token punctuation">:</span>
             cmd<span class="token punctuation">.</span><span class="token function">Root</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">GenBashCompletion</span><span class="token punctuation">(</span>os<span class="token punctuation">.</span>Stdout<span class="token punctuation">)</span>
         <span class="token keyword">case</span> <span class="token string">"zsh"</span><span class="token punctuation">:</span>
@@ -680,9 +680,9 @@ $ yourprogram completion fish > ~/.config/fish/completions/yourprogram.fish
             cmd<span class="token punctuation">.</span><span class="token function">Root</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">GenFishCompletion</span><span class="token punctuation">(</span>os<span class="token punctuation">.</span>Stdout<span class="token punctuation">,</span> <span class="token boolean">true</span><span class="token punctuation">)</span>
         <span class="token keyword">case</span> <span class="token string">"powershell"</span><span class="token punctuation">:</span>
             cmd<span class="token punctuation">.</span><span class="token function">Root</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">GenPowerShellCompletion</span><span class="token punctuation">(</span>os<span class="token punctuation">.</span>Stdout<span class="token punctuation">)</span>
-        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span>
-<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span>
 
 <span class="token comment" spellcheck="true">// 针对不同的版本进行不同的操作</span>
 <span class="token comment" spellcheck="true">// 比如bash</span>
@@ -694,9 +694,9 @@ source <span class="token operator">&lt;</span><span class="token punctuation">(
 
 <span class="token keyword">import</span> <span class="token string">"Gocommand/cmd"</span>
 
-<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     cmd<span class="token punctuation">.</span><span class="token function">Execute</span><span class="token punctuation">(</span><span class="token punctuation">)</span>   <span class="token comment" spellcheck="true">// from /cmd/root.go/  Execute()</span>
-<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 </code></pre>
 <pre class=" language-go"><code class="language-go"><span class="token keyword">package</span> cmd
 
@@ -711,65 +711,65 @@ source <span class="token operator">&lt;</span><span class="token punctuation">(
 
 <span class="token keyword">var</span> cfgFile <span class="token builtin">string</span>
 
-<span class="token keyword">var</span> rootCmd <span class="token operator">=</span> <span class="token operator">&amp;</span>cobra<span class="token punctuation">.</span>Command<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> rootCmd <span class="token operator">=</span> <span class="token operator">&amp;</span>cobra<span class="token punctuation">.</span>Command<span class="token punctuation">{</span>
     Use<span class="token punctuation">:</span>   <span class="token string">"Gocommand"</span><span class="token punctuation">,</span>     <span class="token comment" spellcheck="true">// 这个不能改，改了运行命令就不一样了</span>
     Short<span class="token punctuation">:</span> <span class="token string">"short desc"</span><span class="token punctuation">,</span>   
     Long<span class="token punctuation">:</span> <span class="token string">"long desc"</span>
-    Run<span class="token punctuation">:</span> <span class="token keyword">func</span><span class="token punctuation">(</span>cmd <span class="token operator">*</span>cobra<span class="token punctuation">.</span>Command<span class="token punctuation">,</span> args <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    Run<span class="token punctuation">:</span> <span class="token keyword">func</span><span class="token punctuation">(</span>cmd <span class="token operator">*</span>cobra<span class="token punctuation">.</span>Command<span class="token punctuation">,</span> args <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
         fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"helloworld"</span><span class="token punctuation">)</span>
-     <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span>
-<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+     <span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span>
 
 <span class="token comment" spellcheck="true">// 被main.go 调用</span>
-<span class="token keyword">func</span> <span class="token function">Execute</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
-    <span class="token keyword">if</span> err <span class="token operator">:=</span> rootCmd<span class="token punctuation">.</span><span class="token function">Execute</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+<span class="token keyword">func</span> <span class="token function">Execute</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> err <span class="token operator">:=</span> rootCmd<span class="token punctuation">.</span><span class="token function">Execute</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
         fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
         os<span class="token punctuation">.</span><span class="token function">Exit</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
-<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
 
-<span class="token keyword">func</span> <span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+<span class="token keyword">func</span> <span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     cobra<span class="token punctuation">.</span><span class="token function">OnInitialize</span><span class="token punctuation">(</span>initConfig<span class="token punctuation">)</span>
     rootCmd<span class="token punctuation">.</span><span class="token function">PersistentFlags</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">StringVar</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>cfgFile<span class="token punctuation">,</span> <span class="token string">"config"</span><span class="token punctuation">,</span> <span class="token string">""</span><span class="token punctuation">,</span> <span class="token string">"config file (default is $HOME/.Gocommand.yaml)"</span><span class="token punctuation">)</span>
-<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 
-<span class="token keyword">func</span> <span class="token function">initConfig</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
-    <span class="token keyword">if</span> cfgFile <span class="token operator">!=</span> <span class="token string">""</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+<span class="token keyword">func</span> <span class="token function">initConfig</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> cfgFile <span class="token operator">!=</span> <span class="token string">""</span> <span class="token punctuation">{</span>
         viper<span class="token punctuation">.</span><span class="token function">SetConfigFile</span><span class="token punctuation">(</span>cfgFile<span class="token punctuation">)</span>
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span> <span class="token keyword">else</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
         home<span class="token punctuation">,</span> err <span class="token operator">:=</span> homedir<span class="token punctuation">.</span><span class="token function">Dir</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-        <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
             fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
             os<span class="token punctuation">.</span><span class="token function">Exit</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
-        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
         viper<span class="token punctuation">.</span><span class="token function">AddConfigPath</span><span class="token punctuation">(</span>home<span class="token punctuation">)</span>
         viper<span class="token punctuation">.</span><span class="token function">SetConfigName</span><span class="token punctuation">(</span><span class="token string">".Gocommand"</span><span class="token punctuation">)</span>
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
 
     viper<span class="token punctuation">.</span><span class="token function">AutomaticEnv</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-    <span class="token keyword">if</span> err <span class="token operator">:=</span> viper<span class="token punctuation">.</span><span class="token function">ReadInConfig</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> err <span class="token operator">==</span> <span class="token boolean">nil</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> err <span class="token operator">:=</span> viper<span class="token punctuation">.</span><span class="token function">ReadInConfig</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> err <span class="token operator">==</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
         fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"Using config file:"</span><span class="token punctuation">,</span> viper<span class="token punctuation">.</span><span class="token function">ConfigFileUsed</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
-<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span></code></pre>
-<pre class=" language-go"><code class="language-go"><span class="token keyword">func</span> <span class="token punctuation">(</span>c <span class="token operator">*</span>Command<span class="token punctuation">)</span> <span class="token function">ExecuteC</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">(</span>cmd <span class="token operator">*</span>Command<span class="token punctuation">,</span> err <span class="token builtin">error</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<pre class=" language-go"><code class="language-go"><span class="token keyword">func</span> <span class="token punctuation">(</span>c <span class="token operator">*</span>Command<span class="token punctuation">)</span> <span class="token function">ExecuteC</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">(</span>cmd <span class="token operator">*</span>Command<span class="token punctuation">,</span> err <span class="token builtin">error</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token comment" spellcheck="true">// 判断 ctx字段是否为nil</span>
 
-    <span class="token keyword">if</span> c<span class="token punctuation">.</span>ctx <span class="token operator">==</span> <span class="token boolean">nil</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> c<span class="token punctuation">.</span>ctx <span class="token operator">==</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
         c<span class="token punctuation">.</span>ctx <span class="token operator">=</span> context<span class="token punctuation">.</span><span class="token function">Background</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
 
     <span class="token comment" spellcheck="true">// Regardless of what command execute is called on, run on Root only</span>
     <span class="token comment" spellcheck="true">// 前面说过，我们所有的命令构成了一棵树，每次执行都是从根命令开始执行的</span>
     <span class="token comment" spellcheck="true">// 如果我们手残在代码的某处直接执行了一个子命令，这个方法也会向上遍历到根，然后执行根命令的</span>
-    <span class="token keyword">if</span> c<span class="token punctuation">.</span><span class="token function">HasParent</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> c<span class="token punctuation">.</span><span class="token function">HasParent</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
         <span class="token keyword">return</span> c<span class="token punctuation">.</span><span class="token function">Root</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">ExecuteC</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
 
     <span class="token comment" spellcheck="true">// windows hook</span>
     <span class="token comment" spellcheck="true">// windows系统的钩子</span>
-    <span class="token keyword">if</span> preExecHookFn <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> preExecHookFn <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
         <span class="token function">preExecHookFn</span><span class="token punctuation">(</span>c<span class="token punctuation">)</span>
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
 
     <span class="token comment" spellcheck="true">// initialize help as the last point possible to allow for user</span>
     <span class="token comment" spellcheck="true">// overriding</span>
@@ -779,9 +779,9 @@ source <span class="token operator">&lt;</span><span class="token punctuation">(
 
     <span class="token comment" spellcheck="true">// Workaround FAIL with "go test -v" or "cobra.test -test.v", see #155</span>
     <span class="token comment" spellcheck="true">// 如果没有设置过命令的调用参数，使用os.Args[1:]作为默认参数</span>
-    <span class="token keyword">if</span> c<span class="token punctuation">.</span>args <span class="token operator">==</span> <span class="token boolean">nil</span> <span class="token operator">&amp;&amp;</span> filepath<span class="token punctuation">.</span><span class="token function">Base</span><span class="token punctuation">(</span>os<span class="token punctuation">.</span>Args<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">!=</span> <span class="token string">"cobra.test"</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> c<span class="token punctuation">.</span>args <span class="token operator">==</span> <span class="token boolean">nil</span> <span class="token operator">&amp;&amp;</span> filepath<span class="token punctuation">.</span><span class="token function">Base</span><span class="token punctuation">(</span>os<span class="token punctuation">.</span>Args<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">!=</span> <span class="token string">"cobra.test"</span> <span class="token punctuation">{</span>
         args <span class="token operator">=</span> os<span class="token punctuation">.</span>Args<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">:</span><span class="token punctuation">]</span>
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
 
     <span class="token comment" spellcheck="true">// initialize the hidden command to be used for bash completion</span>
     c<span class="token punctuation">.</span><span class="token function">initCompleteCmd</span><span class="token punctuation">(</span>args<span class="token punctuation">)</span>
@@ -795,57 +795,57 @@ source <span class="token operator">&lt;</span><span class="token punctuation">(
     <span class="token comment" spellcheck="true">// 可以将命令的 TraverseChildren 属性置为 true ，cobra 会在执行命令前解析所有命令</span>
     <span class="token comment" spellcheck="true">// 的 local flag</span>
     <span class="token keyword">var</span> flags <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">string</span>
-    <span class="token keyword">if</span> c<span class="token punctuation">.</span>TraverseChildren <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> c<span class="token punctuation">.</span>TraverseChildren <span class="token punctuation">{</span>
         cmd<span class="token punctuation">,</span> flags<span class="token punctuation">,</span> err <span class="token operator">=</span> c<span class="token punctuation">.</span><span class="token function">Traverse</span><span class="token punctuation">(</span>args<span class="token punctuation">)</span>
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span> <span class="token keyword">else</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
         cmd<span class="token punctuation">,</span> flags<span class="token punctuation">,</span> err <span class="token operator">=</span> c<span class="token punctuation">.</span><span class="token function">Find</span><span class="token punctuation">(</span>args<span class="token punctuation">)</span>
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
-    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
         <span class="token comment" spellcheck="true">// If found parse to a subcommand and then failed, talk about the subcommand</span>
-        <span class="token keyword">if</span> cmd <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> cmd <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
             c <span class="token operator">=</span> cmd
-        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
-        <span class="token keyword">if</span> <span class="token operator">!</span>c<span class="token punctuation">.</span>SilenceErrors <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">if</span> <span class="token operator">!</span>c<span class="token punctuation">.</span>SilenceErrors <span class="token punctuation">{</span>
             c<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"Error:"</span><span class="token punctuation">,</span> err<span class="token punctuation">.</span><span class="token function">Error</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
             c<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"Run '%v --help' for usage.\n"</span><span class="token punctuation">,</span> c<span class="token punctuation">.</span><span class="token function">CommandPath</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
         <span class="token keyword">return</span> c<span class="token punctuation">,</span> err
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
 
     cmd<span class="token punctuation">.</span>commandCalledAs<span class="token punctuation">.</span>called <span class="token operator">=</span> <span class="token boolean">true</span>
-    <span class="token keyword">if</span> cmd<span class="token punctuation">.</span>commandCalledAs<span class="token punctuation">.</span>name <span class="token operator">==</span> <span class="token string">""</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> cmd<span class="token punctuation">.</span>commandCalledAs<span class="token punctuation">.</span>name <span class="token operator">==</span> <span class="token string">""</span> <span class="token punctuation">{</span>
         cmd<span class="token punctuation">.</span>commandCalledAs<span class="token punctuation">.</span>name <span class="token operator">=</span> cmd<span class="token punctuation">.</span><span class="token function">Name</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
 
     <span class="token comment" spellcheck="true">// We have to pass global context to children command</span>
     <span class="token comment" spellcheck="true">// if context is present on the parent command.</span>
-    <span class="token keyword">if</span> cmd<span class="token punctuation">.</span>ctx <span class="token operator">==</span> <span class="token boolean">nil</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> cmd<span class="token punctuation">.</span>ctx <span class="token operator">==</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
         cmd<span class="token punctuation">.</span>ctx <span class="token operator">=</span> c<span class="token punctuation">.</span>ctx
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
 
     err <span class="token operator">=</span> cmd<span class="token punctuation">.</span><span class="token function">execute</span><span class="token punctuation">(</span>flags<span class="token punctuation">)</span>
-    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
         <span class="token comment" spellcheck="true">// Always show help if requested, even if SilenceErrors is in</span>
         <span class="token comment" spellcheck="true">// effect</span>
-        <span class="token keyword">if</span> err <span class="token operator">==</span> flag<span class="token punctuation">.</span>ErrHelp <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> err <span class="token operator">==</span> flag<span class="token punctuation">.</span>ErrHelp <span class="token punctuation">{</span>
             cmd<span class="token punctuation">.</span><span class="token function">HelpFunc</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">(</span>cmd<span class="token punctuation">,</span> args<span class="token punctuation">)</span>
             <span class="token keyword">return</span> cmd<span class="token punctuation">,</span> <span class="token boolean">nil</span>
-        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
 
         <span class="token comment" spellcheck="true">// If root command has SilentErrors flagged,</span>
         <span class="token comment" spellcheck="true">// all subcommands should respect it</span>
-        <span class="token keyword">if</span> <span class="token operator">!</span>cmd<span class="token punctuation">.</span>SilenceErrors <span class="token operator">&amp;&amp;</span> <span class="token operator">!</span>c<span class="token punctuation">.</span>SilenceErrors <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token operator">!</span>cmd<span class="token punctuation">.</span>SilenceErrors <span class="token operator">&amp;&amp;</span> <span class="token operator">!</span>c<span class="token punctuation">.</span>SilenceErrors <span class="token punctuation">{</span>
             c<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"Error:"</span><span class="token punctuation">,</span> err<span class="token punctuation">.</span><span class="token function">Error</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
 
         <span class="token comment" spellcheck="true">// If root command has SilentUsage flagged,</span>
         <span class="token comment" spellcheck="true">// all subcommands should respect it</span>
-        <span class="token keyword">if</span> <span class="token operator">!</span>cmd<span class="token punctuation">.</span>SilenceUsage <span class="token operator">&amp;&amp;</span> <span class="token operator">!</span>c<span class="token punctuation">.</span>SilenceUsage <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token operator">!</span>cmd<span class="token punctuation">.</span>SilenceUsage <span class="token operator">&amp;&amp;</span> <span class="token operator">!</span>c<span class="token punctuation">.</span>SilenceUsage <span class="token punctuation">{</span>
             c<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>cmd<span class="token punctuation">.</span><span class="token function">UsageString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
     <span class="token keyword">return</span> cmd<span class="token punctuation">,</span> err
-<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span></code></pre>
+<span class="token punctuation">}</span></code></pre>
 <p>判断一些字段是否存在，并作出相应的动作</p>
 <p>主要是看这两个方法<br><img src="http://img.noback.top/2020-09-15-10-40-07.png" alt="2020-09-15-10-40-07"></p>
 <blockquote>

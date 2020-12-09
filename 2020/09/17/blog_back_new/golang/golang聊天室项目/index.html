@@ -469,59 +469,59 @@
 
 
 
-<span class="token keyword">func</span> <span class="token function">process</span> <span class="token punctuation">(</span>conn net<span class="token punctuation">.</span>Conn<span class="token punctuation">)</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+<span class="token keyword">func</span> <span class="token function">process</span> <span class="token punctuation">(</span>conn net<span class="token punctuation">.</span>Conn<span class="token punctuation">)</span><span class="token punctuation">{</span>
     <span class="token comment" spellcheck="true">// 关闭连接</span>
     <span class="token keyword">defer</span> conn<span class="token punctuation">.</span><span class="token function">Close</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
     <span class="token comment" spellcheck="true">// 针对当前连接做发送和接受操作</span>
     <span class="token comment" spellcheck="true">//input := bufio.NewReader(os.Stdin)</span>
-    <span class="token keyword">for</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token keyword">for</span> <span class="token punctuation">{</span>
         reader <span class="token operator">:=</span> bufio<span class="token punctuation">.</span><span class="token function">NewReader</span><span class="token punctuation">(</span>conn<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// 创建缓冲区对象</span>
         <span class="token keyword">var</span> buf <span class="token punctuation">[</span><span class="token number">128</span><span class="token punctuation">]</span><span class="token builtin">byte</span> <span class="token comment" spellcheck="true">// 创建缓冲区大小</span>
         n<span class="token punctuation">,</span>err <span class="token operator">:=</span> reader<span class="token punctuation">.</span><span class="token function">Read</span><span class="token punctuation">(</span>buf<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// 将内容写入到buf缓冲区</span>
-        <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token punctuation">{</span>
             fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"read from conn faild,err:%v\n"</span><span class="token punctuation">,</span>err<span class="token punctuation">)</span>
             <span class="token keyword">break</span>
-        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
         recv <span class="token operator">:=</span> <span class="token function">string</span><span class="token punctuation">(</span>buf<span class="token punctuation">[</span><span class="token punctuation">:</span>n<span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// 取出接收到的内容</span>
         fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span> <span class="token string">"服务端收到数据:%v\n"</span><span class="token punctuation">,</span>recv<span class="token punctuation">)</span>
         <span class="token comment" spellcheck="true">// 将接收到的数据返回给客户端</span>
 
         <span class="token comment" spellcheck="true">//mess,_ := input.ReadString('\n') // 每次遍历读取一遍回车 将bytes转换成string</span>
         <span class="token comment" spellcheck="true">//mess = strings.TrimSpace(mess)</span>
-        <span class="token comment" spellcheck="true">//if strings.ToUpper(mess) == "Q" &amp;#123;</span>
+        <span class="token comment" spellcheck="true">//if strings.ToUpper(mess) == "Q" {</span>
         <span class="token comment" spellcheck="true">//    return</span>
-        <span class="token comment" spellcheck="true">//&amp;#125;</span>
+        <span class="token comment" spellcheck="true">//}</span>
         <span class="token boolean">_</span><span class="token punctuation">,</span>err <span class="token operator">=</span> conn<span class="token punctuation">.</span><span class="token function">Write</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token function">byte</span><span class="token punctuation">(</span><span class="token string">"ok"</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// 将ok写入缓存</span>
-        <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token punctuation">{</span>
             fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"write from conn faild,err %v"</span><span class="token punctuation">,</span>err<span class="token punctuation">)</span>
             <span class="token keyword">break</span>
-        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
 
-<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
-
-
+<span class="token punctuation">}</span>
 
 
-<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+
+
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token comment" spellcheck="true">// 创建监听节点</span>
     listen<span class="token punctuation">,</span>err <span class="token operator">:=</span> net<span class="token punctuation">.</span><span class="token function">Listen</span><span class="token punctuation">(</span><span class="token string">"tcp"</span><span class="token punctuation">,</span><span class="token string">"127.0.0.1:9090"</span><span class="token punctuation">)</span>
-    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token punctuation">{</span>
         fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"listen faild,err : %v"</span><span class="token punctuation">,</span>err<span class="token punctuation">)</span>
         <span class="token keyword">return</span>
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
 
-    <span class="token keyword">for</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token keyword">for</span> <span class="token punctuation">{</span>
         <span class="token comment" spellcheck="true">// 节点接受监听，返回连接节点</span>
         conn<span class="token punctuation">,</span>err <span class="token operator">:=</span> listen<span class="token punctuation">.</span><span class="token function">Accept</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-        <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token punctuation">{</span>
             fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span> <span class="token string">"accept faild,err%v\n"</span><span class="token punctuation">,</span>err<span class="token punctuation">)</span>
             <span class="token keyword">continue</span>
-        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
         <span class="token comment" spellcheck="true">// 传入节点</span>
         <span class="token keyword">go</span> <span class="token function">process</span><span class="token punctuation">(</span>conn<span class="token punctuation">)</span>
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
-<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
 </code></pre>
 <p>:::  tip<br>Client<br>:::</p>
 <pre class=" language-go"><code class="language-go"><span class="token keyword">package</span> main
@@ -534,37 +534,37 @@
     <span class="token string">"strings"</span>
 <span class="token punctuation">)</span>
 
-<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token comment" spellcheck="true">// 主动发起请求与服务端产生连接</span>
     conn<span class="token punctuation">,</span>err <span class="token operator">:=</span> net<span class="token punctuation">.</span><span class="token function">Dial</span><span class="token punctuation">(</span><span class="token string">"tcp"</span><span class="token punctuation">,</span><span class="token string">"127.0.0.1:9090"</span><span class="token punctuation">)</span>
-    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token punctuation">{</span>
         fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"conn server faild,err: %v"</span><span class="token punctuation">,</span>err<span class="token punctuation">)</span>
         <span class="token keyword">return</span>
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
     input <span class="token operator">:=</span> bufio<span class="token punctuation">.</span><span class="token function">NewReader</span><span class="token punctuation">(</span>os<span class="token punctuation">.</span>Stdin<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// 创建一个缓存 将写入的内容写到缓冲中区</span>
-    <span class="token keyword">for</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token keyword">for</span> <span class="token punctuation">{</span>
         s<span class="token punctuation">,</span><span class="token boolean">_</span> <span class="token operator">:=</span> input<span class="token punctuation">.</span><span class="token function">ReadString</span><span class="token punctuation">(</span><span class="token string">'\n'</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// 每次遍历读取一遍回车 将bytes转换成string</span>
         s <span class="token operator">=</span> strings<span class="token punctuation">.</span><span class="token function">TrimSpace</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// 去除空格</span>
-        <span class="token keyword">if</span> strings<span class="token punctuation">.</span><span class="token function">ToUpper</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token string">"Q"</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">// 如果是q 直接跳出</span>
+        <span class="token keyword">if</span> strings<span class="token punctuation">.</span><span class="token function">ToUpper</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token string">"Q"</span><span class="token punctuation">{</span>  <span class="token comment" spellcheck="true">// 如果是q 直接跳出</span>
             <span class="token keyword">return</span>
-        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
         <span class="token boolean">_</span><span class="token punctuation">,</span>err <span class="token operator">=</span> conn<span class="token punctuation">.</span><span class="token function">Write</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token function">byte</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span><span class="token punctuation">)</span>  <span class="token comment" spellcheck="true">// 将数据写入发送到server端</span>
-        <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token punctuation">{</span>
             fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"error"</span><span class="token punctuation">)</span>
             <span class="token keyword">return</span>
-        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
 
         <span class="token comment" spellcheck="true">// 从服务端收回消息</span>
         <span class="token keyword">var</span> buf <span class="token punctuation">[</span><span class="token number">1024</span><span class="token punctuation">]</span><span class="token builtin">byte</span>   <span class="token comment" spellcheck="true">// 从服务端接收消息</span>
         n<span class="token punctuation">,</span>err <span class="token operator">:=</span> conn<span class="token punctuation">.</span><span class="token function">Read</span><span class="token punctuation">(</span>buf<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token punctuation">]</span><span class="token punctuation">)</span>  <span class="token comment" spellcheck="true">// 将消息写入</span>
-        <span class="token keyword">if</span> err <span class="token operator">!=</span><span class="token boolean">nil</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> err <span class="token operator">!=</span><span class="token boolean">nil</span><span class="token punctuation">{</span>
             fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"error"</span><span class="token punctuation">)</span>
             <span class="token keyword">return</span>
-        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
 
         fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"客户端发送信息%v,收到服务器消息%v\n"</span><span class="token punctuation">,</span>s<span class="token punctuation">,</span><span class="token function">string</span><span class="token punctuation">(</span>buf<span class="token punctuation">[</span><span class="token punctuation">:</span>n<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// string 格式化</span>
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
-<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
 </code></pre>
 <h2 id="点对多"><a href="#点对多" class="headerlink" title="点对多"></a>点对多</h2>
         </div>

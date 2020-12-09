@@ -454,7 +454,7 @@ bin:x:1:1:bin:/bin:/sbin/nologin
 daemon:x:2:2:daemon:/sbin:/sbin/nologin
 sync:x:5:0:sync:/sbin:/bin/sync</code></pre>
 <p>打印出组为0的行内容（符合结果有二条）</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token function">cat</span> xx <span class="token operator">|</span> <span class="token function">awk</span> -F <span class="token string">":"</span> <span class="token string">'&amp;#123;if (<span class="token variable">$4</span> == '</span>0<span class="token string">')&amp;#123; print <span class="token variable">$0</span>&amp;#125;&amp;#125;'</span></code></pre>
+<pre class=" language-bash"><code class="language-bash"><span class="token function">cat</span> xx <span class="token operator">|</span> <span class="token function">awk</span> -F <span class="token string">":"</span> <span class="token string">'{if (<span class="token variable">$4</span> == '</span>0<span class="token string">'){ print <span class="token variable">$0</span>}}'</span></code></pre>
 <p>修改sync用户的命令为/sbin/nologin</p>
 <pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 方法一</span>
 <span class="token function">sed</span> -i <span class="token string">"/^sync/s/\/bin\/sync/\/bin\/nologin/"</span> xx
@@ -462,7 +462,7 @@ sync:x:5:0:sync:/sbin:/bin/sync</code></pre>
 <span class="token function">sed</span> -i <span class="token string">"/^sync/s#/bin/sync#/sbin/nologin#"</span>  xx</code></pre>
 <p>在daemon用户后面插入一行<br><code>mysql:x:500:500:mysql:/home/mysql:/bin/nologin</code></p>
 <pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 方法一</span>
-<span class="token keyword">echo</span> mysql:x:500:500:mysql:/home/mysql:/bin/nologin <span class="token operator">|</span> <span class="token function">xargs</span> -I <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;&amp;#125; sed -i "/^daemon/a&amp;#123;&amp;#125;" xx</span>
+<span class="token keyword">echo</span> mysql:x:500:500:mysql:/home/mysql:/bin/nologin <span class="token operator">|</span> <span class="token function">xargs</span> -I <span class="token punctuation">{</span><span class="token punctuation">}</span> <span class="token function">sed</span> -i <span class="token string">"/^daemon/a{}"</span> xx
 <span class="token comment" spellcheck="true"># 方法二</span>
 <span class="token function">sed</span> -i <span class="token string">"/^daemon/a mysql:x:500:500:mysql:/home/mysql:/bin/nologin"</span> xx</code></pre>
 <p>思考题（没有正确答案，只要思路）<br>设计一个有100台左右服务器网络架构，有一个总计100G带宽的公网出口，需要考虑高可用和负载均衡。（交换机型号和使用数量不限，内部互联接口类型不限）<br>pass</p>
@@ -494,7 +494,7 @@ sync:x:5:0:sync:/sbin:/bin/sync</code></pre>
 <pre class=" language-bash"><code class="language-bash">1. 看监控图 -<span class="token operator">></span> 定位节点 -<span class="token operator">></span> 定位机器  -<span class="token operator">></span> 定位程序 -<span class="token operator">></span> 定位日志
 2. 定位程序的工具 iftop nethogs iptraf-ng
 
-<span class="token function">netstat</span> -n <span class="token operator">|</span> <span class="token function">awk</span> <span class="token string">'/^tcp/ &amp;#123;++s[<span class="token variable">$NF</span>]&amp;#125;&amp;#123;for (a in s )&amp;#123;print a s[a]&amp;#125;&amp;#125;'</span></code></pre>
+<span class="token function">netstat</span> -n <span class="token operator">|</span> <span class="token function">awk</span> <span class="token string">'/^tcp/ {++s[<span class="token variable">$NF</span>]}{for (a in s ){print a s[a]}}'</span></code></pre>
 
         </div>
 

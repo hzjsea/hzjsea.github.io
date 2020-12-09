@@ -592,7 +592,7 @@ ansible 192.168.1.3 -m shell -a <span class="token string">'echo <span class="to
 ansible 192.168.1.3 -m <span class="token function">command</span> -a <span class="token string">'/root/ansible_test.sh'</span>
 <span class="token comment" spellcheck="true"># 方法二</span>
 root@DESKTOP-GT1K5L0:~<span class="token comment" spellcheck="true"># ansible 192.168.1.3 -m script -a '/root/ansible_test.sh'</span>
-192.168.1.3 <span class="token operator">|</span> SUCCESS <span class="token operator">=</span><span class="token operator">></span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+192.168.1.3 <span class="token operator">|</span> SUCCESS <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
     <span class="token string">"changed"</span><span class="token keyword">:</span> true,
     <span class="token string">"rc"</span><span class="token keyword">:</span> 0,
     <span class="token string">"stderr"</span><span class="token keyword">:</span> <span class="token string">"Shared connection to 192.168.1.3 closed"</span>,
@@ -600,7 +600,7 @@ root@DESKTOP-GT1K5L0:~<span class="token comment" spellcheck="true"># ansible 19
     <span class="token string">"stdout_lines"</span><span class="token keyword">:</span> <span class="token punctuation">[</span>
         <span class="token string">"to do it,ansible"</span>
     <span class="token punctuation">]</span>
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125; </span></code></pre>
+<span class="token punctuation">}</span> </code></pre>
 <h3 id="Copy"><a href="#Copy" class="headerlink" title="Copy"></a>Copy</h3><ul>
 <li>fetch模块是将远程主机拉取文件到本地</li>
 <li>copy是将本地文件复制到远程主机</li>
@@ -687,21 +687,21 @@ ansible ho -m user -a <span class="token string">'name=user state=absent remove=
 <pre class=" language-bash"><code class="language-bash">➜  /tmp ansible -i hosts all -m setup
 <span class="token punctuation">[</span>WARNING<span class="token punctuation">]</span>: Unable to parse the plugin filter <span class="token function">file</span> /etc/ansible/plugin_filters.yml as module_blacklist is not a list. Skipping.
 
-10.0.28.58 <span class="token operator">|</span> SUCCESS <span class="token operator">=</span><span class="token operator">></span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
-    <span class="token string">"ansible_facts"</span><span class="token keyword">:</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+10.0.28.58 <span class="token operator">|</span> SUCCESS <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
+    <span class="token string">"ansible_facts"</span><span class="token keyword">:</span> <span class="token punctuation">{</span>
         <span class="token string">"ansible_all_ipv4_addresses"</span><span class="token keyword">:</span> <span class="token punctuation">[</span>
             <span class="token string">"10.0.28.58"</span>
         <span class="token punctuation">]</span>,
         <span class="token string">"ansible_all_ipv6_addresses"</span><span class="token keyword">:</span> <span class="token punctuation">[</span>
             <span class="token string">"fe80::b116:4b55:85a6:c563"</span>
         <span class="token punctuation">]</span>,
-        <span class="token string">"ansible_apparmor"</span><span class="token keyword">:</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+        <span class="token string">"ansible_apparmor"</span><span class="token keyword">:</span> <span class="token punctuation">{</span>
             <span class="token string">"status"</span><span class="token keyword">:</span> <span class="token string">"disabled"</span>
-        <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;,</span>
+        <span class="token punctuation">}</span>,
         <span class="token string">"ansible_architecture"</span><span class="token keyword">:</span> <span class="token string">"x86_64"</span>,
         <span class="token string">"ansible_bios_date"</span><span class="token keyword">:</span> <span class="token string">"05/14/2015"</span>,
         <span class="token string">"ansible_bios_version"</span><span class="token keyword">:</span> <span class="token string">"0504"</span>,
-        <span class="token string">"ansible_cmdline"</span><span class="token keyword">:</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+        <span class="token string">"ansible_cmdline"</span><span class="token keyword">:</span> <span class="token punctuation">{</span>
             <span class="token string">"BOOT_IMAGE"</span><span class="token keyword">:</span> <span class="token string">"/vmlinuz-3.10.0-1062.12.1.el7.x86_64"</span>,
             <span class="token string">"LANG"</span><span class="token keyword">:</span> <span class="token string">"zh_CN.UTF-8"</span>,
             <span class="token string">"crashkernel"</span><span class="token keyword">:</span> <span class="token string">"auto"</span>,
@@ -710,29 +710,29 @@ ansible ho -m user -a <span class="token string">'name=user state=absent remove=
             <span class="token string">"rhgb"</span><span class="token keyword">:</span> true,
             <span class="token string">"ro"</span><span class="token keyword">:</span> true,
             <span class="token string">"root"</span><span class="token keyword">:</span> <span class="token string">"/dev/mapper/centos-root"</span>
-        <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;,</span></code></pre>
+        <span class="token punctuation">}</span>,</code></pre>
 <p>setup模块返回的是ansible中的一些信息，包括修改后更换的结果，使用filter可以来过滤出我们需要的信息</p>
 <pre class=" language-bash"><code class="language-bash">➜  /tmp ansible all -m setup -a <span class="token string">'filter=ansible_hostname'</span>
 
-10.0.28.58 <span class="token operator">|</span> SUCCESS <span class="token operator">=</span><span class="token operator">></span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
-    <span class="token string">"ansible_facts"</span><span class="token keyword">:</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+10.0.28.58 <span class="token operator">|</span> SUCCESS <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
+    <span class="token string">"ansible_facts"</span><span class="token keyword">:</span> <span class="token punctuation">{</span>
         <span class="token string">"ansible_hostname"</span><span class="token keyword">:</span> <span class="token string">"node"</span>
-    <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;,</span>
+    <span class="token punctuation">}</span>,
     <span class="token string">"changed"</span><span class="token keyword">:</span> <span class="token boolean">false</span>
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span></code></pre>
+<span class="token punctuation">}</span></code></pre>
 <p>并且支持通配符匹配<br>比如我们要过滤出所有包含hostname的字段</p>
 <pre class=" language-bash"><code class="language-bash">ansible all -m setup -a <span class="token string">'filter=*address*'</span>
-10.0.28.58 <span class="token operator">|</span> SUCCESS <span class="token operator">=</span><span class="token operator">></span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
-    <span class="token string">"ansible_facts"</span><span class="token keyword">:</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+10.0.28.58 <span class="token operator">|</span> SUCCESS <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
+    <span class="token string">"ansible_facts"</span><span class="token keyword">:</span> <span class="token punctuation">{</span>
         <span class="token string">"ansible_all_ipv4_addresses"</span><span class="token keyword">:</span> <span class="token punctuation">[</span>
             <span class="token string">"10.0.28.58"</span>
         <span class="token punctuation">]</span>,
         <span class="token string">"ansible_all_ipv6_addresses"</span><span class="token keyword">:</span> <span class="token punctuation">[</span>
             <span class="token string">"fe80::b116:4b55:85a6:c563"</span>
         <span class="token punctuation">]</span>
-    <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;,</span>
+    <span class="token punctuation">}</span>,
     <span class="token string">"changed"</span><span class="token keyword">:</span> <span class="token boolean">false</span>
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span></code></pre>
+<span class="token punctuation">}</span></code></pre>
 <h1 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h1><ul>
 <li><p>模块<br><a target="_blank" rel="noopener" href="https://www.cnblogs.com/f-ck-need-u/p/7550603.html">https://www.cnblogs.com/f-ck-need-u/p/7550603.html</a><br><a target="_blank" rel="noopener" href="https://docs.ansible.com/ansible/2.6/modules/list_of_all_modules.html">https://docs.ansible.com/ansible/2.6/modules/list_of_all_modules.html</a></p>
 </li>

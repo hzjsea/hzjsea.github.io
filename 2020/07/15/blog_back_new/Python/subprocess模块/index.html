@@ -478,11 +478,11 @@ print<span class="token punctuation">(</span>data,<span class="token string">"\n
 <span class="token comment" spellcheck="true">#  t</span></code></pre>
 <p><font color='red'>但是popen会有一个问题，就是在调用awk的时候会出现错误,需要使用双花括号来解决 <code>\&#123;\&#123;\&#125;\&#125;</code></font></p>
 <pre class=" language-python"><code class="language-python"><span class="token keyword">import</span> os
-<span class="token comment" spellcheck="true"># res = os.popen("ls -al &amp;#123;&amp;#125; | awk '&amp;#123; print $NF &amp;#125;'".format(".")).read() #  这样会报错无法识别&amp;#123;&amp;#125; 需要加双花括号来解决</span>
-res <span class="token operator">=</span> os<span class="token punctuation">.</span>popen<span class="token punctuation">(</span><span class="token string">"ls -al &amp;#123;&amp;#125; | awk '&amp;#123;&amp;#123; print $NF &amp;#125;&amp;#125;'"</span><span class="token punctuation">.</span>format<span class="token punctuation">(</span><span class="token string">"."</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span>read<span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token comment" spellcheck="true"># res = os.popen("ls -al {} | awk '{ print $NF }'".format(".")).read() #  这样会报错无法识别{} 需要加双花括号来解决</span>
+res <span class="token operator">=</span> os<span class="token punctuation">.</span>popen<span class="token punctuation">(</span><span class="token string">"ls -al {} | awk '{{ print $NF }}'"</span><span class="token punctuation">.</span>format<span class="token punctuation">(</span><span class="token string">"."</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span>read<span class="token punctuation">(</span><span class="token punctuation">)</span>
 <span class="token keyword">print</span><span class="token punctuation">(</span>res<span class="token punctuation">)</span></code></pre>
 <h2 id="subprocess调用子进程"><a href="#subprocess调用子进程" class="headerlink" title="subprocess调用子进程"></a>subprocess调用子进程</h2><p>subprocess模块比较新把，意在替代一些老的模块，比如<code>os.popen</code></p>
-<pre class=" language-py"><code class="language-py">filelist = subprocess.Popen(args="ls -al &#123;&#125; | awk '&#123;&#123; print $NF&#125;&#125;' | xargs".format(filepath),shell=True,stdin=subprocess.PIPE,stdout=subprocess.PIPE)  # 这里返回的是一个tuple对象 (out,error)
+<pre class=" language-py"><code class="language-py">filelist = subprocess.Popen(args="ls -al {} | awk '{{ print $NF}}' | xargs".format(filepath),shell=True,stdin=subprocess.PIPE,stdout=subprocess.PIPE)  # 这里返回的是一个tuple对象 (out,error)
 (out,error) = filelist.communicate()
 
 print(out)</code></pre>

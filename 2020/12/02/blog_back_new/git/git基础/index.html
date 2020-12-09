@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="hzjsea">
+
+
+
+
+
+
+<title>git基础 | hzjsea</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+    <script src="/js/jquery.min.js"></script>
+    
+
+
+
+    
+    
+        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+    
+
+
+
+
+    <script>
+    function searchToggle() {
+        const width = $(document.body).width()
+        if(width > 479) {
+            return;
+        }
+        const search = $('.search');
+        const searchForm = $('.form-search')
+
+        if(!search.hasClass("mobile-search")) {
+            search.addClass("mobile-search");
+        } else {
+            search.removeClass("mobile-search");
+        } 
+    }
+
+    function search(searchInputEl, formEl, flag) {
+        const path = "/" + "search.json"; // 可以在public 下查看这个search.json
+        $(formEl).submit(function(e){
+            e.preventDefault();
+            let target = null
+            if(searchInputEl == null) {
+                const screenWidth = $(document.body).width();
+                target = screenWidth > 479 ? $('#pc-search-input') : $('#mobile-search-input');
+                console.log(target);
+            } else {
+                target = $(searchInputEl)
+            }
+
+            if(!flag && target.val() === '') {
+                return ;
+            }
+
+            $("#u-search").fadeIn(500, function() {
+                $("body > .wrapper").addClass("modal-active");
+
+                $.ajax({
+                    url: path,
+                    dataType: "json",
+                    beforeSend: function (xhr) {
+                        $input = target.val();
+                        $(".form-input").val($input);
+                        const loadingBar = $('.search-loading-bar') 
+                        loadingBar.css({
+                            width:'100%',
+                            display: 'block'
+                        });
+                    },
+                    success: function( datas ) {
+                        console.log(datas);
+                        const $resultPanel = $(".modal-body")[0];
+                        let str = `<ul class="modal-results">`;
+                        var keywords = $(".form-input").val().trim().toLowerCase().split(/[\s\-]+/);
+                        $resultPanel.innerHTML = "";
+                        let hasResult = false
+                        let text = `<div class="no-result">找不到与关键词相关的内容....</div>`;
+
+                        if ($(".form-input").val().trim().length <= 0) {
+                            // 没有结果
+                            $resultPanel.innerHTML = text;
+                            return;
+                        }
+                        datas.forEach(function (data, index) {
+                            var isMatch = true;
+                            if (!data.title || data.title.trim() === '') {
+                                data.title = "Untitled";
+                            }
+                            var data_title = data.title.trim().toLowerCase();
+                            var data_content = data.content && data.content.trim().replace(/<[^>]+>/g, "").toLowerCase() || '';
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            // only match artiles with not empty contents
+                            if (data_content !== '') {
+                                keywords.forEach(function (keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        hasResult = true
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            } else {
+                                isMatch = false;
+                            }
+                            // show search results
+                            if (isMatch) {
+                                str += `<li class='result-item'><a href='${data_url}' class='result-item-detail'> <span class="title">${data_title}</span>`;
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 200 characters
+                                    var start = first_occur - 40;
+                                    var end = first_occur + 160;
+
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+
+                                    if (start == 0) {
+                                        end = 200;
+                                    }
+
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+
+                                    var match_content = content.substring(start, end);
+
+                                    // highlight all keywords
+                                    keywords.forEach(function (keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, `<em class="search-keyword">${keyword}</em>`);
+                                    });
+
+                                    str += `<span class="content"> ${match_content} ...</span></a>`;
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        if(hasResult) {
+                            $resultPanel.innerHTML = str;
+                        } else {
+                            $resultPanel.innerHTML = text;
+                        }
+
+                    },
+                    complete: function() {
+                        setTimeout(() => {
+                                const loadingBar = $('.search-loading-bar') 
+                                loadingBar.css({
+                                    width:'0%',
+                                    display: 'none'
+                                });
+                        }, 300)
+                    }
+                });
+            })
+
+        });
+    }
+
+    $(document).ready(function() {
+        $('.modal-close').click(function () { 
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+
+        $('.modal-overlay').click(function() {
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+        search(null, ".form-search", false)
+        search("#u-search-modal-form .form-input", ".u-search-modal-form", true)
+    })
+</script>
+
+
+
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo"><a href="/">hzjsea</a></div>
+        <div class="menu navbar-right">
+            
+            
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="pc-search-input"/>
+        </form>
+    </div>
+
+
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+            <input id="switch_default" type="checkbox" class="switch_default">
+            <label for="switch_default" class="toggleBtn"></label>
+        </div>
+    </div>
+</nav>
+
+
+<nav class="navbar-mobile" id="nav-mobile">
+    <div class="container">
+        <div class="navbar-header">
+            <div>
+                <a href="/">hzjsea</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+            </div>
+            <div class="navbar-mobile-right">
+                
+                
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="mobile-search-input"/>
+        </form>
+    </div>
+
+
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; 目录</div>
+            </div>
+            
+        </div>
+        <div class="menu" id="mobile-menu">
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+        </div>
+    </div>
+</nav>
+
+        <div class="main">
+			<!-- Chic/layout.ejs -->
+ <div id="u-search">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="container">
+                    <form id="u-search-modal-form" class="u-search-modal-form">
+                        <button type="submit" class="form-submit-btn">
+                            <img src="/image/search.png" class="search-btn-img" />
+                        </button>
+                        <input placeholder="搜索文章。。。" class="form-input" id="modal-form-input">
+                    </form>
+                    <a class="modal-close">x</a>
+                </div>
+                <div class="search-loading">
+                    <div class="search-loading-bar"></div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <!-- ul 格式如下 -->
+                <!-- <ul class="modal-results">
+                    <li class="result-item">
+                        <a class="result-item-detail">
+                            <span class="title">页面配置</span>
+                            <span class="content">
+                                content
+                            </span>
+                        </a>
+                    </li>
+                </ul> -->
+            </div>
+        </div>
+        <div class="modal-overlay"></div>
+    </div>
+            <div class="container">
+    
+    
+    <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">全部展开</a>
+        <a onclick="go_top()">回到顶部</a>
+        <a onclick="go_bottom()">回到底部</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "全部折叠"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "全部展开"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">git基础</h1>
+            
+            <div class="post-meta">
+                
+                作者： <a itemprop="author" rel="author" href="/">hzjsea</a>&nbsp;
+                
+
+                
+                <span class="post-time">
+                    创建日期： <a
+                        href="#">December 2, 2020&nbsp;&nbsp;13:39:14</a>
+                </span>&nbsp;
+                
+                
+                <span class="post-category">
+                    分类：
+                    
+                    <a href="/categories/git/">git</a>&nbsp;
+                    
+                </span>
+                
+                
+                状态：<a href="#">SNAPSHOT</a>
+                
+            </div>
+            
+        </header>
+
+        <div class="post-content">
+            <a id="more"></a>
+
+<h1 id="git基础"><a href="#git基础" class="headerlink" title="git基础"></a>git基础</h1><p>声明几个目录,方便看懂文章</p>
+<pre class=" language-bash"><code class="language-bash">工作目录 - 初始化了git的目录
+跟踪文件<span class="token punctuation">(</span>暂存区文件<span class="token punctuation">)</span> - <span class="token function">git</span> add README.md 表示将README纳入版本控制,表示已经被跟踪
+暂存区快照 -- <span class="token function">git</span> commit -am <span class="token string">"update"</span> 后的文件
+远程仓库 -- <span class="token function">git</span> push 上传远程仓库的内容</code></pre>
+<h2 id="命令"><a href="#命令" class="headerlink" title="命令"></a>命令</h2><pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true">## 全局设置用户信息</span>
+<span class="token function">git</span> config --global user.name <span class="token string">"your name"</span>
+<span class="token function">git</span> config --global user.email <span class="token string">"xxx@xxx.com"</span>
+
+<span class="token comment" spellcheck="true">## 设置当前仓库用户信息</span>
+<span class="token function">git</span> config user.name <span class="token string">"your name"</span>
+<span class="token function">git</span> config user.email <span class="token string">"xxx@xxx.com"</span>
+
+<span class="token comment" spellcheck="true">## 初始化文件</span>
+<span class="token function">git</span> init <span class="token keyword">.</span>
+
+<span class="token comment" spellcheck="true">## 跟踪文件</span>
+<span class="token comment" spellcheck="true">## 将文件放到暂存区当中</span>
+<span class="token function">git</span> add <span class="token operator">&lt;</span>file<span class="token operator">></span>
+
+<span class="token comment" spellcheck="true">## 查看跟踪文件的状态信息</span>
+<span class="token function">git</span> status 
+
+<span class="token comment" spellcheck="true">## 简短的查看文件的状态信息</span>
+<span class="token function">git</span> status -s 
+<span class="token function">git</span> status --short
+
+<span class="token comment" spellcheck="true">## 查看同一文件暂存与未暂存的对比</span>
+<span class="token function">git</span> <span class="token function">diff</span> <span class="token operator">&lt;</span>file<span class="token operator">></span>
+<span class="token function">git</span> <span class="token function">diff</span>
+
+<span class="token comment" spellcheck="true">## 查看已经暂存的变化</span>
+<span class="token function">git</span> <span class="token function">diff</span> --cache
+
+<span class="token comment" spellcheck="true">## 提交更新 ,到暂存区快照</span>
+<span class="token function">git</span> commit -m <span class="token string">"update"</span>
+
+<span class="token comment" spellcheck="true">## 放入暂存区并提交更新, 也就是跳过了暂存区的步骤</span>
+<span class="token function">git</span> commit -am <span class="token string">"update"</span>
+
+<span class="token comment" spellcheck="true">## 保留本地文件,删除暂存区快照中的文件</span>
+<span class="token function">git</span> <span class="token function">rm</span> <span class="token operator">&lt;</span>file<span class="token operator">></span> --cached
+
+<span class="token comment" spellcheck="true">## 删除本地文件以及暂存区快照中的文件</span>
+<span class="token function">git</span> <span class="token function">rm</span> <span class="token operator">&lt;</span>file<span class="token operator">></span>
+
+<span class="token comment" spellcheck="true">## 查看分支 </span>
+<span class="token function">git</span> remote -v
+
+<span class="token comment" spellcheck="true">## 切换并创建分支</span>
+<span class="token function">git</span> checkout -b backup</code></pre>
+<h2 id="git使用"><a href="#git使用" class="headerlink" title="git使用"></a>git使用</h2><h3 id="上传到暂存区"><a href="#上传到暂存区" class="headerlink" title="上传到暂存区"></a>上传到暂存区</h3><p>工作目录下面的文件,不外乎两种状态<code>已跟踪</code> 和 <code>未跟踪</code><br>已跟踪的文件是指那些被纳入了版本控制的文件，在上一次快照中有它们的记录，在工作一段时间后， 它们的状态可能是未修改，已修改或已放入暂存区<br>纳入版本控制的文件的状态<br><img src="http://img.noback.top/2020-12-02-13-46-11.png" alt="2020-12-02-13-46-11"></p>
+<p>我们添加一个文件,现在这个文件是未跟踪的,文件状态是<code>untracked</code><br><img src="http://img.noback.top/2020-12-02-13-48-37.png" alt="2020-12-02-13-48-37"><br>接下来我们跟踪这个文件,文件的状态是<code>Changes to be committed:</code>,这个状态表示文件在暂存区当中<br><img src="http://img.noback.top/2020-12-02-13-50-15.png" alt="2020-12-02-13-50-15"><br>如果我们这个时候再去修改,文件的状态是<code>Changes not staged for commit</code>,这个表示文件不在暂存区当中,我们需要使用<code>git add</code>将他添加到暂存区当中<br>另外这里我们还能看到,<code>README</code>文件存在两种状态,一个是在暂存区中,一个不在暂存区中,这是因为只有一部分内容是在暂存区当中的,修改的部分不存在,如果要合并到赞存档中,只要重新<code>git add README</code>就可以了<br><img src="http://img.noback.top/2020-12-02-13-54-09.png" alt="2020-12-02-13-54-09"><br><img src="http://img.noback.top/2020-12-02-13-55-23.png" alt="2020-12-02-13-55-23"></p>
+<h3 id="查看本地仓库状态"><a href="#查看本地仓库状态" class="headerlink" title="查看本地仓库状态"></a>查看本地仓库状态</h3><p>使用<code>git status -s </code>或者<code>git status --short</code> 简短的查看文件状态<br>状态信息如下</p>
+<ul>
+<li>?? 表示没有被追踪的文件</li>
+<li>M 表示不在暂存区,但是被修改了的</li>
+<li>AM 表示被添加到暂存区后,又被修改了</li>
+<li>A 表示在暂存区当中的<br><img src="http://img.noback.top/2020-12-02-14-02-41.png" alt="2020-12-02-14-02-41"></li>
+</ul>
+<h3 id="忽略文件"><a href="#忽略文件" class="headerlink" title="忽略文件"></a>忽略文件</h3><p>一般我们总会有些文件无需纳入 Git 的管理，也不希望它们总出现在未跟踪文件列表。 通常都是些自动生成的文件，比如日志文件，或者编译过程中创建的临时文件等。 在这种情况下，我们可以创建一个名为 <code>.gitignore</code> 的文件，列出要忽略的文件的模式</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># cat .gitignore</span>
+
+<span class="token comment" spellcheck="true"># 表示要忽略所有以 .o 或 .a 结尾的文件</span>
+*.<span class="token punctuation">[</span>oa<span class="token punctuation">]</span> 
+
+<span class="token comment" spellcheck="true"># 忽略所有名字以波浪符（~）结尾的文件</span>
+*~ 
+
+<span class="token comment" spellcheck="true"># 忽略所有的 .a 文件</span>
+*.a
+
+<span class="token comment" spellcheck="true"># 但跟踪所有的 lib.a，即便你在前面忽略了 .a 文件</span>
+<span class="token operator">!</span>lib.a
+
+<span class="token comment" spellcheck="true"># 只忽略当前目录下的 TODO 文件，而不忽略 subdir/TODO</span>
+/TODO
+
+<span class="token comment" spellcheck="true"># 忽略任何目录下名为 build 的文件夹</span>
+build/
+
+<span class="token comment" spellcheck="true"># 忽略 doc/notes.txt，但不忽略 doc/server/arch.txt</span>
+doc/*.txt
+
+<span class="token comment" spellcheck="true"># 忽略 doc/ 目录及其所有子目录下的 .pdf 文件</span>
+doc/**/*.pdf</code></pre>
+<p>gitignore的文档规范如下</p>
+<ul>
+<li>所有空行或者以 # 开头的行都会被 Git 忽略。</li>
+<li>可以使用标准的 glob 模式匹配，它会递归地应用在整个工作区中。</li>
+<li>匹配模式可以以（/）开头防止递归。</li>
+<li>匹配模式可以以（/）结尾指定目录。</li>
+<li>要忽略指定模式以外的文件或目录，可以在模式前加上叹号（!）取反</li>
+</ul>
+<p>github上面有专门维护gitignore文件的项目 <a target="_blank" rel="noopener" href="https://github.com/github/gitignore">https://github.com/github/gitignore</a> 当然特殊的需要自己加上去</p>
+<h2 id="比较diff"><a href="#比较diff" class="headerlink" title="比较diff"></a>比较diff</h2><h3 id="对比暂存与为暂存的内容"><a href="#对比暂存与为暂存的内容" class="headerlink" title="对比暂存与为暂存的内容"></a>对比暂存与为暂存的内容</h3><p>向之前有个<code>AM</code>状态的文件,这个文件中有一部分是暂存的有一部分是没有暂存的, 我们可以用<code>git diff </code>来对比比较文件之间的内容<br><img src="http://img.noback.top/2020-12-02-14-11-10.png" alt="2020-12-02-14-11-10"></p>
+<h3 id="查看暂存起来的内容"><a href="#查看暂存起来的内容" class="headerlink" title="查看暂存起来的内容"></a>查看暂存起来的内容</h3><p><img src="http://img.noback.top/2020-12-02-14-15-32.png" alt="2020-12-02-14-15-32"></p>
+<h2 id="提交更新"><a href="#提交更新" class="headerlink" title="提交更新"></a>提交更新</h2><p>提交更新文件,将暂存区的内容放到本地分支上去,为了区分每次提交的区别,需要写入标注,有两种方式</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token function">git</span> commit <span class="token comment" spellcheck="true"># 这时候会打开一个编辑器来让你输入内容</span>
+<span class="token function">git</span> commit -m <span class="token string">"update"</span> <span class="token comment" spellcheck="true"># 直接输入标注</span></code></pre>
+<p><img src="http://img.noback.top/2020-12-02-14-20-19.png" alt="2020-12-02-14-20-19"></p>
+<h2 id="移除文件"><a href="#移除文件" class="headerlink" title="移除文件"></a>移除文件</h2><p>要从 Git 中移除某个文件，就必须要从已跟踪文件清单中移除（确切地说，是从暂存区域移除），然后提交。 可以用 <code>git rm</code> 命令完成此项工作，并连带从工作目录中删除指定的文件，这样以后就不会出现在未跟踪文件清单中了</p>
+<p><img src="http://img.noback.top/2020-12-02-14-22-30.png" alt="2020-12-02-14-22-30"></p>
+<p>保留本地文件,但是删除暂存区的文件<br><img src="http://img.noback.top/2020-12-02-14-24-17.png" alt="2020-12-02-14-24-17"></p>
+<h2 id="查看提交历史"><a href="#查看提交历史" class="headerlink" title="查看提交历史"></a>查看提交历史</h2><p>使用<code>git log</code>可以查看日志,这个命令很关键,回退或者多人合作开发的时候会用到</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token function">git</span> log <span class="token comment" spellcheck="true"># 查看提交历史</span>
+<span class="token function">git</span> log --stats <span class="token comment" spellcheck="true"># 查看提交历史,展示修改的内容</span>
+<span class="token function">git</span> log --pretty<span class="token operator">=</span>online <span class="token comment" spellcheck="true"># 查看提交实例,显示commit信息</span>
+<span class="token comment" spellcheck="true"># git log --pretty== # 还能添加很多的模式</span>
+<span class="token function">git</span> log --pretty<span class="token operator">=</span>format:<span class="token string">"%h - %an, %ar : %s"</span> <span class="token comment" spellcheck="true"># 格式化输出</span>
+<span class="token function">git</span> log --author<span class="token operator">=</span><span class="token string">"xx"</span>  <span class="token comment" spellcheck="true"># 仅显示作者匹配指定字符串的提交。</span>
+--since<span class="token operator">=</span><span class="token string">"2008-10-01"</span> <span class="token comment" spellcheck="true"># 仅显示指定时间之后的提交。</span>
+--before<span class="token operator">=</span><span class="token string">"2008-10-01"</span> <span class="token comment" spellcheck="true"># 仅显示指定时间之前的提交。</span>
+--committer <span class="token comment" spellcheck="true"># 仅显示提交者匹配指定字符串的提交。</span>
+--grep <span class="token comment" spellcheck="true"># 仅显示提交说明中包含指定字符串的提交。</span></code></pre>
+<p><img src="http://img.noback.top/2020-12-02-16-06-22.png" alt="2020-12-02-16-06-22"><br><img src="http://img.noback.top/2020-12-02-16-08-25.png" alt="2020-12-02-16-08-25"></p>
+<p>格式化内容如下</p>
+<pre class=" language-bash"><code class="language-bash">%H 提交的完整哈希值
+%h 提交的简写哈希值
+%T 树的完整哈希值
+%t 树的简写哈希值
+%P 父提交的完整哈希值
+%p 父提交的简写哈希值
+%an 作者名字
+%ae 作者的电子邮件地址
+%ad 作者修订日期（可以用 --date<span class="token operator">=</span>选项 来定制格式）
+%ar 作者修订日期，按多久以前的方式显示
+%cn 提交者的名字
+%ce 提交者的电子邮件地址
+%cd 提交日期
+%cr 提交日期（距今多长时间）
+%s 提交说明</code></pre>
+<h2 id="撤销操作"><a href="#撤销操作" class="headerlink" title="撤销操作"></a>撤销操作</h2><p>使用第二次提交代替第一次提交</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token function">git</span> commit -m <span class="token string">'initial commit'</span>
+<span class="token function">git</span> add forgotten_file
+<span class="token function">git</span> commit --amend</code></pre>
+<p>取消暂存</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token function">git</span> restore --staged <span class="token operator">&lt;</span>file<span class="token operator">></span></code></pre>
+<p><img src="http://img.noback.top/2020-12-02-16-16-53.png" alt="2020-12-02-16-16-53"></p>
+<p>文件提交后修改内容,将修改后的文件回退到上一个版本</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token function">git</span> restore <span class="token operator">&lt;</span>file<span class="token operator">></span></code></pre>
+<p><img src="http://img.noback.top/2020-12-02-16-19-38.png" alt="2020-12-02-16-19-38"></p>
+<h2 id="远程仓库的使用"><a href="#远程仓库的使用" class="headerlink" title="远程仓库的使用"></a>远程仓库的使用</h2><p>查看远程仓库以及远程仓库地址</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token function">git</span> remote
+<span class="token function">git</span> remote -v</code></pre>
+<p><img src="http://img.noback.top/2020-12-02-16-22-26.png" alt="2020-12-02-16-22-26"></p>
+<p>添加远程仓库</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token function">git</span> remote add pb https://github.com/paulboone/ticgit</code></pre>
+<p><img src="http://img.noback.top/2020-12-02-16-23-48.png" alt="2020-12-02-16-23-48"><br>现在可以用pb来代替URL</p>
+<h3 id="从远程仓库拉取或者抓取"><a href="#从远程仓库拉取或者抓取" class="headerlink" title="从远程仓库拉取或者抓取"></a>从远程仓库拉取或者抓取</h3><pre class=" language-bash"><code class="language-bash"><span class="token function">git</span> fetch <span class="token operator">&lt;</span>remote<span class="token operator">></span></code></pre>
+<p><img src="http://img.noback.top/2020-12-02-16-28-32.png" alt="2020-12-02-16-28-32"><br><img src="http://img.noback.top/2020-12-02-16-32-42.png" alt="2020-12-02-16-32-42"><br>这个命令会访问远程仓库，从中拉取所有你还没有的数据。 执行完成后，你将会拥有那个远程仓库中所有分支的引用，可以随时合并或查看。<br>如果你使用 clone 命令克隆了一个仓库，命令会自动将其添加为远程仓库并默认以 <code>origin</code> 为简写。 所以，<code>git fetch origin</code> 会抓取克隆（或上一次抓取）后新推送的所有工作。 必须注意 <code>git fetch</code> 命令只会将数据下载到你的本地仓库——它并不会自动合并或修改你当前的工作。 当准备好时你必须手动将其合并入你的工作。</p>
+<h3 id="推送到远程仓库"><a href="#推送到远程仓库" class="headerlink" title="推送到远程仓库"></a>推送到远程仓库</h3><pre class=" language-bash"><code class="language-bash"><span class="token function">git</span> push <span class="token operator">&lt;</span>remote<span class="token operator">></span> <span class="token operator">&lt;</span>branch<span class="token operator">></span></code></pre>
+<h3 id="查看某个远程仓库"><a href="#查看某个远程仓库" class="headerlink" title="查看某个远程仓库"></a>查看某个远程仓库</h3><pre class=" language-bash"><code class="language-bash"><span class="token function">git</span> remote show origin</code></pre>
+<h2 id="git分支"><a href="#git分支" class="headerlink" title="git分支"></a>git分支</h2><p><img src="http://img.noback.top/2020-12-02-16-36-53.png" alt="2020-12-02-16-36-53"><br><img src="http://img.noback.top/2020-12-02-16-37-31.png" alt="2020-12-02-16-37-31"><br><img src="http://img.noback.top/2020-12-02-16-37-56.png" alt="2020-12-02-16-37-56"><br><img src="http://img.noback.top/2020-12-02-16-38-39.png" alt="2020-12-02-16-38-39"><br><img src="http://img.noback.top/2020-12-02-16-40-01.png" alt="2020-12-02-16-40-01"><br><img src="http://img.noback.top/2020-12-02-16-40-48.png" alt="2020-12-02-16-40-48"><br><img src="http://img.noback.top/2020-12-02-16-41-20.png" alt="2020-12-02-16-41-20"></p>
+<h2 id="Git-分支-分支的新建与合并"><a href="#Git-分支-分支的新建与合并" class="headerlink" title="Git 分支 - 分支的新建与合并"></a>Git 分支 - 分支的新建与合并</h2><p><a target="_blank" rel="noopener" href="https://git-scm.com/book/zh/v2/Git-%E5%88%86%E6%94%AF-%E5%88%86%E6%94%AF%E7%9A%84%E6%96%B0%E5%BB%BA%E4%B8%8E%E5%90%88%E5%B9%B6">https://git-scm.com/book/zh/v2/Git-%E5%88%86%E6%94%AF-%E5%88%86%E6%94%AF%E7%9A%84%E6%96%B0%E5%BB%BA%E4%B8%8E%E5%90%88%E5%B9%B6</a></p>
+<p><a target="_blank" rel="noopener" href="https://git-scm.com/book/zh/v2/Git-%E5%88%86%E6%94%AF-%E5%88%86%E6%94%AF%E7%AE%80%E4%BB%8B">https://git-scm.com/book/zh/v2/Git-%E5%88%86%E6%94%AF-%E5%88%86%E6%94%AF%E7%AE%80%E4%BB%8B</a></p>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>标签：</span>
+                <span class="tag">
+                    
+                    
+                    <a href="/tags/git/"># git</a>
+                    
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript：window.history.back();">后退</a>
+                <span>· </span>
+                <a href="/">主页</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            <a class="prev" rel="prev" href="/2020/12/07/blog_back_new/Python/python%E5%90%84%E7%A7%8D%E9%97%AE%E9%A2%98/">python各种问题</a>
+            
+            
+            <a class="next" rel="next" href="/2020/11/30/blog_back_new/docker/docker%E5%AE%89%E8%A3%85%E4%BB%A5%E5%8F%8A%E6%8E%92%E7%96%91/">docker安装</a>
+            
+        </section>
+    </article>
+</div>
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+    </div>
+</footer>
+
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

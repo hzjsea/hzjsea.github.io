@@ -539,8 +539,8 @@ ctrl+Q 退出锁屏幕</code></pre>
 <span class="token punctuation">[</span><span class="token punctuation">]</span> 匹配括号中的任意一个字符 
 <span class="token punctuation">[</span>^<span class="token punctuation">]</span> 不是括号中的任意一个字符
 <span class="token punctuation">(</span><span class="token punctuation">)</span> 在子shell中执行
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;&amp;#125; 集合 touch file&amp;#123;1..9&amp;#125;  </span>
-    <span class="token function">mkdir</span> file1<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;,9&amp;#125; # 创建file1 和file9</span>
+<span class="token punctuation">{</span><span class="token punctuation">}</span> 集合 <span class="token function">touch</span> file<span class="token punctuation">{</span>1<span class="token punctuation">..</span>9<span class="token punctuation">}</span>  
+    <span class="token function">mkdir</span> file1<span class="token punctuation">{</span>,9<span class="token punctuation">}</span> <span class="token comment" spellcheck="true"># 创建file1 和file9</span>
 
 
 \ 转义字符，转移元字符，上面的都是元字符</code></pre>
@@ -577,36 +577,36 @@ result<span class="token operator">=</span><span class="token string">"命令类
 <span class="token keyword">echo</span> -e <span class="token variable">$TAG</span> <span class="token variable">$result</span> <span class="token variable">$END</span></code></pre>
 <p>常用颜色定义</p>
 <pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true">## tip blue</span>
-<span class="token keyword">function</span> blue<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+<span class="token keyword">function</span> blue<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
     <span class="token keyword">echo</span> -e <span class="token string">"\033[34m[ <span class="token variable">$1</span> ]\033[0m"</span>
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+<span class="token punctuation">}</span>
 
 
 <span class="token comment" spellcheck="true">## success green</span>
-<span class="token keyword">function</span> green<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+<span class="token keyword">function</span> green<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
     <span class="token keyword">echo</span> -e <span class="token string">"\033[32m[ <span class="token variable">$1</span> ]\033[0m"</span>
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+<span class="token punctuation">}</span>
 
 <span class="token comment" spellcheck="true">## Error to warning with blink</span>
-<span class="token keyword">function</span> bred<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+<span class="token keyword">function</span> bred<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
     <span class="token keyword">echo</span> -e <span class="token string">"\033[31m\033[01m\033[05m[ <span class="token variable">$1</span> ]\033[0m"</span>
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+<span class="token punctuation">}</span>
 
 <span class="token comment" spellcheck="true">## Error to warning with blink</span>
-<span class="token keyword">function</span> byellow<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+<span class="token keyword">function</span> byellow<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
     <span class="token keyword">echo</span> -e <span class="token string">"\033[33m\033[01m\033[05m[ <span class="token variable">$1</span> ]\033[0m"</span>
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+<span class="token punctuation">}</span>
 
 
 <span class="token comment" spellcheck="true">## Error</span>
-<span class="token keyword">function</span> bred<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+<span class="token keyword">function</span> bred<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
     <span class="token keyword">echo</span> -e <span class="token string">"\033[31m\033[01m[ <span class="token variable">$1</span> ]\033[0m"</span>
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+<span class="token punctuation">}</span>
 
 <span class="token comment" spellcheck="true">## warning</span>
-<span class="token keyword">function</span> byellow<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+<span class="token keyword">function</span> byellow<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
     <span class="token keyword">echo</span> -e <span class="token string">"\033[33m\033[01m[ <span class="token variable">$1</span> ]\033[0m"</span>
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span></code></pre>
+<span class="token punctuation">}</span></code></pre>
 <h1 id="type命令"><a href="#type命令" class="headerlink" title="type命令"></a>type命令</h1><p>type命令用来显示的指定命令的类型，判断给出的指令是内部指令还是外部指令</p>
 <pre class=" language-bash"><code class="language-bash">命令类型:
  <span class="token function">alias</span> 别名

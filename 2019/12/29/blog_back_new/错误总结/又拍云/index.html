@@ -638,7 +638,7 @@ fping -g 157.119.232.65/27 <span class="token operator">></span> ntt_machine
 fping -g 157.119.231.1/27 <span class="token operator">>></span> ntt_machine
 
 <span class="token comment" spellcheck="true"># filter active to tmp.txt</span>
-<span class="token function">awk</span> <span class="token string">'&amp;#123;if(<span class="token variable">$3</span>=="alive")&amp;#123;print <span class="token variable">$1</span>&amp;#125;&amp;#125;'</span> <span class="token operator">></span> tmp.txt ntt_machine
+<span class="token function">awk</span> <span class="token string">'{if(<span class="token variable">$3</span>=="alive"){print <span class="token variable">$1</span>}}'</span> <span class="token operator">></span> tmp.txt ntt_machine
 
 <span class="token comment" spellcheck="true"># Calculate the total</span>
 nums<span class="token operator">=</span><span class="token variable"><span class="token variable">`</span><span class="token function">cat</span> tmp.txt <span class="token operator">|</span> <span class="token function">wc</span> -l<span class="token variable">`</span></span>
@@ -651,13 +651,13 @@ nums<span class="token operator">=</span><span class="token variable"><span clas
 <span class="token keyword">do</span>
         ip<span class="token operator">=</span>`awk <span class="token string">"NR==<span class="token variable">$i</span>"</span> tmp.txt<span class="token variable"><span class="token variable">`</span>
         link<span class="token operator">=</span><span class="token variable">`</span></span><span class="token function">grep</span> -w <span class="token variable">$ip</span> mingtao/inventory/machines/machines/*<span class="token variable"><span class="token variable">`</span>
-        link<span class="token operator">=</span><span class="token variable">`</span></span><span class="token keyword">echo</span> <span class="token variable">$link</span> <span class="token operator">|</span> <span class="token function">awk</span> -F<span class="token string">":"</span> <span class="token string">'&amp;#123;print <span class="token variable">$2</span>&amp;#125;'</span> `
-        link<span class="token operator">=</span>`echo <span class="token variable">$link</span> <span class="token operator">|</span> <span class="token function">awk</span> <span class="token string">'&amp;#123;if(<span class="token variable">$1</span>=="#")&amp;#123;print <span class="token variable">$2</span>&amp;#125;else&amp;#123;print <span class="token variable">$1</span>&amp;#125;&amp;#125;'</span>`
+        link<span class="token operator">=</span><span class="token variable">`</span></span><span class="token keyword">echo</span> <span class="token variable">$link</span> <span class="token operator">|</span> <span class="token function">awk</span> -F<span class="token string">":"</span> <span class="token string">'{print <span class="token variable">$2</span>}'</span> <span class="token variable"><span class="token variable">`</span>
+        link<span class="token operator">=</span><span class="token variable">`</span></span><span class="token keyword">echo</span> <span class="token variable">$link</span> <span class="token operator">|</span> <span class="token function">awk</span> <span class="token string">'{if(<span class="token variable">$1</span>=="#"){print <span class="token variable">$2</span>}else{print <span class="token variable">$1</span>}}'</span>`
         <span class="token keyword">echo</span>  <span class="token variable">$ip</span>   ,<span class="token string">"active"</span>   ,   <span class="token variable">$link</span> <span class="token operator">>></span> result.txt
 <span class="token keyword">done</span>
 
 <span class="token comment" spellcheck="true"># add unknown to tmp.txt</span>
-<span class="token function">awk</span> <span class="token string">'&amp;#123;if(<span class="token variable">$3!</span>="alive")&amp;#123;print <span class="token variable">$1</span>,<span class="token variable">$3</span>&amp;#125;&amp;#125;'</span> <span class="token operator">>></span> result.txt ntt_machine
+<span class="token function">awk</span> <span class="token string">'{if(<span class="token variable">$3!</span>="alive"){print <span class="token variable">$1</span>,<span class="token variable">$3</span>}}'</span> <span class="token operator">>></span> result.txt ntt_machine
 ~</code></pre>
 <h3 id="底层设备到网络配置"><a href="#底层设备到网络配置" class="headerlink" title="底层设备到网络配置"></a>底层设备到网络配置</h3><p><img src="http://img.noback.top/2019-12-31-11-26-32.png" alt="2019-12-31-11-26-32"><br>通过该tower截图来获取网络配置需求<br>15台1U服务器<br>1台5130交换机<br>2个万兆多模模块<br>30根网线<br>16根电源线</p>
 <p>1个万兆口</p>

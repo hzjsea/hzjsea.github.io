@@ -639,7 +639,7 @@ commands:
         delbr           <span class="token operator">&lt;</span>bridge<span class="token operator">></span>                delete bridge
         addif           <span class="token operator">&lt;</span>bridge<span class="token operator">></span> <span class="token operator">&lt;</span>device<span class="token operator">></span>       add interface to bridge
         delif           <span class="token operator">&lt;</span>bridge<span class="token operator">></span> <span class="token operator">&lt;</span>device<span class="token operator">></span>       delete interface from bridge
-        hairpin         <span class="token operator">&lt;</span>bridge<span class="token operator">></span> <span class="token operator">&lt;</span>port<span class="token operator">></span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;on|off&amp;#125;        turn hairpin on/off</span>
+        hairpin         <span class="token operator">&lt;</span>bridge<span class="token operator">></span> <span class="token operator">&lt;</span>port<span class="token operator">></span> <span class="token punctuation">{</span>on<span class="token operator">|</span>off<span class="token punctuation">}</span>        turn hairpin on/off
         setageing       <span class="token operator">&lt;</span>bridge<span class="token operator">></span> <span class="token operator">&lt;</span>time<span class="token operator">></span>         <span class="token keyword">set</span> ageing <span class="token function">time</span>
         setbridgeprio   <span class="token operator">&lt;</span>bridge<span class="token operator">></span> <span class="token operator">&lt;</span>prio<span class="token operator">></span>         <span class="token keyword">set</span> bridge priority
         setfd           <span class="token operator">&lt;</span>bridge<span class="token operator">></span> <span class="token operator">&lt;</span>time<span class="token operator">></span>         <span class="token keyword">set</span> bridge forward delay
@@ -650,7 +650,7 @@ commands:
         show            <span class="token punctuation">[</span> <span class="token operator">&lt;</span>bridge<span class="token operator">></span> <span class="token punctuation">]</span>            show a list of bridges
         showmacs        <span class="token operator">&lt;</span>bridge<span class="token operator">></span>                show a list of mac addrs
         showstp         <span class="token operator">&lt;</span>bridge<span class="token operator">></span>                show bridge stp info
-        stp             <span class="token operator">&lt;</span>bridge<span class="token operator">></span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;on|off&amp;#125;       turn stp on/off</span></code></pre>
+        stp             <span class="token operator">&lt;</span>bridge<span class="token operator">></span> <span class="token punctuation">{</span>on<span class="token operator">|</span>off<span class="token punctuation">}</span>       turn stp on/off</code></pre>
 <h2 id="容器与容器之间如何互联"><a href="#容器与容器之间如何互联" class="headerlink" title="容器与容器之间如何互联"></a>容器与容器之间如何互联</h2><p>之前做的network namespace是通过veth来形成对，达到两个namespace的空间进行ip通信，在docker中则是使用docker0(bridge)进行ip通信的 </p>
 <p>开启两个docker容器</p>
 <pre class=" language-bash"><code class="language-bash">root:~<span class="token comment" spellcheck="true"># docker run -it -d  --name b1 busybox  /bin/sh -c "while true; do sleep 3600;done"</span>
@@ -770,47 +770,47 @@ docker0         8000.02424faa7310       no              veth5b2efd9
 <p>查看bridge详情</p>
 <pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># docker0的网卡</span>
 docker network inspect bridge
-<span class="token string">"Containers"</span><span class="token keyword">:</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
-            <span class="token string">"890e3e47feea65be2d11122e01739247d41cf45e9ff8a2b88157482ee02a3b6f"</span><span class="token keyword">:</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+<span class="token string">"Containers"</span><span class="token keyword">:</span> <span class="token punctuation">{</span>
+            <span class="token string">"890e3e47feea65be2d11122e01739247d41cf45e9ff8a2b88157482ee02a3b6f"</span><span class="token keyword">:</span> <span class="token punctuation">{</span>
                 <span class="token string">"Name"</span><span class="token keyword">:</span> <span class="token string">"b1"</span>,
                 <span class="token string">"EndpointID"</span><span class="token keyword">:</span> <span class="token string">"13c791d9040e3cb9521e53ef0e56b6f87b9564d9ad3e6af4ee38bd2d8fdc53b5"</span>,
                 <span class="token string">"MacAddress"</span><span class="token keyword">:</span> <span class="token string">"02:42:ac:11:00:02"</span>,
                 <span class="token string">"IPv4Address"</span><span class="token keyword">:</span> <span class="token string">"172.17.0.2/16"</span>,
                 <span class="token string">"IPv6Address"</span><span class="token keyword">:</span> <span class="token string">""</span>
-            <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;,</span>
-            <span class="token string">"db45d33d512104ec2d799bd45ba47095ffb5c1c8253ede8becb808c47b902f7b"</span><span class="token keyword">:</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+            <span class="token punctuation">}</span>,
+            <span class="token string">"db45d33d512104ec2d799bd45ba47095ffb5c1c8253ede8becb808c47b902f7b"</span><span class="token keyword">:</span> <span class="token punctuation">{</span>
                 <span class="token string">"Name"</span><span class="token keyword">:</span> <span class="token string">"b2"</span>,
                 <span class="token string">"EndpointID"</span><span class="token keyword">:</span> <span class="token string">"d155a2a32b4db93753084739ee81710c83c397c8fdf7aa2d799ccad123fa71c9"</span>,
                 <span class="token string">"MacAddress"</span><span class="token keyword">:</span> <span class="token string">"02:42:ac:11:00:03"</span>,
                 <span class="token string">"IPv4Address"</span><span class="token keyword">:</span> <span class="token string">"172.17.0.3/16"</span>,
                 <span class="token string">"IPv6Address"</span><span class="token keyword">:</span> <span class="token string">""</span>
-            <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
-        <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;,</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>,
 <span class="token comment" spellcheck="true"># new-bridge的网卡</span>
 docker network inspect new-bridge
- <span class="token string">"Containers"</span><span class="token keyword">:</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
-            <span class="token string">"890e3e47feea65be2d11122e01739247d41cf45e9ff8a2b88157482ee02a3b6f"</span><span class="token keyword">:</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+ <span class="token string">"Containers"</span><span class="token keyword">:</span> <span class="token punctuation">{</span>
+            <span class="token string">"890e3e47feea65be2d11122e01739247d41cf45e9ff8a2b88157482ee02a3b6f"</span><span class="token keyword">:</span> <span class="token punctuation">{</span>
                 <span class="token string">"Name"</span><span class="token keyword">:</span> <span class="token string">"b1"</span>,
                 <span class="token string">"EndpointID"</span><span class="token keyword">:</span> <span class="token string">"8cd4ff8ff0b032fb72cdfaa3b02b16b9e564c75f2d8844e5cad680b02e76387a"</span>,
                 <span class="token string">"MacAddress"</span><span class="token keyword">:</span> <span class="token string">"02:42:ac:12:00:03"</span>,
                 <span class="token string">"IPv4Address"</span><span class="token keyword">:</span> <span class="token string">"172.18.0.3/16"</span>,
                 <span class="token string">"IPv6Address"</span><span class="token keyword">:</span> <span class="token string">""</span>
-            <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;,</span>
-            <span class="token string">"a60bdef872f7c16305b32920d60e4d973bcd5329a912eaff32b476debf3e6aaa"</span><span class="token keyword">:</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+            <span class="token punctuation">}</span>,
+            <span class="token string">"a60bdef872f7c16305b32920d60e4d973bcd5329a912eaff32b476debf3e6aaa"</span><span class="token keyword">:</span> <span class="token punctuation">{</span>
                 <span class="token string">"Name"</span><span class="token keyword">:</span> <span class="token string">"b4"</span>,
                 <span class="token string">"EndpointID"</span><span class="token keyword">:</span> <span class="token string">"e41fb0b3e878af1596e80f2752fcc1dff2ac68a00d53163aded9aea31ead893d"</span>,
                 <span class="token string">"MacAddress"</span><span class="token keyword">:</span> <span class="token string">"02:42:ac:12:00:02"</span>,
                 <span class="token string">"IPv4Address"</span><span class="token keyword">:</span> <span class="token string">"172.18.0.2/16"</span>,
                 <span class="token string">"IPv6Address"</span><span class="token keyword">:</span> <span class="token string">""</span>
-            <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;,</span>
-            <span class="token string">"db45d33d512104ec2d799bd45ba47095ffb5c1c8253ede8becb808c47b902f7b"</span><span class="token keyword">:</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+            <span class="token punctuation">}</span>,
+            <span class="token string">"db45d33d512104ec2d799bd45ba47095ffb5c1c8253ede8becb808c47b902f7b"</span><span class="token keyword">:</span> <span class="token punctuation">{</span>
                 <span class="token string">"Name"</span><span class="token keyword">:</span> <span class="token string">"b2"</span>,
                 <span class="token string">"EndpointID"</span><span class="token keyword">:</span> <span class="token string">"e77bf7b9ae54e3f652fa4e053c683f85ec3c4308c50ca8225d8722ddbae2e474"</span>,
                 <span class="token string">"MacAddress"</span><span class="token keyword">:</span> <span class="token string">"02:42:ac:12:00:04"</span>,
                 <span class="token string">"IPv4Address"</span><span class="token keyword">:</span> <span class="token string">"172.18.0.4/16"</span>,
                 <span class="token string">"IPv6Address"</span><span class="token keyword">:</span> <span class="token string">""</span>
-            <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
-        <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;,</span></code></pre>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>,</code></pre>
 <h2 id="none与host"><a href="#none与host" class="headerlink" title="none与host"></a>none与host</h2><p>创建一个只有本地回环的容器</p>
 <pre class=" language-bash"><code class="language-bash">docker run -it -d --name b5 --network none busybox /bin/sh 
 root:~<span class="token comment" spellcheck="true"># docker exec b5 ip a</span>

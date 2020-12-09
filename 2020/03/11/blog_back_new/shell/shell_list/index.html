@@ -484,53 +484,53 @@ hostname=$(hostname)
 
 echo "'"  > $tmpfile.json
 ss2 -4itn state $state dport = :80 or sport = :80 or dport = :443 or sport = :433 or sport = :8100 or dport = :8100 |
-awk '&#123; if(NR > 1 && $3 !~ /127.0.0.1/ && $3 !~ /rt[to]/ ) &#123;
+awk '{ if(NR > 1 && $3 !~ /127.0.0.1/ && $3 !~ /rt[to]/ ) {
         line=$0; getline; if($0~/minrtt/) print line""$0
-      &#125;
-&#125;' |
-awk '&#123;
+      }
+}' |
+awk '{
     split($3,src,":"); Saddress=$3;
     split($4,dst,":"); Daddress=dst[1];Dport=dst[2];
     node_type="network-attack";
         split($8,a,"[:/]");
         split($13,b,"[:/]");
-        if ($0 ~ /retrans:/)&#123;
+        if ($0 ~ /retrans:/){
                 split($0,c,"retrans:");
                 gsub("/.*","",c[2]);
                 Retrans=c[2]
-        &#125;else&#123;
+        }else{
                 Retrans=0
-        &#125;;
-        if ($0 ~ /send/)&#123;
+        };
+        if ($0 ~ /send/){
                 split($0,d,"send");
                 gsub("bps.*","",d[2]);
-                if(d[2] ~ /K/) &#123;
+                if(d[2] ~ /K/) {
                         gsub("K","",d[2]);
                         Send=d[2]/1000
-                &#125;
-                else if(d[2] ~ /M/) &#123;
+                }
+                else if(d[2] ~ /M/) {
                         gsub("M","",d[2]);
                         Send=d[2]
-                &#125;
-                else &#123;
+                }
+                else {
                         Send=d[2]
-                &#125;
-        &#125;; 
+                }
+        }; 
         print(Daddress,Saddress,a[2],b[2],Retrans,Send)
-&#125;' |
-awk '&#123;
+}' |
+awk '{
     a[$2]++;d[$2]=$1;rtt[$2]+=$3;cwnd[$2]+=$4;retrans[$2]+=$5;send[$2]+=$6
-    &#125;END&#123;
-        for (i in a)&#123; 
+    }END{
+        for (i in a){ 
             z=split(i,q,":")
             nums=0
-            if (retrans[i]/a[i] != 0) &#123;
+            if (retrans[i]/a[i] != 0) {
                     nums=int(retrans[i]/a[i]+1)
-                    &#125;
-            else&#123;
+                    }
+            else{
                 nums=retrans[i]/a[i]
-          &#125;
-            printf("&#123;\
+          }
+            printf("{\
 \"Daddress\":\"%s\", \
 \"Saddress\": \"%s\",\
 \"SPort\": \"%s\",\
@@ -544,9 +544,9 @@ awk '&#123;
 \"node_type\": \"%s\",\
 \"timestamp\": \"%s +0800\",\
 \"hostname\": \"%s\"\
-&#125;\n",
-                    d[i],q[1],q[2],rtt[i]/a[i],cwnd[i]/a[i],nums,send[i]/a[i],a[i],"ESTAB","bbr","network-attack","'$timestamp'","'$hostname'")&#125;
-&#125;' >> $tmpfile.json
+}\n",
+                    d[i],q[1],q[2],rtt[i]/a[i],cwnd[i]/a[i],nums,send[i]/a[i],a[i],"ESTAB","bbr","network-attack","'$timestamp'","'$hostname'")}
+}' >> $tmpfile.json
 
 echo "'" >> $tmpfile.json
 
@@ -555,7 +555,7 @@ curl -XPOST http://chopper.x.upyun.com:4000/v2/log/repo/cdn-common  -H 'Apikey:1
 <p>ss 各个字段检测<br><a target="_blank" rel="noopener" href="https://kkc.github.io/2017/12/18/Network-Performance-Tuning/">https://kkc.github.io/2017/12/18/Network-Performance-Tuning/</a></p>
 <h2 id="查询inventoy"><a href="#查询inventoy" class="headerlink" title="查询inventoy"></a>查询inventoy</h2><p>查询inventoy 下面不是CWS的机器  </p>
 <pre class=" language-shell"><code class="language-shell">#!/usr/bin/bash
-grep "LNA" mingtao/inventory/machines/lists-* | awk -v FS='[:= ]'  '&#123; if ($2 ~/CWS/) &#123;print "1"&#125; else &#123; print $2 ,$4 &#125;&#125;'    > ./hezejun/xx</code></pre>
+grep "LNA" mingtao/inventory/machines/lists-* | awk -v FS='[:= ]'  '{ if ($2 ~/CWS/) {print "1"} else { print $2 ,$4 }}'    > ./hezejun/xx</code></pre>
 <h2 id="处理Inventory上的内容"><a href="#处理Inventory上的内容" class="headerlink" title="处理Inventory上的内容"></a>处理Inventory上的内容</h2><p>处理表格生成json格式的数据</p>
 <pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true">#!/usr/bin/env bash</span>
 
@@ -572,28 +572,28 @@ grep "LNA" mingtao/inventory/machines/lists-* | awk -v FS='[:= ]'  '&#123; if ($
 <span class="token comment" spellcheck="true"># target_file="/Users/alpaca/PycharmProjects/Npc/switch/lists-switch-edge"</span>
 target_file<span class="token operator">=</span><span class="token string">"/Users/alpaca/PycharmProjects/Npc/switch/lists-switch"</span>
 
-<span class="token function">cat</span> <span class="token variable">$target_file</span> <span class="token operator">|</span> <span class="token function">grep</span> <span class="token string">"ansible_ssh_host"</span>  <span class="token operator">|</span> <span class="token function">awk</span>  <span class="token string">'BEGIN&amp;#123;
-    printf("\&amp;#123;\n \"instances\": \[\n");
-&amp;#125;&amp;#123;
-       split(<span class="token variable">$2</span>,host,"=");hostIp=host[2];
-       split(<span class="token variable">$3</span>,uplinkArray,"=");uplink=uplinkArray[2];
+<span class="token function">cat</span> <span class="token variable">$target_file</span> <span class="token operator">|</span> <span class="token function">grep</span> <span class="token string">"ansible_ssh_host"</span>  <span class="token operator">|</span> <span class="token function">awk</span>  'BEGIN<span class="token punctuation">{</span>
+    printf<span class="token punctuation">(</span><span class="token string">"\{\n \"instances\": \[\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">{</span>
+       split<span class="token punctuation">(</span><span class="token variable">$2</span>,host,<span class="token string">"="</span><span class="token punctuation">)</span><span class="token punctuation">;</span>hostIp<span class="token operator">=</span>host<span class="token punctuation">[</span>2<span class="token punctuation">]</span><span class="token punctuation">;</span>
+       split<span class="token punctuation">(</span><span class="token variable">$3</span>,uplinkArray,<span class="token string">"="</span><span class="token punctuation">)</span><span class="token punctuation">;</span>uplink<span class="token operator">=</span>uplinkArray<span class="token punctuation">[</span>2<span class="token punctuation">]</span><span class="token punctuation">;</span>
 
-        # 这里getline用来识别是否跳转到了最后一行 1表示还有 0表示没有下一行，也就是最后一行了
-       if ( getline == 1)&amp;#123;
-           printf("&amp;#123;\"name\":\"%s\",\"host\":\"%s\",\"uplink\":\"%s\"&amp;#125;,\n",<span class="token variable">$1</span>,hostIp,uplink);
-        &amp;#125;else&amp;#123;
-            printf("&amp;#123;\"name\":\"%s\",\"host\":\"%s\",\"uplink\":\"%s\"&amp;#125;\n",<span class="token variable">$1</span>,hostIp,uplink);
-        &amp;#125;
+        <span class="token comment" spellcheck="true"># 这里getline用来识别是否跳转到了最后一行 1表示还有 0表示没有下一行，也就是最后一行了</span>
+       <span class="token keyword">if</span> <span class="token punctuation">(</span> getline <span class="token operator">==</span> 1<span class="token punctuation">)</span><span class="token punctuation">{</span>
+           printf<span class="token punctuation">(</span><span class="token string">"{\"name\":\"%s\",\"host\":\"%s\",\"uplink\":\"%s\"},\n"</span>,<span class="token variable">$1</span>,hostIp,uplink<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>else<span class="token punctuation">{</span>
+            printf<span class="token punctuation">(</span><span class="token string">"{\"name\":\"%s\",\"host\":\"%s\",\"uplink\":\"%s\"}\n"</span>,<span class="token variable">$1</span>,hostIp,uplink<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
 
 
-    &amp;#125;END&amp;#123;
-        print("\]\&amp;#125;")
-    &amp;#125;'</span>
+    <span class="token punctuation">}</span>END<span class="token punctuation">{</span>
+        print<span class="token punctuation">(</span><span class="token string">"\]\}"</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>'
 <span class="token comment" spellcheck="true"># cat $target_file</span>
 </code></pre>
 <h2 id="搭建使用supervisor管理的redis单机实例"><a href="#搭建使用supervisor管理的redis单机实例" class="headerlink" title="搭建使用supervisor管理的redis单机实例"></a>搭建使用supervisor管理的redis单机实例</h2><pre class=" language-bash"><code class="language-bash"><span class="token shebang important">#!/bin/bash</span>
 
-_init<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+_init<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     os<span class="token operator">=</span><span class="token variable"><span class="token variable">$(</span><span class="token function">uname</span> -s<span class="token variable">)</span></span>
     <span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token variable">$os</span><span class="token operator">==</span><span class="token string">"Darwin"</span> <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
         <span class="token function">export</span> frontcolor<span class="token operator">=</span><span class="token string">"\033[34m"</span>
@@ -602,11 +602,11 @@ _init<span class="token punctuation">(</span><span class="token punctuation">)</
         <span class="token function">export</span> frontcolor<span class="token operator">=</span><span class="token string">"\e[34m"</span>
         <span class="token function">export</span> backcolor<span class="token operator">=</span><span class="token string">"\e[33m"</span>
     <span class="token keyword">fi</span>
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+<span class="token punctuation">}</span>
 
-_usage<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+_usage<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">echo</span> -e <span class="token string">"
-$&amp;#123;frontcolor&amp;#125;
+<span class="token variable">${frontcolor}</span>
 **************************************
 *       thank you use                *
 *       Author: hzjsea               *
@@ -628,20 +628,20 @@ Global Command
     -v
 Example:
     ./xx.sh -n helloworld
-$&amp;#123;backcolor&amp;#125;
+<span class="token variable">${backcolor}</span>
 "</span>
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+<span class="token punctuation">}</span>
 
-_leave<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+_leave<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token function">cat</span> <span class="token operator">&lt;&lt;</span><span class="token string">EOF
 +-------------------------------------------------+
 |  Thank you for usesing!                         |
 +-------------------------------------------------+
 EOF</span>
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+<span class="token punctuation">}</span>
 
 <span class="token comment" spellcheck="true"># 准备环境</span>
-_install<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+_install<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token function">mkdir</span> -p /root/package <span class="token operator">&amp;&amp;</span> <span class="token function">mkdir</span> -p /usr/local/redis
     <span class="token function">mkdir</span> -p /var/log/redislog
     yum <span class="token function">install</span> <span class="token function">wget</span> epel-release -y
@@ -653,26 +653,26 @@ _install<span class="token punctuation">(</span><span class="token punctuation">
     <span class="token function">ln</span> -fs /usr/local/redis/src/redis-server /usr/local/bin/redis-server
     <span class="token function">ln</span> -fs /usr/local/redis/src/redis-cli /usr/local/bin/redis-cli
     <span class="token function">ln</span> -fs /usr/local/redis/src/redis-sentinel /usr/local/bin/redis-sentinel
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+<span class="token punctuation">}</span>
 
 <span class="token comment" spellcheck="true"># 准备supervisor</span>
-_supervisor<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+_supervisor<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token punctuation">[</span> -d chenyuecc <span class="token punctuation">]</span> <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span>rm -r chenyuecc<span class="token punctuation">)</span>
     <span class="token function">git</span> clone -b supervisor https://gitee.com/Alpaca-H/chenyuecc.git <span class="token operator">&amp;&amp;</span> <span class="token function">cd</span> /root/chenyuecc/ <span class="token operator">&amp;&amp;</span> sh ./run.sh 2<span class="token operator">></span>/dev/null
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+<span class="token punctuation">}</span>
 
 <span class="token comment" spellcheck="true"># 准备redis</span>
-_redis<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+_redis<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token punctuation">[</span> <span class="token operator">!</span> -d /usr/local/redis/ <span class="token punctuation">]</span> <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span>
         <span class="token keyword">echo</span> <span class="token string">"please install redis"</span>
         <span class="token keyword">exit</span> 0
     <span class="token punctuation">)</span>
     <span class="token punctuation">[</span> -d chenyuecc <span class="token punctuation">]</span> <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span>rm -r chenyuecc<span class="token punctuation">)</span>
     <span class="token function">git</span> clone -b redis https://gitee.com/Alpaca-H/chenyuecc.git <span class="token operator">&amp;&amp;</span> <span class="token function">cp</span> /root/chenyuecc/redisCC/* /usr/local/redis/
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+<span class="token punctuation">}</span>
 
 <span class="token comment" spellcheck="true"># 准备单机redis</span>
-_redis_single<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+_redis_single<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token function">cat</span> <span class="token operator">></span>/etc/supervisor.d/redisgo.conf <span class="token operator">&lt;&lt;</span><span class="token string">EOF
 [program:redis]
 command=/usr/local/redis/src/redis-server  /usr/local/redis/redis.conf
@@ -682,35 +682,35 @@ autostart=true
 autorestart=true
 startretries=10
 EOF</span>
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+<span class="token punctuation">}</span>
 
-_check<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+_check<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">echo</span> <span class="token string">"检查选项"</span>
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+<span class="token punctuation">}</span>
 
-_stop<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+_stop<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">echo</span> <span class="token string">"终止"</span>
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+<span class="token punctuation">}</span>
 
-_status<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+_status<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">echo</span> <span class="token string">"获取状态"</span>
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+<span class="token punctuation">}</span>
 
-_down<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+_down<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">echo</span> <span class="token string">"关闭"</span>
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+<span class="token punctuation">}</span>
 
 
 
-main<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+main<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
 
     <span class="token punctuation">[</span> <span class="token operator">!</span> -z <span class="token variable">$frontcolor</span> <span class="token punctuation">]</span> <span class="token operator">||</span> _init
     <span class="token punctuation">[</span> -d <span class="token string">"/root/package"</span> <span class="token punctuation">]</span> <span class="token operator">||</span> _install
-    action<span class="token operator">=</span>$<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;1:-"default"&amp;#125;</span>
+    action<span class="token operator">=</span>$<span class="token punctuation">{</span>1:-<span class="token string">"default"</span><span class="token punctuation">}</span>
 
-    <span class="token keyword">case</span> $<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;action&amp;#125; in</span>
+    <span class="token keyword">case</span> <span class="token variable">${action}</span> <span class="token keyword">in</span>
     redis <span class="token operator">|</span> supervisor <span class="token punctuation">)</span>
-        _$<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;action&amp;#125;</span>
+        _<span class="token variable">${action}</span>
         <span class="token punctuation">;</span><span class="token punctuation">;</span>
     redisgo<span class="token punctuation">)</span>
         _redis
@@ -726,7 +726,7 @@ main<span class="token punctuation">(</span><span class="token punctuation">)</s
         <span class="token punctuation">;</span><span class="token punctuation">;</span>
     esac
 
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+<span class="token punctuation">}</span>
 
 main <span class="token variable">$@</span>
 </code></pre>

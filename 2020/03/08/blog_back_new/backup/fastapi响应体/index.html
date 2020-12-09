@@ -524,12 +524,12 @@ class UserOut(BaseModel):
     full_name: str = None
 
 
-fake_db = &#123;
-    "hzj":&#123;"username":"hzj","email":"1088xxx.com"&#125;,
-    "qq": &#123;"username": "hzdsj", "email": "1088xxxds.com"&#125;,
-    "zz": &#123;"username": "hzjdsds", "email": "1088xxx.dscom"&#125;,
-    "j": &#123;"username": "dsdhzj", "email": "1088xxxsds.com"&#125;,
-&#125;
+fake_db = {
+    "hzj":{"username":"hzj","email":"1088xxx.com"},
+    "qq": {"username": "hzdsj", "email": "1088xxxds.com"},
+    "zz": {"username": "hzjdsds", "email": "1088xxx.dscom"},
+    "j": {"username": "dsdhzj", "email": "1088xxxsds.com"},
+}
 
 @app.post("/user",response_model=UserOut)
 async def create_user(*,user: UserIn):
@@ -537,7 +537,7 @@ async def create_user(*,user: UserIn):
     return user
 
 
-@app.get("/user/&#123;user_id&#125;", response_model=UserOut,response_model_exclude_unset=True)
+@app.get("/user/{user_id}", response_model=UserOut,response_model_exclude_unset=True)
 async def get_user(user_id :str=None ):
     if user_id in fake_db:
         return fake_db[user_id]</code></pre>

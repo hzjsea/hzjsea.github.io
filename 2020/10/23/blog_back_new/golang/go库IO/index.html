@@ -467,18 +467,18 @@
 <li>io.EOF输入流的结尾</li>
 </ul>
 <p><img src="http://img.noback.top/2020-10-23-17-11-28.png" alt="2020-10-23-17-11-28"></p>
-<pre class=" language-go"><code class="language-go"><span class="token keyword">type</span> Reader <span class="token keyword">interface</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+<pre class=" language-go"><code class="language-go"><span class="token keyword">type</span> Reader <span class="token keyword">interface</span> <span class="token punctuation">{</span>
     <span class="token function">Read</span><span class="token punctuation">(</span>p <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">)</span> <span class="token punctuation">(</span>n <span class="token builtin">int</span><span class="token punctuation">,</span> err <span class="token builtin">error</span><span class="token punctuation">)</span>
-<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 
 <span class="token comment" spellcheck="true">// 解析，将内容读取到p数组，返回n个数量的字节，以及err错误信息</span>
 <span class="token comment" spellcheck="true">// 错误信息中 如果是因为读取完了 则返回的是io.EOF错误</span>
 <span class="token comment" spellcheck="true">// 返回的是[] EOF</span>
 
 
-<span class="token keyword">type</span> Writer <span class="token keyword">interface</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+<span class="token keyword">type</span> Writer <span class="token keyword">interface</span> <span class="token punctuation">{</span>
     <span class="token function">Write</span><span class="token punctuation">(</span>p <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">)</span> <span class="token punctuation">(</span>n <span class="token builtin">int</span><span class="token punctuation">,</span> err <span class="token builtin">error</span><span class="token punctuation">)</span>
-<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 <span class="token comment" spellcheck="true">// </span></code></pre>
 <p>这里可以分为无缓存与有缓存的读写，其中无缓存的为<code>io.reader</code>或者<code>io.writer</code> 有缓存的则是<code>bufio.reader</code>,<code>bufio.writer</code><br>实现的接口都是上面两个，但是类型的属性有些不一样，提供的方法也有些不一样<br>a<br>经常使用的内容</p>
 <ul>
@@ -495,20 +495,20 @@
 <h2 id="io-reader"><a href="#io-reader" class="headerlink" title="io-reader"></a>io-reader</h2><p>使用io-reader的实例</p>
 <pre class=" language-go"><code class="language-go">    reader_no_buffer <span class="token operator">:=</span> strings<span class="token punctuation">.</span><span class="token function">NewReader</span><span class="token punctuation">(</span><span class="token string">"helloworld"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
     p <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">)</span>
-    <span class="token keyword">for</span>  <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token keyword">for</span>  <span class="token punctuation">{</span>
         <span class="token comment" spellcheck="true">// 将内容写入到p数组</span>
         n<span class="token punctuation">,</span>err <span class="token operator">:=</span> reader_no_buffer<span class="token punctuation">.</span><span class="token function">Read</span><span class="token punctuation">(</span>p<span class="token punctuation">)</span>
-        <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
-            <span class="token keyword">if</span> err <span class="token operator">==</span> io<span class="token punctuation">.</span>EOF<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token punctuation">{</span>
+            <span class="token keyword">if</span> err <span class="token operator">==</span> io<span class="token punctuation">.</span>EOF<span class="token punctuation">{</span>
                 fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"读取完了"</span><span class="token punctuation">)</span>
                 <span class="token keyword">break</span>
-            <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token keyword">else</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span><span class="token keyword">else</span> <span class="token punctuation">{</span>
                 fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"异常错误"</span><span class="token punctuation">)</span>
                 <span class="token function">panic</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
-            <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
-        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
         fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"一共读取到%d个字符,内容为%s\n"</span><span class="token punctuation">,</span>n<span class="token punctuation">,</span><span class="token function">string</span><span class="token punctuation">(</span>p<span class="token punctuation">[</span><span class="token punctuation">:</span>n<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
 <span class="token comment" spellcheck="true">// result </span>
 <span class="token comment" spellcheck="true">// 一共读取到1个字符,内容为h</span>
 <span class="token comment" spellcheck="true">// 一共读取到1个字符,内容为e</span>
@@ -540,18 +540,18 @@
     reader_no_buffer<span class="token punctuation">.</span><span class="token function">Reset</span><span class="token punctuation">(</span><span class="token string">"abcd"</span><span class="token punctuation">)</span>
     fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>reader_no_buffer<span class="token punctuation">.</span><span class="token function">Size</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// 4</span>
     <span class="token comment" spellcheck="true">// 读取字节数</span>
-    <span class="token keyword">for</span>  <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token keyword">for</span>  <span class="token punctuation">{</span>
         bb<span class="token punctuation">,</span>err <span class="token operator">:=</span> reader_no_buffer<span class="token punctuation">.</span><span class="token function">ReadByte</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-        <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
-            <span class="token keyword">if</span> err <span class="token operator">==</span> io<span class="token punctuation">.</span>EOF <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
+            <span class="token keyword">if</span> err <span class="token operator">==</span> io<span class="token punctuation">.</span>EOF <span class="token punctuation">{</span>
                 fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"读取结束"</span><span class="token punctuation">)</span>
                 <span class="token keyword">break</span>
-            <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span> <span class="token keyword">else</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
                 fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"异常错误"</span><span class="token punctuation">)</span>
-            <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
-        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
         fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"当前读到的内容为 %s\n"</span><span class="token punctuation">,</span><span class="token function">string</span><span class="token punctuation">(</span>bb<span class="token punctuation">)</span><span class="token punctuation">)</span>
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
     <span class="token comment" spellcheck="true">// 返回未读部分的字节数</span>
     reader_no_buffer<span class="token punctuation">.</span><span class="token function">Reset</span><span class="token punctuation">(</span><span class="token string">"helloworld"</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// 10</span>
     reader_no_buffer<span class="token punctuation">.</span><span class="token function">Read</span><span class="token punctuation">(</span><span class="token function">make</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// 10 - 1 = 9</span>
@@ -560,26 +560,26 @@
     <span class="token comment" spellcheck="true">// 指针偏移距离</span>
     reader_no_buffer<span class="token punctuation">.</span><span class="token function">Reset</span><span class="token punctuation">(</span><span class="token string">"hellowrold"</span><span class="token punctuation">)</span>
     reader_no_buffer<span class="token punctuation">.</span><span class="token function">Seek</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token comment" spellcheck="true">// 从第一个位置开始偏移两个位置</span>
-    <span class="token keyword">for</span>  <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token keyword">for</span>  <span class="token punctuation">{</span>
         bb<span class="token punctuation">,</span>err <span class="token operator">:=</span> reader_no_buffer<span class="token punctuation">.</span><span class="token function">ReadByte</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-        <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token punctuation">{</span>
             <span class="token keyword">break</span>
-        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
         fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"%s"</span><span class="token punctuation">,</span><span class="token function">string</span><span class="token punctuation">(</span>bb<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// llowrold</span>
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span></code></pre>
+    <span class="token punctuation">}</span></code></pre>
 <h2 id="io-writer"><a href="#io-writer" class="headerlink" title="io-writer"></a>io-writer</h2><pre class=" language-go"><code class="language-go">    <span class="token keyword">var</span> writer bytes<span class="token punctuation">.</span>Buffer
     <span class="token comment" spellcheck="true">// 写入内容</span>
-    writer<span class="token punctuation">.</span><span class="token function">Write</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token number">2</span><span class="token punctuation">,</span><span class="token number">3</span><span class="token punctuation">,</span><span class="token number">45</span><span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span>
+    writer<span class="token punctuation">.</span><span class="token function">Write</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">{</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token number">2</span><span class="token punctuation">,</span><span class="token number">3</span><span class="token punctuation">,</span><span class="token number">45</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
     <span class="token comment" spellcheck="true">// 转换成string类型</span>
     fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>writer<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
     <span class="token comment" spellcheck="true">// 按照字节读取</span>
-    <span class="token keyword">for</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token keyword">for</span> <span class="token punctuation">{</span>
         bb<span class="token punctuation">,</span>err <span class="token operator">:=</span> writer<span class="token punctuation">.</span><span class="token function">ReadByte</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-        <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
             <span class="token keyword">break</span>
-        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
         fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token function">string</span><span class="token punctuation">(</span>bb<span class="token punctuation">)</span><span class="token punctuation">)</span>
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
     <span class="token comment" spellcheck="true">// 重置</span>
     fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>writer<span class="token punctuation">.</span><span class="token function">Len</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
     writer<span class="token punctuation">.</span><span class="token function">Reset</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
@@ -588,7 +588,7 @@
 <h2 id="bufio-Reader"><a href="#bufio-Reader" class="headerlink" title="bufio-Reader"></a>bufio-Reader</h2><p>bufio 包实现了缓存IO。它包装了 io.Reader 和 io.Writer 对象，创建了另外的Reader和Writer对象，它们也实现了 io.Reader 和 io.Writer 接口，不过它们是有缓存的。该包同时为文本I/O提供了一些便利操作。</p>
 <p>bufio.Reader 结构包装了一个 io.Reader 对象，提供缓存功能，同时实现了 io.Reader 接口</p>
 <p>Reader实例</p>
-<pre class=" language-go"><code class="language-go"><span class="token keyword">type</span> Reader <span class="token keyword">struct</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+<pre class=" language-go"><code class="language-go"><span class="token keyword">type</span> Reader <span class="token keyword">struct</span> <span class="token punctuation">{</span>
     buf          <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span>        <span class="token comment" spellcheck="true">// 缓存</span>
     rd           io<span class="token punctuation">.</span>Reader    <span class="token comment" spellcheck="true">// 底层的io.Reader</span>
     <span class="token comment" spellcheck="true">// r:从buf中读走的字节（偏移）；w:buf中填充内容的偏移；</span>
@@ -597,67 +597,67 @@
     err          <span class="token builtin">error</span>        <span class="token comment" spellcheck="true">// 读过程中遇到的错误</span>
     lastByte     <span class="token builtin">int</span>        <span class="token comment" spellcheck="true">// 最后一次读到的字节（ReadByte/UnreadByte)</span>
     lastRuneSize <span class="token builtin">int</span>        <span class="token comment" spellcheck="true">// 最后一次读到的Rune的大小 (ReadRune/UnreadRune)</span>
-<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span></code></pre>
+<span class="token punctuation">}</span></code></pre>
 <p>Reader接口</p>
-<pre class=" language-go"><code class="language-go"><span class="token keyword">type</span> Reader <span class="token keyword">interface</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+<pre class=" language-go"><code class="language-go"><span class="token keyword">type</span> Reader <span class="token keyword">interface</span> <span class="token punctuation">{</span>
  <span class="token comment" spellcheck="true">//n是读取到的字节数，err是读取时发生的错误；</span>
  <span class="token comment" spellcheck="true">//如果资源内容已全部读取完毕，应该返回 io.EOF 错误,表示结尾</span>
     <span class="token function">Read</span><span class="token punctuation">(</span>p <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">)</span> <span class="token punctuation">(</span>n <span class="token builtin">int</span><span class="token punctuation">,</span> err <span class="token builtin">error</span><span class="token punctuation">)</span>
-<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span></code></pre>
+<span class="token punctuation">}</span></code></pre>
 <p>使用实例</p>
 <pre class=" language-go"><code class="language-go"><span class="token comment" spellcheck="true">// 实现内容，将reader 中的东西读取到数据P到中去</span>
     reader <span class="token operator">:=</span> bufio<span class="token punctuation">.</span><span class="token function">NewReader</span><span class="token punctuation">(</span>strings<span class="token punctuation">.</span><span class="token function">NewReader</span><span class="token punctuation">(</span><span class="token string">"hello"</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
     p<span class="token operator">:=</span><span class="token function">make</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">,</span><span class="token number">4</span><span class="token punctuation">)</span>
-    <span class="token keyword">for</span>  <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token keyword">for</span>  <span class="token punctuation">{</span>
         m<span class="token punctuation">,</span>err <span class="token operator">:=</span> reader<span class="token punctuation">.</span><span class="token function">Read</span><span class="token punctuation">(</span>p<span class="token punctuation">)</span>
-        <span class="token keyword">if</span> err<span class="token operator">!=</span><span class="token boolean">nil</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
-            <span class="token keyword">if</span> err <span class="token operator">==</span> io<span class="token punctuation">.</span>EOF <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> err<span class="token operator">!=</span><span class="token boolean">nil</span> <span class="token punctuation">{</span>
+            <span class="token keyword">if</span> err <span class="token operator">==</span> io<span class="token punctuation">.</span>EOF <span class="token punctuation">{</span>
                 fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"读取结束了"</span><span class="token punctuation">)</span>
                 <span class="token keyword">break</span>
-            <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span> <span class="token keyword">else</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
                 fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"异常退出"</span><span class="token punctuation">)</span>
                 os<span class="token punctuation">.</span><span class="token function">Exit</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
-            <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
-        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
         fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"读取到的字节为%d,字节内容为 %s\n"</span><span class="token punctuation">,</span>m<span class="token punctuation">,</span><span class="token function">string</span><span class="token punctuation">(</span>p<span class="token punctuation">[</span><span class="token punctuation">:</span>m<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
 
         <span class="token comment" spellcheck="true">//读取到的字节为4,字节内容为 hell</span>
         <span class="token comment" spellcheck="true">//读取到的字节为1,字节内容为 o</span>
         <span class="token comment" spellcheck="true">//读取结束了</span>
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span></code></pre>
+    <span class="token punctuation">}</span></code></pre>
 <h3 id="创建reader对象"><a href="#创建reader对象" class="headerlink" title="创建reader对象"></a>创建reader对象</h3><p>golang提供了两个方法来实现READER对象的创建</p>
-<pre class=" language-go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">NewReaderSize</span><span class="token punctuation">(</span>rd io<span class="token punctuation">.</span>Reader<span class="token punctuation">,</span> size <span class="token builtin">int</span><span class="token punctuation">)</span> <span class="token operator">*</span>Reader <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+<pre class=" language-go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">NewReaderSize</span><span class="token punctuation">(</span>rd io<span class="token punctuation">.</span>Reader<span class="token punctuation">,</span> size <span class="token builtin">int</span><span class="token punctuation">)</span> <span class="token operator">*</span>Reader <span class="token punctuation">{</span>
     b<span class="token punctuation">,</span> ok <span class="token operator">:=</span> rd<span class="token punctuation">.</span><span class="token punctuation">(</span><span class="token operator">*</span>Reader<span class="token punctuation">)</span> 
-    <span class="token keyword">if</span> ok <span class="token operator">&amp;&amp;</span> <span class="token function">len</span><span class="token punctuation">(</span>b<span class="token punctuation">.</span>buf<span class="token punctuation">)</span> <span class="token operator">>=</span> size <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> ok <span class="token operator">&amp;&amp;</span> <span class="token function">len</span><span class="token punctuation">(</span>b<span class="token punctuation">.</span>buf<span class="token punctuation">)</span> <span class="token operator">>=</span> size <span class="token punctuation">{</span>
         <span class="token keyword">return</span> b
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
-    <span class="token keyword">if</span> size <span class="token operator">&lt;</span> minReadBufferSize <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">if</span> size <span class="token operator">&lt;</span> minReadBufferSize <span class="token punctuation">{</span>
         size <span class="token operator">=</span> minReadBufferSize
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
     r <span class="token operator">:=</span> <span class="token function">new</span><span class="token punctuation">(</span>Reader<span class="token punctuation">)</span>
     r<span class="token punctuation">.</span><span class="token function">reset</span><span class="token punctuation">(</span><span class="token function">make</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">,</span> size<span class="token punctuation">)</span><span class="token punctuation">,</span> rd<span class="token punctuation">)</span>
     <span class="token keyword">return</span> r
-<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 
 <span class="token comment" spellcheck="true">// NewReader returns a new Reader whose buffer has the default size.</span>
-<span class="token keyword">func</span> <span class="token function">NewReader</span><span class="token punctuation">(</span>rd io<span class="token punctuation">.</span>Reader<span class="token punctuation">)</span> <span class="token operator">*</span>Reader <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+<span class="token keyword">func</span> <span class="token function">NewReader</span><span class="token punctuation">(</span>rd io<span class="token punctuation">.</span>Reader<span class="token punctuation">)</span> <span class="token operator">*</span>Reader <span class="token punctuation">{</span>
     <span class="token keyword">return</span> <span class="token function">NewReaderSize</span><span class="token punctuation">(</span>rd<span class="token punctuation">,</span> defaultBufSize<span class="token punctuation">)</span>
-<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 </code></pre>
 <p>其中NewReader 引用了 NewReaderSize方法，定义了默认的大小为4096</p>
 <h3 id="返回缓存数组长度"><a href="#返回缓存数组长度" class="headerlink" title="返回缓存数组长度"></a>返回缓存数组长度</h3><pre class=" language-go"><code class="language-go"><span class="token comment" spellcheck="true">// Size returns the size of the underlying buffer in bytes.</span>
-<span class="token keyword">func</span> <span class="token punctuation">(</span>b <span class="token operator">*</span>Reader<span class="token punctuation">)</span> <span class="token function">Size</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token builtin">int</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span> <span class="token keyword">return</span> <span class="token function">len</span><span class="token punctuation">(</span>b<span class="token punctuation">.</span>buf<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span></code></pre>
-<h3 id="重置缓存内容"><a href="#重置缓存内容" class="headerlink" title="重置缓存内容"></a>重置缓存内容</h3><pre class=" language-go"><code class="language-go"><span class="token keyword">func</span> <span class="token punctuation">(</span>b <span class="token operator">*</span>Reader<span class="token punctuation">)</span> <span class="token function">Reset</span><span class="token punctuation">(</span>r io<span class="token punctuation">.</span>Reader<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+<span class="token keyword">func</span> <span class="token punctuation">(</span>b <span class="token operator">*</span>Reader<span class="token punctuation">)</span> <span class="token function">Size</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token builtin">int</span> <span class="token punctuation">{</span> <span class="token keyword">return</span> <span class="token function">len</span><span class="token punctuation">(</span>b<span class="token punctuation">.</span>buf<span class="token punctuation">)</span> <span class="token punctuation">}</span></code></pre>
+<h3 id="重置缓存内容"><a href="#重置缓存内容" class="headerlink" title="重置缓存内容"></a>重置缓存内容</h3><pre class=" language-go"><code class="language-go"><span class="token keyword">func</span> <span class="token punctuation">(</span>b <span class="token operator">*</span>Reader<span class="token punctuation">)</span> <span class="token function">Reset</span><span class="token punctuation">(</span>r io<span class="token punctuation">.</span>Reader<span class="token punctuation">)</span> <span class="token punctuation">{</span>
     b<span class="token punctuation">.</span><span class="token function">reset</span><span class="token punctuation">(</span>b<span class="token punctuation">.</span>buf<span class="token punctuation">,</span> r<span class="token punctuation">)</span>
-<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
-<span class="token keyword">func</span> <span class="token punctuation">(</span>b <span class="token operator">*</span>Reader<span class="token punctuation">)</span> <span class="token function">reset</span><span class="token punctuation">(</span>buf <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">,</span> r io<span class="token punctuation">.</span>Reader<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
-    <span class="token operator">*</span>b <span class="token operator">=</span> Reader<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">func</span> <span class="token punctuation">(</span>b <span class="token operator">*</span>Reader<span class="token punctuation">)</span> <span class="token function">reset</span><span class="token punctuation">(</span>buf <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">,</span> r io<span class="token punctuation">.</span>Reader<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token operator">*</span>b <span class="token operator">=</span> Reader<span class="token punctuation">{</span>
         buf<span class="token punctuation">:</span>          buf<span class="token punctuation">,</span>
         rd<span class="token punctuation">:</span>           r<span class="token punctuation">,</span>
         lastByte<span class="token punctuation">:</span>     <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">,</span>
         lastRuneSize<span class="token punctuation">:</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">,</span>
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
-<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span></code></pre>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
 <p>r</p>
 <h3 id="缓存区读取流程"><a href="#缓存区读取流程" class="headerlink" title="缓存区读取流程"></a>缓存区读取流程</h3><pre class=" language-go"><code class="language-go">    <span class="token comment" spellcheck="true">// 有缓冲区的reader</span>
     reader <span class="token operator">:=</span> bufio<span class="token punctuation">.</span><span class="token function">NewReader</span><span class="token punctuation">(</span>strings<span class="token punctuation">.</span><span class="token function">NewReader</span><span class="token punctuation">(</span><span class="token string">"hello"</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// 读取hello 进入</span>
@@ -685,37 +685,37 @@
     <span class="token comment" spellcheck="true">// 捕获界定符前面的内容</span>
     reader<span class="token punctuation">.</span><span class="token function">Reset</span><span class="token punctuation">(</span>strings<span class="token punctuation">.</span><span class="token function">NewReader</span><span class="token punctuation">(</span><span class="token string">"hello,world,"</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// hello, world,</span>
     <span class="token comment" spellcheck="true">//reader.Reset(strings.NewReader("hello,world")) // hello,</span>
-    <span class="token keyword">for</span>  <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token keyword">for</span>  <span class="token punctuation">{</span>
         ss<span class="token punctuation">,</span>err <span class="token operator">:=</span> reader<span class="token punctuation">.</span><span class="token function">ReadString</span><span class="token punctuation">(</span><span class="token string">','</span><span class="token punctuation">)</span>
-        <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
-            <span class="token keyword">if</span> err <span class="token operator">==</span> io<span class="token punctuation">.</span>EOF<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token punctuation">{</span>
+            <span class="token keyword">if</span> err <span class="token operator">==</span> io<span class="token punctuation">.</span>EOF<span class="token punctuation">{</span>
                 fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"读取完了"</span><span class="token punctuation">)</span>
                 <span class="token keyword">break</span>
-            <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
             <span class="token keyword">break</span>
-        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
         fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>ss<span class="token punctuation">)</span>
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
     fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>reader<span class="token punctuation">.</span><span class="token function">Peek</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
 
     <span class="token comment" spellcheck="true">// 和栈类似 抛出上层数据，不删除</span>
     reader<span class="token punctuation">.</span><span class="token function">Peek</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// []EOF</span></code></pre>
-<h2 id="Writer"><a href="#Writer" class="headerlink" title="Writer"></a>Writer</h2><pre class=" language-go"><code class="language-go">    proverbs <span class="token operator">:=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">string</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span><span class="token string">"Channels orchestrate mutexes serialize"</span><span class="token punctuation">,</span> <span class="token string">"Cgo is not Go"</span><span class="token punctuation">,</span> <span class="token string">"Errors are values"</span><span class="token punctuation">,</span> <span class="token string">"Don't panic"</span><span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<h2 id="Writer"><a href="#Writer" class="headerlink" title="Writer"></a>Writer</h2><pre class=" language-go"><code class="language-go">    proverbs <span class="token operator">:=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">string</span><span class="token punctuation">{</span><span class="token string">"Channels orchestrate mutexes serialize"</span><span class="token punctuation">,</span> <span class="token string">"Cgo is not Go"</span><span class="token punctuation">,</span> <span class="token string">"Errors are values"</span><span class="token punctuation">,</span> <span class="token string">"Don't panic"</span><span class="token punctuation">}</span>
     <span class="token comment" spellcheck="true">// 创建缓存区</span>
     <span class="token keyword">var</span> writer bytes<span class="token punctuation">.</span>Buffer
     <span class="token comment" spellcheck="true">// 遍历字典中的内容</span>
-    <span class="token keyword">for</span> <span class="token boolean">_</span><span class="token punctuation">,</span> p <span class="token operator">:=</span> <span class="token keyword">range</span> proverbs <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token keyword">for</span> <span class="token boolean">_</span><span class="token punctuation">,</span> p <span class="token operator">:=</span> <span class="token keyword">range</span> proverbs <span class="token punctuation">{</span>
         n<span class="token punctuation">,</span> err <span class="token operator">:=</span> writer<span class="token punctuation">.</span><span class="token function">Write</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token function">byte</span><span class="token punctuation">(</span>p<span class="token punctuation">)</span><span class="token punctuation">)</span>
-        <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
             fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
             os<span class="token punctuation">.</span><span class="token function">Exit</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
-        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
-        <span class="token keyword">if</span> n <span class="token operator">!=</span> <span class="token function">len</span><span class="token punctuation">(</span>p<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">if</span> n <span class="token operator">!=</span> <span class="token function">len</span><span class="token punctuation">(</span>p<span class="token punctuation">)</span> <span class="token punctuation">{</span>
             fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"faild to  write data"</span><span class="token punctuation">)</span>
             os<span class="token punctuation">.</span><span class="token function">Exit</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
-        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
 
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
     fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>writer<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span></code></pre>
 <pre class=" language-go"><code class="language-go">    <span class="token comment" spellcheck="true">// 创建一个缓存区，只在bytes包里面</span>
     <span class="token keyword">var</span> b  bytes<span class="token punctuation">.</span>Buffer
@@ -745,7 +745,7 @@
     <span class="token string">"os"</span>
 <span class="token punctuation">)</span>
 
-<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
 
     <span class="token comment" spellcheck="true">// 获取命令行变量 数组中第一个一定是程序名</span>
     fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>os<span class="token punctuation">.</span>Args<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// [/var/folders/1s/j9mtgsg14jv_xdqhrt1j42l80000gn/T/go-build302297154/b001/exe/testos xx]</span>
@@ -756,9 +756,9 @@
 
     <span class="token comment" spellcheck="true">// 获取所有环境变量</span>
     env <span class="token operator">:=</span> os<span class="token punctuation">.</span><span class="token function">Environ</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-    <span class="token keyword">for</span> k<span class="token punctuation">,</span>v <span class="token operator">:=</span> <span class="token keyword">range</span> env<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token keyword">for</span> k<span class="token punctuation">,</span>v <span class="token operator">:=</span> <span class="token keyword">range</span> env<span class="token punctuation">{</span>
         fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>k<span class="token punctuation">,</span><span class="token string">"---"</span><span class="token punctuation">,</span>v<span class="token punctuation">)</span>
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
 
 
     <span class="token comment" spellcheck="true">// 获取一条环境变量</span>
@@ -768,14 +768,14 @@
 
     <span class="token comment" spellcheck="true">// 创建目录</span>
     err <span class="token operator">:=</span> os<span class="token punctuation">.</span><span class="token function">Mkdir</span><span class="token punctuation">(</span><span class="token string">"./hello/"</span><span class="token punctuation">,</span>os<span class="token punctuation">.</span>ModePerm<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// 0777</span>
-    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token punctuation">{</span>
         fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
     <span class="token comment" spellcheck="true">// 递归创建目录</span>
     err <span class="token operator">=</span> os<span class="token punctuation">.</span><span class="token function">MkdirAll</span><span class="token punctuation">(</span><span class="token string">"./hello/world/test"</span><span class="token punctuation">,</span>os<span class="token punctuation">.</span>ModePerm<span class="token punctuation">)</span>
-    <span class="token keyword">if</span> err <span class="token operator">!=</span><span class="token boolean">nil</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> err <span class="token operator">!=</span><span class="token boolean">nil</span><span class="token punctuation">{</span>
         fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
 
     <span class="token comment" spellcheck="true">// 创建临时目录</span>
     tmp_dir <span class="token operator">:=</span> os<span class="token punctuation">.</span><span class="token function">TempDir</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
@@ -791,46 +791,46 @@
     <span class="token comment" spellcheck="true">// 打开文件用于读取</span>
     gwd<span class="token punctuation">,</span><span class="token boolean">_</span><span class="token operator">:=</span> os<span class="token punctuation">.</span><span class="token function">Getwd</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
     file<span class="token punctuation">,</span>err<span class="token operator">=</span>os<span class="token punctuation">.</span><span class="token function">Open</span><span class="token punctuation">(</span>gwd<span class="token operator">+</span><span class="token string">"/xx/xx.go"</span><span class="token punctuation">)</span>
-    <span class="token keyword">if</span> err <span class="token operator">!=</span><span class="token boolean">nil</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> err <span class="token operator">!=</span><span class="token boolean">nil</span><span class="token punctuation">{</span>
         fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token keyword">else</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token keyword">else</span> <span class="token punctuation">{</span>
         fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>file<span class="token punctuation">.</span><span class="token function">Name</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
 
     <span class="token comment" spellcheck="true">// 递归获取目录信息</span>
     file_info_list<span class="token punctuation">,</span>err <span class="token operator">:=</span> ioutil<span class="token punctuation">.</span><span class="token function">ReadDir</span><span class="token punctuation">(</span>gwd<span class="token operator">+</span><span class="token string">"/xx/"</span><span class="token punctuation">)</span>
-    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token punctuation">{</span>
         fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token keyword">else</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
-        <span class="token keyword">for</span> i<span class="token operator">:=</span><span class="token number">0</span><span class="token punctuation">;</span>i<span class="token operator">&lt;</span><span class="token function">len</span><span class="token punctuation">(</span>file_info_list<span class="token punctuation">)</span><span class="token punctuation">;</span>i<span class="token operator">++</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token keyword">else</span> <span class="token punctuation">{</span>
+        <span class="token keyword">for</span> i<span class="token operator">:=</span><span class="token number">0</span><span class="token punctuation">;</span>i<span class="token operator">&lt;</span><span class="token function">len</span><span class="token punctuation">(</span>file_info_list<span class="token punctuation">)</span><span class="token punctuation">;</span>i<span class="token operator">++</span> <span class="token punctuation">{</span>
             fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>file_info_list<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">Name</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
 
     <span class="token comment" spellcheck="true">// 从file中读取最多len(b)字节数据并写入b</span>
     file<span class="token punctuation">,</span>err<span class="token operator">=</span>os<span class="token punctuation">.</span><span class="token function">Open</span><span class="token punctuation">(</span>gwd<span class="token operator">+</span><span class="token string">"/xx/xx.go"</span><span class="token punctuation">)</span>
     <span class="token keyword">var</span> bb <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span> <span class="token operator">=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">,</span><span class="token number">32</span><span class="token punctuation">)</span>
-    <span class="token keyword">if</span> err <span class="token operator">!=</span><span class="token boolean">nil</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> err <span class="token operator">!=</span><span class="token boolean">nil</span> <span class="token punctuation">{</span>
         fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token keyword">else</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token keyword">else</span> <span class="token punctuation">{</span>
         file<span class="token punctuation">.</span><span class="token function">Read</span><span class="token punctuation">(</span>bb<span class="token punctuation">)</span>
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
     fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token function">string</span><span class="token punctuation">(</span>bb<span class="token punctuation">)</span><span class="token punctuation">)</span>
 
     <span class="token comment" spellcheck="true">// 向文件中写入字符串</span>
     filepath<span class="token punctuation">,</span>err <span class="token operator">:=</span> os<span class="token punctuation">.</span><span class="token function">Getwd</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// 获取当前文件地址</span>
-    <span class="token keyword">if</span>  err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span>  err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token punctuation">{</span>
         fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
     filepath <span class="token operator">=</span> filepath<span class="token operator">+</span><span class="token string">"/xx/helloworld.txt"</span> <span class="token comment" spellcheck="true">// 拼接文件地址</span>
     new_file<span class="token punctuation">,</span><span class="token boolean">_</span> <span class="token operator">:=</span> os<span class="token punctuation">.</span><span class="token function">Create</span><span class="token punctuation">(</span>filepath<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// 创建新的文件</span>
     fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>new_file<span class="token punctuation">.</span><span class="token function">Name</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// 查看创建文件夹的名字</span>
     n<span class="token punctuation">,</span>err <span class="token operator">:=</span> new_file<span class="token punctuation">.</span><span class="token function">WriteString</span><span class="token punctuation">(</span><span class="token string">"hellowrold"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token punctuation">{</span>
         fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token keyword">else</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token keyword">else</span> <span class="token punctuation">{</span>
         fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>n<span class="token punctuation">)</span>
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
 
     <span class="token comment" spellcheck="true">// 关闭当前文件，使文件不能用于读写</span>
     file<span class="token punctuation">.</span><span class="token function">Close</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
@@ -841,15 +841,15 @@
 
     <span class="token comment" spellcheck="true">// 终止当前程序</span>
     <span class="token keyword">var</span> i <span class="token builtin">int</span> <span class="token operator">=</span> <span class="token number">1</span>
-    <span class="token keyword">for</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
-        <span class="token keyword">if</span> i <span class="token operator">==</span> <span class="token number">20</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token keyword">for</span> <span class="token punctuation">{</span>
+        <span class="token keyword">if</span> i <span class="token operator">==</span> <span class="token number">20</span> <span class="token punctuation">{</span>
             os<span class="token punctuation">.</span><span class="token function">Exit</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
-        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
         i<span class="token operator">++</span>
         fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>i<span class="token punctuation">)</span>
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
 
-<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span></code></pre>
+<span class="token punctuation">}</span></code></pre>
 <h2 id="golang文件信息"><a href="#golang文件信息" class="headerlink" title="golang文件信息"></a>golang文件信息</h2><p>os包里面可以用stat来查看某一个文件的文件信息，或者使用 ioutil.ReadDir来递归批量获取文件夹下面所有文件的信息</p>
 <pre class=" language-go"><code class="language-go"><span class="token keyword">package</span> main
 
@@ -858,23 +858,23 @@
     <span class="token string">"os"</span>
 <span class="token punctuation">)</span>
 
-<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token comment" spellcheck="true">// 获取文件地址</span>
     filepath<span class="token punctuation">,</span>err <span class="token operator">:=</span> os<span class="token punctuation">.</span><span class="token function">Getwd</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
         fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token keyword">else</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token keyword">else</span> <span class="token punctuation">{</span>
         filepath <span class="token operator">=</span> filepath<span class="token operator">+</span><span class="token string">"/xx/"</span>
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
 
     <span class="token comment" spellcheck="true">// 查看文件信息</span>
     fileinfo <span class="token operator">:=</span> filepath<span class="token operator">+</span><span class="token string">"helloworld.txt"</span>
     file_info<span class="token punctuation">,</span>err <span class="token operator">:=</span> os<span class="token punctuation">.</span><span class="token function">Stat</span><span class="token punctuation">(</span>fileinfo<span class="token punctuation">)</span>
-    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token punctuation">{</span>
         fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token keyword">else</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token keyword">else</span> <span class="token punctuation">{</span>
         fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>file_info<span class="token punctuation">)</span>
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
 
     <span class="token comment" spellcheck="true">// 文件名字</span>
     fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>file_info<span class="token punctuation">.</span><span class="token function">Name</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
@@ -888,27 +888,27 @@
     fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>file_info<span class="token punctuation">.</span><span class="token function">IsDir</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
     <span class="token comment" spellcheck="true">// 基础数据源</span>
     fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>file_info<span class="token punctuation">.</span><span class="token function">Sys</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 </code></pre>
-<pre class=" language-go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+<pre class=" language-go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token comment" spellcheck="true">// 获取文件地址</span>
     filepath<span class="token punctuation">,</span>err <span class="token operator">:=</span> os<span class="token punctuation">.</span><span class="token function">Getwd</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
         fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token keyword">else</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token keyword">else</span> <span class="token punctuation">{</span>
         filepath <span class="token operator">=</span> filepath<span class="token operator">+</span><span class="token string">"/xx/"</span>
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
 
     <span class="token comment" spellcheck="true">//</span>
     fileinfoList<span class="token punctuation">,</span>err <span class="token operator">:=</span> ioutil<span class="token punctuation">.</span><span class="token function">ReadDir</span><span class="token punctuation">(</span>filepath<span class="token punctuation">)</span>
-    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token punctuation">{</span>
         <span class="token function">panic</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token keyword">else</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
-        <span class="token keyword">for</span> i<span class="token operator">:=</span><span class="token number">0</span><span class="token punctuation">;</span>i<span class="token operator">&lt;</span><span class="token function">len</span><span class="token punctuation">(</span>fileinfoList<span class="token punctuation">)</span><span class="token punctuation">;</span>i<span class="token operator">++</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token keyword">else</span> <span class="token punctuation">{</span>
+        <span class="token keyword">for</span> i<span class="token operator">:=</span><span class="token number">0</span><span class="token punctuation">;</span>i<span class="token operator">&lt;</span><span class="token function">len</span><span class="token punctuation">(</span>fileinfoList<span class="token punctuation">)</span><span class="token punctuation">;</span>i<span class="token operator">++</span><span class="token punctuation">{</span>
             fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>fileinfoList<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">Name</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
-<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
 </code></pre>
 
         </div>

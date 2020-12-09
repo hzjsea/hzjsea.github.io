@@ -733,14 +733,14 @@ print(sen.sentinels)</code></pre>
   <span class="token variable"><span class="token variable">`</span><span class="token function">cp</span> ./redis.conf ./redis-$1.conf<span class="token variable">`</span></span> 
 <span class="token keyword">fi</span>
 
-<span class="token function">sed</span> -i -e  <span class="token string">"/^port/s/.*/port $&amp;#123;Port&amp;#125;/"</span>  \
+<span class="token function">sed</span> -i -e  <span class="token string">"/^port/s/.*/port <span class="token variable">${Port}</span>/"</span>  \
     -e <span class="token string">"/^daemonize/s/no/yes/"</span>   \
-    -e <span class="token string">"/^logfile/s/.*/logfile \"$&amp;#123;Port&amp;#125;.log\"/"</span> \
-    -e <span class="token string">"/^dbfilename/s/.*/dbfilename \"dump-$&amp;#123;Port&amp;#125;.rdb\"/"</span>   \
+    -e <span class="token string">"/^logfile/s/.*/logfile \"<span class="token variable">${Port}</span>.log\"/"</span> \
+    -e <span class="token string">"/^dbfilename/s/.*/dbfilename \"dump-<span class="token variable">${Port}</span>.rdb\"/"</span>   \
     -e <span class="token string">"/^dir/s@.*@dir /opt/soft/redis/data/@"</span> \
     -e <span class="token string">'s/^bind/#&amp;/'</span> \
     -e <span class="token string">"/^protected-mode/s/yes/no/"</span> \
-    redis-$<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;Port&amp;#125;.conf</span>
+    redis-<span class="token variable">${Port}</span>.conf
 
 <span class="token keyword">echo</span> <span class="token string">"success"</span></code></pre>
 <p>从机部署</p>
@@ -764,15 +764,15 @@ print(sen.sentinels)</code></pre>
   <span class="token variable"><span class="token variable">`</span><span class="token function">cp</span> ./redis.conf ./redis-$1.conf<span class="token variable">`</span></span> 
 <span class="token keyword">fi</span>
 
-<span class="token function">sed</span> -i -e  <span class="token string">"/^port/s/.*/port $&amp;#123;Port&amp;#125;/"</span>  \
+<span class="token function">sed</span> -i -e  <span class="token string">"/^port/s/.*/port <span class="token variable">${Port}</span>/"</span>  \
     -e <span class="token string">"/^daemonize/s/no/yes/"</span>   \
-    -e <span class="token string">"/^logfile/s/.*/logfile \"$&amp;#123;Port&amp;#125;.log\"/"</span> \
-    -e <span class="token string">"/^dbfilename/s/.*/dbfilename \"dump-$&amp;#123;Port&amp;#125;.rdb\"/"</span>   \
+    -e <span class="token string">"/^logfile/s/.*/logfile \"<span class="token variable">${Port}</span>.log\"/"</span> \
+    -e <span class="token string">"/^dbfilename/s/.*/dbfilename \"dump-<span class="token variable">${Port}</span>.rdb\"/"</span>   \
     -e <span class="token string">"/^dir/s@.*@dir /opt/soft/redis/data/@"</span> \
     -e <span class="token string">'<span class="token variable">$a</span> slaveof 127.0.0.1 6379'</span> \
     -e <span class="token string">'s/^bind/#&amp;/'</span> \
     -e <span class="token string">"/^protected-mode/s/yes/no/"</span> \
-    redis-$<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;Port&amp;#125;.conf</span>
+    redis-<span class="token variable">${Port}</span>.conf
 
 <span class="token keyword">echo</span> <span class="token string">"success"</span></code></pre>
 <p>哨兵部署</p>
@@ -796,9 +796,9 @@ print(sen.sentinels)</code></pre>
   <span class="token variable"><span class="token variable">`</span><span class="token function">cp</span> ./redis.conf ./redis-$1.conf<span class="token variable">`</span></span> 
 <span class="token keyword">fi</span>
 
-<span class="token function">sed</span> -i -e  <span class="token string">"/^port/s/.*/port $&amp;#123;Port&amp;#125;/"</span>  \
+<span class="token function">sed</span> -i -e  <span class="token string">"/^port/s/.*/port <span class="token variable">${Port}</span>/"</span>  \
     -e <span class="token string">"/^daemonize/s/no/yes/"</span>   \
-    -e <span class="token string">"/^logfile/s/.*/logfile \"$&amp;#123;Port&amp;#125;.log\"/"</span> \
+    -e <span class="token string">"/^logfile/s/.*/logfile \"<span class="token variable">${Port}</span>.log\"/"</span> \
     -e <span class="token string">"/^dir/s@.*@dir /opt/soft/redis/data/@"</span> \
     -e <span class="token string">'s/^bind/#&amp;/'</span> \
     -e <span class="token string">"/^protected-mode/s/yes/no/"</span> \
@@ -806,7 +806,7 @@ print(sen.sentinels)</code></pre>
     -e <span class="token string">'<span class="token variable">$a</span> sentinel down-after-milliseconds mymaster 30000 '</span> \
     -e <span class="token string">'<span class="token variable">$a</span> sentinel parallel-syncs mymaster 1  '</span> \
     -e <span class="token string">'<span class="token variable">$a</span> sentinel failover-timeout mymaster 180000'</span>  \
-    redis-$<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;Port&amp;#125;.conf</span>
+    redis-<span class="token variable">${Port}</span>.conf
 
 <span class="token keyword">echo</span> <span class="token string">"success"</span></code></pre>
 <p>bash</p>

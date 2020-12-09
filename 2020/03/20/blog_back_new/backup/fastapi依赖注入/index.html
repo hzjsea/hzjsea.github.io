@@ -486,7 +486,7 @@ app <span class="token operator">=</span> FastAPI<span class="token punctuation"
 <span class="token comment" spellcheck="true"># 创建一个需要重复的动作</span>
 <span class="token comment" spellcheck="true"># 定义了一个动作，返回输入的三个参数</span>
 <span class="token keyword">async</span> <span class="token keyword">def</span> <span class="token function">repeat_action</span><span class="token punctuation">(</span>q<span class="token punctuation">:</span> str <span class="token operator">=</span> None<span class="token punctuation">,</span> skip<span class="token punctuation">:</span> int <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">,</span>limit<span class="token punctuation">:</span> int <span class="token operator">=</span> <span class="token number">100</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
-    <span class="token keyword">return</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;"q":q,"skip":skip,"limit":limit&amp;#125;</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span><span class="token string">"q"</span><span class="token punctuation">:</span>q<span class="token punctuation">,</span><span class="token string">"skip"</span><span class="token punctuation">:</span>skip<span class="token punctuation">,</span><span class="token string">"limit"</span><span class="token punctuation">:</span>limit<span class="token punctuation">}</span>
 
 
 
@@ -494,7 +494,7 @@ app <span class="token operator">=</span> FastAPI<span class="token punctuation"
 <span class="token comment" spellcheck="true"># 传入参数</span>
 @app<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">"/"</span><span class="token punctuation">)</span>
 <span class="token keyword">async</span> <span class="token keyword">def</span> <span class="token function">root</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
-    <span class="token keyword">return</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;"desc":"hello world"&amp;#125;</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span><span class="token string">"desc"</span><span class="token punctuation">:</span><span class="token string">"hello world"</span><span class="token punctuation">}</span>
 
 <span class="token comment" spellcheck="true"># 执行相同的动作</span>
 @app<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">"/items/"</span><span class="token punctuation">)</span>
@@ -530,17 +530,17 @@ app <span class="token operator">=</span> FastAPI<span class="token punctuation"
 
 @app<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">"/"</span><span class="token punctuation">)</span>
 <span class="token keyword">async</span> <span class="token keyword">def</span> <span class="token function">root</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
-    <span class="token keyword">return</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;"hello world":"helloworld"&amp;#125;</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span><span class="token string">"hello world"</span><span class="token punctuation">:</span><span class="token string">"helloworld"</span><span class="token punctuation">}</span>
 @app<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">"/age/"</span><span class="token punctuation">)</span>
 <span class="token keyword">async</span> <span class="token keyword">def</span> <span class="token function">read_info</span><span class="token punctuation">(</span>commons<span class="token punctuation">:</span> repeat_action<span class="token operator">=</span>Depends<span class="token punctuation">(</span>repeat_action<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
 <span class="token comment" spellcheck="true"># async  def read_info(commons: repeat_action=Depends()) 你还可以这样写</span>
-    res <span class="token operator">=</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;&amp;#125;</span>
+    res <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
     <span class="token keyword">if</span> commons<span class="token punctuation">.</span>age <span class="token keyword">is</span> <span class="token operator">not</span> None<span class="token punctuation">:</span>
         res <span class="token operator">=</span> None
-        <span class="token keyword">return</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;"is birth":res&amp;#125;</span>
+        <span class="token keyword">return</span> <span class="token punctuation">{</span><span class="token string">"is birth"</span><span class="token punctuation">:</span>res<span class="token punctuation">}</span>
     <span class="token keyword">else</span><span class="token punctuation">:</span>
-        res <span class="token operator">=</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;"res":"&amp;#123;&amp;#125; is not birth,age is &amp;#123;&amp;#125;".format(commons.name,commons.age)&amp;#125;</span>
-        <span class="token keyword">return</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;"is birth":res&amp;#125;</span></code></pre>
+        res <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token string">"res"</span><span class="token punctuation">:</span><span class="token string">"{} is not birth,age is {}"</span><span class="token punctuation">.</span>format<span class="token punctuation">(</span>commons<span class="token punctuation">.</span>name<span class="token punctuation">,</span>commons<span class="token punctuation">.</span>age<span class="token punctuation">)</span><span class="token punctuation">}</span>
+        <span class="token keyword">return</span> <span class="token punctuation">{</span><span class="token string">"is birth"</span><span class="token punctuation">:</span>res<span class="token punctuation">}</span></code></pre>
 <h2 id="子级依赖注入"><a href="#子级依赖注入" class="headerlink" title="子级依赖注入"></a>子级依赖注入</h2><p>既然依赖已经可以用类去申明，那他也有子级别依赖注入</p>
 <pre class=" language-python"><code class="language-python"><span class="token keyword">from</span> typing <span class="token keyword">import</span>  List
 <span class="token keyword">from</span> fastapi <span class="token keyword">import</span> FastAPI
@@ -551,7 +551,7 @@ app <span class="token operator">=</span> FastAPI<span class="token punctuation"
 
 <span class="token comment" spellcheck="true">## 创建子级依赖</span>
 <span class="token keyword">async</span>  <span class="token keyword">def</span> <span class="token function">sub_action</span><span class="token punctuation">(</span>q<span class="token punctuation">:</span> str <span class="token operator">=</span>None<span class="token punctuation">)</span><span class="token punctuation">:</span>
-    q <span class="token operator">=</span> <span class="token string">"my type is sub action for &amp;#123;&amp;#125;"</span><span class="token punctuation">.</span>format<span class="token punctuation">(</span>q<span class="token punctuation">)</span>
+    q <span class="token operator">=</span> <span class="token string">"my type is sub action for {}"</span><span class="token punctuation">.</span>format<span class="token punctuation">(</span>q<span class="token punctuation">)</span>
     <span class="token keyword">return</span> q
 
 <span class="token comment" spellcheck="true">## 创建一个类</span>
@@ -568,28 +568,28 @@ app <span class="token operator">=</span> FastAPI<span class="token punctuation"
         self<span class="token punctuation">.</span>desc <span class="token operator">=</span> Depends<span class="token punctuation">(</span>sub_action<span class="token punctuation">(</span>desc<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 @app<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">"/age/"</span><span class="token punctuation">)</span>
 <span class="token keyword">async</span> <span class="token keyword">def</span> <span class="token function">read_info</span><span class="token punctuation">(</span>commons<span class="token punctuation">:</span> repeat_action<span class="token operator">=</span>Depends<span class="token punctuation">(</span>repeat_action<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
-    res <span class="token operator">=</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;&amp;#125;</span>
+    res <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
     <span class="token keyword">if</span> commons<span class="token punctuation">.</span>age <span class="token keyword">is</span> <span class="token operator">not</span> None<span class="token punctuation">:</span>
         res <span class="token operator">=</span> None
-        <span class="token keyword">return</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;"is birth":res&amp;#125;</span>
+        <span class="token keyword">return</span> <span class="token punctuation">{</span><span class="token string">"is birth"</span><span class="token punctuation">:</span>res<span class="token punctuation">}</span>
     <span class="token keyword">else</span><span class="token punctuation">:</span>
-        res <span class="token operator">=</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;"res":"&amp;#123;&amp;#125; is not birth,age is &amp;#123;&amp;#125;".format(commons.name,commons.age)&amp;#125;</span>
-        <span class="token comment" spellcheck="true"># return &amp;#123;"is birth":res&amp;#125;</span>
+        res <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token string">"res"</span><span class="token punctuation">:</span><span class="token string">"{} is not birth,age is {}"</span><span class="token punctuation">.</span>format<span class="token punctuation">(</span>commons<span class="token punctuation">.</span>name<span class="token punctuation">,</span>commons<span class="token punctuation">.</span>age<span class="token punctuation">)</span><span class="token punctuation">}</span>
+        <span class="token comment" spellcheck="true"># return {"is birth":res}</span>
         <span class="token keyword">if</span> commons<span class="token punctuation">.</span>desc <span class="token keyword">is</span> <span class="token operator">not</span> None<span class="token punctuation">:</span>
             res<span class="token punctuation">[</span><span class="token string">'desc'</span><span class="token punctuation">]</span> <span class="token operator">=</span> commons<span class="token punctuation">.</span>desc
         <span class="token keyword">else</span><span class="token punctuation">:</span>
-            <span class="token keyword">return</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;"is birth ":res&amp;#125;</span>
+            <span class="token keyword">return</span> <span class="token punctuation">{</span><span class="token string">"is birth "</span><span class="token punctuation">:</span>res<span class="token punctuation">}</span>
 </code></pre>
 <blockquote>
 <p>这里官方文档写了一个use_cache=False是什么用作 后面在解决</p>
 </blockquote>
 <p>补充，fastapi中，如果你在一个相同的请求路径中多次使用相同的依赖项，fastapi只会使用一次依赖注入 因为他会把第一次依赖注入的结果放到缓存中，<br>中如果需要使用多次调用，可以在调用的过程中使用<code>use_cache=False</code></p>
 <pre class=" language-python"><code class="language-python"><span class="token keyword">async</span> <span class="token keyword">def</span> <span class="token function">needy_dependency</span><span class="token punctuation">(</span>fresh_value<span class="token punctuation">:</span> str <span class="token operator">=</span> Depends<span class="token punctuation">(</span>get_value<span class="token punctuation">,</span> use_cache<span class="token operator">=</span><span class="token boolean">False</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
-    <span class="token keyword">return</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;"fresh_value": fresh_value&amp;#125;</span></code></pre>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span><span class="token string">"fresh_value"</span><span class="token punctuation">:</span> fresh_value<span class="token punctuation">}</span></code></pre>
 <h2 id="依赖注入的其他使用方法"><a href="#依赖注入的其他使用方法" class="headerlink" title="依赖注入的其他使用方法"></a>依赖注入的其他使用方法</h2><p>有时候只需要在Url调用的时候执行以下依赖注入的方法就可以了，不需要返回值，这时候就可以用到<code>Depends</code> 方法与Depends相同，但是不能返回结果<br>传入多个依赖注入</p>
 <pre class=" language-python"><code class="language-python">@app<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">"/items/"</span><span class="token punctuation">,</span> dependencies<span class="token operator">=</span><span class="token punctuation">[</span>Depends<span class="token punctuation">(</span>verify_token<span class="token punctuation">)</span><span class="token punctuation">,</span> Depends<span class="token punctuation">(</span>verify_key<span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
 <span class="token keyword">async</span> <span class="token keyword">def</span> <span class="token function">read_items</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
-    <span class="token keyword">return</span> <span class="token punctuation">[</span><span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;"item": "Foo"&amp;#125;, &amp;#123;"item": "Bar"&amp;#125;]</span></code></pre>
+    <span class="token keyword">return</span> <span class="token punctuation">[</span><span class="token punctuation">{</span><span class="token string">"item"</span><span class="token punctuation">:</span> <span class="token string">"Foo"</span><span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token punctuation">{</span><span class="token string">"item"</span><span class="token punctuation">:</span> <span class="token string">"Bar"</span><span class="token punctuation">}</span><span class="token punctuation">]</span></code></pre>
 
         </div>
 
@@ -613,10 +613,10 @@ app <span class="token operator">=</span> FastAPI<span class="token punctuation"
         </section>
         <section class="post-nav">
             
-            <a class="prev" rel="prev" href="/2020/03/21/blog_back_new/Python/pyjwt%E6%A8%A1%E5%9D%97/">python使用pyjwt模块</a>
+            <a class="prev" rel="prev" href="/2020/03/20/blog_back_new/backup/fastapi%E4%B8%AD%E7%9A%84%E5%BA%8F%E5%88%97%E5%8C%96/">python中的序列化</a>
             
             
-            <a class="next" rel="next" href="/2020/03/20/blog_back_new/backup/fastapi%E4%B8%AD%E6%9B%B4%E6%96%B0%E6%95%B0%E6%8D%AE/">fastapi中更新数据</a>
+            <a class="next" rel="next" href="/2020/03/20/blog_back_new/backup/fastapi%E5%AE%89%E5%85%A8/">fastapi安全</a>
             
         </section>
     </article>

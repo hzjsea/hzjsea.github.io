@@ -487,12 +487,12 @@
     <span class="token string">"os"</span>
 <span class="token punctuation">)</span>
 
-<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     args <span class="token operator">:=</span> os<span class="token punctuation">.</span>Args
     fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>args<span class="token punctuation">)</span>
     argsUserful <span class="token operator">:=</span> os<span class="token punctuation">.</span>Args<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">:</span><span class="token punctuation">]</span>
     fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>argsUserful<span class="token punctuation">)</span>
-<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span></code></pre>
+<span class="token punctuation">}</span></code></pre>
 <p>运行<code>go run qq.go</code> 返回 <code>[/var/folders/1s/j9mtgsg14jv_xdqhrt1j42l80000gn/T/go-build977927048/b001/exe/qq] []</code><br>运行<code>go run qq.go ls</code> 返回 <code>[/var/folders/1s/j9mtgsg14jv_xdqhrt1j42l80000gn/T/go-build977927048/b001/exe/qq] [ls]</code></p>
 <h2 id="flag库"><a href="#flag库" class="headerlink" title="flag库"></a>flag库</h2><p>flag库主要是一个命令行参数的库</p>
 <h3 id="example"><a href="#example" class="headerlink" title="example"></a>example</h3><pre class=" language-go"><code class="language-go"><span class="token keyword">package</span> main
@@ -519,7 +519,7 @@
 
 
 <span class="token comment" spellcheck="true">// 初始化内容</span>
-<span class="token keyword">func</span> <span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+<span class="token keyword">func</span> <span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     flag<span class="token punctuation">.</span><span class="token function">BoolVar</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>h<span class="token punctuation">,</span> <span class="token string">"h"</span><span class="token punctuation">,</span> <span class="token boolean">false</span><span class="token punctuation">,</span> <span class="token string">"this help"</span><span class="token punctuation">)</span>
 
     flag<span class="token punctuation">.</span><span class="token function">BoolVar</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>v<span class="token punctuation">,</span> <span class="token string">"v"</span><span class="token punctuation">,</span> <span class="token boolean">false</span><span class="token punctuation">,</span> <span class="token string">"show version and exit"</span><span class="token punctuation">)</span>
@@ -539,23 +539,23 @@
 
     <span class="token comment" spellcheck="true">// 改变默认的 Usage，flag包中的Usage 其实是一个函数类型。这里是覆盖默认函数实现，具体见后面Usage部分的分析</span>
     flag<span class="token punctuation">.</span>Usage <span class="token operator">=</span> usage
-<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 
-<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     flag<span class="token punctuation">.</span><span class="token function">Parse</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
 
-    <span class="token keyword">if</span> h <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> h <span class="token punctuation">{</span>
         flag<span class="token punctuation">.</span><span class="token function">Usage</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
-<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
 
-<span class="token keyword">func</span> <span class="token function">usage</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+<span class="token keyword">func</span> <span class="token function">usage</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
     fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>os<span class="token punctuation">.</span>Stderr<span class="token punctuation">,</span><span class="token string">`nginx version: nginx/1.10.0
 Usage: nginx [-hvVtTq] [-s signal] [-c filename] [-p prefix] [-g directives]
 
 Options:`</span><span class="token punctuation">)</span>
     flag<span class="token punctuation">.</span><span class="token function">PrintDefaults</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span></code></pre>
+<span class="token punctuation">}</span></code></pre>
 <p>一个一个来看</p>
 <pre class=" language-go"><code class="language-go"><span class="token comment" spellcheck="true">// 创建变量</span>
 <span class="token keyword">var</span> <span class="token punctuation">(</span>
@@ -573,7 +573,7 @@ Options:`</span><span class="token punctuation">)</span>
 <p>首先这一段是创建多个零值变量，是后面用来识别命令行参数的必要内容</p>
 <pre class=" language-go"><code class="language-go">
 <span class="token comment" spellcheck="true">// 初始化内容</span>
-<span class="token keyword">func</span> <span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+<span class="token keyword">func</span> <span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     flag<span class="token punctuation">.</span><span class="token function">BoolVar</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>h<span class="token punctuation">,</span> <span class="token string">"h"</span><span class="token punctuation">,</span> <span class="token boolean">false</span><span class="token punctuation">,</span> <span class="token string">"this help"</span><span class="token punctuation">)</span>
 
     flag<span class="token punctuation">.</span><span class="token function">BoolVar</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>v<span class="token punctuation">,</span> <span class="token string">"v"</span><span class="token punctuation">,</span> <span class="token boolean">false</span><span class="token punctuation">,</span> <span class="token string">"show version and exit"</span><span class="token punctuation">)</span>
@@ -593,14 +593,14 @@ Options:`</span><span class="token punctuation">)</span>
 
     <span class="token comment" spellcheck="true">// 改变默认的 Usage，flag包中的Usage 其实是一个函数类型。这里是覆盖默认函数实现，具体见后面Usage部分的分析</span>
     flag<span class="token punctuation">.</span>Usage <span class="token operator">=</span> usage
-<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span></code></pre>
+<span class="token punctuation">}</span></code></pre>
 <p>这一段是固定命令行参数中的内容。init() 在main() 之前执行。<br>固定参数的形式有如下两种</p>
 <ul>
 <li>使用BoolVar 或者StringVar这种格式<br>先来看看他们的源码<pre class=" language-go"><code class="language-go"><span class="token comment" spellcheck="true">// BoolVar defines a bool flag with specified name, default value, and usage string.</span>
 <span class="token comment" spellcheck="true">// The argument p points to a bool variable in which to store the value of the flag.</span>
-<span class="token keyword">func</span> <span class="token function">BoolVar</span><span class="token punctuation">(</span>p <span class="token operator">*</span><span class="token builtin">bool</span><span class="token punctuation">,</span> name <span class="token builtin">string</span><span class="token punctuation">,</span> value <span class="token builtin">bool</span><span class="token punctuation">,</span> usage <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+<span class="token keyword">func</span> <span class="token function">BoolVar</span><span class="token punctuation">(</span>p <span class="token operator">*</span><span class="token builtin">bool</span><span class="token punctuation">,</span> name <span class="token builtin">string</span><span class="token punctuation">,</span> value <span class="token builtin">bool</span><span class="token punctuation">,</span> usage <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
   CommandLine<span class="token punctuation">.</span><span class="token function">Var</span><span class="token punctuation">(</span><span class="token function">newBoolValue</span><span class="token punctuation">(</span>value<span class="token punctuation">,</span> p<span class="token punctuation">)</span><span class="token punctuation">,</span> name<span class="token punctuation">,</span> usage<span class="token punctuation">)</span>
-<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 </code></pre>
 </li>
 </ul>

@@ -457,37 +457,46 @@
         </header>
 
         <div class="post-content">
-            <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+            <a id="more"></a>
 
-<!-- code_chunk_output -->
-
-<ul>
-<li><a href="#mysql%E9%94%99%E8%AF%AF">mysql错误</a><ul>
-<li><a href="#mysql%E9%94%99%E8%AF%AF%E5%90%88%E9%9B%86">mysql错误合集</a></li>
-<li><a href="#%E9%94%99%E8%AF%AF-%E6%89%BE%E4%B8%8D%E5%88%B0sock%E6%96%87%E4%BB%B6">错误 找不到sock文件</a></li>
-<li><a href="#%E7%89%88%E6%9C%AC%E6%9B%B4%E6%96%B057%E4%BF%AE%E6%94%B9%E5%AF%86%E7%A0%81%E6%8C%87%E4%BB%A4%E5%8F%98%E5%8A%A8">版本更新5.7修改密码指令变动</a></li>
-<li><a href="#mysql%E4%B8%A5%E6%A0%BC%E6%A8%A1%E5%BC%8F">mysql严格模式</a></li>
-<li><a href="#mysql%E9%A9%B1%E5%8A%A8%E5%99%A8%E6%8A%A5%E9%94%99">mysql驱动器报错</a></li>
-<li><a href="#mysql%E8%BF%9C%E7%A8%8B%E7%99%BB%E5%BD%95%E6%8E%88%E6%9D%83%E9%94%99%E8%AF%AF">mysql远程登录授权错误</a></li>
-<li><a href="#%E7%94%A8%E6%88%B7%E6%8E%88%E6%9D%83%E7%9A%84%E9%97%AE%E9%A2%98">用户授权的问题</a></li>
-<li><a href="#%E4%BE%9D%E8%B5%96%E5%B7%B2%E5%AD%98%E5%9C%A8%E7%9A%84%E9%97%AE%E9%A2%98">依赖已存在的问题</a></li>
-<li><a href="#mysql57%E8%AE%BE%E7%BD%AE%E7%AE%80%E5%8D%95%E5%AF%86%E7%A0%81%E6%8A%A5%E9%94%99">mysql5.7设置简单密码报错</a></li>
-</ul>
-</li>
-</ul>
-<!-- /code_chunk_output -->
-
-
-<a id="more"></a>
-
-<h1 id="mysql错误"><a href="#mysql错误" class="headerlink" title="mysql错误"></a>mysql错误</h1><h2 id="mysql错误合集"><a href="#mysql错误合集" class="headerlink" title="mysql错误合集"></a>mysql错误合集</h2><ol>
-<li>mysql插入汉字的问题</li>
-</ol>
+<h1 id="mysql错误"><a href="#mysql错误" class="headerlink" title="mysql错误"></a>mysql错误</h1><blockquote>
+<p>不进入mysql 执行mysql命令</p>
+</blockquote>
+<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 使用-e</span>
+mysql -u root -p xxxxxx -e <span class="token string">"show databases;"</span>
+<span class="token comment" spellcheck="true"># 使用eof</span>
+mysql -u root -p xxxxxx <span class="token operator">&lt;&lt;</span> <span class="token string">eof
+show databases;
+eof</span>
+<span class="token comment" spellcheck="true"># 使用echo</span>
+<span class="token keyword">echo</span> <span class="token string">"show databases;"</span> <span class="token operator">|</span> mysql -u root -p xxxxxx
+<span class="token comment" spellcheck="true"># 使用sql文件执行</span>
+<span class="token keyword">echo</span> <span class="token string">"show databases;"</span> <span class="token operator">></span> show.sql
+mysql -u root -p xxxxxx <span class="token operator">&lt;</span> show.sql 
+<span class="token comment" spellcheck="true"># 使用shell</span>
+MYSQLCMD<span class="token operator">=</span><span class="token string">"mysql -hhost -uuser -ppasswd db"</span>
+CODE<span class="token operator">=</span><span class="token string">"SELECT * FROM table"</span>
+<span class="token keyword">echo</span> <span class="token string">"<span class="token variable">${CODE}</span>"</span> <span class="token operator">|</span> <span class="token variable">${MYSQLCMD}</span>
+</code></pre>
+<blockquote>
+<p>初始化错误</p>
+</blockquote>
+<pre class=" language-bash"><code class="language-bash">刚安装好的MySQL5.7.12，执行service mysqld start时报错，内容如下：
+2017-02-19T07:52:53.807647Z 0 <span class="token punctuation">[</span>Warning<span class="token punctuation">]</span> TIMESTAMP with implicit DEFAULT value is deprecated. Please use –explicit_defaults_for_timestamp server option <span class="token punctuation">(</span>see documentation <span class="token keyword">for</span> <span class="token function">more</span> details<span class="token punctuation">)</span>.
+2017-02-19T07:52:53.809065Z 0 <span class="token punctuation">[</span>ERROR<span class="token punctuation">]</span> –initialize specified but the data directory has files <span class="token keyword">in</span> it. Aborting.
+2017-02-19T07:52:53.809095Z 0 <span class="token punctuation">[</span>ERROR<span class="token punctuation">]</span> Aborting</code></pre>
+<p>执行<code>mysql start</code>的时候,出现上面的错误,正常情况下 mysql是被systemd托管的, systemd启动的时候会先去执行mysql中的初始化程序<code>mysqld --initialize</code> ,这个程序会在<code>/var/lib/mysql/data</code> 初始化一系列数据, 然后当你第二次启动的时候,就不会出现这个错误,解决的办法,是先清空data下面的数据,然后再重新启动mysql  但是这样做会清空之前的数据,正常的做法应该是把这个文件夹做个备份,然后重新创个文件夹</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token function">cd</span> /var/lib/
+<span class="token function">mv</span> mysql mysql.back
+systemctl resatrt mysqld</code></pre>
+<blockquote>
+<p>mysql插入汉字的问题</p>
+</blockquote>
 <p>创建数据库时使用utf8</p>
 <pre class=" language-sql"><code class="language-sql"><span class="token keyword">CREATE</span> <span class="token keyword">DATABASE</span> <span class="token punctuation">`</span>mydb<span class="token punctuation">`</span> <span class="token keyword">CHARACTER SET</span> utf8 <span class="token keyword">COLLATE</span> utf8_general_ci<span class="token punctuation">;</span></code></pre>
-<ol start="2">
-<li>初始化服务器的密码问题<br>MySQL服务器初始化（从MySQL 5.7开始）：在服务器初始启动时，如果服务器的数据目录为空，则会发生以下情况：</li>
-</ol>
+<blockquote>
+<p>初始化服务器的密码问题<br>MySQL服务器初始化（从MySQL 5.7开始）：在服务器初始启动时，如果服务器的数据目录为空，则会发生以下情况：</p>
+</blockquote>
 <ul>
 <li>服务器初始化</li>
 <li>在数据目录中生成SSL证书和密钥文件。</li>
@@ -502,16 +511,16 @@ mysql <span class="token operator">-</span>uroot <span class="token operator">-<
 <span class="token comment" spellcheck="true">-- 修改密码</span>
 <span class="token keyword">alter</span> <span class="token keyword">user</span> <span class="token string">'root'</span>@'localhost<span class="token string">' identified by '</span><span class="token number">123456</span>'<span class="token punctuation">;</span>
 flush <span class="token keyword">all</span> <span class="token keyword">privileges</span></code></pre>
-<ol start="3">
-<li>修改密码出现simple password not pass<br>ERROR 1820 (HY000): You must reset your password using ALTER USER statement before executing this statement.</li>
-</ol>
+<blockquote>
+<p>修改密码出现simple password not pass<br>ERROR 1820 (HY000): You must reset your password using ALTER USER statement before executing this statement.</p>
+</blockquote>
 <p>解决方法,先修改密码策略</p>
 <pre class=" language-sql"><code class="language-sql"><span class="token keyword">show</span> variables <span class="token operator">like</span> <span class="token string">'%password%'</span><span class="token punctuation">;</span>
 <span class="token keyword">set</span> <span class="token keyword">global</span> validate_password_policy<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span>
 <span class="token keyword">set</span> <span class="token keyword">global</span> validate_password_length<span class="token operator">=</span><span class="token number">4</span><span class="token punctuation">;</span></code></pre>
-<ol start="4">
-<li>忘记登陆密码</li>
-</ol>
+<blockquote>
+<p>忘记登陆密码</p>
+</blockquote>
 <p>解决方法:</p>
 <pre class=" language-sql"><code class="language-sql"><span class="token comment" spellcheck="true">-- 关闭mysql</span>
 systemctl stop mysqld
@@ -538,14 +547,14 @@ flush <span class="token keyword">all</span> <span class="token keyword">privile
 flush <span class="token keyword">all</span> <span class="token keyword">privileges</span><span class="token punctuation">;</span>
 
 <span class="token comment" spellcheck="true">-- 退出mysql 关闭mysql 删除skip-grant-tables  重新启动</span></code></pre>
-<ol start="5">
-<li><p>root用户无法远程登陆</p>
+<blockquote>
+<p>root用户无法远程登陆</p>
+</blockquote>
 <pre class=" language-sql"><code class="language-sql"><span class="token keyword">GRANT</span> <span class="token keyword">ALL</span> <span class="token keyword">PRIVILEGES</span> <span class="token keyword">ON</span> <span class="token operator">*</span><span class="token punctuation">.</span><span class="token operator">*</span> <span class="token keyword">TO</span> <span class="token string">'root'</span>@'<span class="token operator">%</span><span class="token string">' IDENTIFIED BY '</span><span class="token number">123456</span>' <span class="token keyword">WITH</span> <span class="token keyword">GRANT</span> <span class="token keyword">OPTION</span><span class="token punctuation">;</span>
 flush <span class="token keyword">privileges</span><span class="token punctuation">;</span></code></pre>
-</li>
-<li><p>mysql无法插入汉字</p>
-</li>
-</ol>
+<blockquote>
+<p>mysql无法插入汉字</p>
+</blockquote>
 <p><font color='red'>查看数据库</font></p>
 <pre class=" language-sql"><code class="language-sql"><span class="token keyword">show</span> VARIABLES <span class="token operator">like</span> <span class="token string">"character%"</span><span class="token punctuation">;</span></code></pre>
 <p><img src="http://img.noback.top/2020-02-24-15-09-49.png" alt="2020-02-24-15-09-49"></p>
@@ -559,7 +568,10 @@ flush <span class="token keyword">privileges</span><span class="token punctuatio
 <span class="token keyword">set</span> character_set_connection<span class="token operator">=</span>utf8<span class="token punctuation">;</span>
 <span class="token keyword">set</span> character_set_client<span class="token operator">=</span>utf8<span class="token punctuation">;</span></code></pre>
 <p>但重启mysql服务后，又还原了，得添加my.ini文件。然后再重启。</p>
-<h2 id="错误-找不到sock文件"><a href="#错误-找不到sock文件" class="headerlink" title="错误 找不到sock文件"></a>错误 找不到sock文件</h2><pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span>root@mysql ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># mysql</span>
+<blockquote>
+<p>错误 找不到sock文件</p>
+</blockquote>
+<pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span>root@mysql ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># mysql</span>
 ERROR 2002 <span class="token punctuation">(</span>HY000<span class="token punctuation">)</span>: Can<span class="token string">'t connect to local MySQL server through socket '</span>/data/mysql/my3306/mysql.sock' <span class="token punctuation">(</span>2<span class="token punctuation">)</span></code></pre>
 <p>这是是因为my.cnf这个配置文件中指定的sock文件路径中不存在这个文件 这个文件是s类型的好像还看不来。。<br>配置该路径</p>
 <pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span>client<span class="token punctuation">]</span>
@@ -567,11 +579,16 @@ ERROR 2002 <span class="token punctuation">(</span>HY000<span class="token punct
   socket <span class="token operator">=</span> /var/lib/mysql/mysql.sock</code></pre>
 <p>重启mysqld</p>
 <pre class=" language-bash"><code class="language-bash">systemctl restart mysqld</code></pre>
-<h2 id="版本更新5-7修改密码指令变动"><a href="#版本更新5-7修改密码指令变动" class="headerlink" title="版本更新5.7修改密码指令变动"></a>版本更新5.7修改密码指令变动</h2><pre class=" language-bash"><code class="language-bash">mysql<span class="token operator">></span> update user <span class="token keyword">set</span> password<span class="token operator">=</span>password<span class="token punctuation">(</span><span class="token string">"*******"</span><span class="token punctuation">)</span> where user<span class="token operator">=</span><span class="token string">"*******"</span><span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">#修改密码报错</span>
+<blockquote>
+<p>版本更新5.7修改密码指令变动</p>
+</blockquote>
+<pre class=" language-bash"><code class="language-bash">mysql<span class="token operator">></span> update user <span class="token keyword">set</span> password<span class="token operator">=</span>password<span class="token punctuation">(</span><span class="token string">"*******"</span><span class="token punctuation">)</span> where user<span class="token operator">=</span><span class="token string">"*******"</span><span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">#修改密码报错</span>
 ERROR 1054 <span class="token punctuation">(</span>42S22<span class="token punctuation">)</span>: Unknown column <span class="token string">'password'</span> <span class="token keyword">in</span> <span class="token string">'field list'</span>
 mysql<span class="token operator">></span> update mysql.user <span class="token keyword">set</span> authentication_string<span class="token operator">=</span>password<span class="token punctuation">(</span><span class="token string">'*******'</span><span class="token punctuation">)</span> where user<span class="token operator">=</span><span class="token string">'*******'</span><span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">#修改密码成功</span>
 Query OK, 1 row affected, 1 warning <span class="token punctuation">(</span>0.00 sec<span class="token punctuation">)</span></code></pre>
-<h2 id="mysql严格模式"><a href="#mysql严格模式" class="headerlink" title="mysql严格模式"></a>mysql严格模式</h2><p>mysql严格模式，禁止通过insert的方式直接修改mysql库中的user表进行添加新用户。<br>报错内容</p>
+<blockquote>
+<p>mysql严格模式<br>mysql严格模式，禁止通过insert的方式直接修改mysql库中的user表进行添加新用户。<br>报错内容</p>
+</blockquote>
 <p><font color='red'>ERROR 1364 (HY000): Field ‘ssl_cipher’ doesn’t have a default value</font></p>
 <p>修改my.cnf上面的内容</p>
 <pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 原来的</span>
@@ -582,7 +599,9 @@ sql-mode<span class="token operator">=</span>NO_AUTO_CREATE_USER,NO_ENGINE_SUBST
 <span class="token comment" spellcheck="true"># 修改后重启</span>
 
 systemctl restart mysqld</code></pre>
-<h2 id="mysql驱动器报错"><a href="#mysql驱动器报错" class="headerlink" title="mysql驱动器报错"></a>mysql驱动器报错</h2><p>这个报错内容有两种情况</p>
+<blockquote>
+<p>mysql驱动器报错<br>这个报错内容有两种情况</p>
+</blockquote>
 <ul>
 <li>使用MySql数据库服务为最新版本8.0.11，而在项目开发的过程中使用了低版本的MySql驱动包</li>
 <li>当MySQL的数据库隔离级别为REPEATABLE-READ时，查询一个select语句也算是事物的开始，而且在hibernate里会把以select语句开头的事务标记为只读事务，此时在这个事务里再执行insert、update、delete等DML语句就会出现如上的异常信息。</li>
@@ -607,7 +626,10 @@ Time: 0.024s</code></pre>
 Time: 0.031s</code></pre>
 <p>修改 REPEATABLE-READ 为READ-COMMITED</p>
 <p><font color='red'> Could not retrieve transaction read-only status from server</font></p>
-<h2 id="mysql远程登录授权错误"><a href="#mysql远程登录授权错误" class="headerlink" title="mysql远程登录授权错误"></a>mysql远程登录授权错误</h2><p><font color='red'>1045-Access denied for user ‘root’@’’(using password:YES)</font> </p>
+<blockquote>
+<p>mysql远程登录授权错误</p>
+</blockquote>
+<p><font color='red'>1045-Access denied for user ‘root’@’’(using password:YES)</font> </p>
 <p>这个是因为用户只有在本机登录数据库的权限，没有远程登录的权限，如下</p>
 <pre class=" language-bash"><code class="language-bash">mysql root@10.0.6.55:mysql<span class="token operator">></span> <span class="token keyword">select</span> user,host,password from mysql.user<span class="token punctuation">;</span>
 +-------+-----------+-------------------------------------------+
@@ -633,13 +655,18 @@ flush privileges<span class="token punctuation">;</span></code></pre>
 <pre class=" language-bash"><code class="language-bash">mysql root@10.0.6.55:mysql<span class="token operator">></span> grant all on *.* to <span class="token string">'hzj'</span>@<span class="token string">'localhost'</span><span class="token punctuation">;</span>
 <span class="token punctuation">(</span>1045, <span class="token string">"Access denied for user 'root'@'%' (using password: YES)"</span><span class="token punctuation">)</span></code></pre>
 <p>这里远程连接上去授权直接报错了</p>
-<h2 id="依赖已存在的问题"><a href="#依赖已存在的问题" class="headerlink" title="依赖已存在的问题"></a>依赖已存在的问题</h2><p>mysql安装过程中依赖已存在的问题</p>
+<blockquote>
+<p>依赖已存在的问题<br>mysql安装过程中依赖已存在的问题</p>
+</blockquote>
 <pre class=" language-bash"><code class="language-bash">Error: mysql80-community-release conflicts with mysql-community-release-el7-5.noarch</code></pre>
 <p>这是因为centos中存在其他mysql的依赖，先删除</p>
 <pre class=" language-bash"><code class="language-bash">
 rpm -qa <span class="token operator">|</span> <span class="token function">grep</span> mysql
 rpm -e --nodeps xxx</code></pre>
-<h2 id="mysql5-7设置简单密码报错"><a href="#mysql5-7设置简单密码报错" class="headerlink" title="mysql5.7设置简单密码报错"></a>mysql5.7设置简单密码报错</h2><pre class=" language-bash"><code class="language-bash">ERROR 1819 <span class="token punctuation">(</span>HY000<span class="token punctuation">)</span>: Your password does not satisfy the current policy requirements</code></pre>
+<blockquote>
+<p>mysql5.7设置简单密码报错</p>
+</blockquote>
+<pre class=" language-bash"><code class="language-bash">ERROR 1819 <span class="token punctuation">(</span>HY000<span class="token punctuation">)</span>: Your password does not satisfy the current policy requirements</code></pre>
 <p>修改配置文件</p>
 <pre class=" language-bash"><code class="language-bash">vim /etc/my.cnf
 validate_password_policy<span class="token operator">=</span>0

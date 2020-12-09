@@ -478,9 +478,9 @@ def func():
     print(res)
 
 # 创建执行器
-executors = &#123;
+executors = {
     'default': ThreadPoolExecutor(20),
-&#125;
+}
 # 创建定时任务的调度器对象
 scheduler = BackgroundScheduler(executors=executors,max_instances=100)
 scheduler.add_job(func,'interval',seconds=10,id="helloworld")
@@ -488,7 +488,7 @@ scheduler.add_job(func,'interval',seconds=10,id="helloworld")
 # 返回一个计数器
 @app.post("/update/count")
 async def return_counter(nums):
-    os.popen("echo &#123;&#125; > hello".format(nums))
+    os.popen("echo {} > hello".format(nums))
     return nums
 
 # 应用开始后，打开计时任务
@@ -506,7 +506,7 @@ async def stop_task():
 # 在应用关闭的时候，会执行
 @app.on_event("shutdown")
 async def shutdown_event():
-    items['shutdown'] = &#123;"status":"shutdown"&#125;
+    items['shutdown'] = {"status":"shutdown"}
     print(items['shutdown'])
 
 # 修改定时器的时间

@@ -466,7 +466,7 @@
 <p>shell初始化模板</p>
 <pre class=" language-bash"><code class="language-bash">
 <span class="token comment" spellcheck="true">#!/bin/bash</span>
-init<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+init<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     os<span class="token operator">=</span><span class="token variable"><span class="token variable">$(</span><span class="token function">uname</span> -s<span class="token variable">)</span></span>
     <span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token variable">$os</span><span class="token operator">==</span><span class="token string">"Darwin"</span> <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
         <span class="token function">export</span> frontcolor<span class="token operator">=</span><span class="token string">"\033[34m"</span>
@@ -475,11 +475,11 @@ init<span class="token punctuation">(</span><span class="token punctuation">)</s
         <span class="token function">export</span> frontcolor<span class="token operator">=</span><span class="token string">"\e[34m"</span>
         <span class="token function">export</span> backcolor<span class="token operator">=</span><span class="token string">"\e[33m"</span>
     <span class="token keyword">fi</span>
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+<span class="token punctuation">}</span>
 
-_usage<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+_usage<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
 <span class="token keyword">echo</span> -e <span class="token string">"
-$&amp;#123;frontcolor&amp;#125;
+<span class="token variable">${frontcolor}</span>
 **************************************
 *       thank you use                *
 *       Author: hzjsea               *
@@ -501,52 +501,52 @@ Global Command
     -v
 Example:
     ./xx.sh -n helloworld
-$&amp;#123;backcolor&amp;#125;
+<span class="token variable">${backcolor}</span>
 "</span>
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+<span class="token punctuation">}</span>
 
-_leave<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+_leave<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
 <span class="token function">cat</span> <span class="token operator">&lt;&lt;</span><span class="token string">EOF
 +-------------------------------------------------+
 |  Thank you for usesing!                         |
 +-------------------------------------------------+
 EOF</span>
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+<span class="token punctuation">}</span>
 
 
-_check<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+_check<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">echo</span> <span class="token string">"检查选项"</span>
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+<span class="token punctuation">}</span>
 
-_stop<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+_stop<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">echo</span> <span class="token string">"终止"</span>
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+<span class="token punctuation">}</span>
 
-_status<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+_status<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">echo</span> <span class="token string">"获取状态"</span>
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+<span class="token punctuation">}</span>
 
-down<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+down<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">echo</span> <span class="token string">"关闭"</span>
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+<span class="token punctuation">}</span>
 
-main<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+main<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
 
     init
-    action<span class="token operator">=</span>$<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;1:-"default"&amp;#125;</span>
+    action<span class="token operator">=</span>$<span class="token punctuation">{</span>1:-<span class="token string">"default"</span><span class="token punctuation">}</span>
 
-    <span class="token keyword">case</span> $<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;action&amp;#125; in</span>
+    <span class="token keyword">case</span> <span class="token variable">${action}</span> <span class="token keyword">in</span>
     <span class="token function">install</span> <span class="token operator">|</span> uninstall <span class="token operator">|</span> update <span class="token operator">|</span> start <span class="token operator">|</span> stop <span class="token operator">|</span> restart<span class="token punctuation">)</span>
-        _$<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;action&amp;#125;</span>
+        _<span class="token variable">${action}</span>
         <span class="token punctuation">;</span><span class="token punctuation">;</span>
     status<span class="token punctuation">)</span>
-        _$<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;action&amp;#125;</span>
+        _<span class="token variable">${action}</span>
         <span class="token punctuation">;</span><span class="token punctuation">;</span>
     script<span class="token punctuation">)</span>
         check_script_update
         <span class="token punctuation">;</span><span class="token punctuation">;</span>
     uid<span class="token punctuation">)</span>
-        _$<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;action&amp;#125;</span>
+        _<span class="token variable">${action}</span>
         <span class="token punctuation">;</span><span class="token punctuation">;</span>
     default<span class="token punctuation">)</span>
         _usage
@@ -558,7 +558,7 @@ main<span class="token punctuation">(</span><span class="token punctuation">)</s
         <span class="token punctuation">;</span><span class="token punctuation">;</span>
     esac
 
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+<span class="token punctuation">}</span>
 
 main <span class="token variable">$@</span>
 </code></pre>
@@ -644,35 +644,35 @@ a<span class="token operator">=</span>5
 <p>说一下普通变量引用与<code>$&#123;&#125;</code>变量引用</p>
 </blockquote>
 <p>正常情况下变量引用<code>$str</code>与<code>$&#123;str&#125;</code> 是一样的，但是后者可以用更高级的匹配模式，以后建议常使用后者<br>语法</p>
-<pre class=" language-bash"><code class="language-bash">$<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;变量名#匹配规则&amp;#125; 从头开始匹配并且删除，非贪婪</span>
-$<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;变量名##匹配规则&amp;#125; 从头开始匹配并且删除 ,贪婪</span>
-$<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;变量名%匹配规则&amp;#125; 从尾巴开始匹配并且删除，非贪婪</span>
-$<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;变量名%%匹配规则&amp;#125; 从尾巴开始匹配并且删除，贪婪</span>
-$<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;变量名/旧字符/新字符&amp;#125; 替换文字。只替换一次</span>
-$<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;变量名//旧字符/新字符&amp;#125; 替换文字，全部替换</span>
-$<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;file:start_index:step&amp;#125; 截取字符串</span>
-$<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;#string&amp;#125; 返回字符串长度</span></code></pre>
+<pre class=" language-bash"><code class="language-bash">$<span class="token punctuation">{</span>变量名<span class="token comment" spellcheck="true">#匹配规则} 从头开始匹配并且删除，非贪婪</span>
+$<span class="token punctuation">{</span>变量名<span class="token comment" spellcheck="true">##匹配规则} 从头开始匹配并且删除 ,贪婪</span>
+<span class="token variable">${变量名%匹配规则}</span> 从尾巴开始匹配并且删除，非贪婪
+<span class="token variable">${变量名%%匹配规则}</span> 从尾巴开始匹配并且删除，贪婪
+<span class="token variable">${变量名/旧字符/新字符}</span> 替换文字。只替换一次
+<span class="token variable">${变量名//旧字符/新字符}</span> 替换文字，全部替换
+<span class="token variable">${file:start_index:step}</span> 截取字符串
+<span class="token variable">${#string}</span> 返回字符串长度</code></pre>
 <blockquote>
 <p>说一下变量的几种形式</p>
 </blockquote>
 <p>shell中变量分为环境变量,全局变量以及局部变量<br>默认情况下申明的都是全局变量</p>
 <p>环境变量对子变量是有效果的,其实在shell的运行过程中,如果他使用了方法,他是会去开启一个子shell来进行运算的,案例如下</p>
-<pre class=" language-bash"><code class="language-bash">main<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+<pre class=" language-bash"><code class="language-bash">main<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
     <span class="token keyword">echo</span> <span class="token variable">$1</span>
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+<span class="token punctuation">}</span>
 main</code></pre>
 <p>当前内容无法获取到<code>$1</code></p>
-<pre class=" language-bash"><code class="language-bash">main<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+<pre class=" language-bash"><code class="language-bash">main<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
     <span class="token keyword">echo</span> <span class="token variable">$1</span>
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+<span class="token punctuation">}</span>
 main <span class="token variable">$@</span></code></pre>
 <p>如上就可以,因为将所有的参数都传入到了数组当中去</p>
 <pre class=" language-bash"><code class="language-bash"><span class="token function">export</span> nums<span class="token operator">=</span>1 <span class="token comment" spellcheck="true"># 环境变量</span>
 
-_stats<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+_stats<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     local nums<span class="token operator">=</span>1 <span class="token comment" spellcheck="true"># 局部变量</span>
-    <span class="token keyword">echo</span> $<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;nums&amp;#125;</span>
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+    <span class="token keyword">echo</span> <span class="token variable">${nums}</span>
+<span class="token punctuation">}</span>
 
 nums<span class="token operator">=</span>1 <span class="token comment" spellcheck="true"># 全局变量</span></code></pre>
 <h2 id="按行遍历读取内容"><a href="#按行遍历读取内容" class="headerlink" title="按行遍历读取内容"></a>按行遍历读取内容</h2><p><code>while read line;do;done &lt; xx.txt</code>  其中每一行的数据就是<code>$line</code></p>
@@ -692,8 +692,8 @@ nums<span class="token operator">=</span>1 <span class="token comment" spellchec
 sum<span class="token operator">=</span>0
 <span class="token keyword">while</span> <span class="token function">read</span> line
 <span class="token keyword">do</span>
-line_n<span class="token operator">=</span>`echo $<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;line&amp;#125;|sed 's/[^0-9]//g'|wc -L`</span>
-<span class="token keyword">echo</span> $<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;line_n&amp;#125;</span>
+line_n<span class="token operator">=</span>`echo <span class="token variable">${line}</span><span class="token operator">|</span><span class="token function">sed</span> <span class="token string">'s/[^0-9]//g'</span><span class="token operator">|</span><span class="token function">wc</span> -L`
+<span class="token keyword">echo</span> <span class="token variable">${line_n}</span>
 sum<span class="token operator">=</span><span class="token variable"><span class="token variable">$((</span>$sum<span class="token operator">+</span>$line_n<span class="token variable">))</span></span>
 <span class="token keyword">done</span> <span class="token operator">&lt;</span> <span class="token variable">$1</span>
 <span class="token keyword">echo</span> <span class="token string">"sum:<span class="token variable">$sum</span>"</span></code></pre>
@@ -734,7 +734,7 @@ substring<span class="token operator">=</span><span class="token punctuation">$(
 <span class="token comment" spellcheck="true"># 字符串长度</span>
 con<span class="token operator">=</span><span class="token punctuation">$(</span>expr length <span class="token string">"sdf"</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true"># res 3</span></code></pre>
 <h2 id="for循环的几种变式"><a href="#for循环的几种变式" class="headerlink" title="for循环的几种变式"></a>for循环的几种变式</h2><pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 语法</span>
-<span class="token keyword">for</span>   变量    <span class="token keyword">in</span>   <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;起始值..终止值&amp;#125;</span>
+<span class="token keyword">for</span>   变量    <span class="token keyword">in</span>   <span class="token punctuation">{</span>起始值<span class="token punctuation">..</span>终止值<span class="token punctuation">}</span>
 <span class="token keyword">do</span> 
     循环主体
 <span class="token keyword">done</span>
@@ -773,17 +773,17 @@ EOF</span>
 <span class="token comment" spellcheck="true"># or</span>
 /usr/bin/python ./xx.py</code></pre>
 <h2 id="shell系统方法总结"><a href="#shell系统方法总结" class="headerlink" title="shell系统方法总结"></a>shell系统方法总结</h2><p>shell脚本基本架构就是各类的方法,通过<code>usage</code>或者<code>tips</code>来做提示 通过<code>getops</code>做选项上的选择(只支持单个字符),通过<code>case</code>来做选项上的选择(可以做多个字符上的判断,使用$1 $2来判断,参数较少的时候适用)</p>
-<h3 id="读取版本"><a href="#读取版本" class="headerlink" title="读取版本"></a>读取版本</h3><pre class=" language-bash"><code class="language-bash">get_version<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+<h3 id="读取版本"><a href="#读取版本" class="headerlink" title="读取版本"></a>读取版本</h3><pre class=" language-bash"><code class="language-bash">get_version<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
     <span class="token keyword">if</span> <span class="token punctuation">[</span><span class="token punctuation">[</span> -s /etc/redhat-release <span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
         <span class="token function">grep</span> -oE  <span class="token string">"[0-9.]+"</span> /etc/redhat-release
     <span class="token keyword">else</span>
         <span class="token function">grep</span> -oE  <span class="token string">"[0-9.]+"</span> /etc/issue
     <span class="token keyword">fi</span>
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+<span class="token punctuation">}</span>
 
 
 get_version</code></pre>
-<h3 id="如果默认没有输入的参数-那么执行install"><a href="#如果默认没有输入的参数-那么执行install" class="headerlink" title="如果默认没有输入的参数,那么执行install"></a>如果默认没有输入的参数,那么执行install</h3><pre class=" language-bash"><code class="language-bash">action<span class="token operator">=</span>$<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;1:-"install"&amp;#125;</span>
+<h3 id="如果默认没有输入的参数-那么执行install"><a href="#如果默认没有输入的参数-那么执行install" class="headerlink" title="如果默认没有输入的参数,那么执行install"></a>如果默认没有输入的参数,那么执行install</h3><pre class=" language-bash"><code class="language-bash">action<span class="token operator">=</span>$<span class="token punctuation">{</span>1:-<span class="token string">"install"</span><span class="token punctuation">}</span>
 相当于  <span class="token punctuation">[</span> -z <span class="token variable">$1</span> <span class="token punctuation">]</span> <span class="token operator">&amp;&amp;</span> <span class="token variable">$1</span><span class="token operator">=</span><span class="token string">"install"</span></code></pre>
 <h3 id="read"><a href="#read" class="headerlink" title="read"></a>read</h3><pre class=" language-bash"><code class="language-bash">
 <span class="token keyword">echo</span> <span class="token operator">&amp;&amp;</span> <span class="token function">read</span>  -p <span class="token string">"请输入数字 [1-3]："</span> menu_num
@@ -798,8 +798,8 @@ get_version</code></pre>
 <span class="token comment" spellcheck="true"># 对输入的字符隐藏</span>
 <span class="token function">read</span> -s -p <span class="token string">"Enter your passwd: "</span> pass
 <span class="token comment" spellcheck="true"># 循环读取文本行</span>
-<span class="token keyword">while</span> <span class="token function">read</span> line<span class="token punctuation">;</span><span class="token keyword">do</span> <span class="token keyword">echo</span> $<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;line&amp;#125;;done &lt; xx.txt</span></code></pre>
-<h3 id="usage-or-tips"><a href="#usage-or-tips" class="headerlink" title="usage or tips"></a>usage or tips</h3><pre class=" language-bash"><code class="language-bash">usage<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+<span class="token keyword">while</span> <span class="token function">read</span> line<span class="token punctuation">;</span><span class="token keyword">do</span> <span class="token keyword">echo</span> <span class="token variable">${line}</span><span class="token punctuation">;</span><span class="token keyword">done</span> <span class="token operator">&lt;</span> xx.txt</code></pre>
+<h3 id="usage-or-tips"><a href="#usage-or-tips" class="headerlink" title="usage or tips"></a>usage or tips</h3><pre class=" language-bash"><code class="language-bash">usage<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
 <span class="token function">cat</span> <span class="token operator">&lt;&lt;</span> <span class="token string">EOF
 **************************************
 *       thank you use                *
@@ -816,11 +816,11 @@ EOF</span>
 |  Thank you for usesing!                         |
 +-------------------------------------------------+
 EOF</span>
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+<span class="token punctuation">}</span>
 </code></pre>
 <h3 id="menus"><a href="#menus" class="headerlink" title="menus"></a>menus</h3><pre class=" language-bash"><code class="language-bash">index<span class="token operator">=</span>-1
 
-<span class="token keyword">function</span> show_menus<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+<span class="token keyword">function</span> show_menus<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
 <span class="token keyword">echo</span> <span class="token operator">&amp;&amp;</span> <span class="token function">cat</span> <span class="token operator">&lt;&lt;</span> <span class="token string">EOF
 【System Environment】                            【Common Tools】
 [1] Initialization System environment.            [4] Install Nginx1.6.
@@ -830,7 +830,7 @@ EOF</span>
 [100] Show Menus.
 [0] Exit.
 EOF</span>
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+<span class="token punctuation">}</span>
 
 show_menus
 <span class="token keyword">while</span><span class="token variable"><span class="token punctuation">((</span>$index<span class="token operator">!=</span><span class="token number">0</span><span class="token punctuation">))</span></span>
@@ -856,34 +856,34 @@ show_menus
         <span class="token punctuation">;</span><span class="token punctuation">;</span>
   esac
 <span class="token keyword">done</span></code></pre>
-<h3 id="用拼接参数的形式来执行字符串形式的方法"><a href="#用拼接参数的形式来执行字符串形式的方法" class="headerlink" title="用拼接参数的形式来执行字符串形式的方法"></a>用拼接参数的形式来执行字符串形式的方法</h3><pre class=" language-bash"><code class="language-bash">action<span class="token operator">=</span>$<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;1:-"install"&amp;#125;</span>
+<h3 id="用拼接参数的形式来执行字符串形式的方法"><a href="#用拼接参数的形式来执行字符串形式的方法" class="headerlink" title="用拼接参数的形式来执行字符串形式的方法"></a>用拼接参数的形式来执行字符串形式的方法</h3><pre class=" language-bash"><code class="language-bash">action<span class="token operator">=</span>$<span class="token punctuation">{</span>1:-<span class="token string">"install"</span><span class="token punctuation">}</span>
 
-<span class="token keyword">case</span> $<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;action&amp;#125; in</span>
+<span class="token keyword">case</span> <span class="token variable">${action}</span> <span class="token keyword">in</span>
     <span class="token function">install</span><span class="token operator">|</span>uninstall<span class="token operator">|</span>update<span class="token operator">|</span>start<span class="token operator">|</span>stop<span class="token operator">|</span>restart<span class="token punctuation">)</span>
-        do_$<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;action&amp;#125;</span>
+        do_<span class="token variable">${action}</span>
         <span class="token punctuation">;</span><span class="token punctuation">;</span>
     status<span class="token punctuation">)</span>
-        do_$<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;action&amp;#125;</span>
+        do_<span class="token variable">${action}</span>
         <span class="token punctuation">;</span><span class="token punctuation">;</span>
     script<span class="token punctuation">)</span>
         check_script_update
         <span class="token punctuation">;</span><span class="token punctuation">;</span>
     uid<span class="token punctuation">)</span>
-        do_$<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;action&amp;#125; </span>
+        do_<span class="token variable">${action}</span> 
         <span class="token punctuation">;</span><span class="token punctuation">;</span>
     *<span class="token punctuation">)</span>
         usage
         <span class="token punctuation">;</span><span class="token punctuation">;</span>
 esac
 
-do_install<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;&amp;#125;</span>
-do_unstall<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;&amp;#125;</span>
-do_status<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;&amp;#125;</span>
-do_uid<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;&amp;#125;</span></code></pre>
+do_install<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span><span class="token punctuation">}</span>
+do_unstall<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span><span class="token punctuation">}</span>
+do_status<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span><span class="token punctuation">}</span>
+do_uid<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span><span class="token punctuation">}</span></code></pre>
 <h3 id="getopts"><a href="#getopts" class="headerlink" title="getopts"></a>getopts</h3><p>这是shell的一个内联函数，用来获取指定的参数</p>
 <pre class=" language-bash"><code class="language-bash"><span class="token shebang important">#!/bin/bash</span>
 <span class="token comment" spellcheck="true"># 模板</span>
-tips<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+tips<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">echo</span> <span class="token string">"
 Use : xxxx
 shortDesc : xxx
@@ -899,11 +899,11 @@ Command: xxxx
 Global Command : xxx
     -v
 "</span>
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+<span class="token punctuation">}</span>
 
 <span class="token keyword">while</span> <span class="token function">getopts</span> <span class="token string">'n:d:z:c:sqvm'</span> options<span class="token punctuation">;</span> <span class="token keyword">do</span>
-    <span class="token keyword">case</span> $<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;options&amp;#125; in</span>
-    z<span class="token punctuation">)</span> <span class="token keyword">echo</span> <span class="token string">"option 当前参数内容 $&amp;#123;name&amp;#125;"</span>+$<span class="token operator">&amp;</span>#123<span class="token punctuation">;</span>OPTARG<span class="token operator">&amp;</span>#125<span class="token punctuation">;</span> <span class="token punctuation">;</span><span class="token punctuation">;</span>
+    <span class="token keyword">case</span> <span class="token variable">${options}</span> <span class="token keyword">in</span>
+    z<span class="token punctuation">)</span> <span class="token keyword">echo</span> <span class="token string">"option 当前参数内容 <span class="token variable">${name}</span>"</span>+<span class="token variable">${OPTARG}</span> <span class="token punctuation">;</span><span class="token punctuation">;</span>
     s<span class="token punctuation">)</span> <span class="token keyword">echo</span> <span class="token string">"is true"</span> <span class="token punctuation">;</span><span class="token punctuation">;</span>
     q<span class="token punctuation">)</span> <span class="token keyword">echo</span> <span class="token string">"is q true"</span> <span class="token punctuation">;</span><span class="token punctuation">;</span>
     n<span class="token punctuation">)</span> <span class="token keyword">echo</span> <span class="token variable">$OPTIND</span> <span class="token punctuation">;</span><span class="token punctuation">;</span>
@@ -945,9 +945,9 @@ Global Command : xxx
 <pre class=" language-bash"><code class="language-bash">frontcolor<span class="token operator">=</span><span class="token string">"\033[34m"</span>
 backcolor<span class="token operator">=</span><span class="token string">"\033[33m"</span>
 
-tips<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+tips<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
 <span class="token keyword">echo</span> -e<span class="token string">"
-$&amp;#123;frontcolor&amp;#125;
+<span class="token variable">${frontcolor}</span>
 Use: xxxx
 shortDesc: xxx
 LongDesc: xxxx
@@ -963,15 +963,15 @@ Global Command
     -v
 Example:
     ./xx.sh -n helloworld
-$&amp;#123;backcolor&amp;#125;
+<span class="token variable">${backcolor}</span>
 "</span>
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+<span class="token punctuation">}</span>
 
-func<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+func<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
 <span class="token keyword">while</span> <span class="token function">getopts</span> <span class="token string">'n:d:z:sqv'</span> options<span class="token punctuation">;</span>
 <span class="token keyword">do</span>
-    <span class="token keyword">case</span> $<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;options&amp;#125; in</span>
-        z<span class="token punctuation">)</span>  <span class="token keyword">echo</span> <span class="token string">"option 当前参数内容 $&amp;#123;name&amp;#125;"</span>+$<span class="token operator">&amp;</span>#123<span class="token punctuation">;</span>OPTARG<span class="token operator">&amp;</span>#125<span class="token punctuation">;</span><span class="token punctuation">;</span><span class="token punctuation">;</span>
+    <span class="token keyword">case</span> <span class="token variable">${options}</span> <span class="token keyword">in</span>
+        z<span class="token punctuation">)</span>  <span class="token keyword">echo</span> <span class="token string">"option 当前参数内容 <span class="token variable">${name}</span>"</span>+<span class="token variable">${OPTARG}</span><span class="token punctuation">;</span><span class="token punctuation">;</span>
         s<span class="token punctuation">)</span>  <span class="token keyword">echo</span> <span class="token string">"is true"</span><span class="token punctuation">;</span><span class="token punctuation">;</span>
         q<span class="token punctuation">)</span>  <span class="token keyword">echo</span> <span class="token string">"is q true"</span><span class="token punctuation">;</span><span class="token punctuation">;</span>
         n<span class="token punctuation">)</span>  <span class="token keyword">echo</span> <span class="token variable">$@</span> + <span class="token variable">$OPTIND</span><span class="token punctuation">;</span><span class="token punctuation">;</span>
@@ -979,16 +979,16 @@ func<span class="token punctuation">(</span><span class="token punctuation">)</s
         *<span class="token punctuation">)</span>  tips
     esac
 <span class="token keyword">done</span>  
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+<span class="token punctuation">}</span>
 
 
-main<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+main<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
     <span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token operator">!</span> -z <span class="token variable">$1</span> <span class="token punctuation">]</span><span class="token punctuation">;</span><span class="token keyword">then</span>
         func <span class="token variable">$1</span>
     <span class="token keyword">else</span>
         tips
     <span class="token keyword">fi</span> 
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+<span class="token punctuation">}</span>
 
 main <span class="token variable">$@</span></code></pre>
 <ol start="3">

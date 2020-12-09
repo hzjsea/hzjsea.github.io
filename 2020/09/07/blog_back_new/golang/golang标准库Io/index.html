@@ -462,43 +462,43 @@
 
 
 <h1 id="golang标准库io"><a href="#golang标准库io" class="headerlink" title="golang标准库io"></a>golang标准库io</h1><p>io标准库地址 <a target="_blank" rel="noopener" href="https://golang.org/pkg/io/">https://golang.org/pkg/io/</a><br>io包为<code>I/O</code>原语提供了基本的接口。它主要包装了这些原语的已有实现。<br>在io包中最重要的是两个接口:<code>Reader</code>和<code>Writer</code>接口</p>
-<h2 id="Reader接口"><a href="#Reader接口" class="headerlink" title="Reader接口"></a>Reader接口</h2><pre class=" language-go"><code class="language-go"><span class="token keyword">type</span> Reader <span class="token keyword">interface</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+<h2 id="Reader接口"><a href="#Reader接口" class="headerlink" title="Reader接口"></a>Reader接口</h2><pre class=" language-go"><code class="language-go"><span class="token keyword">type</span> Reader <span class="token keyword">interface</span> <span class="token punctuation">{</span>
     <span class="token function">Read</span><span class="token punctuation">(</span>p <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">)</span> <span class="token punctuation">(</span>n <span class="token builtin">int</span><span class="token punctuation">,</span> err <span class="token builtin">error</span><span class="token punctuation">)</span>
-<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span></code></pre>
+<span class="token punctuation">}</span></code></pre>
 <p>接受一个byte数组 返回n字节以及err ,没有错误时，err为nil</p>
 <p>::: tip<br>Read 将 len(p) 个字节读取到 p 中。它返回读取的字节数 n（0 &lt;= n &lt;= len(p)） 以及任何遇到的错误。即使 Read 返回的 n &lt; len(p)，它也会在调用过程中占用 len(p) 个字节作为暂存空间。若可读取的数据不到 len(p) 个字节，Read 会返回可用数据，而不是等待更多数据。<br>当 Read 在成功读取 n &gt; 0 个字节后遇到一个错误或 EOF (end-of-file)，它会返回读取的字节数。它可能会同时在本次的调用中返回一个non-nil错误,或在下一次的调用中返回这个错误（且 n 为 0）。 一般情况下, Reader会返回一个非0字节数n, 若 n = len(p) 个字节从输入源的结尾处由 Read 返回，Read可能返回 err == EOF 或者 err == nil。并且之后的 Read() 都应该返回 (n:0, err:EOF)。<br>调用者在考虑错误之前应当首先处理返回的数据。这样做可以正确地处理在读取一些字节后产生的 I/O 错误，同时允许EOF的出现。<br>::: </p>
 <p>根据 Go 语言中关于接口和满足了接口的类型的定义(Interface_types)，我们知道 Reader 接口的方法集(Method_sets)只包含一个 Read 方法，因此，所有实现了 <code>Read</code> 方法的类型都满足 <code>io.Reader</code> 接口，也就是说，在所有需要<code>io.Reader</code>的地方，可以传递实现了<code>Read()</code>方法的类型的实例</p>
 <h2 id="ReadFrom方法"><a href="#ReadFrom方法" class="headerlink" title="ReadFrom方法"></a>ReadFrom方法</h2><p><a target="_blank" rel="noopener" href="https://golang.org/pkg/io/">https://golang.org/pkg/io/</a><br>ReadFrom函数将 <code>io.Reader</code> 作为参数，也就是说，<code>ReadFrom</code> 可以从任意的地方读取数据，只要来源实现了 <code>io.Reader</code> 接口。比如，我们可以从标准输入、文件、字符串等读取数据，示例代码如下</p>
-<pre class=" language-go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">ReadFrom</span><span class="token punctuation">(</span>reader io<span class="token punctuation">.</span>Reader<span class="token punctuation">,</span> num <span class="token builtin">int</span><span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">,</span> <span class="token builtin">error</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+<pre class=" language-go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">ReadFrom</span><span class="token punctuation">(</span>reader io<span class="token punctuation">.</span>Reader<span class="token punctuation">,</span> num <span class="token builtin">int</span><span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">,</span> <span class="token builtin">error</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     p <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">,</span> num<span class="token punctuation">)</span>
     n<span class="token punctuation">,</span> err <span class="token operator">:=</span> reader<span class="token punctuation">.</span><span class="token function">Read</span><span class="token punctuation">(</span>p<span class="token punctuation">)</span>
-    <span class="token keyword">if</span> n <span class="token operator">></span> <span class="token number">0</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> n <span class="token operator">></span> <span class="token number">0</span> <span class="token punctuation">{</span>
         <span class="token keyword">return</span> p<span class="token punctuation">[</span><span class="token punctuation">:</span>n<span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token boolean">nil</span>
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
     <span class="token keyword">return</span> p<span class="token punctuation">,</span> err
-<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span></code></pre>
+<span class="token punctuation">}</span></code></pre>
 <pre class=" language-go"><code class="language-go"><span class="token comment" spellcheck="true">// 从标准输入中读取</span>
 data<span class="token punctuation">,</span>err <span class="token operator">:=</span> <span class="token function">ReadFrom</span><span class="token punctuation">(</span>os<span class="token punctuation">.</span>Stdin<span class="token punctuation">,</span> <span class="token number">11</span><span class="token punctuation">)</span>
 <span class="token comment" spellcheck="true">// 从文件中读取</span>
 data<span class="token punctuation">,</span>err <span class="token operator">:=</span> <span class="token function">ReadFrom</span><span class="token punctuation">(</span>file<span class="token punctuation">,</span><span class="token number">9</span><span class="token punctuation">)</span>
 <span class="token comment" spellcheck="true">// 从字符串中读取</span>
 data<span class="token punctuation">,</span>err <span class="token operator">:=</span> <span class="token function">ReadFrom</span><span class="token punctuation">(</span>strings<span class="token punctuation">.</span><span class="token function">NewReader</span><span class="token punctuation">(</span><span class="token string">"from string"</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token number">12</span><span class="token punctuation">)</span></code></pre>
-<h2 id="Writer-接口"><a href="#Writer-接口" class="headerlink" title="Writer 接口"></a>Writer 接口</h2><pre class=" language-go"><code class="language-go"><span class="token keyword">type</span> Writer <span class="token keyword">interface</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+<h2 id="Writer-接口"><a href="#Writer-接口" class="headerlink" title="Writer 接口"></a>Writer 接口</h2><pre class=" language-go"><code class="language-go"><span class="token keyword">type</span> Writer <span class="token keyword">interface</span> <span class="token punctuation">{</span>
     <span class="token function">Write</span><span class="token punctuation">(</span>p <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">)</span> <span class="token punctuation">(</span>n <span class="token builtin">int</span><span class="token punctuation">,</span> err <span class="token builtin">error</span><span class="token punctuation">)</span>
-<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span></code></pre>
+<span class="token punctuation">}</span></code></pre>
 <p>获取byte数组，返回n个字节和err=nil<br>::: tip<br>Write 将 <code>len(p)</code> 个字节从 p 中写入到基本数据流中。它返回从 p 中被写入的字节数 <code>n(0 &lt;= n &lt;= len(p))</code>以及任何遇到的引起写入提前停止的错误。若 Write 返回的 <code>n &lt; len(p)</code>，它就必须返回一个 <code>非nil</code> 的错误。<br>:::</p>
 <h2 id="Fprintln方法"><a href="#Fprintln方法" class="headerlink" title="Fprintln方法"></a>Fprintln方法</h2><p>我们常用的<code>fmt.println</code>的方法如下</p>
-<pre class=" language-go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">Println</span><span class="token punctuation">(</span>a <span class="token operator">...</span><span class="token keyword">interface</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span><span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span> <span class="token punctuation">(</span>n <span class="token builtin">int</span><span class="token punctuation">,</span> err <span class="token builtin">error</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+<pre class=" language-go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">Println</span><span class="token punctuation">(</span>a <span class="token operator">...</span><span class="token keyword">interface</span><span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">)</span> <span class="token punctuation">(</span>n <span class="token builtin">int</span><span class="token punctuation">,</span> err <span class="token builtin">error</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">return</span> <span class="token function">Fprintln</span><span class="token punctuation">(</span>os<span class="token punctuation">.</span>Stdout<span class="token punctuation">,</span> a<span class="token operator">...</span><span class="token punctuation">)</span>
-<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span></code></pre>
+<span class="token punctuation">}</span></code></pre>
 <p>其中Fprintln的实现如下</p>
-<pre class=" language-go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">Fprintln</span><span class="token punctuation">(</span>w io<span class="token punctuation">.</span>Writer<span class="token punctuation">,</span> a <span class="token operator">...</span><span class="token keyword">interface</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span><span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span> <span class="token punctuation">(</span>n <span class="token builtin">int</span><span class="token punctuation">,</span> err <span class="token builtin">error</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+<pre class=" language-go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">Fprintln</span><span class="token punctuation">(</span>w io<span class="token punctuation">.</span>Writer<span class="token punctuation">,</span> a <span class="token operator">...</span><span class="token keyword">interface</span><span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">)</span> <span class="token punctuation">(</span>n <span class="token builtin">int</span><span class="token punctuation">,</span> err <span class="token builtin">error</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     p <span class="token operator">:=</span> <span class="token function">newPrinter</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
     p<span class="token punctuation">.</span><span class="token function">doPrintln</span><span class="token punctuation">(</span>a<span class="token punctuation">)</span>
     n<span class="token punctuation">,</span> err <span class="token operator">=</span> w<span class="token punctuation">.</span><span class="token function">Write</span><span class="token punctuation">(</span>p<span class="token punctuation">.</span>buf<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// 实现了Writer接口的唯一方法 Write 也就是实现了io.Writer接口</span>
     p<span class="token punctuation">.</span><span class="token function">free</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
     <span class="token keyword">return</span>
-<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span></code></pre>
+<span class="token punctuation">}</span></code></pre>
 <p>这里可以看出Fprintln是实现了<code>io.Writer</code>接口的 ,并且他接收多个参数，返回n个字节以及一个error</p>
 <h2 id="标准输入输出错误"><a href="#标准输入输出错误" class="headerlink" title="标准输入输出错误"></a>标准输入输出错误</h2><p>在golang源码中 os包里面有这么一段变量定义</p>
 <pre class=" language-go"><code class="language-go"><span class="token keyword">var</span> <span class="token punctuation">(</span>
@@ -509,14 +509,14 @@ data<span class="token punctuation">,</span>err <span class="token operator">:=<
 <p>这一段定义说明了golang中的标准输入输出错误，也就是<code>os.stdin</code>,<code>os.stdout</code>,<code>os.stderr</code>都是以文件的形式出现的，<code>os.File</code>是实现了<code>io.Writer</code>和<code>io.Reader</code>接口的<br>所以stdin stdout stderr都是实现了写入写出的</p>
 <h2 id="ReaderAt-和-WriterAt-接口"><a href="#ReaderAt-和-WriterAt-接口" class="headerlink" title="ReaderAt 和 WriterAt 接口"></a>ReaderAt 和 WriterAt 接口</h2><p>来看下他的源码</p>
 <pre class=" language-go"><code class="language-go"><span class="token comment" spellcheck="true">// ReaderAt</span>
-<span class="token keyword">type</span> ReaderAt <span class="token keyword">interface</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+<span class="token keyword">type</span> ReaderAt <span class="token keyword">interface</span> <span class="token punctuation">{</span>
     <span class="token function">ReadAt</span><span class="token punctuation">(</span>p <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">,</span> off <span class="token builtin">int64</span><span class="token punctuation">)</span> <span class="token punctuation">(</span>n <span class="token builtin">int</span><span class="token punctuation">,</span> err <span class="token builtin">error</span><span class="token punctuation">)</span>
-<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 
 <span class="token comment" spellcheck="true">// WriterAt</span>
-<span class="token keyword">type</span> WriterAt <span class="token keyword">interface</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+<span class="token keyword">type</span> WriterAt <span class="token keyword">interface</span> <span class="token punctuation">{</span>
     <span class="token function">WriteAt</span><span class="token punctuation">(</span>p <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">,</span> off <span class="token builtin">int64</span><span class="token punctuation">)</span> <span class="token punctuation">(</span>n <span class="token builtin">int</span><span class="token punctuation">,</span> err <span class="token builtin">error</span><span class="token punctuation">)</span>
-<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span></code></pre>
+<span class="token punctuation">}</span></code></pre>
 <p>他们比之前的就多了一个off  而这个off就是偏移量,主要作用是将<code>ReadAt</code>从<code>基本输入源</code>的偏移量 <code>off</code> 处开始，将 <code>len(p)</code> 个字节读取到 p 中。</p>
 <pre class=" language-go"><code class="language-go"><span class="token keyword">package</span> main
 
@@ -525,17 +525,17 @@ data<span class="token punctuation">,</span>err <span class="token operator">:=<
     <span class="token string">"strings"</span>
 <span class="token punctuation">)</span>
 
-<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token comment" spellcheck="true">// 创建一个输入源</span>
     <span class="token keyword">var</span> qq <span class="token operator">=</span> strings<span class="token punctuation">.</span><span class="token function">NewReader</span><span class="token punctuation">(</span><span class="token string">"helloworld"</span><span class="token punctuation">)</span>
     <span class="token comment" spellcheck="true">// 创建一个输入源</span>
     <span class="token keyword">var</span> list <span class="token operator">=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">,</span><span class="token number">20</span><span class="token punctuation">)</span>
     n<span class="token punctuation">,</span>err <span class="token operator">:=</span> qq<span class="token punctuation">.</span><span class="token function">ReadAt</span><span class="token punctuation">(</span>list<span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">)</span>
-    <span class="token keyword">if</span> err <span class="token operator">==</span> <span class="token boolean">nil</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> err <span class="token operator">==</span> <span class="token boolean">nil</span><span class="token punctuation">{</span>
         fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>n<span class="token punctuation">)</span>
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
     fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"%s, %d\n"</span><span class="token punctuation">,</span> list<span class="token punctuation">,</span> n<span class="token punctuation">)</span>
-<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 
 <span class="token comment" spellcheck="true">// result </span>
 <span class="token comment" spellcheck="true">// lloworld, 8</span></code></pre>
@@ -548,24 +548,24 @@ data<span class="token punctuation">,</span>err <span class="token operator">:=<
     <span class="token string">"strings"</span>
 <span class="token punctuation">)</span>
 
-<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token comment" spellcheck="true">// 创建一个本文</span>
     file<span class="token punctuation">,</span>err <span class="token operator">:=</span> os<span class="token punctuation">.</span><span class="token function">Create</span><span class="token punctuation">(</span><span class="token string">"writeAt.txt"</span><span class="token punctuation">)</span>
-    <span class="token keyword">if</span> err <span class="token operator">!=</span><span class="token boolean">nil</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> err <span class="token operator">!=</span><span class="token boolean">nil</span><span class="token punctuation">{</span>
         <span class="token function">panic</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
     <span class="token keyword">defer</span> file<span class="token punctuation">.</span><span class="token function">Close</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
     file<span class="token punctuation">.</span><span class="token function">WriteString</span><span class="token punctuation">(</span><span class="token string">"Golang中文社区——这里是多余"</span><span class="token punctuation">)</span>
     n<span class="token punctuation">,</span> err <span class="token operator">=</span> file<span class="token punctuation">.</span><span class="token function">WriteAt</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token function">byte</span><span class="token punctuation">(</span><span class="token string">"Go语言中文网"</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token number">24</span><span class="token punctuation">)</span>
-    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
         <span class="token function">panic</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
     fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>n<span class="token punctuation">)</span>
-<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span></code></pre>
+<span class="token punctuation">}</span></code></pre>
 <h2 id="ReaderFrom-和-WriterTo-接口"><a href="#ReaderFrom-和-WriterTo-接口" class="headerlink" title="ReaderFrom 和 WriterTo 接口"></a>ReaderFrom 和 WriterTo 接口</h2><p>先看下源码</p>
-<pre class=" language-go"><code class="language-go"><span class="token keyword">type</span> ReaderFrom <span class="token keyword">interface</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+<pre class=" language-go"><code class="language-go"><span class="token keyword">type</span> ReaderFrom <span class="token keyword">interface</span> <span class="token punctuation">{</span>
     <span class="token function">ReadFrom</span><span class="token punctuation">(</span>r Reader<span class="token punctuation">)</span> <span class="token punctuation">(</span>n <span class="token builtin">int64</span><span class="token punctuation">,</span> err <span class="token builtin">error</span><span class="token punctuation">)</span>
-<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span></code></pre>
+<span class="token punctuation">}</span></code></pre>
 <p>接口说明<br>ReadFrom 从 <code>r</code> 中读取数据，直到 <code>EOF</code> 或<code>发生错误</code>。其返回值n为读取的字节数。除<code>io.EOF</code>之外，在读取过程中遇到的任何错误也将被返回。<br>如果ReaderFrom可用Copy函数就会使用它。</p>
 
         </div>

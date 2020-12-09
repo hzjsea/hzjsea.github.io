@@ -486,7 +486,7 @@
 <pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 首先 在客户机端做域名与ip的映射</span>
 <span class="token keyword">echo</span> <span class="token string">"10.0.5.255 www.123.com"</span> <span class="token operator">>></span> /etc/hosts
 <span class="token comment" spellcheck="true"># 配置nginx文件 /etc/nginx/nginx.conf</span>
-server <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+server <span class="token punctuation">{</span>
         listen       80<span class="token punctuation">;</span>
         server_name  10.0.5.233<span class="token punctuation">;</span>
         root         /usr/share/nginx/html<span class="token punctuation">;</span>
@@ -494,12 +494,12 @@ server <span class="token operator">&amp;</span><span class="token comment" spel
         <span class="token comment" spellcheck="true"># Load configuration files for the default server block.</span>
         include /etc/nginx/default.d/*.conf<span class="token punctuation">;</span>
 
-        location / <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+        location / <span class="token punctuation">{</span>
            root html<span class="token punctuation">;</span>
            proxy_pass http://127.0.0.1:8001<span class="token punctuation">;</span>
            index index.html index.htm<span class="token punctuation">;</span>
-        <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
-    <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125; </span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span> 
 <span class="token comment" spellcheck="true"># 上面是nginx服务器的配置，表示的是监听10.0.5.233:80 将收到的请求转发到 http://127.0.0.1:8001本地端口</span>
 <span class="token comment" spellcheck="true"># 当我们在浏览器输入www.123.com:80 --> 10.0.5.233:80 --> server127.0.0.1:8001</span></code></pre>
 <h2 id="nginx配置–反向代理2"><a href="#nginx配置–反向代理2" class="headerlink" title="nginx配置–反向代理2"></a>nginx配置–反向代理2</h2><p>配置内容<br>1台Nginx代理服务器(10.0.5.233)、2个网页<br>效果: 客户机在浏览器中输入<a target="_blank" rel="noopener" href="http://www.123.com/web1/">www.123.com/web1/</a> 跳转到第一个web页面 ; 输入<a target="_blank" rel="noopener" href="http://www.123.com/web2/">www.123.com/web2/</a> 跳转到第二个web页面</p>
@@ -507,7 +507,7 @@ server <span class="token operator">&amp;</span><span class="token comment" spel
 <span class="token comment" spellcheck="true"># 127.0.0.1:8080/web1/ -> web1</span>
 <span class="token comment" spellcheck="true"># 127.0.0.1:8081/web2/ -> web2</span>
 <span class="token comment" spellcheck="true"># 配置nginx文件 /etc/nginx/nginx.conf</span>
-server <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+server <span class="token punctuation">{</span>
         listen       80<span class="token punctuation">;</span>
         server_name  10.0.5.233<span class="token punctuation">;</span>
         root         /usr/share/nginx/html<span class="token punctuation">;</span>
@@ -516,19 +516,19 @@ server <span class="token operator">&amp;</span><span class="token comment" spel
         include /etc/nginx/default.d/*.conf<span class="token punctuation">;</span>
 
         <span class="token comment" spellcheck="true"># ～ 表示后面的为正则表达式</span>
-        location ~ /web1/ <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+        location ~ /web1/ <span class="token punctuation">{</span>
            proxy_pass http://127.0.0.1:8080<span class="token punctuation">;</span>
-        <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125; </span>
-        location ~ /web2/ <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+        <span class="token punctuation">}</span> 
+        location ~ /web2/ <span class="token punctuation">{</span>
             proxy_pass http://127.0.0.1:8081<span class="token punctuation">;</span>
-        <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
-    <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125; </span></code></pre>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span> </code></pre>
 <h2 id="nginx配置–负载均衡"><a href="#nginx配置–负载均衡" class="headerlink" title="nginx配置–负载均衡"></a>nginx配置–负载均衡</h2><p>配置内容<br>1台Nginx代理服务器(10.0.5.233) 2个web服务器</p>
-<pre class=" language-bash"><code class="language-bash">upstream myserver <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+<pre class=" language-bash"><code class="language-bash">upstream myserver <span class="token punctuation">{</span>
     server 10.0.5.197:8001<span class="token punctuation">;</span>
     server 10.0.5.198:8001<span class="token punctuation">;</span>
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125; </span>
-server <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+<span class="token punctuation">}</span> 
+server <span class="token punctuation">{</span>
         listen       80<span class="token punctuation">;</span>
         server_name  10.0.5.233<span class="token punctuation">;</span>
         root         /usr/share/nginx/html<span class="token punctuation">;</span>
@@ -537,28 +537,28 @@ server <span class="token operator">&amp;</span><span class="token comment" spel
         include /etc/nginx/default.d/*.conf<span class="token punctuation">;</span>
 
         <span class="token comment" spellcheck="true"># ～ 表示后面的为正则表达式</span>
-        location  / <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+        location  / <span class="token punctuation">{</span>
            proxy_pass http://myserver<span class="token punctuation">;</span>
-        <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125; </span>
-    <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125; </span></code></pre>
+        <span class="token punctuation">}</span> 
+    <span class="token punctuation">}</span> </code></pre>
 <h3 id="策略："><a href="#策略：" class="headerlink" title="策略："></a>策略：</h3><ol>
 <li>默认策略为轮询<br>每个请求按时间顺序逐一分配到后端服务器，如果后端服务器down掉，能自动剔除</li>
-<li>权重策略<br>weight代表权重，权重默认为1，权重越高被分配的用户越多<pre class=" language-bash"><code class="language-bash">upstream myserver <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+<li>权重策略<br>weight代表权重，权重默认为1，权重越高被分配的用户越多<pre class=" language-bash"><code class="language-bash">upstream myserver <span class="token punctuation">{</span>
  server 10.0.5.197:8001 weight<span class="token operator">=</span>10<span class="token punctuation">;</span>
  server 10.0.5.198:8001 weight<span class="token operator">=</span>20<span class="token punctuation">;</span>
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125; </span></code></pre>
+<span class="token punctuation">}</span> </code></pre>
 </li>
-<li>ip_hash策略<br>每个请求按照按访问ip的hash结果分配，每个访客固定访问一个后端服务器，可以解决session的问题<pre class=" language-bash"><code class="language-bash">upstream myserver <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+<li>ip_hash策略<br>每个请求按照按访问ip的hash结果分配，每个访客固定访问一个后端服务器，可以解决session的问题<pre class=" language-bash"><code class="language-bash">upstream myserver <span class="token punctuation">{</span>
  ip_hash<span class="token punctuation">;</span>
  server 10.0.5.197:8001<span class="token punctuation">;</span>
  server 10.0.5.198:8001<span class="token punctuation">;</span>
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;  </span></code></pre>
+<span class="token punctuation">}</span>  </code></pre>
 </li>
-<li>fair策略<br>科举服务器响应时间来分配，响应的越快则优先分配<pre class=" language-bash"><code class="language-bash">upstream myserver <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+<li>fair策略<br>科举服务器响应时间来分配，响应的越快则优先分配<pre class=" language-bash"><code class="language-bash">upstream myserver <span class="token punctuation">{</span>
  server 10.0.5.197:8001<span class="token punctuation">;</span>
  server 10.0.5.198:8001<span class="token punctuation">;</span>
  fair<span class="token punctuation">;</span>
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;  </span></code></pre>
+<span class="token punctuation">}</span>  </code></pre>
 </li>
 </ol>
 <h2 id="nginx配置实例–动静分离"><a href="#nginx配置实例–动静分离" class="headerlink" title="nginx配置实例–动静分离"></a>nginx配置实例–动静分离</h2><p>动态请求与静态请求分开，用nginx处理静态页面，django处理动态页面</p>
@@ -566,7 +566,7 @@ server <span class="token operator">&amp;</span><span class="token comment" spel
 <li>静态文件放在静态资源管理服务器上，动态资源放在另外的服务器上，有Nginx做转发</li>
 <li>静态文件和动态资源一起发布在同一个服务器上，由nginx做分离</li>
 </ul>
-<pre class=" language-bash"><code class="language-bash">server <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+<pre class=" language-bash"><code class="language-bash">server <span class="token punctuation">{</span>
         listen       80<span class="token punctuation">;</span>
         server_name  10.0.5.233<span class="token punctuation">;</span>
         root         /usr/share/nginx/html<span class="token punctuation">;</span>
@@ -574,15 +574,15 @@ server <span class="token operator">&amp;</span><span class="token comment" spel
         <span class="token comment" spellcheck="true"># Load configuration files for the default server block.</span>
         include /etc/nginx/default.d/*.conf<span class="token punctuation">;</span>
 
-        location /image/ <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+        location /image/ <span class="token punctuation">{</span>
            root /image/<span class="token punctuation">;</span>  <span class="token comment" spellcheck="true"># 静态文件路径</span>
            index index.html index.htm<span class="token punctuation">;</span>
-        <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
-        location /data/ <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+        <span class="token punctuation">}</span>
+        location /data/ <span class="token punctuation">{</span>
             root /data/<span class="token punctuation">;</span>  <span class="token comment" spellcheck="true"># 静态文件路径</span>
             autoindex on<span class="token punctuation">;</span> <span class="token comment" spellcheck="true"># 自动列出目录</span>
-        <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
-    <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;  </span></code></pre>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>  </code></pre>
 <h2 id="nginx配置实例–高可用集群"><a href="#nginx配置实例–高可用集群" class="headerlink" title="nginx配置实例–高可用集群"></a>nginx配置实例–高可用集群</h2><p>keepalived+nginx<br>配置需求：<br>master机器(main nginx) slave机器(backup nginx)  两台web服务器做轮询负载均衡 、 一个虚拟IP+4个机器IP</p>
 <p>nginx活性检测脚本</p>
 <pre class=" language-bash"><code class="language-bash"><span class="token shebang important">#!/bin/bash</span>
@@ -602,12 +602,12 @@ yum <span class="token function">install</span> keepalived
 <span class="token comment" spellcheck="true"># 修改配置文件</span>
 <span class="token operator">!</span> Configuration File <span class="token keyword">for</span> keepalived
 
-global_defs <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
-   notification_email <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+global_defs <span class="token punctuation">{</span>
+   notification_email <span class="token punctuation">{</span>
      acassen@firewall.loc
      failover@firewall.loc
      sysadmin@firewall.loc
-   <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+   <span class="token punctuation">}</span>
    notification_email_from Alexandre.Cassen@firewall.loc
    smtp_server 192.168.200.1
    smtp_connect_timeout 30
@@ -616,37 +616,37 @@ global_defs <span class="token operator">&amp;</span><span class="token comment"
    vrrp_strict
    vrrp_garp_interval 0
    vrrp_gna_interval 0
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+<span class="token punctuation">}</span>
 
 <span class="token comment" spellcheck="true"># nginx活性检测</span>
-vrrp_script chk_http_port<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+vrrp_script chk_http_port<span class="token punctuation">{</span>
     script <span class="token string">"/usr/local/src/nginx_check.sh"</span>
 
     interval 2 <span class="token comment" spellcheck="true"># 检测脚本执行的间隔</span>
 
     weight 2 <span class="token comment" spellcheck="true"># 权重</span>
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+<span class="token punctuation">}</span>
 
-vrrp_instance VI_1 <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+vrrp_instance VI_1 <span class="token punctuation">{</span>
     state BACKUP   <span class="token comment" spellcheck="true"># DS-backup机器 BACKUP MASTER</span>
     interface eno1 
     virtual_router_id 51
     priority 10  <span class="token comment" spellcheck="true"># 优先级别</span>
     advert_int 1
-    authentication <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+    authentication <span class="token punctuation">{</span>
         auth_type PASS
         auth_pass 1111
-    <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
-    virtual_ipaddress <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+    <span class="token punctuation">}</span>
+    virtual_ipaddress <span class="token punctuation">{</span>
         10.0.5.196/20
-    <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125; </span></code></pre>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span> </code></pre>
 <p>nginx配置</p>
-<pre class=" language-bash"><code class="language-bash">upstream myserver <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+<pre class=" language-bash"><code class="language-bash">upstream myserver <span class="token punctuation">{</span>
     server 10.0.5.197:8001<span class="token punctuation">;</span>
     server 10.0.5.198:8001<span class="token punctuation">;</span>
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125; </span>
-server <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+<span class="token punctuation">}</span> 
+server <span class="token punctuation">{</span>
         listen       80<span class="token punctuation">;</span>
         server_name  10.0.5.196<span class="token punctuation">;</span>
         root         /usr/share/nginx/html<span class="token punctuation">;</span>
@@ -655,10 +655,10 @@ server <span class="token operator">&amp;</span><span class="token comment" spel
         include /etc/nginx/default.d/*.conf<span class="token punctuation">;</span>
 
         <span class="token comment" spellcheck="true"># ～ 表示后面的为正则表达式</span>
-        location  / <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+        location  / <span class="token punctuation">{</span>
            proxy_pass http://myserver<span class="token punctuation">;</span>
-        <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125; </span>
-    <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;  </span></code></pre>
+        <span class="token punctuation">}</span> 
+    <span class="token punctuation">}</span>  </code></pre>
 <p><img src="http://img.noback.top/2020-02-04-15-41-24.png" alt="2020-02-04-15-41-24"><br>当用户访问10.0.5.196:80端口的时候，由于196是vip 此时正在master主机上面，因此他会读取master主机上面的nginx配置文件，后续因为nginx的负载均衡(轮询的配置)，当你不断的访问10.0.5.196时，页面会在10.0.5.197:8001 与10.0.5.198:8001直接来回的跳动</p>
 <h2 id="nginx原理"><a href="#nginx原理" class="headerlink" title="nginx原理"></a>nginx原理</h2><p><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/av68136734?p=17">https://www.bilibili.com/video/av68136734?p=17</a><br><a target="_blank" rel="noopener" href="https://www.cnblogs.com/dongye95/p/11096785.html#_label0_0">https://www.cnblogs.com/dongye95/p/11096785.html#_label0_0</a></p>
 

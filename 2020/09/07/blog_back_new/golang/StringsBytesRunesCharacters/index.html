@@ -547,16 +547,16 @@ param1<span class="token operator">=</span><span class="token string">"<span cla
 <span class="token keyword">echo</span> <span class="token string">"********************************"</span>
 
 
-FILELIST<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+FILELIST<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
 filelist<span class="token operator">=</span><span class="token variable"><span class="token variable">`</span><span class="token function">ls</span> $SPATH <span class="token variable">`</span></span>
 <span class="token keyword">for</span> filename <span class="token keyword">in</span> <span class="token variable">$filelist</span><span class="token punctuation">;</span> <span class="token keyword">do</span>
     <span class="token keyword">if</span> <span class="token punctuation">[</span> -f <span class="token variable">$filename</span> <span class="token punctuation">]</span><span class="token punctuation">;</span><span class="token keyword">then</span>
         <span class="token comment" spellcheck="true">#echo File:$filename</span>
-        <span class="token comment" spellcheck="true">#echo "$&amp;#123;filename#*.&amp;#125;"</span>
-        EXTENSION<span class="token operator">=</span><span class="token string">"$&amp;#123;filename#*.&amp;#125;"</span>
+        <span class="token comment" spellcheck="true">#echo "${filename#*.}"</span>
+        EXTENSION<span class="token operator">=</span><span class="token string">"<span class="token variable">${filename#*.}</span>"</span>
         <span class="token comment" spellcheck="true">#echo $EXTENSION</span>
         <span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token string">"<span class="token variable">$EXTENSION</span>"</span> <span class="token operator">==</span> <span class="token string">"<span class="token variable">$POSTFIX</span>"</span> <span class="token punctuation">]</span><span class="token punctuation">;</span><span class="token keyword">then</span>
-           <span class="token comment" spellcheck="true">#echo "$&amp;#123;filename%%.*&amp;#125;"</span>
+           <span class="token comment" spellcheck="true">#echo "${filename%%.*}"</span>
            <span class="token keyword">echo</span> Processing: <span class="token variable">$filename</span>
            <span class="token function">iconv</span> -f <span class="token variable">$format1</span> -t <span class="token variable">$format2</span> <span class="token variable">$filename</span> -o <span class="token variable">$filename</span>
            <span class="token comment" spellcheck="true">#iconv -f GB2312 -t UTF-8 $filename -o $filename</span>
@@ -572,7 +572,7 @@ filelist<span class="token operator">=</span><span class="token variable"><span 
         <span class="token keyword">echo</span> <span class="token string">"<span class="token variable">$SPATH</span>/<span class="token variable">$filename</span> is not a common file."</span>
     <span class="token keyword">fi</span>
 <span class="token keyword">done</span>
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+<span class="token punctuation">}</span>
 <span class="token function">cd</span> <span class="token variable">$SPATH</span>
 FILELIST
 <span class="token keyword">echo</span> <span class="token string">"======== Convert Done. ========"</span></code></pre>
@@ -601,9 +601,9 @@ fmt<span class="token punctuation">.</span><span class="token function">Printf</
 <span class="token comment" spellcheck="true">//fmt.Println(unsafe.Sizeof(qqxxx))</span>
 
 
-<span class="token keyword">var</span> xx <span class="token keyword">interface</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span><span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span> <span class="token operator">=</span> <span class="token string">"hellowrold"</span>  <span class="token comment" spellcheck="true">// is string</span>
-<span class="token keyword">var</span> xxx <span class="token keyword">interface</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span><span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span> <span class="token operator">=</span> <span class="token string">'x'</span> <span class="token comment" spellcheck="true">// is rune</span>
-<span class="token keyword">switch</span> xxx<span class="token punctuation">.</span><span class="token punctuation">(</span><span class="token keyword">type</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> xx <span class="token keyword">interface</span><span class="token punctuation">{</span><span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token string">"hellowrold"</span>  <span class="token comment" spellcheck="true">// is string</span>
+<span class="token keyword">var</span> xxx <span class="token keyword">interface</span><span class="token punctuation">{</span><span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token string">'x'</span> <span class="token comment" spellcheck="true">// is rune</span>
+<span class="token keyword">switch</span> xxx<span class="token punctuation">.</span><span class="token punctuation">(</span><span class="token keyword">type</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
 <span class="token keyword">case</span> <span class="token builtin">string</span><span class="token punctuation">:</span>
     fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"is string"</span><span class="token punctuation">)</span>
 <span class="token keyword">case</span> <span class="token builtin">rune</span><span class="token punctuation">:</span>
@@ -612,7 +612,7 @@ fmt<span class="token punctuation">.</span><span class="token function">Printf</
     fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"is byte"</span><span class="token punctuation">)</span>
 <span class="token keyword">default</span><span class="token punctuation">:</span>
     fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"dont know"</span><span class="token punctuation">)</span>
-<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 
 </code></pre>
 <p>接下来是字符串，上面讲的都是字符，也就是用单引号包裹起来的，但是字符串则是用双引号包裹起来的。字符串的字节数为16</p>
@@ -633,7 +633,7 @@ fmt<span class="token punctuation">.</span><span class="token function">Println<
 <span class="token keyword">var</span> xx <span class="token operator">=</span> <span class="token string">"helloworld"</span><span class="token punctuation">;</span>
 xx <span class="token operator">=</span> strings<span class="token punctuation">.</span><span class="token function">ToUpper</span><span class="token punctuation">(</span>xx<span class="token punctuation">)</span>
 fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>xx<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// HELLOWORLD</span>
-<span class="token keyword">var</span> ll <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span> <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span><span class="token string">'h'</span><span class="token punctuation">,</span><span class="token string">'e'</span><span class="token punctuation">,</span><span class="token string">'l'</span><span class="token punctuation">,</span><span class="token string">'l'</span><span class="token punctuation">,</span><span class="token string">'o'</span><span class="token punctuation">,</span><span class="token string">'w'</span><span class="token punctuation">,</span><span class="token string">'o'</span><span class="token punctuation">,</span><span class="token string">'r'</span><span class="token punctuation">,</span><span class="token string">'l'</span><span class="token punctuation">,</span><span class="token string">'d'</span><span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> ll <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span> <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">{</span><span class="token string">'h'</span><span class="token punctuation">,</span><span class="token string">'e'</span><span class="token punctuation">,</span><span class="token string">'l'</span><span class="token punctuation">,</span><span class="token string">'l'</span><span class="token punctuation">,</span><span class="token string">'o'</span><span class="token punctuation">,</span><span class="token string">'w'</span><span class="token punctuation">,</span><span class="token string">'o'</span><span class="token punctuation">,</span><span class="token string">'r'</span><span class="token punctuation">,</span><span class="token string">'l'</span><span class="token punctuation">,</span><span class="token string">'d'</span><span class="token punctuation">}</span>
 ll <span class="token operator">=</span> bytes<span class="token punctuation">.</span><span class="token function">ToUpper</span><span class="token punctuation">(</span>ll<span class="token punctuation">)</span>
 fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token function">string</span><span class="token punctuation">(</span>ll<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// HELLOWORLD</span></code></pre>
 <p>Fprintf使用<br>将内容写入到一个实现了Writer接口的变量当中 比如os.stadin</p>

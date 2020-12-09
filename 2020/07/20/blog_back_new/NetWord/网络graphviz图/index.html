@@ -475,34 +475,34 @@
 <a id="more"></a>
 
 
-<h1 id="网络graphviz图"><a href="#网络graphviz图" class="headerlink" title="网络graphviz图"></a>网络graphviz图</h1><h2 id="ISO七层模型"><a href="#ISO七层模型" class="headerlink" title="ISO七层模型"></a>ISO七层模型</h2><pre class=" language-dot"><code class="language-dot">digraph G&#123;
+<h1 id="网络graphviz图"><a href="#网络graphviz图" class="headerlink" title="网络graphviz图"></a>网络graphviz图</h1><h2 id="ISO七层模型"><a href="#ISO七层模型" class="headerlink" title="ISO七层模型"></a>ISO七层模型</h2><pre class=" language-dot"><code class="language-dot">digraph G{
         label="7层模型"
         node [shape = record];
-        client [label="&#123;应用层|运输层|网络层|数据链路层|物理层&#125;"]
-&#125;</code></pre>
-<h2 id="TCP-IP5层模型"><a href="#TCP-IP5层模型" class="headerlink" title="TCP/IP5层模型"></a>TCP/IP5层模型</h2><pre class=" language-dot"><code class="language-dot">digraph G&#123;
+        client [label="{应用层|运输层|网络层|数据链路层|物理层}"]
+}</code></pre>
+<h2 id="TCP-IP5层模型"><a href="#TCP-IP5层模型" class="headerlink" title="TCP/IP5层模型"></a>TCP/IP5层模型</h2><pre class=" language-dot"><code class="language-dot">digraph G{
         label="5层模型"
         node [shape = record];
-        client [label="&#123;应用层|运输层|网络层|数据链路层|物理层&#125;"]
-&#125;</code></pre>
-<h2 id="TCP-IP5层模型互动"><a href="#TCP-IP5层模型互动" class="headerlink" title="TCP/IP5层模型互动"></a>TCP/IP5层模型互动</h2><pre class=" language-dot"><code class="language-dot">digraph G&#123;
+        client [label="{应用层|运输层|网络层|数据链路层|物理层}"]
+}</code></pre>
+<h2 id="TCP-IP5层模型互动"><a href="#TCP-IP5层模型互动" class="headerlink" title="TCP/IP5层模型互动"></a>TCP/IP5层模型互动</h2><pre class=" language-dot"><code class="language-dot">digraph G{
         label="5层模型"
         node [shape = record];
-        client [label="&#123;应用层|运输层|网络层|数据链路层|物理层&#125;"]
+        client [label="{应用层|运输层|网络层|数据链路层|物理层}"]
 
         client:应用层->client:运输层
         client:运输层->client:网络层
         client:网络层->client:运输层
         client:应用层->client:运输层
         client:应用层->client:运输层
-&#125;
+}
 </code></pre>
-<h2 id="三次握手与四次握手模型"><a href="#三次握手与四次握手模型" class="headerlink" title="三次握手与四次握手模型"></a>三次握手与四次握手模型</h2><pre class=" language-dot"><code class="language-dot">digraph G &#123;
+<h2 id="三次握手与四次握手模型"><a href="#三次握手与四次握手模型" class="headerlink" title="三次握手与四次握手模型"></a>三次握手与四次握手模型</h2><pre class=" language-dot"><code class="language-dot">digraph G {
     label="三次握手"
     client -> service [label="syn=1,client_id" color="red"]
     service -> client [label="syn=1,client_id+1 service_id" color="red"]
     client -> service [label="syn=0,client_id+1 service_id+1" color="red"]
-&#125;
+}
 </code></pre>
 <pre class=" language-mermaid"><code class="language-mermaid">graph LR
     三次握手
@@ -510,7 +510,7 @@
     E -- this is text --- F
     A --syn=1,client_id+1,service_id--> B
     B --syn=0,client_id+1,service_id+1--> A</code></pre>
-<pre class=" language-dot"><code class="language-dot">digraph G&#123;
+<pre class=" language-dot"><code class="language-dot">digraph G{
         lable="客户端-TCP生命周期"
         NOSTATUS -> SYN_SENT [label=" 发送一条TCP连接请求 发送SYN=1 q=client_id"]
         SYN_SENT -> ESTABLISHED [label="接收服务端的SYN=1 seq=service_id ask=client_id+1"]
@@ -520,8 +520,8 @@
         FIN_WAIT_2 -> TIME_WAIT [label="接收FIN 发送ACK"]
         TIME_WAIT -> CLOSED [label="等待30秒"]
         CLOSED -> NOSTATUS1
-&#125;</code></pre>
-<pre class=" language-dot"><code class="language-dot">digraph G&#123;
+}</code></pre>
+<pre class=" language-dot"><code class="language-dot">digraph G{
         label="服务端-TCP生命周期"
         NOSTATUS->LISTEN [label="创建一个监听套接字"]
         LISTEN -> SYN_RCVD [label="接收SYN，发送SYN&ACK SYN=1;seq=service_id+1 ask=client_id+1"]
@@ -529,13 +529,13 @@
         ESTABLISHED -> CLOSED_WAIT [label="接收FIN 发送ACK"]
         CLOSED_WAIT -> CLOSED [label="等待30秒"]
         CLOSED -> NOSTATUS1 
-&#125;
+}
 </code></pre>
 <h2 id="机房互联对接流程"><a href="#机房互联对接流程" class="headerlink" title="机房互联对接流程"></a>机房互联对接流程</h2><pre class=" language-mermaid"><code class="language-mermaid">graph TD
-        member(对接人员) --> select2&#123;初始互联个数&#125;
+        member(对接人员) --> select2{初始互联个数}
         select2 --单个互联单个汇聚口--> 走accress --> setting[single_port port access vlan 2010]
 
-        select2 --> select3&#123;多个互联形式&#125;
+        select2 --> select3{多个互联形式}
         select3 --多个互联access--> 单口access --> setting2[single_port access vlan2010 single_port2 access vlan 2020]
         select3 --多个互联trunk--> 汇聚走trunk --> setting3[B300 port trunk vlan 2010 2020]
         select2 --单个互联多个汇聚口--> 汇聚走access --> setting4[B200 port access vlan 2010]

@@ -13,7 +13,7 @@
 
 
 
-<title>git基础 | hzjsea</title>
+<title>git基础2 | hzjsea</title>
 
 
 
@@ -428,7 +428,7 @@
     
     <article class="post-wrap">
         <header class="post-header">
-            <h1 class="post-title">git基础</h1>
+            <h1 class="post-title">git基础2</h1>
             
             <div class="post-meta">
                 
@@ -457,55 +457,68 @@
         </header>
 
         <div class="post-content">
-            <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+            <a id="more"></a>
 
-<!-- code_chunk_output -->
-
+<h1 id="git介绍"><a href="#git介绍" class="headerlink" title="git介绍"></a>git介绍</h1><p>Git是一个分布式版本管理系统，是为了更好地管理Linux内核开发而创立的。<br>Git可以在任何时间点，把文档的状态作为更新记录保存起来。因此可以把编辑过的文档复原到以前的状态，也可以显示编辑前后的内容差异。</p>
+<p>笔记来自 <a target="_blank" rel="noopener" href="https://backlog.com/git-tutorial/cn/intro/intro1_2.html">https://backlog.com/git-tutorial/cn/intro/intro1_2.html</a><br>        <a target="_blank" rel="noopener" href="https://git-scm.com/docs">https://git-scm.com/docs</a></p>
+<blockquote>
+<p>优化提醒</p>
+<ol>
+<li>不同类别的修改 (如：Bug修复和功能添加) 要尽量分开提交，以方便以后从历史记录里查找特定的修改内容。</li>
+</ol>
+</blockquote>
+<h2 id="数据库"><a href="#数据库" class="headerlink" title="数据库"></a>数据库</h2><p>git数据库一共分为本地数据库和远程数据库</p>
 <ul>
-<li><a href="#%E6%B5%81%E7%A8%8B">流程</a><ul>
-<li><a href="#%E5%AE%89%E8%A3%85">安装</a></li>
-<li><a href="#%E5%85%A8%E5%B1%80%E5%A3%B0%E6%98%8E%E7%94%A8%E6%88%B7">全局声明用户</a></li>
-<li><a href="#%E5%A3%B0%E6%98%8E%E4%BB%93%E5%BA%93-%E5%BF%85%E9%A1%BB">声明仓库  必须</a></li>
-<li><a href="#%E6%8F%90%E4%BA%A4%E5%B9%B6%E6%8F%90%E4%BE%9B%E4%BF%A1%E6%81%AF">提交并提供信息</a></li>
-<li><a href="#%E6%B7%BB%E5%8A%A0%E6%96%87%E4%BB%B6">添加文件</a></li>
-<li><a href="#%E6%9F%A5%E7%9C%8B%E7%8A%B6%E6%80%81">查看状态</a></li>
-<li><a href="#%E6%9F%A5%E7%9C%8B%E6%97%A5%E5%BF%97">查看日志</a></li>
-<li><a href="#%E5%9B%9E%E9%80%80%E6%93%8D%E4%BD%9C">回退操作</a></li>
-<li><a href="#%E6%8F%90%E4%BA%A4%E8%BF%9C%E7%A8%8B%E4%BB%93%E5%BA%93">提交远程仓库</a></li>
-<li><a href="#%E4%BB%8E%E8%BF%9C%E7%A8%8B%E4%BB%93%E5%BA%93%E4%B8%8B%E8%BD%BD">从远程仓库下载</a></li>
-<li><a href="#%E4%BB%8E%E8%BF%9C%E7%A8%8B%E4%BB%93%E5%BA%93%E4%B8%8B%E8%BD%BD-%E6%8C%87%E5%AE%9A%E5%88%86%E6%94%AF">从远程仓库下载 – 指定分支</a></li>
-<li><a href="#%E5%88%86%E6%94%AF%E7%AE%A1%E7%90%86">分支管理</a></li>
-<li><a href="#%E5%88%86%E6%94%AF%E7%AE%A1%E7%90%862">分支管理2</a></li>
-<li><a href="#%E5%90%88%E5%B9%B6%E5%88%86%E6%94%AF">合并分支</a></li>
-<li><a href="#%E5%88%A0%E9%99%A4%E5%88%86%E6%94%AF">删除分支</a></li>
-<li><a href="#%E5%BC%BA%E5%88%B6%E8%A6%86%E7%9B%96%E6%9C%AC%E5%9C%B0%E4%BB%A3%E7%A0%81">强制覆盖本地代码</a></li>
-<li><a href="#git-%E5%85%B3%E4%BA%8Egit%E6%AF%8F%E6%AC%A1%E8%BF%9B%E5%85%A5%E9%83%BD%E9%9C%80%E8%A6%81%E8%BE%93%E5%85%A5%E7%94%A8%E6%88%B7%E5%90%8D%E5%92%8C%E5%AF%86%E7%A0%81%E7%9A%84%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3">git 关于Git每次进入都需要输入用户名和密码的问题解决</a></li>
-<li><a href="#%E5%88%86%E6%94%AF%E5%90%8C%E6%AD%A5%E4%B8%BB%E5%B9%B2">分支同步主干</a></li>
-<li><a href="#%E4%B8%BB%E5%B9%B2%E5%90%8C%E6%AD%A5%E5%88%86%E6%94%AF%E6%85%8E%E7%94%A8">主干同步分支(慎用)</a></li>
-<li><a href="#inventory%E6%93%8D%E4%BD%9C">inventory操作</a></li>
-<li><a href="#%E9%94%99%E8%AF%AF%E6%95%B4%E7%90%86">错误整理</a><ul>
-<li><a href="#%E5%9C%BA%E6%99%AF1">场景1</a></li>
-<li><a href="#%E5%9C%BA%E6%99%AF2">场景2</a></li>
+<li>远程数据库: 配有专用的服务器，为了多人共享而建立的数据库</li>
+<li>本地数据库: 为了方便用户个人使用，在自己的机器上配置的数据库。</li>
 </ul>
-</li>
-</ul>
-</li>
-</ul>
-<!-- /code_chunk_output -->
-<a id="more"></a>
-<h1 id="流程"><a href="#流程" class="headerlink" title="流程"></a>流程</h1><p>工作区(我们当前的文件夹)<br>暂存区(add 提交之后文件所存在的位置)<br>仓库(commit 之后将暂存区提交到的地方)</p>
+<p><img src="http://img.noback.top/2020-12-02-11-34-40.png" alt="2020-12-02-11-34-40"></p>
+<h2 id="流程"><a href="#流程" class="headerlink" title="流程"></a>流程</h2><p>工作区(我们当前的文件夹)<br>暂存区(add 提交之后文件所存在的位置)<br>仓库(commit 之后将暂存区提交到的地方)</p>
 <p>首先是init初始化我们的工作区，这时候当前存在.git文件的就是我们的工作区，当前路径为我们的根目录<br>在工作区创建一个新的文件test.txt，<br>git add 之后文件上传到暂存区，我们可以用git status 会记录当前暂存区的操作<br>git diff可以比较工作区和暂存区的差异，当然这里是没有任何差异的，因为他们是同样的两份文件<br>修改test.txt 之后再去git diff 你会发现他们之间存在着差异，因为这个时候他们已经不是同样两份文件了<br>假如你再次 使用Git add . 再用git diff 时又没有差异了</p>
-<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># ubuntu</span>
+<h2 id="修改记录的提交"><a href="#修改记录的提交" class="headerlink" title="修改记录的提交"></a>修改记录的提交</h2><p>若要把文件或目录的添加和变更保存到数据库，就需要进行提交<br>每次提交之后,都会生成一段log ,以时间顺序排列状态被保存到数据库中,这段log会根据修改的内容计算出没有重复的40位英文及数字(id)来给提交命名</p>
+<h2 id="git的配置"><a href="#git的配置" class="headerlink" title="git的配置"></a>git的配置</h2><p>Git 自带一个git config的工具来帮助设置控制 Git 外观和行为的配置变量。<br>这些变量存储在三个不同的位置</p>
+<ul>
+<li><code>/etc/gitconfig</code> 文件: 包含系统上每一个用户及他们仓库的通用配置。 如果在执行 git config 时带上 <code>--system</code> 选项，那么它就会读写该文件中的配置变量</li>
+<li><code>~/.gitconfig</code> 或 <code>~/.config/git/config</code> 文件：只针对当前用户。 你可以传递 <code>--global</code> 选项让 Git 读写此文件</li>
+<li><code>.git/config</code> 这个是针对当前仓库的,你可以传递<code>--local</code>选项让 Git 强制读写此文件，虽然默认情况下用的就是它</li>
+</ul>
+<p>越底层,覆盖的等级越高,所以他们覆盖的顺序是</p>
+<pre><code>.git/config &gt; ~/.gitconfig &gt; /etc/gitconfig</code></pre>
+<p>查看对应的git配置</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token function">git</span> config --list --show-origin
+file:/usr/local/etc/gitconfig   credential.helper<span class="token operator">=</span>osxkeychain
+file:/Users/alpaca/.gitconfig   filter.lfs.clean<span class="token operator">=</span>git-lfs clean -- %f
+file:/Users/alpaca/.gitconfig   filter.lfs.smudge<span class="token operator">=</span>git-lfs smudge -- %f
+file:/Users/alpaca/.gitconfig   filter.lfs.process<span class="token operator">=</span>git-lfs filter-process
+file:/Users/alpaca/.gitconfig   filter.lfs.required<span class="token operator">=</span>true
+file:/Users/alpaca/.gitconfig   user.email<span class="token operator">=</span>user@gmail.com
+file:/Users/alpaca/.gitconfig   user.name<span class="token operator">=</span>user
+file:/Users/alpaca/.gitconfig   credential.helper<span class="token operator">=</span>store</code></pre>
+<h2 id="git基础"><a href="#git基础" class="headerlink" title="git基础"></a>git基础</h2><h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># ubuntu</span>
 <span class="token function">sudo</span> <span class="token function">apt-get</span> <span class="token function">install</span> <span class="token function">git</span>
 <span class="token comment" spellcheck="true"># centos </span>
 yum <span class="token function">install</span> <span class="token function">git</span> -y
 <span class="token comment" spellcheck="true"># mac </span>
 brew <span class="token function">install</span> <span class="token function">git</span></code></pre>
-<h2 id="全局声明用户"><a href="#全局声明用户" class="headerlink" title="全局声明用户"></a>全局声明用户</h2><p>git config –global user.name “your name”<br>git config –global user.email “<a href="mailto:&#x78;&#x78;&#120;&#64;&#120;&#x78;&#120;&#x2e;&#x63;&#111;&#109;">&#x78;&#x78;&#120;&#64;&#120;&#x78;&#120;&#x2e;&#x63;&#111;&#109;</a>“</p>
-<h2 id="声明仓库-必须"><a href="#声明仓库-必须" class="headerlink" title="声明仓库  必须"></a>声明仓库  必须</h2><p>mkdir test<br>cd test<br>git init </p>
-<p>会生成一个.git的仓库管理文件,如果你使用了zsh的主题，你会发现多了一个master 这是你当前的分支，也仅仅只有这个分支</p>
-<p>git add . —&gt; 将文件放到暂存区<br>git commit —&gt; 将文件提交到当前分支 master</p>
-<p><strong>声明仓库内容  不一定</strong><br>既然是作为开源共享的项目或者说是线上多平台交互的私库，那一定需要一个专门解释这个仓库是做什么的文件—&gt; README.md<br>git add README.md</p>
+<h2 id="全局声明用户"><a href="#全局声明用户" class="headerlink" title="全局声明用户"></a>全局声明用户</h2><p>安装完git之后就需要设置用户信息</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token function">git</span> config --global user.name <span class="token string">"your name"</span>
+<span class="token function">git</span> config --global user.email <span class="token string">"xxx@xxx.com"</span></code></pre>
+<p>设置全局<code>--global</code>之后,git会全局设定用户信息,如果需要制定特定的用户信息,可以在仓库中设置</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token function">git</span> config  user.name <span class="token string">"your name"</span>
+<span class="token function">git</span> config  user.email <span class="token string">"xxx@xxx.com"</span>
+<span class="token function">git</span> config --list --show-origin
+<span class="token comment" spellcheck="true"># file:.git/config        user.name=xx</span>
+<span class="token comment" spellcheck="true"># file:.git/config        user.email=zz</span>
+<span class="token comment" spellcheck="true"># 查看当前仓库的用户信息</span>
+<span class="token function">git</span> config user.name
+<span class="token comment" spellcheck="true"># xx</span></code></pre>
+<p>这样当前仓库的信息就会被更改,因为当前仓库的gitconfig覆盖等级是最高的</p>
+<h2 id="声明仓库"><a href="#声明仓库" class="headerlink" title="声明仓库"></a>声明仓库</h2><p>声明仓库有两种方式,一种是clone现成的仓库,一种是自己定义一个仓库,<br>两种方式最后都会在本地创建一个仓库</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># clone</span>
+<span class="token function">git</span> clone online/xx.git
+<span class="token comment" spellcheck="true"># init </span>
+<span class="token function">mkdir</span> -p project <span class="token operator">&amp;&amp;</span> <span class="token function">cd</span> project <span class="token operator">&amp;&amp;</span> <span class="token function">git</span> init</code></pre>
+<h2 id="文件追踪"><a href="#文件追踪" class="headerlink" title="文件追踪"></a>文件追踪</h2><p>初始化好以后的仓库,文件是没有被追踪的<br>可以通过<code>git add</code>命令来指定所需的文件来进行追踪，然后执行<code>git commit</code></p>
 <h2 id="提交并提供信息"><a href="#提交并提供信息" class="headerlink" title="提交并提供信息"></a>提交并提供信息</h2><p>将文件提交到仓库</p>
 <pre class=" language-bash"><code class="language-bash"><span class="token function">git</span> commit -m <span class="token string">"your message"</span></code></pre>
 <h2 id="添加文件"><a href="#添加文件" class="headerlink" title="添加文件"></a>添加文件</h2><pre class=" language-bash"><code class="language-bash"><span class="token function">git</span> add xxx.txt

@@ -559,7 +559,7 @@ pid /run/nginx.pid<span class="token punctuation">;</span> <span class="token co
 include /usr/share/nginx/modules/*.conf<span class="token punctuation">;</span> </code></pre>
 </li>
 <li><p>第二部分: events模块<br>主要影响nginx服务器与用户的网络连接</p>
-<pre class=" language-bash"><code class="language-bash">events <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+<pre class=" language-bash"><code class="language-bash">events <span class="token punctuation">{</span>
   <span class="token comment" spellcheck="true"># 使用epoll的I/O 模型；epoll 使用于Linux内核2.6版本及以后的系统</span>
   use epoll<span class="token punctuation">;</span>
   <span class="token comment" spellcheck="true"># 每一个工作进程的最大连接数量； 理论上而言每一台nginx服务器的最大连接数为： worker_processes*worker_connections</span>
@@ -580,10 +580,10 @@ include /usr/share/nginx/modules/*.conf<span class="token punctuation">;</span> 
   <span class="token comment" spellcheck="true"># 如果在指定的参数open_file_cache的属性inactive设置的值之内，没有被访问这么多次（open_file_cache_min_uses），则清除缓存</span>
   <span class="token comment" spellcheck="true"># 则这里指的是 60s内都没有被访问过一次则清除 的意思</span>
   open_file_cache_min_uses 1<span class="token punctuation">;</span>
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span></code></pre>
+<span class="token punctuation">}</span></code></pre>
 </li>
 <li><p>第三部分1: http模块<br>http全局配置的指令包括文件引入、MIME-TYPE定义、日志自定义、连接超时时间、单链请求数上限等。</p>
-<pre class=" language-bash"><code class="language-bash">http <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+<pre class=" language-bash"><code class="language-bash">http <span class="token punctuation">{</span>
   <span class="token comment" spellcheck="true"># 日志发送</span>
   <span class="token comment" spellcheck="true"># 日志格式  其中main是日志文件的名字</span>
   <span class="token comment" spellcheck="true"># --------------------------------------------------------------------------   #</span>
@@ -623,51 +623,51 @@ include /usr/share/nginx/modules/*.conf<span class="token punctuation">;</span> 
   <span class="token comment" spellcheck="true"># 【扩展策略】：fair、通用hash、一致性hash 默认没有编译进nginx</span>
   <span class="token comment" spellcheck="true">#-----------------------------------------------------------------------------------------------#</span>
   <span class="token comment" spellcheck="true"># 【1】默认是轮询；如果后端服务器down掉，能自动剔除。</span>
-  <span class="token comment" spellcheck="true">#   upstream bakend &amp;#123;</span>
+  <span class="token comment" spellcheck="true">#   upstream bakend {</span>
   <span class="token comment" spellcheck="true">#        server 192.168.75.130:8080;</span>
   <span class="token comment" spellcheck="true">#        server 192.168.75.132:8080;</span>
   <span class="token comment" spellcheck="true">#        server 192.168.75.134:8080;</span>
-  <span class="token comment" spellcheck="true">#    &amp;#125;</span>
+  <span class="token comment" spellcheck="true">#    }</span>
   <span class="token comment" spellcheck="true">#</span>
   <span class="token comment" spellcheck="true">#【2】权重轮询(加权轮询)：这样配置后，如果总共请求了3次，则前面两次请求到130，后面一次请求到132</span>
-  <span class="token comment" spellcheck="true">#   upstream bakend &amp;#123;</span>
+  <span class="token comment" spellcheck="true">#   upstream bakend {</span>
   <span class="token comment" spellcheck="true">#        server 192.168.75.130:8080 weight=2;</span>
   <span class="token comment" spellcheck="true">#        server 192.168.75.132:8080 weight=1;</span>
-  <span class="token comment" spellcheck="true">#   &amp;#125;</span>
+  <span class="token comment" spellcheck="true">#   }</span>
   <span class="token comment" spellcheck="true">#</span>
   <span class="token comment" spellcheck="true">#【3】ip_hash：这种配置会使得每个请求按访问者的ip的hash结果分配，这样每个访客固定访问一个后端服务器，这样也可以解决session的问题。</span>
-  <span class="token comment" spellcheck="true">#   upstream bakend &amp;#123;</span>
+  <span class="token comment" spellcheck="true">#   upstream bakend {</span>
   <span class="token comment" spellcheck="true">#        ip_hash;</span>
   <span class="token comment" spellcheck="true">#        server 192.168.75.130:8080;</span>
   <span class="token comment" spellcheck="true">#        server 192.168.75.132:8080;</span>
-  <span class="token comment" spellcheck="true">#   &amp;#125;</span>
+  <span class="token comment" spellcheck="true">#   }</span>
   <span class="token comment" spellcheck="true">#</span>
   <span class="token comment" spellcheck="true">#【4】最少连接：将请求分配给连接数最少的服务器。Nginx会统计哪些服务器的连接数最少。</span>
-  <span class="token comment" spellcheck="true">#   upstream bakend &amp;#123;</span>
+  <span class="token comment" spellcheck="true">#   upstream bakend {</span>
   <span class="token comment" spellcheck="true">#        least_conn;</span>
   <span class="token comment" spellcheck="true">#        server 192.168.75.130:8080;</span>
   <span class="token comment" spellcheck="true">#        server 192.168.75.132:8080;</span>
-  <span class="token comment" spellcheck="true">#   &amp;#125;</span>
+  <span class="token comment" spellcheck="true">#   }</span>
   <span class="token comment" spellcheck="true">#</span>
   <span class="token comment" spellcheck="true">#</span>
   <span class="token comment" spellcheck="true">#【5】fair策略(需要安装nginx的第三方模块fair)：按后端服务器的响应时间来分配请求，响应时间短的优先分配。</span>
-  <span class="token comment" spellcheck="true">#   upstream bakend &amp;#123;</span>
+  <span class="token comment" spellcheck="true">#   upstream bakend {</span>
   <span class="token comment" spellcheck="true">#        fair;</span>
   <span class="token comment" spellcheck="true">#        server 192.168.75.130:8080;</span>
   <span class="token comment" spellcheck="true">#        server 192.168.75.132:8080;</span>
-  <span class="token comment" spellcheck="true">#   &amp;#125;</span>
+  <span class="token comment" spellcheck="true">#   }</span>
   <span class="token comment" spellcheck="true">#</span>
   <span class="token comment" spellcheck="true">#【6】url_hash策略（也是第三方策略）：按访问url的hash结果来分配请求，使每个url定向到同一个后端服务器，后端服务器为缓存时比较有效。</span>
   <span class="token comment" spellcheck="true">#               在upstream中加入hash语句，server语句中不能写入weight等其他的参数，hash_method指定hash算法</span>
-  <span class="token comment" spellcheck="true">#   upstream bakend &amp;#123;</span>
+  <span class="token comment" spellcheck="true">#   upstream bakend {</span>
   <span class="token comment" spellcheck="true">#        server 192.168.75.130:8080;</span>
   <span class="token comment" spellcheck="true">#        server 192.168.75.132:8080;</span>
   <span class="token comment" spellcheck="true">#        hash $request_uri;</span>
   <span class="token comment" spellcheck="true">#        hash_method crc32;</span>
-  <span class="token comment" spellcheck="true">#   &amp;#125;</span>
+  <span class="token comment" spellcheck="true">#   }</span>
   <span class="token comment" spellcheck="true">#</span>
   <span class="token comment" spellcheck="true">#【7】其他设置，主要是设备的状态设置</span>
-  <span class="token comment" spellcheck="true">#   upstream bakend&amp;#123;</span>
+  <span class="token comment" spellcheck="true">#   upstream bakend{</span>
   <span class="token comment" spellcheck="true">#       ip_hash;</span>
   <span class="token comment" spellcheck="true">#       server 127.0.0.1:9090 down;   # down 表示该机器处于下线状态不可用</span>
   <span class="token comment" spellcheck="true">#       server 127.0.0.1:8080 weight=2;</span>
@@ -683,7 +683,7 @@ include /usr/share/nginx/modules/*.conf<span class="token punctuation">;</span> 
   <span class="token comment" spellcheck="true">#       server 192.168.0.103:8080 max_conns=1000;</span>
   <span class="token comment" spellcheck="true">#       server 127.0.0.1:7070 backup;  # 备份机；其他机器都不可用时，这台机器就上场了</span>
   <span class="token comment" spellcheck="true">#       server example.com my_dns_resolve;  # 指定域名解析器；my_dns_resolve需要在http节点配置resolver节点如：resolver 10.0.0.1;</span>
-  <span class="token comment" spellcheck="true">#   &amp;#125;</span>
+  <span class="token comment" spellcheck="true">#   }</span>
   <span class="token comment" spellcheck="true">#</span>
   <span class="token comment" spellcheck="true">#</span>
   <span class="token comment" spellcheck="true">#</span>
@@ -698,7 +698,7 @@ include /usr/share/nginx/modules/*.conf<span class="token punctuation">;</span> 
 </li>
 <li><p>第三部分2: http-server模块</p>
 <pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># server模块 </span>
-server <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+server <span class="token punctuation">{</span>
       listen       80 default_server<span class="token punctuation">;</span> <span class="token comment" spellcheck="true"># 监听端口</span>
       listen       <span class="token punctuation">[</span>::<span class="token punctuation">]</span>:80 default_server<span class="token punctuation">;</span>
       server_name  localhost
@@ -708,18 +708,18 @@ server <span class="token operator">&amp;</span><span class="token comment" spel
       include /etc/nginx/default.d/*.conf<span class="token punctuation">;</span>
       include /etc/nginx/default.d/*.conf<span class="token punctuation">;</span>
 
-      location / <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+      location / <span class="token punctuation">{</span>
 
-      <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+      <span class="token punctuation">}</span>
 
       error_page 404 /404.html<span class="token punctuation">;</span>
-          location <span class="token operator">=</span> /40x.html <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
-      <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+          location <span class="token operator">=</span> /40x.html <span class="token punctuation">{</span>
+      <span class="token punctuation">}</span>
 
       error_page 500 502 503 504 /50x.html<span class="token punctuation">;</span>
-          location <span class="token operator">=</span> /50x.html <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
-      <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
-  <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125; </span></code></pre>
+          location <span class="token operator">=</span> /50x.html <span class="token punctuation">{</span>
+      <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span> </code></pre>
 <pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 单文件 nginx.conf</span>
 </code></pre>
 </li>
@@ -765,7 +765,7 @@ drwxr-xr-x. 2 root root    6 Oct  3 13:15 default.d
 -rw-r--r--. 1 root root  664 Oct  3 13:15 uwsgi_params.default
 -rw-r--r--. 1 root root 3610 Oct  3 13:15 win-utf </code></pre>
 <p>在 nginx.conf配置中有这么一段话，其中表明了几个文件夹的作用<br>/etc/nginx/default.d/ 主要存放location<br>/etc/nginx/conf.d/ 主要存放server<br>否则会报错 <font color='red'>nginx: [emerg] “user” directive is not allowed here in /etc/nginx/conf.d/nginx.conf:5</font></p>
-<pre class=" language-bash"><code class="language-bash">http <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+<pre class=" language-bash"><code class="language-bash">http <span class="token punctuation">{</span>
     log_format  main  <span class="token string">'<span class="token variable">$remote_addr</span> - <span class="token variable">$remote_user</span> [<span class="token variable">$time_local</span>] "<span class="token variable">$request</span>" '</span>
                       <span class="token string">'<span class="token variable">$status</span> <span class="token variable">$body_bytes_sent</span> "<span class="token variable">$http_referer</span>" '</span>
                       <span class="token string">'"<span class="token variable">$http_user_agent</span>" "<span class="token variable">$http_x_forwarded_for</span>"'</span><span class="token punctuation">;</span>
@@ -786,7 +786,7 @@ drwxr-xr-x. 2 root root    6 Oct  3 13:15 default.d
     <span class="token comment" spellcheck="true"># for more information</span>
     include /etc/nginx/conf.d/*.conf<span class="token punctuation">;</span>   <span class="token comment" spellcheck="true"># 存放server</span>
 
-    server <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+    server <span class="token punctuation">{</span>
         listen       80<span class="token punctuation">;</span>
         server_name  10.0.5.233<span class="token punctuation">;</span>
         root         /usr/share/nginx/html<span class="token punctuation">;</span>
@@ -794,18 +794,18 @@ drwxr-xr-x. 2 root root    6 Oct  3 13:15 default.d
         <span class="token comment" spellcheck="true"># Load configuration files for the default server block.</span>
         include /etc/nginx/default.d/*.conf<span class="token punctuation">;</span> <span class="token comment" spellcheck="true"># 存放location</span>
 
-        location / <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+        location / <span class="token punctuation">{</span>
            root html<span class="token punctuation">;</span>
            proxy_pass http://127.0.0.1:8001<span class="token punctuation">;</span>
            index index.html index.htm<span class="token punctuation">;</span>
-        <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
-    <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span></code></pre>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span></code></pre>
 <hr>
 <p>在/etc/nginx/nginx.conf中存放了一些初始的配置，可以选择在在这个文件中直接添加server来配置nginx，也可以将自己的server单独写到conf.d/文件夹中去，或者写到nginx.conf.default中去</p>
 <h3 id="location模块配置"><a href="#location模块配置" class="headerlink" title="location模块配置"></a>location模块配置</h3><p>配置内容如下</p>
-<pre class=" language-bash"><code class="language-bash">location <span class="token punctuation">[</span> <span class="token operator">=</span> <span class="token operator">|</span> ~ <span class="token operator">|</span> ~* <span class="token operator">|</span> ^~ <span class="token punctuation">]</span>  uri <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+<pre class=" language-bash"><code class="language-bash">location <span class="token punctuation">[</span> <span class="token operator">=</span> <span class="token operator">|</span> ~ <span class="token operator">|</span> ~* <span class="token operator">|</span> ^~ <span class="token punctuation">]</span>  uri <span class="token punctuation">{</span>
 
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span></code></pre>
+<span class="token punctuation">}</span></code></pre>
 <p>= 用于不需要正则表达式的uri 要求严格匹配，如果匹配成功，就往下搜索并处理请求<br>~ 用于需要正则表达式的uri 区分大小写<br><del>* 用于需要正则表达式的uri 不区分大小写<br>^</del> 用于不需要正则表达式的uri，要求Nginx服务器找到标识uri和请求字符串匹配度最高的location后，立即使用此location处理请求，而不在使用location块中的正则uri和请求字符串做匹配</p>
 <h2 id="配置实例"><a href="#配置实例" class="headerlink" title="配置实例"></a>配置实例</h2><p><img src="https://img2018.cnblogs.com/blog/1381066/201906/1381066-20190627141117429-435885754.png"></p>
 <h2 id="nginx错误"><a href="#nginx错误" class="headerlink" title="nginx错误"></a>nginx错误</h2><pre class=" language-bash"><code class="language-bash">nginx bind<span class="token punctuation">(</span><span class="token punctuation">)</span> to 0.0.0.0:**** failed <span class="token punctuation">(</span>13: Permission denied<span class="token punctuation">)</span></code></pre>

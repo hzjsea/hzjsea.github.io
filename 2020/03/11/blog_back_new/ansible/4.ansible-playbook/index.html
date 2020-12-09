@@ -680,20 +680,20 @@ systemctl start httpd.service
 
   <span class="token key atrule">tasks</span><span class="token punctuation">:</span>
   <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> add user
-    <span class="token key atrule">user</span><span class="token punctuation">:</span> name=&amp;<span class="token comment" spellcheck="true">#123;&amp;#123; username &amp;#125;&amp;#125; state=present</span>
+    <span class="token key atrule">user</span><span class="token punctuation">:</span> name=<span class="token punctuation">{</span><span class="token punctuation">{</span> username <span class="token punctuation">}</span><span class="token punctuation">}</span> state=present
     <span class="token key atrule">when</span><span class="token punctuation">:</span> ansible_os_family == "Debian"
   <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> set password
-    <span class="token key atrule">shell</span><span class="token punctuation">:</span> echo &amp;<span class="token comment" spellcheck="true">#123;&amp;#123; password &amp;#125;&amp;#125; |passwd --stdin &amp;#123;&amp;#123; username &amp;#125;&amp;#125;</span>
+    <span class="token key atrule">shell</span><span class="token punctuation">:</span> echo <span class="token punctuation">{</span><span class="token punctuation">{</span> password <span class="token punctuation">}</span><span class="token punctuation">}</span> <span class="token punctuation">|</span>passwd <span class="token punctuation">-</span><span class="token punctuation">-</span>stdin <span class="token punctuation">{</span><span class="token punctuation">{</span> username <span class="token punctuation">}</span><span class="token punctuation">}</span>
   <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> install httpd php
-    <span class="token key atrule">yum</span><span class="token punctuation">:</span> name=&amp;<span class="token comment" spellcheck="true">#123;&amp;#123; item &amp;#125;&amp;#125; state=present</span>
+    <span class="token key atrule">yum</span><span class="token punctuation">:</span> name=<span class="token punctuation">{</span><span class="token punctuation">{</span> item <span class="token punctuation">}</span><span class="token punctuation">}</span> state=present
     <span class="token key atrule">with_items</span><span class="token punctuation">:</span>
       <span class="token punctuation">-</span> httpd
       <span class="token punctuation">-</span> php
   <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> add two users
-    <span class="token key atrule">user</span><span class="token punctuation">:</span> name=&amp;<span class="token comment" spellcheck="true">#123;&amp;#123; item &amp;#125;&amp;#125; state=present groups=&amp;#123;&amp;#123; item.groups &amp;#125;&amp;#125;</span>
+    <span class="token key atrule">user</span><span class="token punctuation">:</span> name=<span class="token punctuation">{</span><span class="token punctuation">{</span> item <span class="token punctuation">}</span><span class="token punctuation">}</span> state=present groups=<span class="token punctuation">{</span><span class="token punctuation">{</span> item.groups <span class="token punctuation">}</span><span class="token punctuation">}</span>
     <span class="token key atrule">with_items</span><span class="token punctuation">:</span>
-    <span class="token punctuation">-</span> &amp;<span class="token comment" spellcheck="true">#123; name: 'user1', groups: 'group1'&amp;#125;</span>
-    <span class="token punctuation">-</span> &amp;<span class="token comment" spellcheck="true">#123; name: 'user2', groups: 'group2'&amp;#125;</span>
+    <span class="token punctuation">-</span> <span class="token punctuation">{</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> <span class="token string">'user1'</span><span class="token punctuation">,</span> <span class="token key atrule">groups</span><span class="token punctuation">:</span> <span class="token string">'group1'</span><span class="token punctuation">}</span>
+    <span class="token punctuation">-</span> <span class="token punctuation">{</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> <span class="token string">'user2'</span><span class="token punctuation">,</span> <span class="token key atrule">groups</span><span class="token punctuation">:</span> <span class="token string">'group2'</span><span class="token punctuation">}</span>
 </code></pre>
 <p>with_items 是tasks中的内置变量<br>name 是每一个task任务都必须要有的名字</p>
 <h3 id="例子3"><a href="#例子3" class="headerlink" title="例子3"></a>例子3</h3><pre class=" language-yaml"><code class="language-yaml">vim /root/third.yml
@@ -753,7 +753,7 @@ ansible-playbook xx.yaml -t stophttp,rehttpd</code></pre>
 
     <span class="token key atrule">tasks</span><span class="token punctuation">:</span>
       <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> install  package
-        <span class="token key atrule">yum</span><span class="token punctuation">:</span> name=&amp;<span class="token comment" spellcheck="true">#123;&amp;#123; package &amp;#125;&amp;#125;·</span>
+        <span class="token key atrule">yum</span><span class="token punctuation">:</span> name=<span class="token punctuation">{</span><span class="token punctuation">{</span> package <span class="token punctuation">}</span><span class="token punctuation">}</span>·
         <span class="token key atrule">tags</span><span class="token punctuation">:</span> installpackage
 
 <span class="token comment" spellcheck="true"># ansible-playbook  xx.yaml -e 'package=httpd'</span></code></pre>
@@ -768,7 +768,7 @@ ansible-playbook xx.yaml -t stophttp,rehttpd</code></pre>
       <span class="token punctuation">-</span> <span class="token key atrule">package</span><span class="token punctuation">:</span> httpd
     <span class="token key atrule">tasks</span><span class="token punctuation">:</span>
       <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> install  package
-        <span class="token key atrule">yum</span><span class="token punctuation">:</span> name=&amp;<span class="token comment" spellcheck="true">#123;&amp;#123; package &amp;#125;&amp;#125;·</span>
+        <span class="token key atrule">yum</span><span class="token punctuation">:</span> name=<span class="token punctuation">{</span><span class="token punctuation">{</span> package <span class="token punctuation">}</span><span class="token punctuation">}</span>·
         <span class="token key atrule">tags</span><span class="token punctuation">:</span> installpackage
 
 <span class="token comment" spellcheck="true"># ansible-playbook xx.yaml</span></code></pre>
@@ -786,10 +786,10 @@ ansible-playbook xx.yaml -t stophttp,rehttpd</code></pre>
       ¦- vars.yml
     tasks:
       - name: <span class="token function">install</span>  package
-        yum: name<span class="token operator">=</span><span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;&amp;#123; app1 &amp;#125;&amp;#125;·</span>
+        yum: name<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span> app1 <span class="token punctuation">}</span><span class="token punctuation">}</span>·
         tags: installpackage
       - name: <span class="token function">install</span>  package
-        yum: name<span class="token operator">=</span><span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;&amp;#123; app2 &amp;#125;&amp;#125;·</span>
+        yum: name<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span> app2 <span class="token punctuation">}</span><span class="token punctuation">}</span>·
         tags: installpackage
 
 <span class="token comment" spellcheck="true"># ansible-playbook xx.yml</span></code></pre>
@@ -802,7 +802,7 @@ ansible-playbook xx.yaml -t stophttp,rehttpd</code></pre>
 <span class="token function">cp</span> /etc/nginx/nginx.conf /etc/ansible/templates/nginx.conf.j2
 <span class="token comment" spellcheck="true"># 修改监听端口</span>
 <span class="token function">vi</span> /etc/ansible/templates/nginx.conf 
-listen 22<span class="token punctuation">;</span> <span class="token operator">=</span><span class="token operator">></span> listen <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;&amp;#123; port &amp;#125;&amp;#125;</span>
+listen 22<span class="token punctuation">;</span> <span class="token operator">=</span><span class="token operator">></span> listen <span class="token punctuation">{</span><span class="token punctuation">{</span> port <span class="token punctuation">}</span><span class="token punctuation">}</span>
 <span class="token comment" spellcheck="true"># 编写xx.yml vi /tmp/xx.yml</span>
   ---
   - name: get_nginx_conf
@@ -828,17 +828,17 @@ listen 22<span class="token punctuation">;</span> <span class="token operator">=
 <p><font color='red'>根据CPU数量动态加载nginx</font></p>
 <pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 查看cpu数量</span>
 ➜  /tmp ansible all -m setup -a <span class="token string">"filter=*cpu*"</span>
-10.0.28.58 <span class="token operator">|</span> SUCCESS <span class="token operator">=</span><span class="token operator">></span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
-    <span class="token string">"ansible_facts"</span><span class="token keyword">:</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+10.0.28.58 <span class="token operator">|</span> SUCCESS <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
+    <span class="token string">"ansible_facts"</span><span class="token keyword">:</span> <span class="token punctuation">{</span>
         <span class="token string">"ansible_processor_vcpus"</span><span class="token keyword">:</span> 2
-    <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;,</span>
+    <span class="token punctuation">}</span>,
     <span class="token string">"changed"</span><span class="token keyword">:</span> <span class="token boolean">false</span>
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+<span class="token punctuation">}</span>
 
 <span class="token comment" spellcheck="true"># 根据CPU数量动态加载</span>
 <span class="token function">vi</span> /etc/ansible/template/nginx.conf.j2
 
-worker_processes  <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;&amp;#123; ansible_processor_vcpus**2 &amp;#125;&amp;#125;;</span>
+worker_processes  <span class="token punctuation">{</span><span class="token punctuation">{</span> ansible_processor_vcpus**2 <span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
 
 <span class="token comment" spellcheck="true"># 启动</span>
 ansible-playbook  xx.yml
@@ -871,36 +871,36 @@ root     29960  0.0  0.0 112712   964 pts/2    S+   17:17   0:00 <span class="to
     ¦ ¦ ¦ template<span class="token punctuation">:</span> src=/etc/ansible/templates/template.conf.j2 dest=/data/test.conf</code></pre>
 <pre class=" language-bash"><code class="language-bash"><span class="token function">vi</span> /etc/ansible/template.conf.j2
 
-  <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;% for port in ports %&amp;#125;</span>
-  ▏ <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;% if port == 62 %&amp;#125;</span>
-  ▏ ▏ ▏ server <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+  <span class="token punctuation">{</span>% <span class="token keyword">for</span> port <span class="token keyword">in</span> ports %<span class="token punctuation">}</span>
+  ▏ <span class="token punctuation">{</span>% <span class="token keyword">if</span> port <span class="token operator">==</span> 62 %<span class="token punctuation">}</span>
+  ▏ ▏ ▏ server <span class="token punctuation">{</span>
   ▏ ▏ ▏ ▏ ▏ ssh_port <span class="token operator">=</span> 67
-  ▏ ▏ ▏ <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
-  ▏ <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;% else %&amp;#125;</span>
-  ▏ server <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
-  ▏ ▏ ssh_port <span class="token operator">=</span>  <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;&amp;#123;port&amp;#125;&amp;#125;</span>
-  ▏ <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
-  ▏ <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;%endif%&amp;#125;</span>
-  <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;% endfor %&amp;#125;</span></code></pre>
+  ▏ ▏ ▏ <span class="token punctuation">}</span>
+  ▏ <span class="token punctuation">{</span>% <span class="token keyword">else</span> %<span class="token punctuation">}</span>
+  ▏ server <span class="token punctuation">{</span>
+  ▏ ▏ ssh_port <span class="token operator">=</span>  <span class="token punctuation">{</span><span class="token punctuation">{</span>port<span class="token punctuation">}</span><span class="token punctuation">}</span>
+  ▏ <span class="token punctuation">}</span>
+  ▏ <span class="token punctuation">{</span>%endif%<span class="token punctuation">}</span>
+  <span class="token punctuation">{</span>% endfor %<span class="token punctuation">}</span></code></pre>
 <p>输出结果</p>
 <pre class=" language-bash"><code class="language-bash">➜  /tmp ansible all -m shell -a <span class="token string">"cat /data/test.conf"</span>
 
 10.0.28.58 <span class="token operator">|</span> CHANGED <span class="token operator">|</span> rc<span class="token operator">=</span>0 <span class="token operator">>></span>
-                        server <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+                        server <span class="token punctuation">{</span>
                 sh_port <span class="token operator">=</span> 62
-        <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
-                        server <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+        <span class="token punctuation">}</span>
+                        server <span class="token punctuation">{</span>
                 ssh_port <span class="token operator">=</span>  99
-        <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
-                        server <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+        <span class="token punctuation">}</span>
+                        server <span class="token punctuation">{</span>
                 ssh_port <span class="token operator">=</span>  1010
-        <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span></code></pre>
+        <span class="token punctuation">}</span></code></pre>
 <h2 id="ansible-playbook-with-items-循环"><a href="#ansible-playbook-with-items-循环" class="headerlink" title="ansible-playbook with_items 循环"></a>ansible-playbook with_items 循环</h2><p>如果我们要创建多个文件，频繁的使用</p>
 <pre class=" language-bash"><code class="language-bash">file: name<span class="token operator">=</span>/tmp/xxx 
 file: name<span class="token operator">=</span>/tmp/yyy
 file: name<span class="token operator">=</span>/tmp/qqq </code></pre>
 <p>这样的做法是不合理的，最好的做法是使用循环</p>
-<pre class=" language-yml"><code class="language-yml">file: name=/tmp/&#123;&#123; item &#125;&#125;
+<pre class=" language-yml"><code class="language-yml">file: name=/tmp/{{ item }}
 with_items:
  - file1
  - file2
@@ -914,19 +914,19 @@ with_items:
   ··
     tasks:
       - name: create files
-        file: name=&#123;&#123; item &#125;&#125; state=touch
+        file: name={{ item }} state=touch
         with_items:
           - file1
           - file2
           - file3
       - name: install packages
-        yum: name=&#123;&#123; item &#125;&#125;
+        yum: name={{ item }}
         with_items:
           - nginx
           - sl
           - hping3</code></pre>
 <p><font color='red'>字典循环</font></p>
-<pre class=" language-yml"><code class="language-yml">file: name=/tmp/&#123;&#123; item &#125;&#125;
+<pre class=" language-yml"><code class="language-yml">file: name=/tmp/{{ item }}
 with_items:
  - file1
  - file2
@@ -939,19 +939,19 @@ with_items:
 
     tasks:
       - name: create files
-        file: name=/&#123;&#123; item.dest &#125;&#125;/&#123;&#123; item.name &#125;&#125; state=directory
+        file: name=/{{ item.dest }}/{{ item.name }} state=directory
         with_items:
-          - &#123;dest: '/tmp/',name: 'xxx'&#125;
-          - &#123;dest: '/etc/',name: 'yyy'&#125;
-          - &#123;dest: '/hzj/',name: 'test'&#125;
-          - &#123;dest: '/qqq/',name: 'xxx'&#125;</code></pre>
+          - {dest: '/tmp/',name: 'xxx'}
+          - {dest: '/etc/',name: 'yyy'}
+          - {dest: '/hzj/',name: 'test'}
+          - {dest: '/qqq/',name: 'xxx'}</code></pre>
 <h2 id="ansible-playbook-使用role角色"><a href="#ansible-playbook-使用role角色" class="headerlink" title="ansible-playbook 使用role角色"></a>ansible-playbook 使用role角色</h2><p>role角色的存在主要是层次性 结构化的组织playbook,roles根据层次型结构自动装在变量文件 tasks handlers等等<br>比如我们可以将nginx mysql 这些服务模块分成一类一类的模块(我们称之为角色),使用主控文件夹yaml来控制我们使用哪些角色</p>
 <pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 创建roles文件夹</span>
 <span class="token function">cd</span> /etc/ansible
 <span class="token function">mkdir</span> roles
 
 <span class="token comment" spellcheck="true"># 创建角色文件夹，角色文件夹中需要存在tasks handlers等任务文件夹</span>
-<span class="token function">mkdir</span> -p ./roles/<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;nginx,uwsgi,mysql&amp;#125;/&amp;#123;tasks,templates,vars,files&amp;#125; #递归创建目录结构的命令</span>
+<span class="token function">mkdir</span> -p ./roles/<span class="token punctuation">{</span>nginx,uwsgi,mysql<span class="token punctuation">}</span>/<span class="token punctuation">{</span>tasks,templates,vars,files<span class="token punctuation">}</span> <span class="token comment" spellcheck="true">#递归创建目录结构的命令</span>
 
 <span class="token comment" spellcheck="true"># 查看目录结构</span>
 ➜  ansible tree ./roles
@@ -976,9 +976,9 @@ with_items:
 <h3 id="项目结构"><a href="#项目结构" class="headerlink" title="项目结构"></a>项目结构</h3><p><img src="http://img.noback.top/2020-03-12-22-15-08.png" alt="2020-03-12-22-15-08"></p>
 <p>roles下面的子文件夹<br><img src="http://img.noback.top/2020-03-12-22-16-45.png" alt="2020-03-12-22-16-45"></p>
 <h2 id="报错总结"><a href="#报错总结" class="headerlink" title="报错总结"></a>报错总结</h2><h3 id="远端机器上默认的python环境问题"><a href="#远端机器上默认的python环境问题" class="headerlink" title="远端机器上默认的python环境问题"></a>远端机器上默认的python环境问题</h3><p>报错内容</p>
-<pre class=" language-bash"><code class="language-bash">fatal: <span class="token punctuation">[</span>10.0.28.58<span class="token punctuation">]</span>: FAILED<span class="token operator">!</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;"changed": false, "msg": "The Python 2 bindings for rpm are needed for this module. If you r</span>
-equire Python 3 support use the <span class="token variable"><span class="token variable">`</span>dnf<span class="token variable">`</span></span> Ansible module instead<span class="token punctuation">..</span> The Python 2 yum module is needed <span class="token keyword">for</span> this module. If you requ
-ire Python 3 support use the <span class="token variable"><span class="token variable">`</span>dnf<span class="token variable">`</span></span> Ansible module instead."<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span></code></pre>
+<pre class=" language-bash"><code class="language-bash">fatal: <span class="token punctuation">[</span>10.0.28.58<span class="token punctuation">]</span>: FAILED<span class="token operator">!</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span><span class="token string">"changed"</span><span class="token keyword">:</span> false, <span class="token string">"msg"</span><span class="token keyword">:</span> <span class="token string">"The Python 2 bindings for rpm are needed for this module. If you r
+equire Python 3 support use the <span class="token variable"><span class="token variable">`</span>dnf<span class="token variable">`</span></span> Ansible module instead.. The Python 2 yum module is needed for this module. If you requ
+ire Python 3 support use the <span class="token variable"><span class="token variable">`</span>dnf<span class="token variable">`</span></span> Ansible module instead."</span><span class="token punctuation">}</span></code></pre>
 <p>远端机器上默认的python环境为python3，但是ansible支持的是python2<br>这里要规定一下python的环境</p>
 <pre class=" language-bash"><code class="language-bash"><span class="token function">vi</span> /etc/ansible/hosts
 

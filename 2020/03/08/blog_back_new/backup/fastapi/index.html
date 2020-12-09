@@ -477,27 +477,27 @@ class itemmodel(BaseModel):
 # 定义根目录 方法为get 返回helloworld
 @app.get("/")
 def get_first():
-    return &#123;
+    return {
         "hello": "world"
-    &#125;
+    }
 
 
 # 定义耳机目录以及输入参数
 # 定义方法，请求参数类型
-@app.get("/items/&#123;item_id&#125;")
+@app.get("/items/{item_id}")
 def get_second(item_id: int, itemmodel: itemmodel):
-    return &#123;
+    return {
         "item_id": item_id,
         "item": itemmodel.name
-    &#125;
+    }
 
 # 请求put
-@app.put("/items/&#123;item_id&#125;")
+@app.put("/items/{item_id}")
 def update_item(item_id: int, itemmodel: itemmodel):
-    return &#123;
+    return {
         "item_name": itemmodel.name,
         "item_id": item_id
-    &#125;
+    }
 </code></pre>
 <p>运行项目<br>这里我所创建的py文件是server.py,所以启动方式是这样的 –reload的作用是，当代码变更的时候,服务器会重新开启</p>
 <pre class=" language-py"><code class="language-py">uvicorn server:app --reload</code></pre>
@@ -516,45 +516,45 @@ app = FastAPI()
 @app.get("/")
 # 使用异步请求
 async def root():
-    return &#123;
+    return {
         "message":"hello world"
-    &#125;
+    }
 
 # 路径参数
-@app.get('/items/&#123;item_id&#125;')
+@app.get('/items/{item_id}')
 async def get_single_item(item_id):
-    return &#123;
+    return {
         "item_id" : item_id 
-    &#125;
+    }
 
 # 路径参数+ 参数类型限制
-@app.get('/items/&#123;item_str&#125;')
+@app.get('/items/{item_str}')
 async def get_str_item(item_str:str):
-    return &#123;
+    return {
         "item_str": item_str
-    &#125;
+    }
 
 # 参数类型限制表示，你在url中输入的内容是string类型的，他会自动帮你转换其他类型的，比如说这里的 string - > int 
-@app.get('/items/&#123;item_number&#125;')
+@app.get('/items/{item_number}')
 async def get_number_item(item_number:int):
-    return &#123;
+    return {
         "item_number": item_number
-    &#125;
+    }
 
 
 # 路径参数的默认值
-@app.get('/items/&#123;item_number&#125;')
+@app.get('/items/{item_number}')
 async def get_number_item(item_number: int=1):
     message = "这是默认的"
     if item_number == 1:
         message = "你输出了默认的参数值 1"
     else:
-        message = "你输出了其他的参数&#123;&#125;".format(item_number)
+        message = "你输出了其他的参数{}".format(item_number)
 
-    return &#123;
+    return {
         "message":message
 
-    &#125;
+    }
 
 </code></pre>
 <h4 id="路径参数的顺序"><a href="#路径参数的顺序" class="headerlink" title="路径参数的顺序"></a>路径参数的顺序</h4><p>fastapi的路径参数如果仅仅只有上面的内容，那么设计是不合理的，比如当你创建如下两个路径</p>
@@ -563,21 +563,21 @@ from fastapi import  FastAPI
 
 app  = FastAPI()
 
-static_url = "http://127.0.0.1:8000&#123;0&#125;"
+static_url = "http://127.0.0.1:8000{0}"
 
 @app.get("/")
 async def root():
-    return &#123;
+    return {
         "path1":static_url.format("/name/me"),
-        "path":static_url.format("/name/&#123;you can input something&#125;")
-    &#125;
+        "path":static_url.format("/name/{you can input something}")
+    }
 @app.get("/name/me")
 async def return_name():
-    return &#123;"name":"this name is me "&#125;
+    return {"name":"this name is me "}
 
-@app.get("/name/&#123;name&#125;")
+@app.get("/name/{name}")
 async def return_name(name:str):
-    return &#123;"name":"you  input name is &#123;&#125;".format(name)&#125;</code></pre>
+    return {"name":"you  input name is {}".format(name)}</code></pre>
 <p>这里在定制了两个路径参数其中第一个<code>/name/me</code> 返回this name is me  第二个<code>/name&#123;name&#125;</code> 返回 you input name is {name}<br>而fastapi的执行顺序是从上到下的，如果我们把第二个接口放到第一位，当我们输入<code>me</code>的时候，程序无法判断我们使用的是哪个接口</p>
 <p><font color='red'>因此，一般有实例的api需要放在最前面</font></p>
 <h3 id="枚举-预定义值"><a href="#枚举-预定义值" class="headerlink" title="枚举 预定义值"></a>枚举 预定义值</h3><p><font color='red'>类似于选项框类的，需要预定义值得时候，可以使用枚举</font></p>
@@ -591,21 +591,21 @@ class PeopleModel(str,Enum):
     age = 12,
     text = 'like PeopleModel'
 
-@app.get('/items/&#123;model_name&#125;')
+@app.get('/items/{model_name}')
 def get_people(model_name: PeopleModel):
     if model_name == PeopleModel.name:
-        return &#123;"model_name":model_name,"input_message":'show PeopleModel.name'&#125;
+        return {"model_name":model_name,"input_message":'show PeopleModel.name'}
     if model_name == PeopleModel.age:
-        return &#123;"model_name":model_name,"input_message":'show PeopleModel.age'&#125;
+        return {"model_name":model_name,"input_message":'show PeopleModel.age'}
     if model_name == PeopleModel.like:
-        return &#123;"model_name":model_name,"input_message":'show PeopleModel.like'&#125;</code></pre>
+        return {"model_name":model_name,"input_message":'show PeopleModel.like'}</code></pre>
 <p>在python3.4之后其实就已经支持枚举类型了，和平常的枚举使用情况一样，没什么差别</p>
 <h3 id="查询参数-Query"><a href="#查询参数-Query" class="headerlink" title="查询参数 Query"></a>查询参数 Query</h3><p>和路径参数不同的是，我们可以在方法中输入请求方法中没有出现过的参数，这些参数会被解释成查询参数</p>
 <pre class=" language-py"><code class="language-py">from fastapi import FastAPI
 
 app = FastAPI()
 
-fake_items_db = [&#123;"item_name": "Foo"&#125;, &#123;"item_name": "Bar"&#125;, &#123;"item_name": "Baz"&#125;]
+fake_items_db = [{"item_name": "Foo"}, {"item_name": "Bar"}, {"item_name": "Baz"}]
 
 # 这里可以使用查询参数
 # 请求形式 http://127.0.0.1:8000/items/?skip=0&limit=1
@@ -617,7 +617,7 @@ async def read_item(skip: int = 1,limit: int = 2):
 
 # 这里只有路径参数
 # 请求形式 http://127.0.0.1:8000/items/1/2
-@app.get('/items/&#123;skip&#125;/&#123;limit&#125;')
+@app.get('/items/{skip}/{limit}')
 async def read_item(skip: int ,limit: int):
     return fake_items_db[skip:skip+limit]</code></pre>
 <h3 id="查询参数中的可选与必选"><a href="#查询参数中的可选与必选" class="headerlink" title="查询参数中的可选与必选"></a>查询参数中的可选与必选</h3><p>在定义查询参数的时候，我们定义三种查询参数的形式</p>
@@ -687,11 +687,11 @@ async def create_item(item: Item):
 app = FastAPI()
 
 name_server = [
-    &#123;"name":"hzj"&#125;,
-    &#123;"name":"xxx"&#125;,
-    &#123;"name":"yyy"&#125;,
-    &#123;"name":"qqq"&#125;,
-    &#123;"name":"fff"&#125;,
+    {"name":"hzj"},
+    {"name":"xxx"},
+    {"name":"yyy"},
+    {"name":"qqq"},
+    {"name":"fff"},
 ]
 @app.get('/user/')
 def get_user(name: str):
@@ -699,21 +699,21 @@ def get_user(name: str):
         if name in name_s.values():
             return name_s
         else:
-            return &#123;"msg":"不存在你要查询的内容"&#125;
+            return {"msg":"不存在你要查询的内容"}
 
 # url  http://127.0.0.1:8000/user/?name=hzj
-# res &#123;name: "hzj"&#125;</code></pre>
+# res {name: "hzj"}</code></pre>
 <p>但是现在我们要把name这个查询参数做字符上的限制</p>
 <pre class=" language-py"><code class="language-py">from fastapi import FastAPI
 from fastapi import Query
 app = FastAPI()
 
 name_server = [
-    &#123;"name":"hzj"&#125;,
-    &#123;"name":"xxx"&#125;,
-    &#123;"name":"yyy"&#125;,
-    &#123;"name":"qqq"&#125;,
-    &#123;"name":"fff"&#125;,
+    {"name":"hzj"},
+    {"name":"xxx"},
+    {"name":"yyy"},
+    {"name":"qqq"},
+    {"name":"fff"},
 ]
 
 @app.get('/user/')
@@ -722,7 +722,7 @@ def get_user(name: str = Query(None,max_length=3,min_length=1,)):
         if name in name_s.values():
             return name_s
         else:
-            return &#123;"msg":"不存在你要查询的内容"&#125;
+            return {"msg":"不存在你要查询的内容"}
 
 ## 其中None为查询参数name 的默认值</code></pre>
 <p><font color='red'>比如现在我们用上面的代码中设置请求的查询参数最大长度是1个字符，使用swagger再次查询hzj这个名字是否存在于name_server中的时候，会出现报错</font></p>
@@ -760,26 +760,26 @@ def get_user(name: str = Query(...,max_length=1,min_length=1,)):</code></pre>
 <h3 id="路径参数和数值验证"><a href="#路径参数和数值验证" class="headerlink" title="路径参数和数值验证"></a>路径参数和数值验证</h3><p>在路径参数中，同样也可以像Query一样做参数上的约束</p>
 <pre class=" language-py"><code class="language-py">from fastapi import FastAPI, Path, Query
 app = FastAPI()
-@app.get("/items/&#123;item_id&#125;")
+@app.get("/items/{item_id}")
 async def read_items(
     item_id: int = Path(..., title="The ID of the item to get"),
     q: str = Query(None, alias="item-query"),
 ):
-    results = &#123;"item_id": item_id&#125;
+    results = {"item_id": item_id}
     if q:
-        results.update(&#123;"q": q&#125;)
+        results.update({"q": q})
     return results</code></pre>
 <p>Path用于限制路径参数 …表示该参数是必填的</p>
 <p>如果你想要让q也称为必填的参数，你可以这样写</p>
 <pre class=" language-python"><code class="language-python"><span class="token keyword">from</span> fastapi <span class="token keyword">import</span> FastAPI<span class="token punctuation">,</span> Path<span class="token punctuation">,</span> Query
 app <span class="token operator">=</span> FastAPI<span class="token punctuation">(</span><span class="token punctuation">)</span>
-@app<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">"/items/&amp;#123;item_id&amp;#125;"</span><span class="token punctuation">)</span>
+@app<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">"/items/{item_id}"</span><span class="token punctuation">)</span>
 <span class="token keyword">async</span> <span class="token keyword">def</span> <span class="token function">read_items</span><span class="token punctuation">(</span>
     item_id<span class="token punctuation">:</span> int <span class="token operator">=</span> Path<span class="token punctuation">(</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">,</span> title<span class="token operator">=</span><span class="token string">"The ID of the item to get"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
     q<span class="token punctuation">:</span> str <span class="token operator">=</span> Query<span class="token punctuation">(</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">,</span> alias<span class="token operator">=</span><span class="token string">"item-query"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
 <span class="token punctuation">)</span><span class="token punctuation">:</span>
-    results <span class="token operator">=</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;"item_id": item_id&amp;#125;</span>
-    results<span class="token punctuation">.</span>update<span class="token punctuation">(</span><span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;"q": q&amp;#125;)</span>
+    results <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token string">"item_id"</span><span class="token punctuation">:</span> item_id<span class="token punctuation">}</span>
+    results<span class="token punctuation">.</span>update<span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token string">"q"</span><span class="token punctuation">:</span> q<span class="token punctuation">}</span><span class="token punctuation">)</span>
     <span class="token keyword">return</span> results</code></pre>
 <p>这和我们之前写的必须查询参数是一样的</p>
 <pre class=" language-python"><code class="language-python">    q<span class="token punctuation">:</span> str <span class="token operator">=</span> Query<span class="token punctuation">(</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">,</span> alias<span class="token operator">=</span><span class="token string">"item-query"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
@@ -789,12 +789,12 @@ app <span class="token operator">=</span> FastAPI<span class="token punctuation"
 <p>当然你也可以这样写</p>
 <pre class=" language-python"><code class="language-python"><span class="token keyword">from</span> fastapi <span class="token keyword">import</span> FastAPI<span class="token punctuation">,</span> Path<span class="token punctuation">,</span> Query
 app <span class="token operator">=</span> FastAPI<span class="token punctuation">(</span><span class="token punctuation">)</span>
-@app<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">"/items/&amp;#123;item_id&amp;#125;"</span><span class="token punctuation">)</span>
+@app<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">"/items/{item_id}"</span><span class="token punctuation">)</span>
 <span class="token keyword">async</span> <span class="token keyword">def</span> <span class="token function">read_items</span><span class="token punctuation">(</span>
     q<span class="token punctuation">:</span> str<span class="token punctuation">,</span>item_id<span class="token punctuation">:</span> int <span class="token operator">=</span> Path<span class="token punctuation">(</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">,</span> title<span class="token operator">=</span><span class="token string">"The ID of the item to get"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
 <span class="token punctuation">)</span><span class="token punctuation">:</span>
-    results <span class="token operator">=</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;"item_id": item_id&amp;#125;</span>
-    results<span class="token punctuation">.</span>update<span class="token punctuation">(</span><span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;"q": q&amp;#125;)</span>
+    results <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token string">"item_id"</span><span class="token punctuation">:</span> item_id<span class="token punctuation">}</span>
+    results<span class="token punctuation">.</span>update<span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token string">"q"</span><span class="token punctuation">:</span> q<span class="token punctuation">}</span><span class="token punctuation">)</span>
     <span class="token keyword">return</span> results</code></pre>
 <p><font color='red'>数值验证</font></p>
 <pre class=" language-py"><code class="language-py">from fastapi import FastAPI, Path, Query
@@ -802,16 +802,16 @@ app <span class="token operator">=</span> FastAPI<span class="token punctuation"
 app = FastAPI()
 
 
-@app.get("/items/&#123;item_id&#125;")
+@app.get("/items/{item_id}")
 async def read_items(
     *,
     item_id: int = Path(..., title="The ID of the item to get", ge=0, le=1000),
     q: str,
     size: float = Query(..., gt=0, lt=10.5)
 ):
-    results = &#123;"item_id": item_id&#125;
+    results = {"item_id": item_id}
     if q:
-        results.update(&#123;"q": q&#125;)
+        results.update({"q": q})
     return results</code></pre>
 <h3 id=""><a href="#" class="headerlink" title="*"></a>*</h3><p>这边这个<code>*</code>做了什么动作</p>
 <p><font color='red'>文档里面说这个*没有做任何的动作。只是声明了后面所有传入的参数都为键值对的形式传入</font></p>
@@ -833,18 +833,18 @@ class Item(BaseModel):
     tax: float = None
 
 
-@app.put("/items/&#123;item_id&#125;")
+@app.put("/items/{item_id}")
 async def update_item(
     *,
     item_id: int = Path(..., title="The ID of the item to get", ge=0, le=1000),
     q: str = None,
     item: Item = None,
 ):
-    results = &#123;"item_id": item_id&#125;
+    results = {"item_id": item_id}
     if q:
-        results.update(&#123;"q": q&#125;)
+        results.update({"q": q})
     if item:
-        results.update(&#123;"item": item&#125;)
+        results.update({"item": item})
     return results</code></pre>
 <p>return values<br><img src="http://img.noback.top/2020-03-08-15-13-05.png" alt="2020-03-08-15-13-05"></p>
 <pre class=" language-py"><code class="language-py">from fastapi import FastAPI
@@ -865,25 +865,25 @@ class User(BaseModel):
 
 @app.get('/')
 async def root():
-    return &#123;"hello":"hello world"&#125;
+    return {"hello":"hello world"}
 
 # 更新用户
-# 传入参数为&#123;user-id&#125;
-@app.put('/user/&#123;user_id&#125;')
+# 传入参数为{user-id}
+@app.put('/user/{user_id}')
 async def update_user_items(
     user_id: int,
     S_item: Student,
     user: User,
 ):
-    res = &#123;"user_id":user_id&#125;
+    res = {"user_id":user_id}
     if S_item or user:
-        res.update(&#123;"S_item":S_item,"user":user&#125;)
+        res.update({"S_item":S_item,"user":user})
     elif user:
-        res.update(&#123;"user":user&#125;)
+        res.update({"user":user})
     elif S_item:
-        res.update(&#123;"S_item":S_item&#125;)
+        res.update({"S_item":S_item})
     else:
-        return &#123;"status":404&#125;
+        return {"status":404}
     return res</code></pre>
 <h3 id="使用Body"><a href="#使用Body" class="headerlink" title="使用Body"></a>使用Body</h3><p>Body的用法和Query Path的用法一样</p>
 <p><font color='red'>这个关键字使用的方式是，将查询参数直接映射到request body中，而不是变成一个查询条件用于查询</font></p>
@@ -906,12 +906,12 @@ app <span class="token operator">=</span> FastAPI<span class="token punctuation"
     full_name<span class="token punctuation">:</span> str <span class="token operator">=</span> None
 
 
-@app<span class="token punctuation">.</span>put<span class="token punctuation">(</span><span class="token string">"/items/&amp;#123;item_id&amp;#125;"</span><span class="token punctuation">)</span>
+@app<span class="token punctuation">.</span>put<span class="token punctuation">(</span><span class="token string">"/items/{item_id}"</span><span class="token punctuation">)</span>
 <span class="token keyword">async</span> <span class="token keyword">def</span> <span class="token function">update_item</span><span class="token punctuation">(</span>
     <span class="token operator">*</span><span class="token punctuation">,</span> item_id<span class="token punctuation">:</span> int <span class="token operator">=</span> Path<span class="token punctuation">(</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">,</span>description<span class="token operator">=</span><span class="token string">"test filed"</span><span class="token punctuation">,</span><span class="token punctuation">)</span><span class="token punctuation">,</span> item<span class="token punctuation">:</span> Item<span class="token punctuation">,</span> user<span class="token punctuation">:</span> User<span class="token punctuation">,</span> importance<span class="token punctuation">:</span> int <span class="token operator">=</span> Body<span class="token punctuation">(</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">,</span>description<span class="token operator">=</span><span class="token string">"test_body"</span><span class="token punctuation">)</span>
 <span class="token punctuation">)</span><span class="token punctuation">:</span>
     importance <span class="token operator">=</span> <span class="token number">1000000</span>
-    results <span class="token operator">=</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;"item_id": item_id, "item": item, "user": user, "importance": importance&amp;#125;</span>
+    results <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token string">"item_id"</span><span class="token punctuation">:</span> item_id<span class="token punctuation">,</span> <span class="token string">"item"</span><span class="token punctuation">:</span> item<span class="token punctuation">,</span> <span class="token string">"user"</span><span class="token punctuation">:</span> user<span class="token punctuation">,</span> <span class="token string">"importance"</span><span class="token punctuation">:</span> importance<span class="token punctuation">}</span>
     <span class="token keyword">return</span> results</code></pre>
 <p><img src="http://img.noback.top/2020-03-31-11-31-38.png" alt="2020-03-31-11-31-38"><br>没有出现在查询条件中，而是直接出现在了request body中</p>
 <p>把Body更换成Query 对查询参数做限制</p>
@@ -933,12 +933,12 @@ class User(BaseModel):
     full_name: str = None
 
 
-@app.put("/items/&#123;item_id&#125;")
+@app.put("/items/{item_id}")
 async def update_item(
     *, item_id: int = Path(...,description="test filed",), item: Item, user: User, importance: int = Query(...,description="test_body")
 ):
     importance = 100000000000000
-    results = &#123;"item_id": item_id, "item": item, "user": user, "importance": importance&#125;
+    results = {"item_id": item_id, "item": item, "user": user, "importance": importance}
     return results</code></pre>
 <p><img src="http://img.noback.top/2020-03-31-11-33-41.png" alt="2020-03-31-11-33-41"></p>
 <p><font color='red'>另外Body还有一些扩展的功能</font><br>比如写一个例子</p>
@@ -955,21 +955,21 @@ class Item(BaseModel):
     tax: float = None
 
 
-@app.put("/items/&#123;item_id&#125;")
+@app.put("/items/{item_id}")
 async def update_item(
     *,
     item_id: int,
     item: Item = Body(
         ...,
-        example=&#123;
+        example={
             "name": "Foo",
             "description": "A very nice Item",
             "price": 35.4,
             "tax": 3.2,
-        &#125;,
+        },
     )
 ):
-    results = &#123;"item_id": item_id, "item": item&#125;
+    results = {"item_id": item_id, "item": item}
     return results</code></pre>
 <h4 id="规定模型类中的字段"><a href="#规定模型类中的字段" class="headerlink" title="规定模型类中的字段"></a>规定模型类中的字段</h4><p>pass</p>
 <h3 id="使用-Field"><a href="#使用-Field" class="headerlink" title="使用 Field"></a>使用 Field</h3><p>Field可以在定义模型类的时候，对模型类的中内容做限制<br>使用方法和Query以及Path一样，但是这个是在pydantic</p>
@@ -1000,7 +1000,7 @@ class Item(BaseModel):
 
 @app.get("/")
 async  def root():
-    return &#123;"hello":"world"&#125;
+    return {"hello":"world"}
 
 @app.post("/items")
 async def post_items(item: Item):

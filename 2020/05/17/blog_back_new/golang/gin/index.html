@@ -490,33 +490,33 @@ mkdir <span class="token keyword">go</span><span class="token operator">-</span>
 
 <span class="token comment" spellcheck="true">// 两种写法，一种是main里面定义路由和请求形式，以及对象的方法</span>
 
-<span class="token comment" spellcheck="true">//func main() &amp;#123;</span>
+<span class="token comment" spellcheck="true">//func main() {</span>
 <span class="token comment" spellcheck="true">//    // 初始化一个gin的对象  app = fastapi()</span>
 <span class="token comment" spellcheck="true">//    r := gin.Default()</span>
 <span class="token comment" spellcheck="true">//    // 写路径和对应的request方法</span>
-<span class="token comment" spellcheck="true">//    r.GET("/", func(c *gin.Context) &amp;#123;</span>
-<span class="token comment" spellcheck="true">//        c.JSON(200, gin.H&amp;#123;</span>
+<span class="token comment" spellcheck="true">//    r.GET("/", func(c *gin.Context) {</span>
+<span class="token comment" spellcheck="true">//        c.JSON(200, gin.H{</span>
 <span class="token comment" spellcheck="true">//            "hello": "world",</span>
-<span class="token comment" spellcheck="true">//        &amp;#125;)</span>
-<span class="token comment" spellcheck="true">//    &amp;#125;)</span>
+<span class="token comment" spellcheck="true">//        })</span>
+<span class="token comment" spellcheck="true">//    })</span>
 <span class="token comment" spellcheck="true">//    r.Run(":7777") // 监听并在 0.0.0.0:8080 上启动服务</span>
-<span class="token comment" spellcheck="true">//&amp;#125;</span>
+<span class="token comment" spellcheck="true">//}</span>
 
 <span class="token comment" spellcheck="true">//另外一种写法就是就是仅在main里面定义路由和请求方法，方法的具体实现在外部</span>
 
-<span class="token keyword">func</span> <span class="token function">helloworld</span><span class="token punctuation">(</span>c <span class="token operator">*</span>gin<span class="token punctuation">.</span>Context<span class="token punctuation">)</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
-    c<span class="token punctuation">.</span><span class="token function">JSON</span><span class="token punctuation">(</span><span class="token number">200</span><span class="token punctuation">,</span>gin<span class="token punctuation">.</span>H<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+<span class="token keyword">func</span> <span class="token function">helloworld</span><span class="token punctuation">(</span>c <span class="token operator">*</span>gin<span class="token punctuation">.</span>Context<span class="token punctuation">)</span><span class="token punctuation">{</span>
+    c<span class="token punctuation">.</span><span class="token function">JSON</span><span class="token punctuation">(</span><span class="token number">200</span><span class="token punctuation">,</span>gin<span class="token punctuation">.</span>H<span class="token punctuation">{</span>
         <span class="token string">"hello"</span><span class="token punctuation">:</span><span class="token string">"world"</span><span class="token punctuation">,</span>
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span>
-<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
 
-<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
     r <span class="token operator">:=</span> gin<span class="token punctuation">.</span><span class="token function">Default</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
 
     r<span class="token punctuation">.</span><span class="token function">GET</span><span class="token punctuation">(</span><span class="token string">"/"</span><span class="token punctuation">,</span>helloworld<span class="token punctuation">)</span>
 
     r<span class="token punctuation">.</span><span class="token function">Run</span><span class="token punctuation">(</span><span class="token string">":7778"</span><span class="token punctuation">)</span>
-<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span></code></pre>
+<span class="token punctuation">}</span></code></pre>
 <h2 id="路由模块"><a href="#路由模块" class="headerlink" title="路由模块"></a>路由模块</h2><h3 id="路径参数与查询参数"><a href="#路径参数与查询参数" class="headerlink" title="路径参数与查询参数"></a>路径参数与查询参数</h3><p>api的设计无非就是IP+路径参数+查询参数，形如<br><code>&lt;域名&gt;/api/version/device/add?token=string&amp;deviceId=intid&amp;deviceName=string</code>这样的内容</p>
 <ul>
 <li>域名</li>
@@ -526,16 +526,16 @@ mkdir <span class="token keyword">go</span><span class="token operator">-</span>
 </ul>
 <p><font color='red'>请求方法</font><br>路由方法有 GET, POST, PUT, PATCH, DELETE 和 OPTIONS，还有Any，可匹配以上任意类型的请求。</p>
 <ul>
-<li>无参数请求<pre class=" language-go"><code class="language-go">r<span class="token punctuation">.</span><span class="token function">GET</span><span class="token punctuation">(</span><span class="token string">"/"</span><span class="token punctuation">,</span><span class="token keyword">func</span><span class="token punctuation">(</span>c <span class="token operator">*</span>gin<span class="token punctuation">.</span>context<span class="token punctuation">)</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+<li>无参数请求<pre class=" language-go"><code class="language-go">r<span class="token punctuation">.</span><span class="token function">GET</span><span class="token punctuation">(</span><span class="token string">"/"</span><span class="token punctuation">,</span><span class="token keyword">func</span><span class="token punctuation">(</span>c <span class="token operator">*</span>gin<span class="token punctuation">.</span>context<span class="token punctuation">)</span><span class="token punctuation">{</span>
   c<span class="token punctuation">.</span><span class="token function">Srting</span><span class="token punctuation">(</span>http<span class="token punctuation">.</span>StatusOk<span class="token punctuation">,</span><span class="token string">"hello world"</span><span class="token punctuation">)</span>
-<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span></code></pre>
+<span class="token punctuation">}</span><span class="token punctuation">)</span></code></pre>
 </li>
-<li>路径参数请求<pre class=" language-go"><code class="language-go">r<span class="token punctuation">.</span><span class="token function">GET</span><span class="token punctuation">(</span><span class="token string">"/user/:name"</span><span class="token punctuation">,</span><span class="token keyword">func</span><span class="token punctuation">(</span>c <span class="token operator">*</span>gin<span class="token punctuation">.</span>context<span class="token punctuation">)</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+<li>路径参数请求<pre class=" language-go"><code class="language-go">r<span class="token punctuation">.</span><span class="token function">GET</span><span class="token punctuation">(</span><span class="token string">"/user/:name"</span><span class="token punctuation">,</span><span class="token keyword">func</span><span class="token punctuation">(</span>c <span class="token operator">*</span>gin<span class="token punctuation">.</span>context<span class="token punctuation">)</span><span class="token punctuation">{</span>
   name<span class="token operator">:=</span>c<span class="token punctuation">.</span><span class="token function">Param</span><span class="token punctuation">(</span><span class="token string">"name"</span><span class="token punctuation">)</span>
   c<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span>http<span class="token punctuation">.</span>StatusOk<span class="token punctuation">,</span><span class="token string">"hello%s"</span><span class="token punctuation">,</span>name<span class="token punctuation">)</span>
-<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span></code></pre>
+<span class="token punctuation">}</span><span class="token punctuation">)</span></code></pre>
 </li>
-<li>查询参数请求<pre class=" language-go"><code class="language-go">r<span class="token punctuation">.</span><span class="token function">GET</span><span class="token punctuation">(</span><span class="token string">"/users"</span><span class="token punctuation">,</span><span class="token keyword">func</span><span class="token punctuation">(</span>c <span class="token operator">*</span>gin<span class="token punctuation">.</span>context<span class="token punctuation">)</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+<li>查询参数请求<pre class=" language-go"><code class="language-go">r<span class="token punctuation">.</span><span class="token function">GET</span><span class="token punctuation">(</span><span class="token string">"/users"</span><span class="token punctuation">,</span><span class="token keyword">func</span><span class="token punctuation">(</span>c <span class="token operator">*</span>gin<span class="token punctuation">.</span>context<span class="token punctuation">)</span><span class="token punctuation">{</span>
 </code></pre>
 </li>
 </ul>

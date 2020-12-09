@@ -499,10 +499,10 @@
   <span class="token punctuation">[</span> -z <span class="token string">"<span class="token variable">$BASH_VERSION</span>"</span> -o -z <span class="token string">"<span class="token variable">$PS1</span>"</span> -o -n <span class="token string">"<span class="token variable">$BASH_COMPLETION_COMPAT_DIR</span>"</span> <span class="token punctuation">]</span> <span class="token operator">&amp;&amp;</span> <span class="token keyword">return</span>
 
   <span class="token comment" spellcheck="true"># Check for recent enough version of bash.</span>
-  bash<span class="token operator">=</span>$<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;BASH_VERSION%.*&amp;#125;; bmajor=$&amp;#123;bash%.*&amp;#125;; bminor=$&amp;#123;bash#*.&amp;#125;</span>
+  bash<span class="token operator">=</span><span class="token variable">${BASH_VERSION%.*}</span><span class="token punctuation">;</span> bmajor<span class="token operator">=</span><span class="token variable">${bash%.*}</span><span class="token punctuation">;</span> bminor<span class="token operator">=</span>$<span class="token punctuation">{</span>bash<span class="token comment" spellcheck="true">#*.}</span>
   <span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token variable">$bmajor</span> -gt 4 <span class="token punctuation">]</span> <span class="token operator">||</span> <span class="token punctuation">[</span> <span class="token variable">$bmajor</span> -eq 4 -a <span class="token variable">$bminor</span> -ge 1 <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
-      <span class="token punctuation">[</span> -r <span class="token string">"$&amp;#123;XDG_CONFIG_HOME:-<span class="token variable">$HOME</span>/.config&amp;#125;/bash_completion"</span> <span class="token punctuation">]</span> <span class="token operator">&amp;&amp;</span> \
-          <span class="token keyword">.</span> <span class="token string">"$&amp;#123;XDG_CONFIG_HOME:-<span class="token variable">$HOME</span>/.config&amp;#125;/bash_completion"</span>
+      <span class="token punctuation">[</span> -r <span class="token string">"<span class="token variable">${XDG_CONFIG_HOME:-$HOME/.config}</span>/bash_completion"</span> <span class="token punctuation">]</span> <span class="token operator">&amp;&amp;</span> \
+          <span class="token keyword">.</span> <span class="token string">"<span class="token variable">${XDG_CONFIG_HOME:-$HOME/.config}</span>/bash_completion"</span>
       <span class="token keyword">if</span> <span class="token function">shopt</span> -q progcomp <span class="token operator">&amp;&amp;</span> <span class="token punctuation">[</span> -r /usr/share/bash-completion/bash_completion <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
           <span class="token comment" spellcheck="true"># Source completion code.</span>
           <span class="token keyword">.</span> /usr/share/bash-completion/bash_completion
@@ -594,14 +594,14 @@ compopt: compopt <span class="token punctuation">[</span>-o<span class="token op
 </tbody></table>
 <h2 id="构建一个自动完成的替补工具"><a href="#构建一个自动完成的替补工具" class="headerlink" title="构建一个自动完成的替补工具"></a>构建一个自动完成的替补工具</h2><p>自动补全脚本</p>
 <pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># vi /etc/completion.d/ws</span>
-_start<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+_start<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
     <span class="token comment" spellcheck="true"># 数组，又来收集提醒的内容</span>
     COMPREPLY<span class="token operator">=</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
 
     <span class="token comment" spellcheck="true"># 返回当前输入的参数</span>
-    local cur<span class="token operator">=</span>$<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;COMP_WORDS[COMP_CWORD]&amp;#125;</span>
+    local cur<span class="token operator">=</span><span class="token variable">${COMP_WORDS[COMP_CWORD]}</span>
     <span class="token comment" spellcheck="true"># 返回当前输入的</span>
-    local cmd<span class="token operator">=</span>$<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;COMP_WORDS[COMP_CWORD-1]&amp;#125;</span>
+    local cmd<span class="token operator">=</span><span class="token variable">${COMP_WORDS[COMP_CWORD-1]}</span>
     <span class="token keyword">case</span> <span class="token variable">$cmd</span>  <span class="token keyword">in</span> 
         <span class="token string">'ws'</span><span class="token punctuation">)</span>
         COMPREPLY<span class="token operator">=</span><span class="token punctuation">(</span><span class="token punctuation">$(</span>compgen -W <span class="token string">'--word1 --word2 --word3'</span> -- <span class="token variable">$cur</span><span class="token punctuation">))</span>
@@ -612,31 +612,31 @@ _start<span class="token punctuation">(</span><span class="token punctuation">)<
     esac
     <span class="token keyword">return</span> 0
 
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+<span class="token punctuation">}</span>
 complete -F _start ws</code></pre>
 <p>启动命令 ，或者重新登录一下，反正放在这个文件夹下面的脚本都会在用户登录的时候去加载<br><code>source ws</code></p>
 <p>使用命令</p>
 <pre class=" language-bash"><code class="language-bash">ws <span class="token punctuation">[</span>TAb<span class="token punctuation">]</span><span class="token punctuation">[</span>TAb<span class="token punctuation">]</span> <span class="token comment" spellcheck="true">#就会有提示出来了</span></code></pre>
-<h3 id="自动补全模板"><a href="#自动补全模板" class="headerlink" title="自动补全模板"></a>自动补全模板</h3><pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># vi /etc/completion.d/&amp;#123;&amp;#123;name&amp;#125;&amp;#125;</span>
-_start<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+<h3 id="自动补全模板"><a href="#自动补全模板" class="headerlink" title="自动补全模板"></a>自动补全模板</h3><pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># vi /etc/completion.d/{{name}}</span>
+_start<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
     <span class="token comment" spellcheck="true"># 数组，又来收集提醒的内容</span>
     COMPREPLY<span class="token operator">=</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
     <span class="token comment" spellcheck="true"># 返回当前输入的参数</span>
-    local cur<span class="token operator">=</span>$<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;COMP_WORDS[COMP_CWORD]&amp;#125;</span>
+    local cur<span class="token operator">=</span><span class="token variable">${COMP_WORDS[COMP_CWORD]}</span>
     <span class="token comment" spellcheck="true"># 返回当前输入的</span>
-    local cmd<span class="token operator">=</span>$<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;COMP_WORDS[COMP_CWORD-1]&amp;#125;</span>
+    local cmd<span class="token operator">=</span><span class="token variable">${COMP_WORDS[COMP_CWORD-1]}</span>
     <span class="token keyword">case</span> <span class="token variable">$cmd</span>  <span class="token keyword">in</span> 
         <span class="token string">'arg1'</span><span class="token punctuation">)</span>
-        COMPREPLY<span class="token operator">=</span><span class="token punctuation">(</span><span class="token punctuation">$(</span>compgen -W <span class="token string">'&amp;#123;&amp;#123;argument&amp;#125;&amp;#125;'</span> -- <span class="token variable">$cur</span><span class="token punctuation">))</span>
+        COMPREPLY<span class="token operator">=</span><span class="token punctuation">(</span><span class="token punctuation">$(</span>compgen -W <span class="token string">'{{argument}}'</span> -- <span class="token variable">$cur</span><span class="token punctuation">))</span>
         <span class="token punctuation">;</span><span class="token punctuation">;</span>
         <span class="token string">'arg2'</span><span class="token punctuation">)</span>
-        COMPREPLY<span class="token operator">=</span><span class="token punctuation">(</span><span class="token punctuation">$(</span>compgen -W <span class="token string">'&amp;#123;&amp;#123;argument&amp;#125;&amp;#125;'</span> -- <span class="token variable">$cur</span><span class="token punctuation">))</span>
+        COMPREPLY<span class="token operator">=</span><span class="token punctuation">(</span><span class="token punctuation">$(</span>compgen -W <span class="token string">'{{argument}}'</span> -- <span class="token variable">$cur</span><span class="token punctuation">))</span>
         <span class="token punctuation">;</span><span class="token punctuation">;</span>
     esac
     <span class="token keyword">return</span> 0
 
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
-complete -F _start <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;&amp;#123;name&amp;#125;&amp;#125;</span></code></pre>
+<span class="token punctuation">}</span>
+complete -F _start <span class="token punctuation">{</span><span class="token punctuation">{</span>name<span class="token punctuation">}</span><span class="token punctuation">}</span></code></pre>
 <h2 id="构建一个文本筛选系统"><a href="#构建一个文本筛选系统" class="headerlink" title="构建一个文本筛选系统"></a>构建一个文本筛选系统</h2><p>同Upai里面的一个sws 自动补全工具</p>
 <pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 创建过滤文本 类似如下</span>
 <span class="token punctuation">[</span>EDGE-SWITCH<span class="token punctuation">]</span>
@@ -669,37 +669,37 @@ NTT-CN-HKG-S02 ansible_ssh_<span class="token operator">=</span>ip_host_example 
 <p>创建自动补全脚本</p>
 <pre class=" language-bash"><code class="language-bash">  <span class="token comment" spellcheck="true"># vi /etc/completion.d/sws</span>
   target_file<span class="token operator">=</span><span class="token string">"/root/hzj/pro_shell/sws/inventory"</span>
-  _start<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+  _start<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
       <span class="token comment" spellcheck="true"># 数组，用来收集提醒的内容</span>
       COMPREPLY<span class="token operator">=</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
       <span class="token comment" spellcheck="true"># 返回当前输入的参数</span>
-      local cur<span class="token operator">=</span>$<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;COMP_WORDS[COMP_CWORD]&amp;#125;</span>
+      local cur<span class="token operator">=</span><span class="token variable">${COMP_WORDS[COMP_CWORD]}</span>
       <span class="token comment" spellcheck="true"># 返回当前输入的</span>
-      local cmd<span class="token operator">=</span>$<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;COMP_WORDS[COMP_CWORD-1]&amp;#125;</span>
+      local cmd<span class="token operator">=</span><span class="token variable">${COMP_WORDS[COMP_CWORD-1]}</span>
   ▏       ▏       <span class="token comment" spellcheck="true"># 做参数整理</span>
   ▏         cur<span class="token operator">=</span><span class="token punctuation">$(</span>echo <span class="token variable">$cur</span> <span class="token operator">|</span><span class="token function">tr</span> <span class="token string">'[:lower:]'</span> <span class="token string">'[:upper:]'</span><span class="token operator">|</span> <span class="token function">tr</span> <span class="token string">'.'</span> <span class="token string">'-'</span><span class="token punctuation">)</span>
   ▏       ▏       <span class="token comment" spellcheck="true">#输出参数</span>
-  ▏       ▏       <span class="token keyword">if</span> <span class="token punctuation">[</span> $<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;cur&amp;#125;  ]</span>
+  ▏       ▏       <span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token variable">${cur}</span>  <span class="token punctuation">]</span>
   ▏       ▏       <span class="token keyword">then</span>
-  ▏       ▏       ▏       machines<span class="token operator">=</span><span class="token punctuation">$(</span>grep -e <span class="token string">"^$&amp;#123;cur&amp;#125;"</span> <span class="token variable">$target_file</span> <span class="token punctuation">)</span>
+  ▏       ▏       ▏       machines<span class="token operator">=</span><span class="token punctuation">$(</span>grep -e <span class="token string">"^<span class="token variable">${cur}</span>"</span> <span class="token variable">$target_file</span> <span class="token punctuation">)</span>
   ▏       ▏       ▏       COMPREPLY<span class="token operator">=</span><span class="token punctuation">(</span><span class="token punctuation">$(</span>compgen -W <span class="token string">'<span class="token variable">$machines</span>'</span> -- <span class="token variable">$cur</span><span class="token punctuation">))</span>
   ▏       ▏       ▏       <span class="token keyword">return</span> 0
   ▏       ▏       <span class="token keyword">fi</span>
 
-  <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+  <span class="token punctuation">}</span>
   complete -F _start sws</code></pre>
 <p>创建脚本</p>
 <pre class=" language-bash"><code class="language-bash"><span class="token keyword">echo</span> <span class="token string">'echo echo "hello world"'</span> <span class="token operator">></span> /hzj/pro_shell/sws</code></pre>
 <h2 id="更高级的写法"><a href="#更高级的写法" class="headerlink" title="更高级的写法"></a>更高级的写法</h2><p>如果你用的是zsh，那么补全命令应该在/root/.zsh/completion/下面<br>上面只是一些小小的个例写法，另外高级的可以抛弃他给的那些内建函数，自己写,比如upssh</p>
 <h2 id="自动完成脚本实例"><a href="#自动完成脚本实例" class="headerlink" title="自动完成脚本实例"></a>自动完成脚本实例</h2><pre class=" language-bash"><code class="language-bash"><span class="token shebang important">#!/bin/bash</span>
 
-_start<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+_start<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
     <span class="token comment" spellcheck="true"># 数组，又来收集提醒的内容</span>
     COMPREPLY<span class="token operator">=</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
 
-    local cur<span class="token operator">=</span>$<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;COMP_WORDS[COMP_CWORD]&amp;#125;</span>
+    local cur<span class="token operator">=</span><span class="token variable">${COMP_WORDS[COMP_CWORD]}</span>
     <span class="token keyword">echo</span> <span class="token variable">$cur</span>
-    local cmd<span class="token operator">=</span>$<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;COMP_WORDS[COMP_CWORD-1]&amp;#125;</span>
+    local cmd<span class="token operator">=</span><span class="token variable">${COMP_WORDS[COMP_CWORD-1]}</span>
     <span class="token keyword">echo</span> <span class="token variable">$cmd</span>
     <span class="token keyword">case</span> <span class="token variable">$cmd</span>  <span class="token keyword">in</span> 
         <span class="token string">'./06_sws.sh'</span><span class="token punctuation">)</span>
@@ -711,16 +711,16 @@ _start<span class="token punctuation">(</span><span class="token punctuation">)<
     esac
     <span class="token keyword">return</span> 0
 
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+<span class="token punctuation">}</span>
 complete -F _start ./06_sws.sh
 </code></pre>
 <h2 id="sws实例"><a href="#sws实例" class="headerlink" title="sws实例"></a>sws实例</h2><pre class=" language-bash"><code class="language-bash"><span class="token shebang important">#!/bin/bash</span>
-usage<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+usage<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
 <span class="token keyword">echo</span>  <span class="token string">"Usage:  -p port [ default: 22 ]
         -u user [ default: admin ]
         &lt;-i> [ default: /root/.ssh/swmgmt ]"</span>
 <span class="token keyword">exit</span> 1
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+<span class="token punctuation">}</span>
 
 <span class="token keyword">while</span> <span class="token function">getopts</span> <span class="token string">"p:u:i:"</span> OPT <span class="token operator">></span> /dev/null 2<span class="token operator">></span><span class="token operator">&amp;</span>1
     <span class="token keyword">do</span>
@@ -747,27 +747,27 @@ usage<span class="token punctuation">(</span><span class="token punctuation">)</
 <span class="token comment" spellcheck="true"># 匹配IP</span>
 <span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token variable">$@</span> <span class="token punctuation">]</span>
    <span class="token keyword">then</span>
-      IP<span class="token operator">=</span>$<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;@#*/&amp;#125;</span>
+      IP<span class="token operator">=</span>$<span class="token punctuation">{</span>@<span class="token comment" spellcheck="true">#*/}</span>
 <span class="token keyword">else</span>
     usage
 <span class="token keyword">fi</span>
 
 <span class="token comment" spellcheck="true"># 匹配端口</span>
-PORT<span class="token operator">=</span>$<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;PORT:=22&amp;#125;</span>
+PORT<span class="token operator">=</span><span class="token variable">${PORT:=22}</span>
 
 <span class="token comment" spellcheck="true"># 匹配用户</span>
 USER<span class="token operator">=</span>admin
 
 <span class="token comment" spellcheck="true"># 匹配秘钥</span>
-IDY_FILE<span class="token operator">=</span>$<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;IDY_FILE:=/root/.ssh/swmgmt&amp;#125;</span>
+IDY_FILE<span class="token operator">=</span><span class="token variable">${IDY_FILE:=/root/.ssh/swmgmt}</span>
 
 
 
-OPTIONS<span class="token operator">=</span><span class="token string">"-p $&amp;#123;PORT&amp;#125;"</span>
+OPTIONS<span class="token operator">=</span><span class="token string">"-p <span class="token variable">${PORT}</span>"</span>
 
-<span class="token punctuation">[</span> -e $<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;IDY_FILE&amp;#125; ] &amp;&amp; OPTIONS="$&amp;#123;OPTIONS&amp;#125; -i $&amp;#123;IDY_FILE&amp;#125;"</span>
+<span class="token punctuation">[</span> -e <span class="token variable">${IDY_FILE}</span> <span class="token punctuation">]</span> <span class="token operator">&amp;&amp;</span> OPTIONS<span class="token operator">=</span><span class="token string">"<span class="token variable">${OPTIONS}</span> -i <span class="token variable">${IDY_FILE}</span>"</span>
 
-<span class="token function">ssh</span> $<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;OPTIONS&amp;#125; $&amp;#123;USER&amp;#125;@$&amp;#123;IP&amp;#125;</span></code></pre>
+<span class="token function">ssh</span> <span class="token variable">${OPTIONS}</span> <span class="token variable">${USER}</span>@<span class="token variable">${IP}</span></code></pre>
 
         </div>
 

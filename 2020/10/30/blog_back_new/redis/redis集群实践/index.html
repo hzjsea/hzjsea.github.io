@@ -528,7 +528,7 @@ cluster keyslot name <span class="token comment" spellcheck="true"># 5798 所以
 <p>为了实现将key分到相同机器，就需要相同的hash值，即相同的key，但key相同是不现实的，因为key都有不同的用途。例如user:user1:ids保存用户id，user:user1:detail保存用户的具体信息，两个key不可能同名。两个key其实有相同的地方，即user。能不能拿这一部分去计算hash呢？这就是 Hash Tag。允许用key的部分字符串来计算hash,<br>当一个key包含 {} 的时候，就不对整个key做hash，而仅对 {} 包括的字符串做hash。</p>
 <p>假设hash算法为sha1。对user:{user1}:ids和user:{user1}:detail，其hash值都等同于sha1(user1)。<br>将不同的key放在同一个槽之内，如下<br><img src="http://img.noback.top/2020-11-04-17-02-47.png" alt="2020-11-04-17-02-47"><br>在hash计算的时候，回去计算a的hash值，然后放到对应id的桶当中。</p>
 <h2 id="手动操作槽与数据的迁移"><a href="#手动操作槽与数据的迁移" class="headerlink" title="手动操作槽与数据的迁移"></a>手动操作槽与数据的迁移</h2><p><img src="http://img.noback.top/2020-11-04-12-02-16.png" alt="2020-11-04-12-02-16"><br>首先准备数据，准备3条数据到6379中，操作如下</p>
-<pre class=" language-bash"><code class="language-bash">mset <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;test1&amp;#125;name hzj &amp;#123;test1&amp;#125;name2 cy &amp;#123;test1&amp;#125;name3 helloworld</span>
+<pre class=" language-bash"><code class="language-bash">mset <span class="token punctuation">{</span>test1<span class="token punctuation">}</span>name hzj <span class="token punctuation">{</span>test1<span class="token punctuation">}</span>name2 cy <span class="token punctuation">{</span>test1<span class="token punctuation">}</span>name3 helloworld
 cluster keyslot test1 <span class="token comment" spellcheck="true"># 获取桶ID</span>
 cluster getkeysinslot 4768 5 <span class="token comment" spellcheck="true"># 获取对应桶ID中对应数量的值</span></code></pre>
 <p><img src="http://img.noback.top/2020-11-04-17-16-03.png" alt="2020-11-04-17-16-03"><br>现在我们将6379节点4768桶中的数据转移到6380当中去</p>
@@ -541,7 +541,7 @@ cluster getkeysinslot 4768 5 <span class="token comment" spellcheck="true"># 获
 <span class="token comment" spellcheck="true"># 批量获取对应槽内的key-value</span>
 10.0.6.35:6379<span class="token operator">></span> cluster getkeysinslot 4768 100
 <span class="token comment" spellcheck="true"># 批量迁移</span>
-10.0.6.35:6379<span class="token operator">></span> migrate 127.0.0.1 6380 <span class="token string">""</span> 0 5000 KEYS <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;test1&amp;#125;name &amp;#123;test1&amp;#125;name2 &amp;#123;test1&amp;#125;name3</span>
+10.0.6.35:6379<span class="token operator">></span> migrate 127.0.0.1 6380 <span class="token string">""</span> 0 5000 KEYS <span class="token punctuation">{</span>test1<span class="token punctuation">}</span>name <span class="token punctuation">{</span>test1<span class="token punctuation">}</span>name2 <span class="token punctuation">{</span>test1<span class="token punctuation">}</span>name3
 <span class="token comment" spellcheck="true"># 通知其他节点槽4768 指派给节点</span>
 iredis -h 10.0.6.35 -p 6379 cluster setslot 4768 node f3f2c1910f30573d82071ee1746b3f3b0a07267d
 iredis -h 10.0.6.35 -p 6381 cluster setslot 4768 node f3f2c1910f30573d82071ee1746b3f3b0a07267d
@@ -564,13 +564,13 @@ iredis -h 10.0.6.35 -p 6382 cluster setslot 4768 node f3f2c1910f30573d82071ee174
 <p>使用参数和ruby脚本一样</p>
 <h3 id="添加从节点"><a href="#添加从节点" class="headerlink" title="添加从节点"></a>添加从节点</h3><pre class=" language-bash"><code class="language-bash">10.0.6.35:6386<span class="token operator">></span> cluster replicate 16e43ced3ae6c4fd7912b7f609df363ab56cd89a</code></pre>
 <h2 id="节点下线流程"><a href="#节点下线流程" class="headerlink" title="节点下线流程"></a>节点下线流程</h2><p>要保证节点的下线，首先是要转移节点中的槽，保证数据的完整性<br>要通知所有的其他节点， 该节点已经下线了</p>
-<h3 id="忘记节点"><a href="#忘记节点" class="headerlink" title="忘记节点"></a>忘记节点</h3><pre class=" language-bash"><code class="language-bash">cluster forget<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;down NodeId&amp;#125;</span></code></pre>
+<h3 id="忘记节点"><a href="#忘记节点" class="headerlink" title="忘记节点"></a>忘记节点</h3><pre class=" language-bash"><code class="language-bash">cluster forget<span class="token punctuation">{</span>down NodeId<span class="token punctuation">}</span></code></pre>
 <p>当节点接收到cluster forget{down NodeId}命令后，会把nodeId指定的节点加入到禁用列表中，在禁用列表内的节点不再发送Gossip消息。禁用列表有效期是60秒，超过60秒节点会再次参与消息交换。也就是说当第一次forget命令发出后，我们有60秒的时间让集群内的所有节点忘记下线节点。</p>
 <p>下线需求，最好先下线从节点，再下线主节点。如果从节点丢失了主节点，他会自动去更新一个新的主节点，这样会出现没有必要的全量复制<br>线上环境建议使用</p>
 <pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 旧版本</span>
-redis-trib.rb del-node<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;host：port&amp;#125;&amp;#123;downNodeId&amp;#125;</span>
+redis-trib.rb del-node<span class="token punctuation">{</span>host：port<span class="token punctuation">}</span><span class="token punctuation">{</span>downNodeId<span class="token punctuation">}</span>
 <span class="token comment" spellcheck="true"># 新版本</span>
-redis-cli --cluster del-node <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;host:port&amp;#125;&amp;#123;downNodeId&amp;#125;</span>
+redis-cli --cluster del-node <span class="token punctuation">{</span>host:port<span class="token punctuation">}</span><span class="token punctuation">{</span>downNodeId<span class="token punctuation">}</span>
 <span class="token comment" spellcheck="true"># 示例</span>
 ./redis-cli --cluster del-node  127.0.0.1:6379 81b2d20ffe75f429b4934b494e368697b388ff22</code></pre>
 <h3 id="节点下线实验"><a href="#节点下线实验" class="headerlink" title="节点下线实验"></a>节点下线实验</h3><p>当前情况如下<br><img src="http://img.noback.top/2020-11-05-10-10-29.png" alt="2020-11-05-10-10-29"><br>现在要下线6381节点，将6381中的槽平均分配到其他节点中去</p>
@@ -614,17 +614,17 @@ module_file<span class="token operator">=</span><span class="token string">"./re
   <span class="token variable"><span class="token variable">`</span><span class="token function">cp</span> $module_file ./redis-$1.conf<span class="token variable">`</span></span>
 <span class="token keyword">fi</span>
 
-<span class="token function">sed</span> -i -e  <span class="token string">"/^port/s/.*/port $&amp;#123;Port&amp;#125;/"</span>  \
+<span class="token function">sed</span> -i -e  <span class="token string">"/^port/s/.*/port <span class="token variable">${Port}</span>/"</span>  \
     -e <span class="token string">"/^daemonize/s/no/yes/"</span>   \
-    -e <span class="token string">"/^logfile/s/.*/logfile \"$&amp;#123;Port&amp;#125;.log\"/"</span> \
-    -e <span class="token string">"/^dbfilename/s/.*/dbfilename \"dump-$&amp;#123;Port&amp;#125;.rdb\"/"</span>   \
+    -e <span class="token string">"/^logfile/s/.*/logfile \"<span class="token variable">${Port}</span>.log\"/"</span> \
+    -e <span class="token string">"/^dbfilename/s/.*/dbfilename \"dump-<span class="token variable">${Port}</span>.rdb\"/"</span>   \
     -e <span class="token string">"/^dir/s@.*@dir ./data/@"</span> \
     -e <span class="token string">'s/^bind/#&amp;/'</span> \
     -e <span class="token string">"/^protected-mode/s/yes/no/"</span> \
     -e <span class="token string">"/cluster-node-timeout/s@# @"</span><span class="token string">"@"</span> \
-    -e <span class="token string">"/cluster-config-file/s@.*@cluster-config-file nodes-$&amp;#123;Port&amp;#125;.conf@"</span>\
+    -e <span class="token string">"/cluster-config-file/s@.*@cluster-config-file nodes-<span class="token variable">${Port}</span>.conf@"</span>\
     -e <span class="token string">"/cluster-enabled/s@# @"</span><span class="token string">"@"</span> \
-    redis-$<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;Port&amp;#125;.conf</span>
+    redis-<span class="token variable">${Port}</span>.conf
 
 <span class="token keyword">echo</span> <span class="token string">"success"</span>
 <span class="token comment" spellcheck="true"># sh ./master.sh 6666</span></code></pre>
