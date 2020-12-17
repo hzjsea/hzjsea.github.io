@@ -468,8 +468,8 @@
 <li><a href="#5820%E7%B3%BB%E5%88%97%E7%9A%84%E4%BA%A4%E6%8D%A2%E6%9C%BA%E9%9C%80%E8%A6%81%E5%9C%A8%E6%9C%AC%E5%9C%B0%E7%94%9F%E6%88%90sshkey">5820系列的交换机需要在本地生成sshkey</a></li>
 <li><a href="#%E4%BA%8C%E5%B1%82%E7%8E%AF%E8%B7%AF%E6%A3%80%E6%B5%8B%E9%85%8D%E7%BD%AE">***二层环路检测配置</a></li>
 <li><a href="#%E8%87%AA%E5%8A%A8%E7%94%9F%E6%88%90%E6%B1%87%E8%81%9A%E7%AB%AF%E5%8F%A3%E9%85%8D%E7%BD%AE%E8%84%9A%E6%9C%AC">自动生成汇聚端口配置脚本</a></li>
-<li><a href="#ipv6%E9%85%8D%E7%BD%AE">ipv6配置</a><ul>
-<li><a href="#%E8%A5%BF%E5%AE%89%E5%85%89%E9%80%9A%E9%AB%98%E9%98%B2-ipv6%E9%85%8D%E7%BD%AE">西安光通高防 ipv6配置</a></li>
+<li><a href="#ipv6%E9%85%8D%E7%BD%AE">ipv6配置</a></li>
+<li><a href="#-%E8%A5%BF%E5%AE%89%E5%85%89%E9%80%9A%E9%AB%98%E9%98%B2-ipv6%E9%85%8D%E7%BD%AE">### 西安光通高防 ipv6配置</a><ul>
 <li><a href="#%E5%9B%9B%E5%B7%9D%E6%88%90%E5%8D%8E%E7%A7%BB%E5%8A%A8%E6%9C%BA%E6%88%BF">四川成华移动机房</a></li>
 </ul>
 </li>
@@ -481,7 +481,9 @@
 
 <a id="more"></a>
 
-<h1 id="网络部署需求分析"><a href="#网络部署需求分析" class="headerlink" title="网络部署需求分析"></a>网络部署需求分析</h1><h2 id="基础配置"><a href="#基础配置" class="headerlink" title="基础配置"></a>基础配置</h2><p>::: tip<br>内网的交换机不需要配置acl2000<br>:::</p>
+<h1 id="网络部署需求分析"><a href="#网络部署需求分析" class="headerlink" title="网络部署需求分析"></a>网络部署需求分析</h1><h2 id="基础配置"><a href="#基础配置" class="headerlink" title="基础配置"></a>基础配置</h2><blockquote>
+<p>内网的交换机不需要配置acl2000</p>
+</blockquote>
 <pre class=" language-bash"><code class="language-bash">int LoopBack 3
 description jump
 
@@ -543,21 +545,23 @@ sysname pubkey-general
 sysname acl-setting
 acl number 2000
 description Login IP Control
-rule 1 permit <span class="token function">source</span> 192.168.0.0 0.0.255.255
-rule 5 permit <span class="token function">source</span> 115.238.93.82 0
-rule 10 permit <span class="token function">source</span> 115.231.100.64 0.0.0.63
-rule 15 permit <span class="token function">source</span> 121.52.226.192 0.0.0.63
-rule 20 permit <span class="token function">source</span> 115.238.54.160 0.0.0.15
-rule 25 permit <span class="token function">source</span> 124.160.114.192 0.0.0.15
-rule 30 permit <span class="token function">source</span> 106.186.117.158 0.0.0.255
-rule 35 permit <span class="token function">source</span> 157.119.232.0  0.0.0.31
-rule 40 permit <span class="token function">source</span> 218.205.64.19 0.0.0.31
-rule 45 permit <span class="token function">source</span> 112.17.251.0 0.0.0.31
-rule 50 permit <span class="token function">source</span> 121.52.250.193 0.0.0.31
-rule 55 permit <span class="token function">source</span> 183.131.0.65 0.0.0.31
-rule 60 permit <span class="token function">source</span> 43.230.89.160 0.0.0.31
-rule 65 permit <span class="token function">source</span> 111.1.32.0 0.0.0.127
-rule 70 permit <span class="token function">source</span> 115.231.97.0 0.0.0.31
+rule 0 permit <span class="token function">source</span> 192.168.0.0 0.0.255.255
+rule 5 permit <span class="token function">source</span> 10.0.0.0 0.255.255.255
+rule 10 permit <span class="token function">source</span> 122.224.83.128 0.0.0.63
+rule 15 permit <span class="token function">source</span> 124.160.136.128 0.0.0.63
+rule 20 permit <span class="token function">source</span> 112.13.110.128 0.0.0.63
+rule 25 permit <span class="token function">source</span> 115.231.100.64 0.0.0.63
+rule 30 permit <span class="token function">source</span> 121.52.226.192 0.0.0.63
+rule 35 permit <span class="token function">source</span> 112.17.251.0 0.0.0.63
+rule 40 permit <span class="token function">source</span> 218.205.64.0 0.0.0.31
+rule 45 permit <span class="token function">source</span> 183.131.12.16 0.0.0.15
+rule 50 permit <span class="token function">source</span> 115.231.97.0 0.0.0.31
+rule 55 permit <span class="token function">source</span> 101.251.144.0 0.0.0.31
+rule 60 permit <span class="token function">source</span> 112.13.172.96 0.0.0.31
+rule 65 permit <span class="token function">source</span> 112.13.174.0 0.0.0.31
+rule 70 permit <span class="token function">source</span> 183.136.236.224 0.0.0.31
+rule 75 permit <span class="token function">source</span> 43.230.89.160 0.0.0.31
+rule 80 permit <span class="token function">source</span> 129.227.137.224 0.0.0.31
 rule 1000 deny <span class="token function">source</span> any
 quit
 int loopback 3

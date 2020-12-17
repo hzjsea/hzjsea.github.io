@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="hzjsea">
+
+
+
+
+
+
+<title>go库os | hzjsea</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+    <script src="/js/jquery.min.js"></script>
+    
+
+
+
+    
+    
+        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+    
+
+
+
+
+    <script>
+    function searchToggle() {
+        const width = $(document.body).width()
+        if(width > 479) {
+            return;
+        }
+        const search = $('.search');
+        const searchForm = $('.form-search')
+
+        if(!search.hasClass("mobile-search")) {
+            search.addClass("mobile-search");
+        } else {
+            search.removeClass("mobile-search");
+        } 
+    }
+
+    function search(searchInputEl, formEl, flag) {
+        const path = "/" + "search.json"; // 可以在public 下查看这个search.json
+        $(formEl).submit(function(e){
+            e.preventDefault();
+            let target = null
+            if(searchInputEl == null) {
+                const screenWidth = $(document.body).width();
+                target = screenWidth > 479 ? $('#pc-search-input') : $('#mobile-search-input');
+                console.log(target);
+            } else {
+                target = $(searchInputEl)
+            }
+
+            if(!flag && target.val() === '') {
+                return ;
+            }
+
+            $("#u-search").fadeIn(500, function() {
+                $("body > .wrapper").addClass("modal-active");
+
+                $.ajax({
+                    url: path,
+                    dataType: "json",
+                    beforeSend: function (xhr) {
+                        $input = target.val();
+                        $(".form-input").val($input);
+                        const loadingBar = $('.search-loading-bar') 
+                        loadingBar.css({
+                            width:'100%',
+                            display: 'block'
+                        });
+                    },
+                    success: function( datas ) {
+                        console.log(datas);
+                        const $resultPanel = $(".modal-body")[0];
+                        let str = `<ul class="modal-results">`;
+                        var keywords = $(".form-input").val().trim().toLowerCase().split(/[\s\-]+/);
+                        $resultPanel.innerHTML = "";
+                        let hasResult = false
+                        let text = `<div class="no-result">找不到与关键词相关的内容....</div>`;
+
+                        if ($(".form-input").val().trim().length <= 0) {
+                            // 没有结果
+                            $resultPanel.innerHTML = text;
+                            return;
+                        }
+                        datas.forEach(function (data, index) {
+                            var isMatch = true;
+                            if (!data.title || data.title.trim() === '') {
+                                data.title = "Untitled";
+                            }
+                            var data_title = data.title.trim().toLowerCase();
+                            var data_content = data.content && data.content.trim().replace(/<[^>]+>/g, "").toLowerCase() || '';
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            // only match artiles with not empty contents
+                            if (data_content !== '') {
+                                keywords.forEach(function (keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        hasResult = true
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            } else {
+                                isMatch = false;
+                            }
+                            // show search results
+                            if (isMatch) {
+                                str += `<li class='result-item'><a href='${data_url}' class='result-item-detail'> <span class="title">${data_title}</span>`;
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 200 characters
+                                    var start = first_occur - 40;
+                                    var end = first_occur + 160;
+
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+
+                                    if (start == 0) {
+                                        end = 200;
+                                    }
+
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+
+                                    var match_content = content.substring(start, end);
+
+                                    // highlight all keywords
+                                    keywords.forEach(function (keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, `<em class="search-keyword">${keyword}</em>`);
+                                    });
+
+                                    str += `<span class="content"> ${match_content} ...</span></a>`;
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        if(hasResult) {
+                            $resultPanel.innerHTML = str;
+                        } else {
+                            $resultPanel.innerHTML = text;
+                        }
+
+                    },
+                    complete: function() {
+                        setTimeout(() => {
+                                const loadingBar = $('.search-loading-bar') 
+                                loadingBar.css({
+                                    width:'0%',
+                                    display: 'none'
+                                });
+                        }, 300)
+                    }
+                });
+            })
+
+        });
+    }
+
+    $(document).ready(function() {
+        $('.modal-close').click(function () { 
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+
+        $('.modal-overlay').click(function() {
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+        search(null, ".form-search", false)
+        search("#u-search-modal-form .form-input", ".u-search-modal-form", true)
+    })
+</script>
+
+
+
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo"><a href="/">hzjsea</a></div>
+        <div class="menu navbar-right">
+            
+            
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="pc-search-input"/>
+        </form>
+    </div>
+
+
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+            <input id="switch_default" type="checkbox" class="switch_default">
+            <label for="switch_default" class="toggleBtn"></label>
+        </div>
+    </div>
+</nav>
+
+
+<nav class="navbar-mobile" id="nav-mobile">
+    <div class="container">
+        <div class="navbar-header">
+            <div>
+                <a href="/">hzjsea</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+            </div>
+            <div class="navbar-mobile-right">
+                
+                
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="mobile-search-input"/>
+        </form>
+    </div>
+
+
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; 目录</div>
+            </div>
+            
+        </div>
+        <div class="menu" id="mobile-menu">
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+        </div>
+    </div>
+</nav>
+
+        <div class="main">
+			<!-- Chic/layout.ejs -->
+ <div id="u-search">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="container">
+                    <form id="u-search-modal-form" class="u-search-modal-form">
+                        <button type="submit" class="form-submit-btn">
+                            <img src="/image/search.png" class="search-btn-img" />
+                        </button>
+                        <input placeholder="搜索文章。。。" class="form-input" id="modal-form-input">
+                    </form>
+                    <a class="modal-close">x</a>
+                </div>
+                <div class="search-loading">
+                    <div class="search-loading-bar"></div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <!-- ul 格式如下 -->
+                <!-- <ul class="modal-results">
+                    <li class="result-item">
+                        <a class="result-item-detail">
+                            <span class="title">页面配置</span>
+                            <span class="content">
+                                content
+                            </span>
+                        </a>
+                    </li>
+                </ul> -->
+            </div>
+        </div>
+        <div class="modal-overlay"></div>
+    </div>
+            <div class="container">
+    
+    
+    <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">全部展开</a>
+        <a onclick="go_top()">回到顶部</a>
+        <a onclick="go_bottom()">回到底部</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "全部折叠"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "全部展开"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">go库os</h1>
+            
+            <div class="post-meta">
+                
+                作者： <a itemprop="author" rel="author" href="/">hzjsea</a>&nbsp;
+                
+
+                
+                <span class="post-time">
+                    创建日期： <a
+                        href="#">December 16, 2020&nbsp;&nbsp;18:28:38</a>
+                </span>&nbsp;
+                
+                
+                <span class="post-category">
+                    分类：
+                    
+                    <a href="/categories/go/">go</a>&nbsp;
+                    
+                </span>
+                
+                
+                状态：<a href="#">SNAPSHOT</a>
+                
+            </div>
+            
+        </header>
+
+        <div class="post-content">
+            <a id="more"></a>
+
+<h1 id="go库os"><a href="#go库os" class="headerlink" title="go库os"></a>go库os</h1><p>os包提供了操作系统函数的不依赖平台的接口</p>
+<ul>
+<li>系统指令</li>
+<li>文件指令</li>
+<li>文件对象</li>
+</ul>
+<p>os-exec 库</p>
+<h2 id="系统指令"><a href="#系统指令" class="headerlink" title="系统指令"></a>系统指令</h2><pre class=" language-bash"><code class="language-bash"><span class="token function">hostname</span> <span class="token comment" spellcheck="true"># 获取主机名</span>
+getpagesize <span class="token comment" spellcheck="true"># 内存页尺寸</span>
+environ <span class="token comment" spellcheck="true"># 环境变量</span>
+getenv <span class="token comment" spellcheck="true"># 根据key获取变量</span>
+setenv <span class="token comment" spellcheck="true"># 设置环境变量</span>
+clearenv <span class="token comment" spellcheck="true"># 清除所有环境变量</span>
+<span class="token keyword">exit</span> <span class="token comment" spellcheck="true"># 以当前状态码退出程序 0表示成功  非0表示出错</span></code></pre>
+<h2 id="文件指令-FileMode"><a href="#文件指令-FileMode" class="headerlink" title="文件指令 FileMode"></a>文件指令 FileMode</h2><p>文件权限</p>
+<pre class=" language-bash"><code class="language-bash">const <span class="token punctuation">(</span>
+    // 单字符是被String方法用于格式化的属性缩写。
+    ModeDir        FileMode <span class="token operator">=</span> 1 <span class="token operator">&lt;&lt;</span> <span class="token punctuation">(</span>32 - 1 - iota<span class="token punctuation">)</span> // d: 目录
+    ModeAppend                                     // a: 只能写入，且只能写入到末尾
+    ModeExclusive                                  // l: 用于执行
+    ModeTemporary                                  // T: 临时文件（非备份文件）
+    ModeSymlink                                    // L: 符号链接（不是快捷方式文件）
+    ModeDevice                                     // D: 设备
+    ModeNamedPipe                                  // p: 命名管道（FIFO）
+    ModeSocket                                     // S: Unix域socket
+    ModeSetuid                                     // u: 表示文件具有其创建者用户id权限
+    ModeSetgid                                     // g: 表示文件具有其创建者组id的权限
+    ModeCharDevice                                 // c: 字符设备，需已设置ModeDevice
+    ModeSticky                                     // t: 只有root/创建者能删除/移动文件
+    // 覆盖所有类型位（用于通过<span class="token operator">&amp;</span>获取类型位），对普通文件，所有这些位都不应被设置
+    ModeType <span class="token operator">=</span> ModeDir <span class="token operator">|</span> ModeSymlink <span class="token operator">|</span> ModeNamedPipe <span class="token operator">|</span> ModeSocket <span class="token operator">|</span> ModeDevice
+    ModePerm FileMode <span class="token operator">=</span> 0777 // 覆盖所有Unix权限位（用于通过<span class="token operator">&amp;</span>获取类型位）
+<span class="token punctuation">)</span></code></pre>
+<pre class=" language-bash"><code class="language-bash">isdir <span class="token comment" spellcheck="true"># 是否是个目录</span>
+isregular <span class="token comment" spellcheck="true"># 是否是一个普通文件</span>
+perm <span class="token comment" spellcheck="true"># 返回权限位</span>
+String <span class="token comment" spellcheck="true"># 字符串格式化</span>
+</code></pre>
+<h2 id="文件对象-FileInfo"><a href="#文件对象-FileInfo" class="headerlink" title="文件对象  FileInfo"></a>文件对象  FileInfo</h2><pre class=" language-bash"><code class="language-bash"><span class="token function">type</span> FileInfo interface <span class="token punctuation">{</span>
+    Name<span class="token punctuation">(</span><span class="token punctuation">)</span> string       // 文件的名字（不含扩展名）
+    Size<span class="token punctuation">(</span><span class="token punctuation">)</span> int64        // 普通文件返回值表示其大小；其他文件的返回值含义各系统不同
+    Mode<span class="token punctuation">(</span><span class="token punctuation">)</span> FileMode     // 文件的模式位
+    ModTime<span class="token punctuation">(</span><span class="token punctuation">)</span> time.Time // 文件的修改时间
+    IsDir<span class="token punctuation">(</span><span class="token punctuation">)</span> bool        // 等价于Mode<span class="token punctuation">(</span><span class="token punctuation">)</span>.IsDir<span class="token punctuation">(</span><span class="token punctuation">)</span>
+    Sys<span class="token punctuation">(</span><span class="token punctuation">)</span> interface<span class="token punctuation">{</span><span class="token punctuation">}</span>   // 底层数据来源（可以返回nil）
+<span class="token punctuation">}</span></code></pre>
+<p>获取文件对象</p>
+<pre class=" language-bash"><code class="language-bash">os.stat
+os.lstat
+os.isexist
+os.isnoexist
+os.isPermission
+os.getwd
+os.chdir
+os.chmod
+os.chowd
+os.mkdir
+os.mkdirall
+os.rename
+os.remove
+os.removeall</code></pre>
+<p>打开一个文件对象</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token function">type</span> File struct <span class="token punctuation">{</span>
+    // 内含隐藏或非导出字段
+<span class="token punctuation">}</span>
+
+os.create
+os.open
+
+file.Name
+file.stat
+file.Size
+file.fd
+file.chdir
+file.chmod
+file.chowd
+</code></pre>
+<pre class=" language-go"><code class="language-go"><span class="token keyword">package</span> main
+
+<span class="token keyword">import</span> <span class="token punctuation">(</span>
+    <span class="token string">"fmt"</span>
+    <span class="token string">"log"</span>
+    <span class="token string">"os"</span>
+    <span class="token string">"os/exec"</span>
+<span class="token punctuation">)</span>
+
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>os<span class="token punctuation">.</span><span class="token function">Getpagesize</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    pwd<span class="token punctuation">,</span>err<span class="token operator">:=</span> os<span class="token punctuation">.</span><span class="token function">Getwd</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token punctuation">{</span>
+        log<span class="token punctuation">.</span><span class="token function">Fatal</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>pwd<span class="token punctuation">)</span>
+
+
+    <span class="token comment" spellcheck="true">// 获取文件信息  stat检测的如果是链接文件会跳转过去,但是lstat不会</span>
+    fileinfo<span class="token punctuation">,</span>err <span class="token operator">:=</span> os<span class="token punctuation">.</span><span class="token function">Stat</span><span class="token punctuation">(</span>pwd<span class="token operator">+</span><span class="token string">"/client.go"</span><span class="token punctuation">)</span>
+    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token punctuation">{</span>
+        log<span class="token punctuation">.</span><span class="token function">Fatal</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>fileinfo<span class="token punctuation">)</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>fileinfo<span class="token punctuation">)</span>
+
+    fileinfo2<span class="token punctuation">,</span>err <span class="token operator">:=</span> os<span class="token punctuation">.</span><span class="token function">Lstat</span><span class="token punctuation">(</span>pwd<span class="token operator">+</span><span class="token string">"/client.go"</span><span class="token punctuation">)</span>
+    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token punctuation">{</span>
+        log<span class="token punctuation">.</span><span class="token function">Fatal</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>fileinfo2<span class="token punctuation">)</span>
+
+    <span class="token comment" spellcheck="true">// 判断一个错误 是不是因为文件或目录不存在 而导致的</span>
+    fileinfo<span class="token punctuation">,</span>err <span class="token operator">=</span> os<span class="token punctuation">.</span><span class="token function">Lstat</span><span class="token punctuation">(</span><span class="token string">"ds"</span><span class="token punctuation">)</span>
+    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token punctuation">{</span>
+         fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>os<span class="token punctuation">.</span><span class="token function">IsExist</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span><span class="token keyword">else</span> <span class="token punctuation">{</span>
+        fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>fileinfo<span class="token punctuation">.</span><span class="token function">Name</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token comment" spellcheck="true">// 返回一个布尔值说明该错误是否表示因权限不足要求被拒绝</span>
+    fileinfo<span class="token punctuation">,</span>err <span class="token operator">=</span> os<span class="token punctuation">.</span><span class="token function">Lstat</span><span class="token punctuation">(</span><span class="token string">"ds"</span><span class="token punctuation">)</span>
+    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token punctuation">{</span>
+        fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>os<span class="token punctuation">.</span><span class="token function">IsPermission</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span><span class="token keyword">else</span><span class="token punctuation">{</span>
+        fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>fileinfo<span class="token punctuation">.</span><span class="token function">Name</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token comment" spellcheck="true">// Getwd返回一个对应当前工作目录的根路径</span>
+    pwd<span class="token punctuation">,</span><span class="token boolean">_</span> <span class="token operator">=</span> os<span class="token punctuation">.</span><span class="token function">Getwd</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>pwd<span class="token punctuation">)</span>
+
+    <span class="token comment" spellcheck="true">// 修改工作目录</span>
+    <span class="token comment" spellcheck="true">//pwd,_ = os.Getwd()</span>
+    <span class="token comment" spellcheck="true">//fmt.Println(pwd)</span>
+    <span class="token comment" spellcheck="true">//os.Chdir("/etc/")</span>
+    <span class="token comment" spellcheck="true">//pwd,_ = os.Getwd()</span>
+    <span class="token comment" spellcheck="true">//fmt.Println(pwd)</span>
+
+    <span class="token comment" spellcheck="true">// 修改文件权限</span>
+    <span class="token comment" spellcheck="true">//os.Chmod()</span>
+    <span class="token comment" spellcheck="true">// 修改用户组</span>
+    <span class="token comment" spellcheck="true">//os.Chown()</span>
+
+    <span class="token comment" spellcheck="true">// 创建文件夹</span>
+    <span class="token comment" spellcheck="true">//pwd,_= os.Getwd()</span>
+    <span class="token comment" spellcheck="true">//fmt.Println(pwd)</span>
+    <span class="token comment" spellcheck="true">//os.Chdir("/")</span>
+    pwd<span class="token punctuation">,</span><span class="token boolean">_</span> <span class="token operator">=</span> os<span class="token punctuation">.</span><span class="token function">Getwd</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>pwd<span class="token punctuation">)</span>
+    os<span class="token punctuation">.</span><span class="token function">Mkdir</span><span class="token punctuation">(</span>pwd<span class="token operator">+</span><span class="token string">"/helloword.txt"</span><span class="token punctuation">,</span>os<span class="token punctuation">.</span>ModePerm<span class="token punctuation">)</span>
+
+    <span class="token comment" spellcheck="true">// 递归创建文件 相当于 mkdir -p</span>
+    pwd<span class="token punctuation">,</span><span class="token boolean">_</span> <span class="token operator">=</span> os<span class="token punctuation">.</span><span class="token function">Getwd</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>pwd<span class="token punctuation">)</span>
+    os<span class="token punctuation">.</span><span class="token function">MkdirAll</span><span class="token punctuation">(</span>pwd<span class="token operator">+</span><span class="token string">"/xx/helloworld.txt"</span><span class="token punctuation">,</span>os<span class="token punctuation">.</span>ModePerm<span class="token punctuation">)</span>
+    listfile<span class="token punctuation">,</span>err <span class="token operator">:=</span> os<span class="token punctuation">.</span><span class="token function">Stat</span><span class="token punctuation">(</span>pwd<span class="token punctuation">)</span>
+    <span class="token keyword">if</span> err <span class="token operator">!=</span><span class="token boolean">nil</span><span class="token punctuation">{</span>
+        log<span class="token punctuation">.</span><span class="token function">Fatal</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>listfile<span class="token punctuation">.</span><span class="token function">Name</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+    <span class="token comment" spellcheck="true">// 删除文件</span>
+    os<span class="token punctuation">.</span><span class="token function">Remove</span><span class="token punctuation">(</span>pwd<span class="token operator">+</span><span class="token string">"/helloworld.txt"</span><span class="token punctuation">)</span>
+
+    <span class="token comment" spellcheck="true">// 递归删除文件</span>
+    os<span class="token punctuation">.</span><span class="token function">RemoveAll</span><span class="token punctuation">(</span>pwd<span class="token operator">+</span><span class="token string">"/xx/helloworld.txt"</span><span class="token punctuation">)</span>
+
+    <span class="token comment" spellcheck="true">// TempDir返回一个用于保管临时文件的默认目录。</span>
+    <span class="token comment" spellcheck="true">//temdir := os.TempDir()</span>
+    <span class="token comment" spellcheck="true">//fmt.Println(temdir)</span>
+    <span class="token comment" spellcheck="true">//temdir_info,err := os.Stat(temdir)</span>
+    <span class="token comment" spellcheck="true">//fmt.Println(temdir_info.Name())</span>
+
+
+    <span class="token comment" spellcheck="true">// 创建一个模式为0666的文件,可读写不可运行</span>
+    file<span class="token punctuation">,</span>err<span class="token operator">:=</span>os<span class="token punctuation">.</span><span class="token function">Create</span><span class="token punctuation">(</span><span class="token string">"helloworld"</span><span class="token punctuation">)</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>file<span class="token punctuation">.</span><span class="token function">Name</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token comment" spellcheck="true">// 读取一个文件 或者一个文件夹</span>
+    file<span class="token punctuation">,</span>err <span class="token operator">=</span> os<span class="token punctuation">.</span><span class="token function">Open</span><span class="token punctuation">(</span><span class="token string">"helloworld"</span><span class="token punctuation">)</span>
+
+    <span class="token comment" spellcheck="true">// 返回文件名字</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>file<span class="token punctuation">.</span><span class="token function">Name</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token comment" spellcheck="true">// 返回Unix文件描述符</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>file<span class="token punctuation">.</span><span class="token function">Fd</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+    file<span class="token punctuation">,</span>err <span class="token operator">=</span> os<span class="token punctuation">.</span><span class="token function">Open</span><span class="token punctuation">(</span><span class="token string">"xx"</span><span class="token punctuation">)</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>file<span class="token punctuation">.</span><span class="token function">Name</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    file<span class="token punctuation">.</span><span class="token function">Chdir</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    pwd<span class="token punctuation">,</span>err <span class="token operator">=</span> os<span class="token punctuation">.</span><span class="token function">Getwd</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>pwd<span class="token punctuation">)</span>
+
+
+
+    <span class="token comment" spellcheck="true">// 进程</span>
+    <span class="token comment" spellcheck="true">// StartProcess使用提供的属性、程序名、命令行参数开始一个新进程</span>
+
+    <span class="token comment" spellcheck="true">// FindProcess根据进程id查找一个运行中的进程</span>
+<span class="token punctuation">}</span>
+
+</code></pre>
+<h2 id="os-exec"><a href="#os-exec" class="headerlink" title="os-exec"></a>os-exec</h2><p>os-exec包用来执行外部的命令,他创建了一个cmd实例</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token function">type</span> Cmd struct <span class="token punctuation">{</span>
+    // Path是将要执行的命令的路径。
+    //
+    // 该字段不能为空，如为相对路径会相对于Dir字段。
+    Path string
+    // Args保管命令的参数，包括命令名作为第一个参数；如果为空切片或者nil，相当于无参数命令。
+    //
+    // 典型用法下，Path和Args都应被Command函数设定。
+    Args <span class="token punctuation">[</span><span class="token punctuation">]</span>string
+    // Env指定进程的环境，如为nil，则是在当前进程的环境下执行。
+    Env <span class="token punctuation">[</span><span class="token punctuation">]</span>string
+    // Dir指定命令的工作目录。如为空字符串，会在调用者的进程当前目录下执行。
+    Dir string
+    // Stdin指定进程的标准输入，如为nil，进程会从空设备读取（os.DevNull）
+    Stdin io.Reader
+    // Stdout和Stderr指定进程的标准输出和标准错误输出。
+    //
+    // 如果任一个为nil，Run方法会将对应的文件描述符关联到空设备（os.DevNull）
+    //
+    // 如果两个字段相同，同一时间最多有一个线程可以写入。
+    Stdout io.Writer
+    Stderr io.Writer
+    // ExtraFiles指定额外被新进程继承的已打开文件流，不包括标准输入、标准输出、标准错误输出。
+    // 如果本字段非nil，entry i会变成文件描述符3+i。
+    //
+    // BUG: 在OS X 10.6系统中，子进程可能会继承不期望的文件描述符。
+    // http://golang.org/issue/2603
+    ExtraFiles <span class="token punctuation">[</span><span class="token punctuation">]</span>*os.File
+    // SysProcAttr保管可选的、各操作系统特定的sys执行属性。
+    // Run方法会将它作为os.ProcAttr的Sys字段传递给os.StartProcess函数。
+    SysProcAttr *syscall.SysProcAttr
+    // Process是底层的，只执行一次的进程。
+    Process *os.Process
+    // ProcessState包含一个已经存在的进程的信息，只有在调用Wait或Run后才可用。
+    ProcessState *os.ProcessState
+    // 内含隐藏或非导出字段
+<span class="token punctuation">}</span></code></pre>
+<p>使用command生成</p>
+<pre class=" language-bash"><code class="language-bash">func Command<span class="token punctuation">(</span>name string, arg <span class="token punctuation">..</span>.string<span class="token punctuation">)</span> *Cmd</code></pre>
+<pre class=" language-go"><code class="language-go">    cmd <span class="token operator">:=</span>exec<span class="token punctuation">.</span><span class="token function">Command</span><span class="token punctuation">(</span><span class="token string">"tr"</span><span class="token punctuation">,</span><span class="token string">"a-z"</span><span class="token punctuation">,</span><span class="token string">"A-Z"</span><span class="token punctuation">)</span>
+    cmd<span class="token punctuation">.</span>Stdin <span class="token operator">=</span> strings<span class="token punctuation">.</span><span class="token function">NewReader</span><span class="token punctuation">(</span><span class="token string">"some"</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">var</span> out bytes<span class="token punctuation">.</span>Buffer
+    cmd<span class="token punctuation">.</span>Stdout <span class="token operator">=</span> <span class="token operator">&amp;</span>out
+
+    err <span class="token operator">:=</span> cmd<span class="token punctuation">.</span><span class="token function">Run</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token punctuation">{</span>
+        log<span class="token punctuation">.</span><span class="token function">Fatal</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+
+    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>out<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span></code></pre>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>标签：</span>
+                <span class="tag">
+                    
+                    
+                    <a href="/tags/golang/"># golang</a>
+                    
+                    <a href="/tags/go-library/"># go-library</a>
+                    
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript：window.history.back();">后退</a>
+                <span>· </span>
+                <a href="/">主页</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            <a class="prev" rel="prev" href="/2020/12/17/blog_back_new/NetWord/%E4%BA%A4%E6%8D%A2%E6%9C%BA/%E4%BA%A4%E6%8D%A2%E6%9C%BA%E5%A0%86%E5%8F%A0/">交换机irf堆叠</a>
+            
+            
+            <a class="next" rel="next" href="/2020/12/16/blog_back_new/golang/go%E5%BA%93ioutil/">go库ioutil</a>
+            
+        </section>
+    </article>
+</div>
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+    </div>
+</footer>
+
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

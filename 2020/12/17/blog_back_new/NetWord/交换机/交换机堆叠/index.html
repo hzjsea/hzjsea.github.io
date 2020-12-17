@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="hzjsea">
+
+
+
+
+
+
+<title>交换机irf堆叠 | hzjsea</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+    <script src="/js/jquery.min.js"></script>
+    
+
+
+
+    
+    
+        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+    
+
+
+
+
+    <script>
+    function searchToggle() {
+        const width = $(document.body).width()
+        if(width > 479) {
+            return;
+        }
+        const search = $('.search');
+        const searchForm = $('.form-search')
+
+        if(!search.hasClass("mobile-search")) {
+            search.addClass("mobile-search");
+        } else {
+            search.removeClass("mobile-search");
+        } 
+    }
+
+    function search(searchInputEl, formEl, flag) {
+        const path = "/" + "search.json"; // 可以在public 下查看这个search.json
+        $(formEl).submit(function(e){
+            e.preventDefault();
+            let target = null
+            if(searchInputEl == null) {
+                const screenWidth = $(document.body).width();
+                target = screenWidth > 479 ? $('#pc-search-input') : $('#mobile-search-input');
+                console.log(target);
+            } else {
+                target = $(searchInputEl)
+            }
+
+            if(!flag && target.val() === '') {
+                return ;
+            }
+
+            $("#u-search").fadeIn(500, function() {
+                $("body > .wrapper").addClass("modal-active");
+
+                $.ajax({
+                    url: path,
+                    dataType: "json",
+                    beforeSend: function (xhr) {
+                        $input = target.val();
+                        $(".form-input").val($input);
+                        const loadingBar = $('.search-loading-bar') 
+                        loadingBar.css({
+                            width:'100%',
+                            display: 'block'
+                        });
+                    },
+                    success: function( datas ) {
+                        console.log(datas);
+                        const $resultPanel = $(".modal-body")[0];
+                        let str = `<ul class="modal-results">`;
+                        var keywords = $(".form-input").val().trim().toLowerCase().split(/[\s\-]+/);
+                        $resultPanel.innerHTML = "";
+                        let hasResult = false
+                        let text = `<div class="no-result">找不到与关键词相关的内容....</div>`;
+
+                        if ($(".form-input").val().trim().length <= 0) {
+                            // 没有结果
+                            $resultPanel.innerHTML = text;
+                            return;
+                        }
+                        datas.forEach(function (data, index) {
+                            var isMatch = true;
+                            if (!data.title || data.title.trim() === '') {
+                                data.title = "Untitled";
+                            }
+                            var data_title = data.title.trim().toLowerCase();
+                            var data_content = data.content && data.content.trim().replace(/<[^>]+>/g, "").toLowerCase() || '';
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            // only match artiles with not empty contents
+                            if (data_content !== '') {
+                                keywords.forEach(function (keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        hasResult = true
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            } else {
+                                isMatch = false;
+                            }
+                            // show search results
+                            if (isMatch) {
+                                str += `<li class='result-item'><a href='${data_url}' class='result-item-detail'> <span class="title">${data_title}</span>`;
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 200 characters
+                                    var start = first_occur - 40;
+                                    var end = first_occur + 160;
+
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+
+                                    if (start == 0) {
+                                        end = 200;
+                                    }
+
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+
+                                    var match_content = content.substring(start, end);
+
+                                    // highlight all keywords
+                                    keywords.forEach(function (keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, `<em class="search-keyword">${keyword}</em>`);
+                                    });
+
+                                    str += `<span class="content"> ${match_content} ...</span></a>`;
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        if(hasResult) {
+                            $resultPanel.innerHTML = str;
+                        } else {
+                            $resultPanel.innerHTML = text;
+                        }
+
+                    },
+                    complete: function() {
+                        setTimeout(() => {
+                                const loadingBar = $('.search-loading-bar') 
+                                loadingBar.css({
+                                    width:'0%',
+                                    display: 'none'
+                                });
+                        }, 300)
+                    }
+                });
+            })
+
+        });
+    }
+
+    $(document).ready(function() {
+        $('.modal-close').click(function () { 
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+
+        $('.modal-overlay').click(function() {
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+        search(null, ".form-search", false)
+        search("#u-search-modal-form .form-input", ".u-search-modal-form", true)
+    })
+</script>
+
+
+
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo"><a href="/">hzjsea</a></div>
+        <div class="menu navbar-right">
+            
+            
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="pc-search-input"/>
+        </form>
+    </div>
+
+
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+            <input id="switch_default" type="checkbox" class="switch_default">
+            <label for="switch_default" class="toggleBtn"></label>
+        </div>
+    </div>
+</nav>
+
+
+<nav class="navbar-mobile" id="nav-mobile">
+    <div class="container">
+        <div class="navbar-header">
+            <div>
+                <a href="/">hzjsea</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+            </div>
+            <div class="navbar-mobile-right">
+                
+                
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Searching" autocomplete="off" id="mobile-search-input"/>
+        </form>
+    </div>
+
+
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; 目录</div>
+            </div>
+            
+        </div>
+        <div class="menu" id="mobile-menu">
+            
+                <a class="menu-item" href="/archives">文章</a>
+            
+                <a class="menu-item" href="/category">分类</a>
+            
+                <a class="menu-item" href="/tag">标签</a>
+            
+                <a class="menu-item" href="/about">关于</a>
+            
+        </div>
+    </div>
+</nav>
+
+        <div class="main">
+			<!-- Chic/layout.ejs -->
+ <div id="u-search">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="container">
+                    <form id="u-search-modal-form" class="u-search-modal-form">
+                        <button type="submit" class="form-submit-btn">
+                            <img src="/image/search.png" class="search-btn-img" />
+                        </button>
+                        <input placeholder="搜索文章。。。" class="form-input" id="modal-form-input">
+                    </form>
+                    <a class="modal-close">x</a>
+                </div>
+                <div class="search-loading">
+                    <div class="search-loading-bar"></div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <!-- ul 格式如下 -->
+                <!-- <ul class="modal-results">
+                    <li class="result-item">
+                        <a class="result-item-detail">
+                            <span class="title">页面配置</span>
+                            <span class="content">
+                                content
+                            </span>
+                        </a>
+                    </li>
+                </ul> -->
+            </div>
+        </div>
+        <div class="modal-overlay"></div>
+    </div>
+            <div class="container">
+    
+    
+    <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">全部展开</a>
+        <a onclick="go_top()">回到顶部</a>
+        <a onclick="go_bottom()">回到底部</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "全部折叠"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "全部展开"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">交换机irf堆叠</h1>
+            
+            <div class="post-meta">
+                
+                作者： <a itemprop="author" rel="author" href="/">hzjsea</a>&nbsp;
+                
+
+                
+                <span class="post-time">
+                    创建日期： <a
+                        href="#">December 17, 2020&nbsp;&nbsp;11:36:37</a>
+                </span>&nbsp;
+                
+                
+                <span class="post-category">
+                    分类：
+                    
+                    <a href="/categories/net/">net</a>&nbsp;
+                    
+                </span>
+                
+                
+                状态：<a href="#">SNAPSHOT</a>
+                
+            </div>
+            
+        </header>
+
+        <div class="post-content">
+            <a id="more"></a>
+
+<h1 id="交换机堆叠流程官方版"><a href="#交换机堆叠流程官方版" class="headerlink" title="交换机堆叠流程官方版"></a>交换机堆叠流程官方版</h1><h2 id="堆叠的流程"><a href="#堆叠的流程" class="headerlink" title="堆叠的流程"></a>堆叠的流程</h2><p><font color='red'>0.拔掉所有的堆叠线</font> </p>
+<blockquote>
+<p>重置配置</p>
+</blockquote>
+<pre class=" language-bash"><code class="language-bash">reset saved-configuration
+<span class="token function">reboot</span></code></pre>
+<blockquote>
+<p>配置堆叠</p>
+</blockquote>
+<p>Switch 1<br>进入第二台交换机进行配置，具体流程为修改成员id(需要重启) 创建irf组 将堆叠口加入到irf组中</p>
+<pre class=" language-bash"><code class="language-bash">system-view
+irf mac-address persistent timer
+irf auto-update <span class="token function">enable</span>
+undo irf link-delay
+<span class="token comment" spellcheck="true"># 设备编号默认为1,编号为1的作为主机，设置级别为32 最高为32</span>
+irf member 1 priority 32
+
+<span class="token comment" spellcheck="true"># 关闭堆叠口</span>
+interface range ten 1/0/49 to ten 1/0/50
+<span class="token function">shutdown</span>
+
+<span class="token comment" spellcheck="true"># 创建irf组，将关闭后的堆叠口加入到irf组</span>
+irf-port 1/1
+port group interface ten 1/0/49
+port group interface ten 1/0/50
+
+<span class="token comment" spellcheck="true"># 开启堆叠口</span>
+interface range ten 1/0/49 to ten 1/0/50
+undo <span class="token function">shutdown</span>
+
+<span class="token comment" spellcheck="true"># 激活irf配置</span>
+irf-port-configuration active
+
+<span class="token comment" spellcheck="true"># 保存配置</span>
+save force</code></pre>
+<p>Switch 2</p>
+<pre class=" language-bash"><code class="language-bash">irf mac-address persistent timer
+irf auto-update <span class="token function">enable</span>
+undo irf link-delay
+
+<span class="token comment" spellcheck="true"># 修改irf成员id，并且注意priority级别要低于主机的级别,32为最高 1 位最小</span>
+<span class="token comment" spellcheck="true"># 修改成员id 改变了硬件设备的设置, 需要重启交换机</span>
+irf member 1 renumber 2 priority 1 
+ <span class="token comment" spellcheck="true"># 保存重启，修改成员id需要重启</span>
+save force
+quit
+<span class="token function">reboot</span>
+
+<span class="token comment" spellcheck="true"># 关闭堆叠口</span>
+interface range ten 2/0/49 to ten 2/0/50
+<span class="token function">shutdown</span>
+
+<span class="token comment" spellcheck="true"># 创建堆叠组，将堆叠口加入到堆叠组中</span>
+irf-port 2/2
+port group interface ten 2/0/49
+port group interface ten 2/0/50
+
+<span class="token comment" spellcheck="true"># 开启堆叠口</span>
+interface range ten 2/0/49 to ten 2/0/50
+undo <span class="token function">shutdown</span>
+
+<span class="token comment" spellcheck="true"># 激活irf组</span>
+irf-port-configuration active
+
+<span class="token comment" spellcheck="true"># 保存配置 </span>
+save force</code></pre>
+<p><font color='red'>当第二台交换机激活irf组之后，交换机并不会自动重启，这时候将堆叠线按照要求插上，交换机重启，重启之后查看是否配置成功</font></p>
+<h2 id="堆叠结果"><a href="#堆叠结果" class="headerlink" title="堆叠结果"></a>堆叠结果</h2><p>使用display cu查看当前的配置情况，会发现在两台Switch中都存在了对方以及自己的irf堆叠组</p>
+<pre class=" language-bash"><code class="language-bash">irf-port 1/1
+ port group interface Ten-GigabitEthernet1/0/49
+ port group interface Ten-GigabitEthernet1/0/50
+<span class="token comment" spellcheck="true">#</span>
+irf-port 2/2
+ port group interface Ten-GigabitEthernet2/0/49
+ port group interface Ten-GigabitEthernet2/0/50
+<span class="token comment" spellcheck="true">#   </span></code></pre>
+<p>使用display irf查看当前irf堆叠的情况，会发现再member ID中已经存在了两台机器，并且两台机器的irf配置应该都如图统一。</p>
+<pre class=" language-bash"><code class="language-bash">MemberID    Role    Priority  CPU-Mac         Description
+  *1        Master  10        00e0-fc0f-8c02  ---
+  +2        Standby 1         00e0-fc0f-8c03  ---
+--------------------------------------------------
+ * indicates the device is the master.
+ + indicates the device through <span class="token function">which</span> the user logs in.
+
+ The bridge MAC of the IRF is: 70ba-ef73-4a5d
+ Auto upgrade                <span class="token keyword">:</span> <span class="token function">yes</span>
+ Mac persistent              <span class="token keyword">:</span> 6 min
+ Domain ID                   <span class="token keyword">:</span> 0</code></pre>
+<p>使用display interface brief会发现在其中任何一台交换机都可以看到所有的交换机的端口</p>
+<p><strong>另外你会发现主机和从机的交换机名字变成一样的了</strong></p>
+<h2 id="额外操作"><a href="#额外操作" class="headerlink" title="额外操作"></a>额外操作</h2><p>注释信息<br>undo info-center enable<br>堆叠过程中，会修改板卡信息，比如number 1 renumber 2 将设备的编号从1改成2  这样设备的接口就会从1/0/1改成2/0/1 重置无效？ 如何重置？</p>
+<p>设置成员设备的描述信息<br>irf member 1 desc text </p>
+<p>自动升级<br>如果堆叠的交换机版本不一致，则新加入的交换机将不能重启，这时候需要开启启动文件的自动加载功能<br>irf auto-update enable</p>
+<p>irf链路延迟上报时间<br>irf link-delay + inteval  默认位4s</p>
+<h2 id="irf的显示与维护"><a href="#irf的显示与维护" class="headerlink" title="irf的显示与维护"></a>irf的显示与维护</h2><p>dis irf 显示irf中所有成员设备的相关信息<br>dis irf topology 查看irf的拓扑信息<br>dis irf link 显示irf链路信息<br>dis irf conf 显示irf配置信息<br>dis irf-port load-sharing mode irf-port 1 显示irf链路的负载分担模式<br>dis mad [verbose] 显示MAD配置信息</p>
+<p>h3c irf堆叠配置 <a target="_blank" rel="noopener" href="http://www.h3c.com/cn/d_201206/747218_30005_0.htm#_Ref306371643">http://www.h3c.com/cn/d_201206/747218_30005_0.htm#_Ref306371643</a></p>
+<h2 id="交换机堆叠配置"><a href="#交换机堆叠配置" class="headerlink" title="交换机堆叠配置"></a>交换机堆叠配置</h2><p>堆叠是一种将交换机处理能力叠加的技术。堆叠交换机，性能是交换机的性能和，端口也是所有交换机的总和。端口汇聚是把端口的带宽叠加，并能起到冗余备份的作用</p>
+<p><a target="_blank" rel="noopener" href="http://blog.sina.com.cn/s/blog_458d86080102vk9x.html">http://blog.sina.com.cn/s/blog_458d86080102vk9x.html</a><br><a target="_blank" rel="noopener" href="https://zhiliao.h3c.com/questions/dispcont/27280">https://zhiliao.h3c.com/questions/dispcont/27280</a><br><a target="_blank" rel="noopener" href="https://cn.bing.com/search?q=The+device+is+not+in+the+current+IRF.&amp;PC=U316&amp;FORM=CHROMN">https://cn.bing.com/search?q=The+device+is+not+in+the+current+IRF.&amp;PC=U316&amp;FORM=CHROMN</a><br><a target="_blank" rel="noopener" href="https://docs.google.com/document/d/1jEBmlFBnQh6qdYrev5aM5LzeJIytY40y7bUytafvpLs/edit#heading=h.i1kyhwtxrom0">https://docs.google.com/document/d/1jEBmlFBnQh6qdYrev5aM5LzeJIytY40y7bUytafvpLs/edit#heading=h.i1kyhwtxrom0</a></p>
+<h2 id="交换机多种堆叠方式配置"><a href="#交换机多种堆叠方式配置" class="headerlink" title="交换机多种堆叠方式配置"></a>交换机多种堆叠方式配置</h2><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/itfat/p/7904153.html">https://www.cnblogs.com/itfat/p/7904153.html</a></p>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>标签：</span>
+                <span class="tag">
+                    
+                    
+                    <a href="/tags/switch/"># switch</a>
+                    
+                    <a href="/tags/net/"># net</a>
+                    
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript：window.history.back();">后退</a>
+                <span>· </span>
+                <a href="/">主页</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            
+            <a class="next" rel="next" href="/2020/12/16/blog_back_new/golang/go%E5%BA%93os/">go库os</a>
+            
+        </section>
+    </article>
+</div>
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+    </div>
+</footer>
+
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>
