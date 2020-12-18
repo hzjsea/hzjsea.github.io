@@ -13,7 +13,7 @@
 
 
 
-<title>Archives | hzjsea</title>
+<title>python打包的几种形式 | hzjsea</title>
 
 
 
@@ -359,106 +359,165 @@
         </div>
         <div class="modal-overlay"></div>
     </div>
-            <div class="post-wrap archive">
+            <div class="container">
     
     
-        
+    <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">全部展开</a>
+        <a onclick="go_top()">回到顶部</a>
+        <a onclick="go_bottom()">回到底部</a>
+    </div>
+</div>
 
-        
-            <h3>2020</h3>
-        
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
 
-        <article class="archive-item">
-            <a class="archive-item-link" href="/2020/12/09/blog_back_new/linux/linux%E5%91%BD%E4%BB%A4crond/">linux命令crond</a>
-            <span class="archive-item-date">December 9, 2020</span>
-        </article>
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "全部折叠"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "全部展开"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
     
-        
 
-        
-
-        <article class="archive-item">
-            <a class="archive-item-link" href="/2020/12/09/blog_back_new/linux/linux%E5%91%BD%E4%BB%A4curl/">linux命令curl</a>
-            <span class="archive-item-date">December 9, 2020</span>
-        </article>
     
-        
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">python打包的几种形式</h1>
+            
+            <div class="post-meta">
+                
+                作者： <a itemprop="author" rel="author" href="/">hzjsea</a>&nbsp;
+                
+
+                
+                <span class="post-time">
+                    创建日期： <a
+                        href="#">December 18, 2020&nbsp;&nbsp;9:26:14</a>
+                </span>&nbsp;
+                
+                
+                <span class="post-category">
+                    分类：
+                    
+                    <a href="/categories/python/">python</a>&nbsp;
+                    
+                </span>
+                
+                
+                状态：<a href="#">SNAPSHOT</a>
+                
+            </div>
+            
+        </header>
+
+        <div class="post-content">
+            <a id="more"></a>   
+<h1 id="python打包"><a href="#python打包" class="headerlink" title="python打包"></a>python打包</h1><p>新版本更新以后的zipapp</p>
+<p>方法如下</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token function">mkdir</span> workspace <span class="token operator">&amp;&amp;</span> <span class="token function">cd</span> workspace
+virtualenv ./venv --python<span class="token operator">=</span>python3.7
+<span class="token function">source</span> ./venv/bin/active
+<span class="token comment" spellcheck="true"># 下载需要压缩的包</span>
+<span class="token function">git</span> clone https://github.com/Julian-Nash/simple-flask-demo.git
+<span class="token comment" spellcheck="true"># 创建压缩包的工作环境</span>
+<span class="token comment" spellcheck="true"># 如果需要将各种第三方包一起打包的话,需要把第三方包打包到工作环境当中</span>
+<span class="token function">mkdir</span> -p app <span class="token operator">&amp;&amp;</span> <span class="token function">rm</span> -rf ./app/*
+<span class="token comment" spellcheck="true"># 安装第三方包</span>
+pip <span class="token function">install</span> -t ./app -r ./simple-flask-demo/requirements.txt
+<span class="token comment" spellcheck="true"># 移动项目</span>
+<span class="token function">mv</span> ./simple-flask-demo/* ./app
+<span class="token comment" spellcheck="true"># 删除不必要的文件</span>
+<span class="token function">rm</span> -rf ./app/__pycache__/  ./app/*.dist-info
+<span class="token comment" spellcheck="true"># 修改启动文件</span>
+<span class="token function">mv</span> ./app/run.py ./app/__main__.py
+python -m zipapp app
+python app.pyz</code></pre>
+<p>zipapps </p>
+<pre class=" language-bash"><code class="language-bash"><span class="token function">mkdir</span> workspace2 <span class="token operator">&amp;&amp;</span> <span class="token function">cd</span> workspace2
+virtualenv ./venv/ --python<span class="token operator">=</span>python3.7
+<span class="token function">source</span> ./venv/bin/active
+
+<span class="token comment" spellcheck="true"># 下载zipapps</span>
+pip <span class="token function">install</span> zipapps
+<span class="token function">git</span> clone https://github.com/Julian-Nash/simple-flask-demo.git
+
+<span class="token comment" spellcheck="true"># 只打包虚拟环境</span>
+python -m zipapps -u AUTO_UNZIP -o venv.pyz -r ./simple-flask-demo/requirements.txt
+python venv.pyz ./simple-flask-demo/run.py</code></pre>
+
+        </div>
 
         
-
-        <article class="archive-item">
-            <a class="archive-item-link" href="/2020/12/09/blog_back_new/linux/linux%E4%B8%BB%E6%9C%BA%E5%90%8D/">linux主机名</a>
-            <span class="archive-item-date">December 9, 2020</span>
-        </article>
-    
-        
-
-        
-
-        <article class="archive-item">
-            <a class="archive-item-link" href="/2020/12/08/blog_back_new/linux/linux%E7%B3%BB%E7%BB%9F%E6%97%B6%E9%97%B4/">linux系统时间</a>
-            <span class="archive-item-date">December 8, 2020</span>
-        </article>
-    
-        
-
-        
-
-        <article class="archive-item">
-            <a class="archive-item-link" href="/2020/12/07/blog_back_new/docker/docker/">docker</a>
-            <span class="archive-item-date">December 7, 2020</span>
-        </article>
-    
-        
-
-        
-
-        <article class="archive-item">
-            <a class="archive-item-link" href="/2020/12/07/blog_back_new/Python/python%E5%90%84%E7%A7%8D%E9%97%AE%E9%A2%98/">python各种问题</a>
-            <span class="archive-item-date">December 7, 2020</span>
-        </article>
-    
-        
-
-        
-
-        <article class="archive-item">
-            <a class="archive-item-link" href="/2020/12/02/blog_back_new/git/git%E5%9F%BA%E7%A1%80/">git基础</a>
-            <span class="archive-item-date">December 2, 2020</span>
-        </article>
-    
-        
-
-        
-
-        <article class="archive-item">
-            <a class="archive-item-link" href="/2020/11/30/blog_back_new/docker/docker%E5%AE%89%E8%A3%85%E4%BB%A5%E5%8F%8A%E6%8E%92%E7%96%91/">docker安装</a>
-            <span class="archive-item-date">November 30, 2020</span>
-        </article>
-    
-        
-
-        
-
-        <article class="archive-item">
-            <a class="archive-item-link" href="/2020/11/30/blog_back_new/linux/linux%E5%91%BD%E4%BB%A4firewalld/">linux命令firewalld</a>
-            <span class="archive-item-date">November 30, 2020</span>
-        </article>
-    
-        
-
-        
-
-        <article class="archive-item">
-            <a class="archive-item-link" href="/2020/11/30/blog_back_new/linux/linux%E5%91%BD%E4%BB%A4ip/">linux命令iprouter</a>
-            <span class="archive-item-date">November 30, 2020</span>
-        </article>
-    
-    
-    <nav class="pagination">
-        <a class="page-number" href="/archives/">1</a><span class="page-number current">2</span><a class="page-number" href="/archives/page/3/">3</a><a class="page-number" href="/archives/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/archives/page/19/">19</a>
-    </nav>
-
+        <section class="post-tags">
+            <div>
+                <span>标签：</span>
+                <span class="tag">
+                    
+                    
+                    <a href="/tags/python/"># python</a>
+                    
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript：window.history.back();">后退</a>
+                <span>· </span>
+                <a href="/">主页</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            
+            <a class="next" rel="next" href="/2020/12/17/blog_back_new/NetWord/%E4%BA%A4%E6%8D%A2%E6%9C%BA/%E4%BA%A4%E6%8D%A2%E6%9C%BA%E5%A0%86%E5%8F%A0/">交换机irf堆叠</a>
+            
+        </section>
+    </article>
 </div>
         </div>
         <footer id="footer" class="footer">

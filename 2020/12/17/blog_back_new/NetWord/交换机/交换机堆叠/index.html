@@ -468,7 +468,7 @@
 <blockquote>
 <p>配置堆叠</p>
 </blockquote>
-<p>Switch 1<br>进入第二台交换机进行配置，具体流程为修改成员id(需要重启) 创建irf组 将堆叠口加入到irf组中</p>
+<p>Switch 1</p>
 <pre class=" language-bash"><code class="language-bash">system-view
 irf mac-address persistent timer
 irf auto-update <span class="token function">enable</span>
@@ -494,13 +494,17 @@ irf-port-configuration active
 
 <span class="token comment" spellcheck="true"># 保存配置</span>
 save force</code></pre>
-<p>Switch 2</p>
+<p>Switch 2<br>进入第二台交换机进行配置，具体流程为修改成员id(需要重启) 创建irf组 将堆叠口加入到irf组中</p>
 <pre class=" language-bash"><code class="language-bash">irf mac-address persistent timer
 irf auto-update <span class="token function">enable</span>
 undo irf link-delay
 
 <span class="token comment" spellcheck="true"># 修改irf成员id，并且注意priority级别要低于主机的级别,32为最高 1 位最小</span>
 <span class="token comment" spellcheck="true"># 修改成员id 改变了硬件设备的设置, 需要重启交换机</span>
+<span class="token comment" spellcheck="true"># 这里一些新版本的交换机无法在后面直接使用priority 1 </span>
+<span class="token comment" spellcheck="true"># 解决方法是重启然后再设置priority</span>
+<span class="token comment" spellcheck="true"># irf member 1 renumber 2</span>
+<span class="token comment" spellcheck="true"># irf priority 1</span>
 irf member 1 renumber 2 priority 1 
  <span class="token comment" spellcheck="true"># 保存重启，修改成员id需要重启</span>
 save force
@@ -582,6 +586,8 @@ irf-port 2/2
             </div>
         </section>
         <section class="post-nav">
+            
+            <a class="prev" rel="prev" href="/2020/12/18/blog_back_new/Python/python%E6%89%93%E5%8C%85/">python打包的几种形式</a>
             
             
             <a class="next" rel="next" href="/2020/12/16/blog_back_new/golang/go%E5%BA%93os/">go库os</a>

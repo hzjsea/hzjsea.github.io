@@ -709,6 +709,111 @@ file.chowd
     <span class="token punctuation">}</span>
 
     fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>out<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span></code></pre>
+<pre class=" language-go"><code class="language-go"><span class="token keyword">package</span> main
+
+<span class="token keyword">import</span> <span class="token punctuation">(</span>
+    <span class="token string">"bytes"</span>
+    <span class="token string">"fmt"</span>
+    <span class="token string">"log"</span>
+    <span class="token string">"os/exec"</span>
+    <span class="token string">"strings"</span>
+    <span class="token string">"unsafe"</span>
+<span class="token punctuation">)</span>
+
+
+<span class="token comment" spellcheck="true">//https://studygolang.com/static/pkgdoc/pkg/os_exec.htm#example-Cmd-Output</span>
+
+<span class="token keyword">func</span> <span class="token function">displaydir</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">// 返回一个对象实例</span>
+    cmd <span class="token operator">:=</span> exec<span class="token punctuation">.</span><span class="token function">Command</span><span class="token punctuation">(</span><span class="token string">"find"</span><span class="token punctuation">,</span> <span class="token string">"."</span><span class="token punctuation">,</span> <span class="token string">"-name"</span> <span class="token punctuation">,</span><span class="token string">"xx"</span><span class="token punctuation">)</span>
+
+    <span class="token comment" spellcheck="true">// 指定cmd的输出</span>
+    <span class="token keyword">var</span> out bytes<span class="token punctuation">.</span>Buffer
+    cmd<span class="token punctuation">.</span>Stdout <span class="token operator">=</span> <span class="token operator">&amp;</span>out
+    err <span class="token operator">:=</span> cmd<span class="token punctuation">.</span><span class="token function">Run</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token keyword">if</span> err <span class="token operator">!=</span><span class="token boolean">nil</span><span class="token punctuation">{</span>
+        log<span class="token punctuation">.</span><span class="token function">Fatal</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>out<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>cmd<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// /usr/bin/find . -name xx</span>
+
+
+<span class="token punctuation">}</span>
+
+
+<span class="token keyword">func</span> <span class="token function">pipecmd</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    cmd <span class="token operator">:=</span> exec<span class="token punctuation">.</span><span class="token function">Command</span><span class="token punctuation">(</span><span class="token string">"echo"</span><span class="token punctuation">,</span><span class="token string">"-n"</span><span class="token punctuation">,</span><span class="token string">`{"Name": "Bob", "Age": 32}`</span><span class="token punctuation">)</span>
+    <span class="token keyword">var</span> out bytes<span class="token punctuation">.</span>Buffer
+    cmd<span class="token punctuation">.</span>Stdout <span class="token operator">=</span> <span class="token operator">&amp;</span>out
+    err <span class="token operator">:=</span> cmd<span class="token punctuation">.</span><span class="token function">Run</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token punctuation">{</span>
+        log<span class="token punctuation">.</span><span class="token function">Fatal</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>out<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token comment" spellcheck="true">//fmt.Println(cmd.Output())</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">func</span> <span class="token function">cmdstratanddwait</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    cmd <span class="token operator">:=</span> exec<span class="token punctuation">.</span><span class="token function">Command</span><span class="token punctuation">(</span><span class="token string">"sleep"</span><span class="token punctuation">,</span><span class="token string">"5"</span><span class="token punctuation">)</span>
+    err <span class="token operator">:=</span> cmd<span class="token punctuation">.</span><span class="token function">Start</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// 不会进行阻塞ned</span>
+    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token punctuation">{</span>
+        log<span class="token punctuation">.</span><span class="token function">Fatal</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+    err <span class="token operator">=</span> cmd<span class="token punctuation">.</span><span class="token function">Wait</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// 阻塞进行</span>
+    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token punctuation">{</span>
+        log<span class="token punctuation">.</span><span class="token function">Fatal</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+
+<span class="token punctuation">}</span>
+
+<span class="token keyword">func</span> <span class="token function">cmdoutput</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    out<span class="token punctuation">,</span>err <span class="token operator">:=</span> exec<span class="token punctuation">.</span><span class="token function">Command</span><span class="token punctuation">(</span><span class="token string">"date"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Output</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token punctuation">{</span>
+        log<span class="token punctuation">.</span><span class="token function">Fatal</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>out<span class="token punctuation">)</span>
+
+    <span class="token comment" spellcheck="true">// 两种[]byte转换string的方法</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token function">string</span><span class="token punctuation">(</span>out<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// 写的简单,但是效率慢</span>
+    stringout <span class="token operator">:=</span> <span class="token operator">*</span><span class="token punctuation">(</span><span class="token operator">*</span><span class="token builtin">string</span><span class="token punctuation">)</span><span class="token punctuation">(</span>unsafe<span class="token punctuation">.</span><span class="token function">Pointer</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>out<span class="token punctuation">)</span><span class="token punctuation">)</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>stringout<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// 效率高</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">func</span> <span class="token function">cmdCombinedOutput</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    out<span class="token punctuation">,</span>err <span class="token operator">:=</span> exec<span class="token punctuation">.</span><span class="token function">Command</span><span class="token punctuation">(</span><span class="token string">"data"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Output</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token punctuation">{</span>
+        log<span class="token punctuation">.</span><span class="token function">Fatal</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token function">string</span><span class="token punctuation">(</span>out<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+
+    cmd <span class="token operator">:=</span>exec<span class="token punctuation">.</span><span class="token function">Command</span><span class="token punctuation">(</span><span class="token string">"tr"</span><span class="token punctuation">,</span><span class="token string">"a-z"</span><span class="token punctuation">,</span><span class="token string">"A-Z"</span><span class="token punctuation">)</span>
+
+    cmd<span class="token punctuation">.</span>Stdin <span class="token operator">=</span> strings<span class="token punctuation">.</span><span class="token function">NewReader</span><span class="token punctuation">(</span><span class="token string">"some"</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">var</span> out bytes<span class="token punctuation">.</span>Buffer
+    cmd<span class="token punctuation">.</span>Stdout <span class="token operator">=</span> <span class="token operator">&amp;</span>out
+    err <span class="token operator">:=</span> cmd<span class="token punctuation">.</span><span class="token function">Run</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token punctuation">{</span>
+        log<span class="token punctuation">.</span><span class="token function">Fatal</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+
+    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>out<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+    <span class="token function">displaydir</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token function">pipecmd</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token function">cmdoutput</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token function">cmdCombinedOutput</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token function">cmdstratanddwait</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token punctuation">}</span>
+
+</code></pre>
 
         </div>
 
@@ -737,7 +842,7 @@ file.chowd
             <a class="prev" rel="prev" href="/2020/12/17/blog_back_new/NetWord/%E4%BA%A4%E6%8D%A2%E6%9C%BA/%E4%BA%A4%E6%8D%A2%E6%9C%BA%E5%A0%86%E5%8F%A0/">交换机irf堆叠</a>
             
             
-            <a class="next" rel="next" href="/2020/12/16/blog_back_new/golang/go%E5%BA%93ioutil/">go库ioutil</a>
+            <a class="next" rel="next" href="/2020/12/16/blog_back_new/golang/go%E5%BA%93iobase/">go库iobase</a>
             
         </section>
     </article>
