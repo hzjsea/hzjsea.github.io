@@ -464,6 +464,10 @@
 <ul>
 <li><a href="#rust-%E5%9F%BA%E7%A1%80">rust 基础</a><ul>
 <li><a href="#rust-version">rust version</a></li>
+<li><a href="#rust%E6%A6%82%E5%BF%B5">rust概念</a><ul>
+<li><a href="#%E5%8F%98%E9%87%8F%E9%81%AE%E8%94%BD">变量遮蔽</a></li>
+</ul>
+</li>
 <li><a href="#hello-world">hello world</a></li>
 <li><a href="#rust%E4%B8%AD%E7%9A%84%E5%91%BD%E5%90%8D%E8%A7%84%E5%88%99">rust中的命名规则</a></li>
 <li><a href="#%E5%8F%98%E9%87%8F%E5%B8%B8%E9%87%8F%E4%B8%8E%E6%89%93%E5%8D%B0">变量、常量与打印</a><ul>
@@ -595,6 +599,29 @@
 <li>每晚更新版本  有一些新的特性  需要这个版本才能用 nightly</li>
 </ul>
 <p>比如在看官方库的时候发现Stirng有一个方法 <code>into_raw_parts</code> 这个内容，是一个新的特性，只能在新的版本中使用，平稳版本中还不支持<br>解决方法见:<a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/53136717/errore0554-feature-may-not-be-used-on-the-stable-release-channel-couldnt">https://stackoverflow.com/questions/53136717/errore0554-feature-may-not-be-used-on-the-stable-release-channel-couldnt</a><br>报错内容为: <code>error[E0554]: </code>#![feature]<code> may not be used on the stable release channel</code></p>
+<h2 id="rust概念"><a href="#rust概念" class="headerlink" title="rust概念"></a>rust概念</h2><p>rust是一门新型的语言,他有很多的新特性,同时为了兼容这些新特性在语法上也会有一些变化,这里想要专门分出一个栏目来介绍一些他的新特性,这些特性在其他语言中也都有出现过,无非是在rust中被提及了,并且做了特殊的名词处理</p>
+<h3 id="变量遮蔽"><a href="#变量遮蔽" class="headerlink" title="变量遮蔽"></a>变量遮蔽</h3><p>简单的说,就是当一个作用域内,如果出现两个及以上的变量名称,只有最后一个变量会被生效.但不同的创建形式也有不同</p>
+<p>其中rust中的let关键词是一个<code>模式匹配</code>的关键词,他可以用来创建变量以及模式解构,比如如下</p>
+<pre class=" language-rust"><code class="language-rust"><span class="token keyword">fn</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+
+    <span class="token comment" spellcheck="true">// 创建变量</span>
+    <span class="token keyword">let</span> s <span class="token operator">=</span> <span class="token string">"helloworld"</span><span class="token punctuation">;</span>
+
+    <span class="token comment" spellcheck="true">// 模式解构</span>
+    <span class="token keyword">let</span> <span class="token punctuation">(</span><span class="token keyword">mut</span> s1<span class="token punctuation">,</span><span class="token keyword">mut</span> s2<span class="token punctuation">)</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token string">"foo"</span><span class="token punctuation">,</span><span class="token string">"bar"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">println!</span><span class="token punctuation">(</span>s1<span class="token punctuation">,</span>s2<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>这里再介绍一个<code>变量遮蔽</code>,如下</p>
+<pre class=" language-rust"><code class="language-rust"><span class="token keyword">fn</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">// 创建一个变量x</span>
+    <span class="token keyword">let</span> x <span class="token operator">=</span> <span class="token string">"foo"</span><span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">// 创建另一个变量 x</span>
+    <span class="token keyword">let</span> x <span class="token operator">=</span> <span class="token string">"bar"</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// 发生变量遮蔽, 无法访问上一个x变量</span>
+
+    <span class="token keyword">let</span> y <span class="token operator">=</span> <span class="token string">"foo"</span><span class="token punctuation">;</span>
+    y <span class="token operator">=</span> <span class="token string">"bar"</span><span class="token punctuation">;</span> 
+<span class="token punctuation">}</span></code></pre>
+<p>上面这种创建了两个变量x 但是因为变量遮蔽的问题.第一个x被遮蔽<br>下面这个是重新赋值(重新绑定),和变量遮蔽没有关系</p>
 <h2 id="hello-world"><a href="#hello-world" class="headerlink" title="hello world"></a>hello world</h2><p>任何一门语言的开始都用”hello,world”来作为开始的标记</p>
 <pre class=" language-rust"><code class="language-rust"><span class="token keyword">fn</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token function">println!</span><span class="token punctuation">(</span><span class="token string">"hello,world"</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">//输出完毕后 额外添加一次回车</span>
@@ -612,50 +639,50 @@ error: aborting due to previous error
 For <span class="token function">more</span> information about this error, try <span class="token variable"><span class="token variable">`</span>rustc --explain E0423<span class="token variable">`</span></span><span class="token keyword">.</span>
 error: could not compile <span class="token variable"><span class="token variable">`</span>untitled<span class="token variable">`</span></span><span class="token keyword">.</span>
 
-To learn more, run the <span class="token function">command</span> again with --verbose.
-
-</code></pre>
+To learn more, run the <span class="token function">command</span> again with --verbose.</code></pre>
 <p><font color='red'>rust 希望你能够在 print 后面添加！</font></p>
 <h2 id="rust中的命名规则"><a href="#rust中的命名规则" class="headerlink" title="rust中的命名规则"></a>rust中的命名规则</h2><ol>
-<li>使用下划线命名，例如_name = “hzj” ,这样命名的好处是，如果该变量在编译的过程中没用使用，那么编译器是不会警告他们未被使用的<pre class=" language-rust"><code class="language-rust"><span class="token keyword">fn</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
- <span class="token keyword">let</span> num <span class="token operator">=</span> <span class="token string">"hello"</span><span class="token punctuation">;</span>
- <span class="token keyword">let</span> _nums <span class="token operator">=</span> <span class="token string">"hellos"</span><span class="token punctuation">;</span>
+<li>使用下划线命名，例如_name = “hzj” ,这样命名的好处是，如果该变量在编译的过程中没用使用，那么编译器是不会警告他们未被使用的</li>
+</ol>
+<pre class=" language-rust"><code class="language-rust"><span class="token keyword">fn</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">let</span> num <span class="token operator">=</span> <span class="token string">"hello"</span><span class="token punctuation">;</span>
+    <span class="token keyword">let</span> _nums <span class="token operator">=</span> <span class="token string">"hellos"</span><span class="token punctuation">;</span>
 <span class="token punctuation">}</span>
-</code></pre>
-</li>
-</ol>
-<p>//    Compiling helloworld v0.1.0 (/Users/alpaca/hzj/yl/test/helloworld)<br>// warning: unused variable: <code>num</code><br>//   –&gt; src/main.rs:18:9<br>//    |<br>// 18 |     let num = “hello”;<br>//    |         ^^^ help: consider prefixing with an underscore: <code>_num</code><br>//    |<br>//    = note: <code>#[warn(unused_variables)]</code> on by default</p>
-<p>//     Finished dev [unoptimized + debuginfo] target(s) in 0.19s<br>//      Running <code>target/debug/helloworld src/main.rs</code></p>
-<p>// 像上面这块内容，加了下划线的变量是不会报错的</p>
-<pre><code>
-## 变量、常量与打印
+<span class="token comment" spellcheck="true">//    Compiling helloworld v0.1.0 (/Users/alpaca/hzj/yl/test/helloworld)</span>
+<span class="token comment" spellcheck="true">// warning: unused variable: `num`</span>
+<span class="token comment" spellcheck="true">//   --> src/main.rs:18:9</span>
+<span class="token comment" spellcheck="true">//    |</span>
+<span class="token comment" spellcheck="true">// 18 |     let num = "hello";</span>
+<span class="token comment" spellcheck="true">//    |         ^^^ help: consider prefixing with an underscore: `_num`</span>
+<span class="token comment" spellcheck="true">//    |</span>
+<span class="token comment" spellcheck="true">//    = note: `#[warn(unused_variables)]` on by default</span>
 
-```rust
-fn main() &#123;
-    //定义一个不可变变量
-    let immutable:i32 = 1;
-    // 定义一个可变的变量
-    let mut immutable:i32 = 2;
+<span class="token comment" spellcheck="true">//     Finished dev [unoptimized + debuginfo] target(s) in 0.19s</span>
+<span class="token comment" spellcheck="true">//      Running `target/debug/helloworld src/main.rs`</span>
 
-    //定义一个常量
-    const  constant:i32 = 3;
+<span class="token comment" spellcheck="true">// 像上面这块内容，加了下划线的变量是不会报错的</span></code></pre>
+<h2 id="变量、常量与打印"><a href="#变量、常量与打印" class="headerlink" title="变量、常量与打印"></a>变量、常量与打印</h2><pre class=" language-rust"><code class="language-rust"><span class="token keyword">fn</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">//定义一个不可变变量</span>
+    <span class="token keyword">let</span> immutable<span class="token punctuation">:</span>i32 <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">// 定义一个可变的变量</span>
+    <span class="token keyword">let</span> <span class="token keyword">mut</span> immutable<span class="token punctuation">:</span>i32 <span class="token operator">=</span> <span class="token number">2</span><span class="token punctuation">;</span>
 
-    // 变量可以重复赋值
-    // 但是常量不可以
-    let x:i32 = 5;
-    let x:i32 = x + 1;
-    let x = x + 1;
-    let constant = 1;
+    <span class="token comment" spellcheck="true">//定义一个常量</span>
+    <span class="token keyword">const</span>  constant<span class="token punctuation">:</span>i32 <span class="token operator">=</span> <span class="token number">3</span><span class="token punctuation">;</span>
 
-    println!(&quot;Hello, world!&quot;);
-&#125;</code></pre>
+    <span class="token comment" spellcheck="true">// 变量可以重复赋值</span>
+    <span class="token comment" spellcheck="true">// 但是常量不可以</span>
+    <span class="token keyword">let</span> x<span class="token punctuation">:</span>i32 <span class="token operator">=</span> <span class="token number">5</span><span class="token punctuation">;</span>
+    <span class="token keyword">let</span> x<span class="token punctuation">:</span>i32 <span class="token operator">=</span> x <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">;</span>
+    <span class="token keyword">let</span> x <span class="token operator">=</span> x <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">;</span>
+    <span class="token keyword">let</span> constant <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+
+    <span class="token function">println!</span><span class="token punctuation">(</span><span class="token string">"Hello, world!"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
 <p><font color='red'>常量与变量的区别</font></p>
-<p>:::  tip </p>
-<ol>
-<li>声明常量使用 const 关键字 而声明变量使用 let 关键字 </li>
-<li>常量可以在任何作用域中声明，包括全局作用域，这在一个值需要被很多部分的代码用到时很有用。 </li>
-<li>常量只能被设置为常量表达式，而不能是函数调用的结果，或任何其他只能在运行时计算出的值。<br>:::</li>
-</ol>
+<blockquote>
+<p>声明常量使用 const 关键字 而声明变量使用 let 关键字<br>  常量可以在任何作用域中声明，包括全局作用域，这在一个值需要被很多部分的代码用到时很有用。<br>  常量只能被设置为常量表达式，而不能是函数调用的结果，或任何其他只能在运行时计算出的值。</p>
+</blockquote>
 <h3 id="Shadowing"><a href="#Shadowing" class="headerlink" title="Shadowing"></a>Shadowing</h3><p>对于变量来说，可变变量的值是变化的，但是不可变变量只在特定情况下允许变化，比如重新赋值，同时可以改变不可变变量的类型<br>当再次使用 let 时，实际上创建了一个新变量，我们可以改变值的类型，并且复用这个名字</p>
 <pre class=" language-rust"><code class="language-rust"><span class="token keyword">fn</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token comment" spellcheck="true">// shadowing</span>
@@ -1903,7 +1930,7 @@ xxx <span class="token operator">=</span> <span class="token punctuation">{</spa
 <li>字符串（string）是字符的集合。我们之前见过 String 类型，不过在本章我们将深入了解。</li>
 <li>哈希 map（hash map）允许我们将值与一个特定的键（key）相关联。这是一个叫做 map 的更通用的数据结构的特定实现。</li>
 </ul>
-<h3 id="vector"><a href="#vector" class="headerlink" title="vector"></a>vector</h3><p>第一个类型是 <code>Vec&lt;T&gt;</code>，也被称为 vector。vector 允许我们在一个单独的数据结构中储存多于一个的值，它在内存中彼此相邻地排列所有的值。vector 只能储存相同类型的值，类型由<code>T</code>来决定</p>
+<h3 id="vector"><a href="#vector" class="headerlink" title="vector"></a>vector</h3><p>向量（Vector）是一个封装了动态大小数组的顺序容器（Sequence Container）。跟任意其它类型容器一样，它能够存放各种类型的对象。可以简单的认为，向量是一个能够存放任意类型的动态数组。<br>第一个类型是 <code>Vec&lt;T&gt;</code>，也被称为 vector。vector 允许我们在一个单独的数据结构中储存多于一个的值，它在内存中彼此相邻地排列所有的值。vector 只能储存相同类型的值，类型由<code>T</code>来决定</p>
 <pre class=" language-rust"><code class="language-rust"><span class="token keyword">fn</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
 
     <span class="token keyword">let</span> v<span class="token punctuation">:</span>Vec<span class="token operator">&lt;</span>i32<span class="token operator">></span> <span class="token operator">=</span> Vec<span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token function">new</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
@@ -2601,7 +2628,7 @@ cargo test</code></pre>
         </section>
         <section class="post-nav">
             
-            <a class="prev" rel="prev" href="/2020/07/10/blog_back_new/%E6%8A%80%E6%9C%AF%E8%A1%A5%E8%B6%B3/js-vue/">js技能补足</a>
+            <a class="prev" rel="prev" href="/2020/07/08/blog_back_new/Rust/rustv2/">rustv2</a>
             
             
             <a class="next" rel="next" href="/2020/07/08/blog_back_new/fastapi/fastapi%E5%AE%9A%E6%97%B6%E5%99%A8%E5%AE%9E%E8%B7%B5/">fastapi定时器实践</a>

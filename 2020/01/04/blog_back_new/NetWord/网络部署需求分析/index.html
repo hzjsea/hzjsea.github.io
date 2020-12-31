@@ -465,6 +465,7 @@
 <li><a href="#%E7%BD%91%E7%BB%9C%E9%83%A8%E7%BD%B2%E9%9C%80%E6%B1%82%E5%88%86%E6%9E%90">网络部署需求分析</a><ul>
 <li><a href="#%E5%9F%BA%E7%A1%80%E9%85%8D%E7%BD%AE">基础配置</a></li>
 <li><a href="#%E5%8F%96%E6%B6%88telnet-%E6%8E%88%E6%9D%83%E7%99%BB%E5%BD%95">取消Telnet 授权登录</a></li>
+<li><a href="#6520%E9%9C%80%E8%A6%81%E5%BC%80%E5%90%AF%E7%9A%84%E9%85%8D%E7%BD%AE">6520需要开启的配置</a></li>
 <li><a href="#5820%E7%B3%BB%E5%88%97%E7%9A%84%E4%BA%A4%E6%8D%A2%E6%9C%BA%E9%9C%80%E8%A6%81%E5%9C%A8%E6%9C%AC%E5%9C%B0%E7%94%9F%E6%88%90sshkey">5820系列的交换机需要在本地生成sshkey</a></li>
 <li><a href="#%E4%BA%8C%E5%B1%82%E7%8E%AF%E8%B7%AF%E6%A3%80%E6%B5%8B%E9%85%8D%E7%BD%AE">***二层环路检测配置</a></li>
 <li><a href="#%E8%87%AA%E5%8A%A8%E7%94%9F%E6%88%90%E6%B1%87%E8%81%9A%E7%AB%AF%E5%8F%A3%E9%85%8D%E7%BD%AE%E8%84%9A%E6%9C%AC">自动生成汇聚端口配置脚本</a></li>
@@ -712,7 +713,6 @@ undo copyright-info <span class="token function">enable</span>
 <span class="token function">ssh</span> server acl 2000
 undo ip http <span class="token function">enable</span>
 undo stp global <span class="token function">enable</span>
-undo info-center <span class="token function">enable</span>
 int loopback 3
 quit
 
@@ -730,6 +730,11 @@ undo password
 undo service-type  telnet
 quit
 save force</code></pre>
+<h2 id="6520需要开启的配置"><a href="#6520需要开启的配置" class="headerlink" title="6520需要开启的配置"></a>6520需要开启的配置</h2><pre class=" language-bash"><code class="language-bash">max-ecmp-num 64
+ecmp mode enhanced
+save force
+quit 
+<span class="token function">reboot</span></code></pre>
 <h2 id="5820系列的交换机需要在本地生成sshkey"><a href="#5820系列的交换机需要在本地生成sshkey" class="headerlink" title="5820系列的交换机需要在本地生成sshkey"></a>5820系列的交换机需要在本地生成sshkey</h2><pre class=" language-bash"><code class="language-bash">public-key local create rsa 
 <span class="token comment" spellcheck="true"># 不断回车就行了</span></code></pre>
 <h2 id="二层环路检测配置"><a href="#二层环路检测配置" class="headerlink" title="***二层环路检测配置"></a>***二层环路检测配置</h2><p>h3c 5130配置</p>
