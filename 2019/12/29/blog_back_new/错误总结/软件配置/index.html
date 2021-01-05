@@ -1,463 +1,233 @@
+
+
 <!DOCTYPE html>
-<html lang="cn">
+<html lang="cn" data-default-color-scheme=&#34;auto&#34;>
+
+
+
 <head>
-    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-<meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="hzjsea">
+  <meta name="keywords" content="">
+  <title>软件配置 - hzjsea</title>
 
-    <meta name="author" content="hzjsea">
-
-
-
-
-
-
-<title>软件配置 | hzjsea</title>
-
-
-
-    <link rel="icon" href="/favicon.ico">
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
 
 
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
 
-
-    <!-- stylesheets list from _config.yml -->
-    
-    <link rel="stylesheet" href="/css/style.css">
-    
-
-
-
-    <!-- scripts list from _config.yml -->
-    
-    <script src="/js/script.js"></script>
-    
-    <script src="/js/tocbot.min.js"></script>
-    
-    <script src="/js/jquery.min.js"></script>
-    
-
-
-
+  
     
     
-        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-    "HTML-CSS": {
-        preferredFont: "TeX",
-        availableFonts: ["STIX","TeX"],
-        linebreaks: { automatic:true },
-        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
-    },
-    tex2jax: {
-        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
-        processEscapes: true,
-        ignoreClass: "tex2jax_ignore|dno",
-        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
-    },
-    TeX: {
-        equationNumbers: { autoNumber: "AMS" },
-        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
-        Macros: { href: "{}" }
-    },
-    messageStyle: "none"
-    });
-</script>
-<!-- 给MathJax元素添加has-jax class -->
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax(), i;
-        for(i=0; i < all.length; i += 1) {
-            all[i].SourceElement().parentNode.className += ' has-jax';
-        }
-    });
-</script>
-<!-- 通过连接CDN加载MathJax的js代码 -->
-<script type="text/javascript" async
-        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
-</script>
-
-
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
     
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
 
 
 
+<!-- 主题依赖的图标库，不要自行修改 -->
 
-    <script>
-    function searchToggle() {
-        const width = $(document.body).width()
-        if(width > 479) {
-            return;
-        }
-        const search = $('.search');
-        const searchForm = $('.form-search')
-
-        if(!search.hasClass("mobile-search")) {
-            search.addClass("mobile-search");
-        } else {
-            search.removeClass("mobile-search");
-        } 
-    }
-
-    function search(searchInputEl, formEl, flag) {
-        const path = "/" + "search.json"; // 可以在public 下查看这个search.json
-        $(formEl).submit(function(e){
-            e.preventDefault();
-            let target = null
-            if(searchInputEl == null) {
-                const screenWidth = $(document.body).width();
-                target = screenWidth > 479 ? $('#pc-search-input') : $('#mobile-search-input');
-                console.log(target);
-            } else {
-                target = $(searchInputEl)
-            }
-
-            if(!flag && target.val() === '') {
-                return ;
-            }
-
-            $("#u-search").fadeIn(500, function() {
-                $("body > .wrapper").addClass("modal-active");
-
-                $.ajax({
-                    url: path,
-                    dataType: "json",
-                    beforeSend: function (xhr) {
-                        $input = target.val();
-                        $(".form-input").val($input);
-                        const loadingBar = $('.search-loading-bar') 
-                        loadingBar.css({
-                            width:'100%',
-                            display: 'block'
-                        });
-                    },
-                    success: function( datas ) {
-                        console.log(datas);
-                        const $resultPanel = $(".modal-body")[0];
-                        let str = `<ul class="modal-results">`;
-                        var keywords = $(".form-input").val().trim().toLowerCase().split(/[\s\-]+/);
-                        $resultPanel.innerHTML = "";
-                        let hasResult = false
-                        let text = `<div class="no-result">找不到与关键词相关的内容....</div>`;
-
-                        if ($(".form-input").val().trim().length <= 0) {
-                            // 没有结果
-                            $resultPanel.innerHTML = text;
-                            return;
-                        }
-                        datas.forEach(function (data, index) {
-                            var isMatch = true;
-                            if (!data.title || data.title.trim() === '') {
-                                data.title = "Untitled";
-                            }
-                            var data_title = data.title.trim().toLowerCase();
-                            var data_content = data.content && data.content.trim().replace(/<[^>]+>/g, "").toLowerCase() || '';
-                            var data_url = data.url;
-                            var index_title = -1;
-                            var index_content = -1;
-                            var first_occur = -1;
-                            // only match artiles with not empty contents
-                            if (data_content !== '') {
-                                keywords.forEach(function (keyword, i) {
-                                    index_title = data_title.indexOf(keyword);
-                                    index_content = data_content.indexOf(keyword);
-
-                                    if (index_title < 0 && index_content < 0) {
-                                        isMatch = false;
-                                    } else {
-                                        hasResult = true
-                                        if (index_content < 0) {
-                                            index_content = 0;
-                                        }
-                                        if (i == 0) {
-                                            first_occur = index_content;
-                                        }
-                                    }
-                                });
-                            } else {
-                                isMatch = false;
-                            }
-                            // show search results
-                            if (isMatch) {
-                                str += `<li class='result-item'><a href='${data_url}' class='result-item-detail'> <span class="title">${data_title}</span>`;
-                                var content = data.content.trim().replace(/<[^>]+>/g, "");
-                                if (first_occur >= 0) {
-                                    // cut out 200 characters
-                                    var start = first_occur - 40;
-                                    var end = first_occur + 160;
-
-                                    if (start < 0) {
-                                        start = 0;
-                                    }
-
-                                    if (start == 0) {
-                                        end = 200;
-                                    }
-
-                                    if (end > content.length) {
-                                        end = content.length;
-                                    }
-
-                                    var match_content = content.substring(start, end);
-
-                                    // highlight all keywords
-                                    keywords.forEach(function (keyword) {
-                                        var regS = new RegExp(keyword, "gi");
-                                        match_content = match_content.replace(regS, `<em class="search-keyword">${keyword}</em>`);
-                                    });
-
-                                    str += `<span class="content"> ${match_content} ...</span></a>`;
-                                }
-                                str += "</li>";
-                            }
-                        });
-                        str += "</ul>";
-                        if(hasResult) {
-                            $resultPanel.innerHTML = str;
-                        } else {
-                            $resultPanel.innerHTML = text;
-                        }
-
-                    },
-                    complete: function() {
-                        setTimeout(() => {
-                                const loadingBar = $('.search-loading-bar') 
-                                loadingBar.css({
-                                    width:'0%',
-                                    display: 'none'
-                                });
-                        }, 300)
-                    }
-                });
-            })
-
-        });
-    }
-
-    $(document).ready(function() {
-        $('.modal-close').click(function () { 
-            $("#u-search").fadeOut();
-            $("body > .wrapper").removeClass("modal-active")
-        })
-
-        $('.modal-overlay').click(function() {
-            $("#u-search").fadeOut();
-            $("body > .wrapper").removeClass("modal-active")
-        })
-        search(null, ".form-search", false)
-        search("#u-search-modal-form .form-input", ".u-search-modal-form", true)
-    })
-</script>
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
 
 
 
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"www.baidu.com","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
 <meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+
+
 <body>
-    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
-        <nav class="navbar">
-    <div class="container">
-        <div class="navbar-header header-logo"><a href="/">hzjsea</a></div>
-        <div class="menu navbar-right">
-            
-            
-    <div class="search ">
-        <div class="search-btn" onClick="searchToggle()">
-            <img src="/image/search.png" class="search-btn-img" />
-        </div>
-        <form class="form-search">
-            <input class="input" placeholder="Searching" autocomplete="off" id="pc-search-input"/>
-        </form>
-    </div>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
 
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
 
-            
-                <a class="menu-item" href="/archives">文章</a>
-            
-                <a class="menu-item" href="/category">分类</a>
-            
-                <a class="menu-item" href="/tag">标签</a>
-            
-                <a class="menu-item" href="/about">关于</a>
-            
-            <input id="switch_default" type="checkbox" class="switch_default">
-            <label for="switch_default" class="toggleBtn"></label>
-        </div>
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                Home
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                Archives
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                Categories
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                Tags
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                About
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
     </div>
+  </div>
 </nav>
 
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="软件配置">
+              
+            </span>
 
-<nav class="navbar-mobile" id="nav-mobile">
-    <div class="container">
-        <div class="navbar-header">
-            <div>
-                <a href="/">hzjsea</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
-            </div>
-            <div class="navbar-mobile-right">
-                
-                
-    <div class="search ">
-        <div class="search-btn" onClick="searchToggle()">
-            <img src="/image/search.png" class="search-btn-img" />
-        </div>
-        <form class="form-search">
-            <input class="input" placeholder="Searching" autocomplete="off" id="mobile-search-input"/>
-        </form>
-    </div>
-
-
-                <div class="menu-toggle" onclick="mobileBtn()">&#9776; 目录</div>
-            </div>
             
-        </div>
-        <div class="menu" id="mobile-menu">
-            
-                <a class="menu-item" href="/archives">文章</a>
-            
-                <a class="menu-item" href="/category">分类</a>
-            
-                <a class="menu-item" href="/tag">标签</a>
-            
-                <a class="menu-item" href="/about">关于</a>
-            
-        </div>
-    </div>
-</nav>
-
-        <div class="main">
-			<!-- Chic/layout.ejs -->
- <div id="u-search">
-        <div class="modal">
-            <div class="modal-header">
-                <div class="container">
-                    <form id="u-search-modal-form" class="u-search-modal-form">
-                        <button type="submit" class="form-submit-btn">
-                            <img src="/image/search.png" class="search-btn-img" />
-                        </button>
-                        <input placeholder="搜索文章。。。" class="form-input" id="modal-form-input">
-                    </form>
-                    <a class="modal-close">x</a>
-                </div>
-                <div class="search-loading">
-                    <div class="search-loading-bar"></div>
-                </div>
-            </div>
-            <div class="modal-body">
-                <!-- ul 格式如下 -->
-                <!-- <ul class="modal-results">
-                    <li class="result-item">
-                        <a class="result-item-detail">
-                            <span class="title">页面配置</span>
-                            <span class="content">
-                                content
-                            </span>
-                        </a>
-                    </li>
-                </ul> -->
-            </div>
-        </div>
-        <div class="modal-overlay"></div>
-    </div>
-            <div class="container">
-    
-    
-    <div class="post-toc">
-    <div class="tocbot-list">
-    </div>
-    <div class="tocbot-list-menu">
-        <a class="tocbot-toc-expand" onclick="expand_toc()">全部展开</a>
-        <a onclick="go_top()">回到顶部</a>
-        <a onclick="go_bottom()">回到底部</a>
-    </div>
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2019-12-29 13:11" pubdate>
+        December 29, 2019 pm
+      </time>
+    </span>
+  
 </div>
 
-<script>
-    document.ready(
-        function () {
-            tocbot.init({
-                tocSelector: '.tocbot-list',
-                contentSelector: '.post-content',
-                headingSelector: 'h1, h2, h3, h4, h5',
-                collapseDepth: 1,
-                orderedList: false,
-                scrollSmooth: true,
-            })
-        }
-    )
-
-    function expand_toc() {
-        var b = document.querySelector(".tocbot-toc-expand");
-        tocbot.init({
-            tocSelector: '.tocbot-list',
-            contentSelector: '.post-content',
-            headingSelector: 'h1, h2, h3, h4, h5',
-            collapseDepth: 6,
-            orderedList: false,
-            scrollSmooth: true,
-        });
-        b.setAttribute("onclick", "collapse_toc()");
-        b.innerHTML = "全部折叠"
-    }
-
-    function collapse_toc() {
-        var b = document.querySelector(".tocbot-toc-expand");
-        tocbot.init({
-            tocSelector: '.tocbot-list',
-            contentSelector: '.post-content',
-            headingSelector: 'h1, h2, h3, h4, h5',
-            collapseDepth: 1,
-            orderedList: false,
-            scrollSmooth: true,
-        });
-        b.setAttribute("onclick", "expand_toc()");
-        b.innerHTML = "全部展开"
-    }
-
-    function go_top() {
-        window.scrollTo(0, 0);
-    }
-
-    function go_bottom() {
-        window.scrollTo(0, document.body.scrollHeight);
-    }
-
-</script>
+<div class="mt-1">
+  
     
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      3.8k 字
+    </span>
+  
 
+  
     
-    <article class="post-wrap">
-        <header class="post-header">
-            <h1 class="post-title">软件配置</h1>
-            
-            <div class="post-meta">
-                
-                作者： <a itemprop="author" rel="author" href="/">hzjsea</a>&nbsp;
-                
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      51
+       分钟
+    </span>
+  
 
-                
-                <span class="post-time">
-                    创建日期： <a
-                        href="#">December 29, 2019&nbsp;&nbsp;13:11:16</a>
-                </span>&nbsp;
-                
-                
-                <span class="post-category">
-                    分类：
-                    
-                    <a href="/categories/machine/">machine</a>&nbsp;
-                    
-                </span>
-                
-                
-                状态：<a href="#">SNAPSHOT</a>
-                
-            </div>
-            
-        </header>
+  
+  
+</div>
 
-        <div class="post-content">
-            <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">软件配置</h1>
+            
+            <div class="markdown-body">
+              <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 
 <!-- code_chunk_output -->
 
@@ -523,10 +293,10 @@
 <h3 id="vscode-绑定vim自定义快捷键"><a href="#vscode-绑定vim自定义快捷键" class="headerlink" title="vscode 绑定vim自定义快捷键"></a>vscode 绑定vim自定义快捷键</h3><p>在vscode中自定义vim快捷键<br>“vim.insertModeKeyBindings”: [<br>        {<br>            “before”: [“j”, “j”],<br>            “after”: [“<Esc>“]<br>        }<br>]<br><a target="_blank" rel="noopener" href="https://github.com/VSCodeVim/Vim/#key-remapping">https://github.com/VSCodeVim/Vim/#key-remapping</a></p>
 <h2 id="chrome"><a href="#chrome" class="headerlink" title="chrome"></a>chrome</h2><h3 id="清除特定网址的缓存"><a href="#清除特定网址的缓存" class="headerlink" title="清除特定网址的缓存"></a>清除特定网址的缓存</h3><p>打开开发者工具（F12），选择 Network——Disable cache 即可。需要清除某网站缓存时 F12 打开开发者工具就会自动清除这个网站的缓存，而不必清除所有网站的缓存了</p>
 <h2 id="ss"><a href="#ss" class="headerlink" title="ss"></a>ss</h2><h3 id="ss加强模式"><a href="#ss加强模式" class="headerlink" title="ss加强模式"></a>ss加强模式</h3><p><font color='red'> Mac电脑使用shadowsocks无法连接公司内网问题</font><br>最近换了mac但是发现无法连接mac电脑，主要原因是在mac电脑中ss无法对所有软件都支持端口转发,这时候需要用到一个软件 proxifier,在这个上面做全局的端口转发即可</p>
-<p><img src="http://img.noback.top/blog/imgproxifier%E8%BD%AF%E4%BB%B6.png"><br>看到socks5的监听端口为 1086</p>
+<p><img src="http://img.noback.top/blog/imgproxifier%E8%BD%AF%E4%BB%B6.png" srcset="/img/loading.gif"><br>看到socks5的监听端口为 1086</p>
 <ol>
-<li>添加代理<br><img src="http://img.noback.top/blog/img20191022152254.png"></li>
-<li>添加规则<br><img src="http://img.noback.top/blog/img20191022152521.png"></li>
+<li>添加代理<br><img src="http://img.noback.top/blog/img20191022152254.png" srcset="/img/loading.gif"></li>
+<li>添加规则<br><img src="http://img.noback.top/blog/img20191022152521.png" srcset="/img/loading.gif"></li>
 </ol>
 <h2 id="mac"><a href="#mac" class="headerlink" title="mac"></a>mac</h2><h3 id="mac连接交换机"><a href="#mac连接交换机" class="headerlink" title="mac连接交换机"></a>mac连接交换机</h3><p>由于在mac中没有像windows中xshell这样简单方便的串口连接工具，因此我们只能使用screen来连接交换机</p>
 <p>首先用串口线连接交换机，然后查看接入的串口设备，他们放在/dev下面 由于不同的串口线命名不同，但是他们应该都会带有usb字样</p>
@@ -682,7 +452,7 @@ hexo s
 git上传忽略全局文件，并且在gitconfig中引入<br>```bash<br>touch ~/.gitigonre_global<h1 id="gitignore-global"><a href="#gitignore-global" class="headerlink" title=".gitignore_global"></a>.gitignore_global</h1>####################################<br>######## OS generated files ########<br>####################################<br>.DS_Store<br>.DS_Store?</li>
 </ul>
 <p><em>.swp<br>._</em><br>.Spotlight-V100<br>.Trashes<br>Icon?<br>ehthumbs.db<br>Thumbs.db<br>####################################<br>############# packages #############<br>####################################<br>*.7z<br>*.dmg<br>*.gz<br>*.iso<br>*.jar<br>*.rar<br>*.tar<br>*.zip </p>
-<p>#.gitconfig<br>[filter “lfs”]<br>    required = true<br>    clean = git-lfs clean %f<br>    smudge = git-lfs smudge %f<br>[user]<br>    name = bingozb<br>    email = <a href="mailto:&#x34;&#53;&#x34;&#x31;&#x31;&#x33;&#54;&#57;&#50;&#64;&#x71;&#113;&#x2e;&#99;&#x6f;&#109;">&#x34;&#53;&#x34;&#x31;&#x31;&#x33;&#54;&#57;&#50;&#64;&#x71;&#113;&#x2e;&#99;&#x6f;&#109;</a><br>[core]<br>    excludesfile = /Users/bingo/.gitignore_global</p>
+<p>#.gitconfig<br>[filter “lfs”]<br>    required = true<br>    clean = git-lfs clean %f<br>    smudge = git-lfs smudge %f<br>[user]<br>    name = bingozb<br>    email = <a href="mailto:&#x34;&#x35;&#52;&#x31;&#x31;&#x33;&#54;&#x39;&#50;&#64;&#x71;&#x71;&#46;&#x63;&#x6f;&#x6d;">&#x34;&#x35;&#52;&#x31;&#x31;&#x33;&#54;&#x39;&#50;&#64;&#x71;&#x71;&#46;&#x63;&#x6f;&#x6d;</a><br>[core]<br>    excludesfile = /Users/bingo/.gitignore_global</p>
 <pre><code>
 
 ## vimrc基础配置
@@ -886,42 +656,217 @@ setw -g monitor-activity on <span class="token comment" spellcheck="true"># 非�
 <p>解决办法，设置当前编码为utf-8</p>
 <pre class=" language-bash"><code class="language-bash">:set fileencoding<span class="token operator">=</span>utf-8</code></pre>
 
-        </div>
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/machine/">machine</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/machine/">machine</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2019/12/29/blog_back_new/%E9%94%99%E8%AF%AF%E6%80%BB%E7%BB%93/linux%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">常见错误</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2019/12/29/blog_back_new/leetcode/LinkList/%E5%9B%BE%E8%A7%A3%E7%AE%97%E6%B3%95/">
+                        <span class="hidden-mobile">图解算法</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
 
-        
-        <section class="post-tags">
-            <div>
-                <span>标签：</span>
-                <span class="tag">
-                    
-                    
-                    <a href="/tags/machine/"># machine</a>
-                    
-                    
-                </span>
-            </div>
-            <div>
-                <a href="javascript：window.history.back();">后退</a>
-                <span>· </span>
-                <a href="/">主页</a>
-            </div>
-        </section>
-        <section class="post-nav">
             
-            <a class="prev" rel="prev" href="/2019/12/29/blog_back_new/%E9%94%99%E8%AF%AF%E6%80%BB%E7%BB%93/linux%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98/">常见错误</a>
-            
-            
-            <a class="next" rel="next" href="/2019/12/29/blog_back_new/leetcode/LinkList/%E5%9B%BE%E8%A7%A3%E7%AE%97%E6%B3%95/">图解算法</a>
-            
-        </section>
-    </article>
-</div>
+          </article>
         </div>
-        <footer id="footer" class="footer">
-    <div class="copyright">
+      </div>
     </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
 </footer>
 
-    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+
+
 </body>
 </html>

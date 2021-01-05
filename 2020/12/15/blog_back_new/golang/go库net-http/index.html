@@ -1,463 +1,233 @@
+
+
 <!DOCTYPE html>
-<html lang="cn">
+<html lang="cn" data-default-color-scheme=&#34;auto&#34;>
+
+
+
 <head>
-    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-<meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="hzjsea">
+  <meta name="keywords" content="">
+  <title>go库net-http - hzjsea</title>
 
-    <meta name="author" content="hzjsea">
-
-
-
-
-
-
-<title>go库net-http | hzjsea</title>
-
-
-
-    <link rel="icon" href="/favicon.ico">
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
 
 
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
 
-
-    <!-- stylesheets list from _config.yml -->
-    
-    <link rel="stylesheet" href="/css/style.css">
-    
-
-
-
-    <!-- scripts list from _config.yml -->
-    
-    <script src="/js/script.js"></script>
-    
-    <script src="/js/tocbot.min.js"></script>
-    
-    <script src="/js/jquery.min.js"></script>
-    
-
-
-
+  
     
     
-        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-    "HTML-CSS": {
-        preferredFont: "TeX",
-        availableFonts: ["STIX","TeX"],
-        linebreaks: { automatic:true },
-        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
-    },
-    tex2jax: {
-        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
-        processEscapes: true,
-        ignoreClass: "tex2jax_ignore|dno",
-        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
-    },
-    TeX: {
-        equationNumbers: { autoNumber: "AMS" },
-        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
-        Macros: { href: "{}" }
-    },
-    messageStyle: "none"
-    });
-</script>
-<!-- 给MathJax元素添加has-jax class -->
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax(), i;
-        for(i=0; i < all.length; i += 1) {
-            all[i].SourceElement().parentNode.className += ' has-jax';
-        }
-    });
-</script>
-<!-- 通过连接CDN加载MathJax的js代码 -->
-<script type="text/javascript" async
-        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
-</script>
-
-
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
     
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
 
 
 
+<!-- 主题依赖的图标库，不要自行修改 -->
 
-    <script>
-    function searchToggle() {
-        const width = $(document.body).width()
-        if(width > 479) {
-            return;
-        }
-        const search = $('.search');
-        const searchForm = $('.form-search')
-
-        if(!search.hasClass("mobile-search")) {
-            search.addClass("mobile-search");
-        } else {
-            search.removeClass("mobile-search");
-        } 
-    }
-
-    function search(searchInputEl, formEl, flag) {
-        const path = "/" + "search.json"; // 可以在public 下查看这个search.json
-        $(formEl).submit(function(e){
-            e.preventDefault();
-            let target = null
-            if(searchInputEl == null) {
-                const screenWidth = $(document.body).width();
-                target = screenWidth > 479 ? $('#pc-search-input') : $('#mobile-search-input');
-                console.log(target);
-            } else {
-                target = $(searchInputEl)
-            }
-
-            if(!flag && target.val() === '') {
-                return ;
-            }
-
-            $("#u-search").fadeIn(500, function() {
-                $("body > .wrapper").addClass("modal-active");
-
-                $.ajax({
-                    url: path,
-                    dataType: "json",
-                    beforeSend: function (xhr) {
-                        $input = target.val();
-                        $(".form-input").val($input);
-                        const loadingBar = $('.search-loading-bar') 
-                        loadingBar.css({
-                            width:'100%',
-                            display: 'block'
-                        });
-                    },
-                    success: function( datas ) {
-                        console.log(datas);
-                        const $resultPanel = $(".modal-body")[0];
-                        let str = `<ul class="modal-results">`;
-                        var keywords = $(".form-input").val().trim().toLowerCase().split(/[\s\-]+/);
-                        $resultPanel.innerHTML = "";
-                        let hasResult = false
-                        let text = `<div class="no-result">找不到与关键词相关的内容....</div>`;
-
-                        if ($(".form-input").val().trim().length <= 0) {
-                            // 没有结果
-                            $resultPanel.innerHTML = text;
-                            return;
-                        }
-                        datas.forEach(function (data, index) {
-                            var isMatch = true;
-                            if (!data.title || data.title.trim() === '') {
-                                data.title = "Untitled";
-                            }
-                            var data_title = data.title.trim().toLowerCase();
-                            var data_content = data.content && data.content.trim().replace(/<[^>]+>/g, "").toLowerCase() || '';
-                            var data_url = data.url;
-                            var index_title = -1;
-                            var index_content = -1;
-                            var first_occur = -1;
-                            // only match artiles with not empty contents
-                            if (data_content !== '') {
-                                keywords.forEach(function (keyword, i) {
-                                    index_title = data_title.indexOf(keyword);
-                                    index_content = data_content.indexOf(keyword);
-
-                                    if (index_title < 0 && index_content < 0) {
-                                        isMatch = false;
-                                    } else {
-                                        hasResult = true
-                                        if (index_content < 0) {
-                                            index_content = 0;
-                                        }
-                                        if (i == 0) {
-                                            first_occur = index_content;
-                                        }
-                                    }
-                                });
-                            } else {
-                                isMatch = false;
-                            }
-                            // show search results
-                            if (isMatch) {
-                                str += `<li class='result-item'><a href='${data_url}' class='result-item-detail'> <span class="title">${data_title}</span>`;
-                                var content = data.content.trim().replace(/<[^>]+>/g, "");
-                                if (first_occur >= 0) {
-                                    // cut out 200 characters
-                                    var start = first_occur - 40;
-                                    var end = first_occur + 160;
-
-                                    if (start < 0) {
-                                        start = 0;
-                                    }
-
-                                    if (start == 0) {
-                                        end = 200;
-                                    }
-
-                                    if (end > content.length) {
-                                        end = content.length;
-                                    }
-
-                                    var match_content = content.substring(start, end);
-
-                                    // highlight all keywords
-                                    keywords.forEach(function (keyword) {
-                                        var regS = new RegExp(keyword, "gi");
-                                        match_content = match_content.replace(regS, `<em class="search-keyword">${keyword}</em>`);
-                                    });
-
-                                    str += `<span class="content"> ${match_content} ...</span></a>`;
-                                }
-                                str += "</li>";
-                            }
-                        });
-                        str += "</ul>";
-                        if(hasResult) {
-                            $resultPanel.innerHTML = str;
-                        } else {
-                            $resultPanel.innerHTML = text;
-                        }
-
-                    },
-                    complete: function() {
-                        setTimeout(() => {
-                                const loadingBar = $('.search-loading-bar') 
-                                loadingBar.css({
-                                    width:'0%',
-                                    display: 'none'
-                                });
-                        }, 300)
-                    }
-                });
-            })
-
-        });
-    }
-
-    $(document).ready(function() {
-        $('.modal-close').click(function () { 
-            $("#u-search").fadeOut();
-            $("body > .wrapper").removeClass("modal-active")
-        })
-
-        $('.modal-overlay').click(function() {
-            $("#u-search").fadeOut();
-            $("body > .wrapper").removeClass("modal-active")
-        })
-        search(null, ".form-search", false)
-        search("#u-search-modal-form .form-input", ".u-search-modal-form", true)
-    })
-</script>
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
 
 
 
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"www.baidu.com","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
 <meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+
+
 <body>
-    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
-        <nav class="navbar">
-    <div class="container">
-        <div class="navbar-header header-logo"><a href="/">hzjsea</a></div>
-        <div class="menu navbar-right">
-            
-            
-    <div class="search ">
-        <div class="search-btn" onClick="searchToggle()">
-            <img src="/image/search.png" class="search-btn-img" />
-        </div>
-        <form class="form-search">
-            <input class="input" placeholder="Searching" autocomplete="off" id="pc-search-input"/>
-        </form>
-    </div>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
 
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
 
-            
-                <a class="menu-item" href="/archives">文章</a>
-            
-                <a class="menu-item" href="/category">分类</a>
-            
-                <a class="menu-item" href="/tag">标签</a>
-            
-                <a class="menu-item" href="/about">关于</a>
-            
-            <input id="switch_default" type="checkbox" class="switch_default">
-            <label for="switch_default" class="toggleBtn"></label>
-        </div>
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                Home
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                Archives
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                Categories
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                Tags
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                About
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
     </div>
+  </div>
 </nav>
 
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="go库net-http">
+              
+            </span>
 
-<nav class="navbar-mobile" id="nav-mobile">
-    <div class="container">
-        <div class="navbar-header">
-            <div>
-                <a href="/">hzjsea</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
-            </div>
-            <div class="navbar-mobile-right">
-                
-                
-    <div class="search ">
-        <div class="search-btn" onClick="searchToggle()">
-            <img src="/image/search.png" class="search-btn-img" />
-        </div>
-        <form class="form-search">
-            <input class="input" placeholder="Searching" autocomplete="off" id="mobile-search-input"/>
-        </form>
-    </div>
-
-
-                <div class="menu-toggle" onclick="mobileBtn()">&#9776; 目录</div>
-            </div>
             
-        </div>
-        <div class="menu" id="mobile-menu">
-            
-                <a class="menu-item" href="/archives">文章</a>
-            
-                <a class="menu-item" href="/category">分类</a>
-            
-                <a class="menu-item" href="/tag">标签</a>
-            
-                <a class="menu-item" href="/about">关于</a>
-            
-        </div>
-    </div>
-</nav>
-
-        <div class="main">
-			<!-- Chic/layout.ejs -->
- <div id="u-search">
-        <div class="modal">
-            <div class="modal-header">
-                <div class="container">
-                    <form id="u-search-modal-form" class="u-search-modal-form">
-                        <button type="submit" class="form-submit-btn">
-                            <img src="/image/search.png" class="search-btn-img" />
-                        </button>
-                        <input placeholder="搜索文章。。。" class="form-input" id="modal-form-input">
-                    </form>
-                    <a class="modal-close">x</a>
-                </div>
-                <div class="search-loading">
-                    <div class="search-loading-bar"></div>
-                </div>
-            </div>
-            <div class="modal-body">
-                <!-- ul 格式如下 -->
-                <!-- <ul class="modal-results">
-                    <li class="result-item">
-                        <a class="result-item-detail">
-                            <span class="title">页面配置</span>
-                            <span class="content">
-                                content
-                            </span>
-                        </a>
-                    </li>
-                </ul> -->
-            </div>
-        </div>
-        <div class="modal-overlay"></div>
-    </div>
-            <div class="container">
-    
-    
-    <div class="post-toc">
-    <div class="tocbot-list">
-    </div>
-    <div class="tocbot-list-menu">
-        <a class="tocbot-toc-expand" onclick="expand_toc()">全部展开</a>
-        <a onclick="go_top()">回到顶部</a>
-        <a onclick="go_bottom()">回到底部</a>
-    </div>
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-12-15 15:46" pubdate>
+        December 15, 2020 pm
+      </time>
+    </span>
+  
 </div>
 
-<script>
-    document.ready(
-        function () {
-            tocbot.init({
-                tocSelector: '.tocbot-list',
-                contentSelector: '.post-content',
-                headingSelector: 'h1, h2, h3, h4, h5',
-                collapseDepth: 1,
-                orderedList: false,
-                scrollSmooth: true,
-            })
-        }
-    )
-
-    function expand_toc() {
-        var b = document.querySelector(".tocbot-toc-expand");
-        tocbot.init({
-            tocSelector: '.tocbot-list',
-            contentSelector: '.post-content',
-            headingSelector: 'h1, h2, h3, h4, h5',
-            collapseDepth: 6,
-            orderedList: false,
-            scrollSmooth: true,
-        });
-        b.setAttribute("onclick", "collapse_toc()");
-        b.innerHTML = "全部折叠"
-    }
-
-    function collapse_toc() {
-        var b = document.querySelector(".tocbot-toc-expand");
-        tocbot.init({
-            tocSelector: '.tocbot-list',
-            contentSelector: '.post-content',
-            headingSelector: 'h1, h2, h3, h4, h5',
-            collapseDepth: 1,
-            orderedList: false,
-            scrollSmooth: true,
-        });
-        b.setAttribute("onclick", "expand_toc()");
-        b.innerHTML = "全部展开"
-    }
-
-    function go_top() {
-        window.scrollTo(0, 0);
-    }
-
-    function go_bottom() {
-        window.scrollTo(0, document.body.scrollHeight);
-    }
-
-</script>
+<div class="mt-1">
+  
     
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.5k 字
+    </span>
+  
 
+  
     
-    <article class="post-wrap">
-        <header class="post-header">
-            <h1 class="post-title">go库net-http</h1>
-            
-            <div class="post-meta">
-                
-                作者： <a itemprop="author" rel="author" href="/">hzjsea</a>&nbsp;
-                
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      20
+       分钟
+    </span>
+  
 
-                
-                <span class="post-time">
-                    创建日期： <a
-                        href="#">December 15, 2020&nbsp;&nbsp;15:46:14</a>
-                </span>&nbsp;
-                
-                
-                <span class="post-category">
-                    分类：
-                    
-                    <a href="/categories/golang/">golang</a>&nbsp;
-                    
-                </span>
-                
-                
-                状态：<a href="#">SNAPSHOT</a>
-                
-            </div>
-            
-        </header>
+  
+  
+</div>
 
-        <div class="post-content">
-            <a id="more"></a>
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">go库net-http</h1>
+            
+            <div class="markdown-body">
+              <a id="more"></a>
 
 <h1 id="go库net-http"><a href="#go库net-http" class="headerlink" title="go库net-http"></a>go库net-http</h1><p>官方库 中文文档<br><a target="_blank" rel="noopener" href="https://studygolang.com/pkgdoc">https://studygolang.com/pkgdoc</a><br>官方库 英文文档<br><a target="_blank" rel="noopener" href="https://golang.org/pkg/net/http/">https://golang.org/pkg/net/http/</a></p>
 <p>包括如下几个库</p>
@@ -469,138 +239,228 @@
 </ul>
 <h2 id="http库"><a href="#http库" class="headerlink" title="http库"></a>http库</h2><p>http包提供了HTTP客户端和服务端的实现。</p>
 <p>http解析错误</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token function">type</span> ProtocolError struct <span class="token punctuation">{</span>
-    ErrorString string
-<span class="token punctuation">}</span>
-func <span class="token punctuation">(</span>err *ProtocolError<span class="token punctuation">)</span> Error<span class="token punctuation">(</span><span class="token punctuation">)</span> string</code></pre>
-<h2 id="content解析"><a href="#content解析" class="headerlink" title="content解析"></a>content解析</h2><pre class=" language-bash"><code class="language-bash">func CanonicalHeaderKey<span class="token punctuation">(</span>s string<span class="token punctuation">)</span> string  <span class="token comment" spellcheck="true"># 返回头域 也就是header</span>
-func DetectContentType<span class="token punctuation">(</span>data <span class="token punctuation">[</span><span class="token punctuation">]</span>byte<span class="token punctuation">)</span> string <span class="token comment" spellcheck="true"># 返回 合法的MIME类型 比如application/octet-stream</span>
-func ParseHTTPVersion<span class="token punctuation">(</span>vers string<span class="token punctuation">)</span> <span class="token punctuation">(</span>major, minor int, ok bool<span class="token punctuation">)</span> <span class="token comment" spellcheck="true"># 返回 ParseHTTPVersion解析HTTP版本字符串。如"HTTP/1.0"返回(1, 0, true)</span>
-func ParseTime<span class="token punctuation">(</span>text string<span class="token punctuation">)</span> <span class="token punctuation">(</span>t time.Time, err error<span class="token punctuation">)</span> <span class="token comment" spellcheck="true"># 返回时间头</span>
-func StatusText<span class="token punctuation">(</span>code int<span class="token punctuation">)</span> string <span class="token comment" spellcheck="true"># 返回状态码</span></code></pre>
-<h2 id="type-Header"><a href="#type-Header" class="headerlink" title="type Header"></a>type Header</h2><pre class=" language-bash"><code class="language-bash"><span class="token function">type</span> Header map<span class="token punctuation">[</span>string<span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token punctuation">]</span>string
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre class=" language-hljs bash"><span class="hljs-built_in"><code class="language-hljs bash"><span class="hljs-built_in">type</span> ProtocolError struct {<br>    ErrorString string<br>}<br>func (err *ProtocolError) Error() string<br></code></pre></td></tr></table></figure>
 
-func <span class="token punctuation">(</span>h Header<span class="token punctuation">)</span> Get<span class="token punctuation">(</span>key string<span class="token punctuation">)</span> string
-func <span class="token punctuation">(</span>h Header<span class="token punctuation">)</span> Set<span class="token punctuation">(</span>key, value string<span class="token punctuation">)</span>
-func <span class="token punctuation">(</span>h Header<span class="token punctuation">)</span> Del<span class="token punctuation">(</span>key string<span class="token punctuation">)</span>
-func <span class="token punctuation">(</span>h Header<span class="token punctuation">)</span> Write<span class="token punctuation">(</span>w io.Writer<span class="token punctuation">)</span> error
-func <span class="token punctuation">(</span>h Header<span class="token punctuation">)</span> WriteSubset<span class="token punctuation">(</span>w io.Writer, exclude map<span class="token punctuation">[</span>string<span class="token punctuation">]</span>bool<span class="token punctuation">)</span> error</code></pre>
+<h2 id="content解析"><a href="#content解析" class="headerlink" title="content解析"></a>content解析</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre class=" language-hljs bash">func CanonicalHeaderKey(s string) string  <span class="hljs-comment"># 返回头域 也就是header</span><br>func DetectContentType(data []byte) string <span class="hljs-comment"># 返回 合法的MIME类型 比如application/octet-stream</span><br>func ParseHTTPVersion(vers string) (major, minor int, ok bool) <span class="hljs-comment"># 返回 ParseHTTPVersion解析HTTP版本字符串。如&quot;HTTP/1.0&quot;返回(1, 0, true)</span><br>func ParseTime(text string) (t time.Time, err error) <span class="hljs-comment"># 返回时间头</span><br>func StatusText(code int) string <span class="hljs-comment"><code class="language-hljs bash">func CanonicalHeaderKey(s string) string  <span class="hljs-comment"># 返回头域 也就是header</span><br>func DetectContentType(data []byte) string <span class="hljs-comment"># 返回 合法的MIME类型 比如application/octet-stream</span><br>func ParseHTTPVersion(vers string) (major, minor int, ok bool) <span class="hljs-comment"># 返回 ParseHTTPVersion解析HTTP版本字符串。如&quot;HTTP/1.0&quot;返回(1, 0, true)</span><br>func ParseTime(text string) (t time.Time, err error) <span class="hljs-comment"># 返回时间头</span><br>func StatusText(code int) string <span class="hljs-comment"># 返回状态码</span><br></code></pre></td></tr></table></figure>
+
+<h2 id="type-Header"><a href="#type-Header" class="headerlink" title="type Header"></a>type Header</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre class=" language-hljs bash"><span class="hljs-built_in"><code class="language-hljs bash"><span class="hljs-built_in">type</span> Header map[string][]string<br><br>func (h Header) Get(key string) string<br>func (h Header) Set(key, value string)<br>func (h Header) Del(key string)<br>func (h Header) Write(w io.Writer) error<br>func (h Header) WriteSubset(w io.Writer, exclude map[string]bool) error<br></code></pre></td></tr></table></figure>
 <p>Header代表HTTP头域的键值对。<br>Get返回键对应的第一个值，如果键不存在会返回””。如要获取该键对应的值切片，请直接用规范格式的键访问map。<br>Set添加键值对到h，如键已存在则会用只有新值一个元素的切片取代旧值切片。</p>
-<h2 id="type-Request"><a href="#type-Request" class="headerlink" title="type Request"></a>type Request</h2><pre class=" language-bash"><code class="language-bash"><span class="token function">type</span> Request struct <span class="token punctuation">{</span>
-    // Method指定HTTP方法（GET、POST、PUT等）。对客户端，<span class="token string">""</span>代表GET
-    Method string
-    URL *url.URL
-    // 接收到的请求的协议版本。本包生产的Request总是使用HTTP/1.1
-    Proto      string // <span class="token string">"HTTP/1.0"</span>
-    ProtoMajor int    // 1
-    ProtoMinor int    // 0
-    // Header字段用来表示HTTP请求的头域。如果头域（多行键值对格式）为：
-    //    accept-encoding: gzip, deflate
-    //    Accept-Language: en-us
-    //    Connection: keep-alive
-    // 则：
-    //    Header <span class="token operator">=</span> map<span class="token punctuation">[</span>string<span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token punctuation">]</span>string<span class="token punctuation">{</span>
-    //        <span class="token string">"Accept-Encoding"</span><span class="token keyword">:</span> <span class="token punctuation">{</span><span class="token string">"gzip, deflate"</span><span class="token punctuation">}</span>,
-    //        <span class="token string">"Accept-Language"</span><span class="token keyword">:</span> <span class="token punctuation">{</span><span class="token string">"en-us"</span><span class="token punctuation">}</span>,
-    //        <span class="token string">"Connection"</span><span class="token keyword">:</span> <span class="token punctuation">{</span><span class="token string">"keep-alive"</span><span class="token punctuation">}</span>,
-    //    <span class="token punctuation">}</span>
-    // HTTP规定头域的键名（头名）是大小写敏感的，请求的解析器通过规范化头域的键名来实现这点。
-    // 在客户端的请求，可能会被自动添加或重写Header中的特定的头，参见Request.Write方法。
-    Header Header
-    Body io.ReadCloser
-    ContentLength int64
-    TransferEncoding <span class="token punctuation">[</span><span class="token punctuation">]</span>string
-    Close bool
-    Host string
-    Form url.Values
-    PostForm url.Values
-    MultipartForm *multipart.Form
-    Trailer Header
-    RemoteAddr string
-    RequestURI string
-    TLS *tls.ConnectionState
-<span class="token punctuation">}</span>
-func NewRequest<span class="token punctuation">(</span>method, urlStr string, body io.Reader<span class="token punctuation">)</span> <span class="token punctuation">(</span>*Request, error<span class="token punctuation">)</span>
-func ReadRequest<span class="token punctuation">(</span>b *bufio.Reader<span class="token punctuation">)</span> <span class="token punctuation">(</span>req *Request, err error<span class="token punctuation">)</span>
-func <span class="token punctuation">(</span>r *Request<span class="token punctuation">)</span> UserAgent<span class="token punctuation">(</span><span class="token punctuation">)</span> string
-func <span class="token punctuation">(</span>r *Request<span class="token punctuation">)</span> Referer<span class="token punctuation">(</span><span class="token punctuation">)</span> string
-func <span class="token punctuation">(</span>r *Request<span class="token punctuation">)</span> SetBasicAuth<span class="token punctuation">(</span>username, password string<span class="token punctuation">)</span></code></pre>
-<h2 id="type-Response"><a href="#type-Response" class="headerlink" title="type Response"></a>type Response</h2><pre class=" language-bash"><code class="language-bash"><span class="token function">type</span> Response struct <span class="token punctuation">{</span>
-    Status     string // 例如<span class="token string">"200 OK"</span>
-    StatusCode int    // 例如200
-    Proto      string // 例如<span class="token string">"HTTP/1.0"</span>
-    ProtoMajor int    // 例如1
-    ProtoMinor int    // 例如0
-    // Header保管头域的键值对。
-    // 如果回复中有多个头的键相同，Header中保存为该键对应用逗号分隔串联起来的这些头的值
-    // （参见RFC 2616 Section 4.2）
-    // 被本结构体中的其他字段复制保管的头（如ContentLength）会从Header中删掉。
-    //
-    // Header中的键都是规范化的，参见CanonicalHeaderKey函数
-    Header Header
-    // Body代表回复的主体。
-    // Client类型和Transport类型会保证Body字段总是非nil的，即使回复没有主体或主体长度为0。
-    // 关闭主体是调用者的责任。
-    // 如果服务端采用<span class="token string">"chunked"</span>传输编码发送的回复，Body字段会自动进行解码。
-    Body io.ReadCloser
-    // ContentLength记录相关内容的长度。
-    // 其值为-1表示长度未知（采用chunked传输编码）
-    // 除非对应的Request.Method是<span class="token string">"HEAD"</span>，其值<span class="token operator">>=</span>0表示可以从Body读取的字节数
-    ContentLength int64
-    // TransferEncoding按从最外到最里的顺序列出传输编码，空切片表示<span class="token string">"identity"</span>编码。
-    TransferEncoding <span class="token punctuation">[</span><span class="token punctuation">]</span>string
-    // Close记录头域是否指定应在读取完主体后关闭连接。（即Connection头）
-    // 该值是给客户端的建议，Response.Write方法的ReadResponse函数都不会关闭连接。
-    Close bool
-    // Trailer字段保存和头域相同格式的trailer键值对，和Header字段相同类型
-    Trailer Header
-    // Request是用来获取此回复的请求
-    // Request的Body字段是nil（因为已经被用掉了）
-    // 这个字段是被Client类型发出请求并获得回复后填充的
-    Request *Request
-    // TLS包含接收到该回复的TLS连接的信息。 对未加密的回复，本字段为nil。
-    // 返回的指针是被（同一TLS连接接收到的）回复共享的，不应被修改。
-    TLS *tls.ConnectionState
-<span class="token punctuation">}</span></code></pre>
+<h2 id="type-Request"><a href="#type-Request" class="headerlink" title="type Request"></a>type Request</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre class=" language-hljs bash"><span class="hljs-built_in">type</span> Request struct &#123;<br>	// Method指定HTTP方法（GET、POST、PUT等）。对客户端，<span class="hljs-string">&quot;&quot;</span>代表GET<br>    Method string<br>    URL *url.URL<br>    // 接收到的请求的协议版本。本包生产的Request总是使用HTTP/1.1<br>    Proto      string // <span class="hljs-string">&quot;HTTP/1.0&quot;</span><br>    ProtoMajor int    // 1<br>    ProtoMinor int    // 0<br>    // Header字段用来表示HTTP请求的头域。如果头域（多行键值对格式）为：<br>    //	accept-encoding: gzip, deflate<br>    //	Accept-Language: en-us<br>    //	Connection: keep-alive<br>    // 则：<br>    //	Header = map[string][]string&#123;<br>    //		<span class="hljs-string">&quot;Accept-Encoding&quot;</span>: &#123;<span class="hljs-string">&quot;gzip, deflate&quot;</span>&#125;,<br>    //		<span class="hljs-string">&quot;Accept-Language&quot;</span>: &#123;<span class="hljs-string">&quot;en-us&quot;</span>&#125;,<br>    //		<span class="hljs-string">&quot;Connection&quot;</span>: &#123;<span class="hljs-string"><code class="language-hljs bash"><span class="hljs-built_in">type</span> Request struct &#123;<br>	// Method指定HTTP方法（GET、POST、PUT等）。对客户端，<span class="hljs-string">&quot;&quot;</span>代表GET<br>    Method string<br>    URL *url.URL<br>    // 接收到的请求的协议版本。本包生产的Request总是使用HTTP/1.1<br>    Proto      string // <span class="hljs-string">&quot;HTTP/1.0&quot;</span><br>    ProtoMajor int    // 1<br>    ProtoMinor int    // 0<br>    // Header字段用来表示HTTP请求的头域。如果头域（多行键值对格式）为：<br>    //	accept-encoding: gzip, deflate<br>    //	Accept-Language: en-us<br>    //	Connection: keep-alive<br>    // 则：<br>    //	Header = map[string][]string&#123;<br>    //		<span class="hljs-string">&quot;Accept-Encoding&quot;</span>: &#123;<span class="hljs-string">&quot;gzip, deflate&quot;</span>&#125;,<br>    //		<span class="hljs-string">&quot;Accept-Language&quot;</span>: &#123;<span class="hljs-string">&quot;en-us&quot;</span>&#125;,<br>    //		<span class="hljs-string">&quot;Connection&quot;</span>: &#123;<span class="hljs-string">"keep-alive"</span>},<br>    //	}<br>    // HTTP规定头域的键名（头名）是大小写敏感的，请求的解析器通过规范化头域的键名来实现这点。<br>    // 在客户端的请求，可能会被自动添加或重写Header中的特定的头，参见Request.Write方法。<br>    Header Header<br>    Body io.ReadCloser<br>    ContentLength int64<br>    TransferEncoding []string<br>    Close bool<br>    Host string<br>    Form url.Values<br>    PostForm url.Values<br>    MultipartForm *multipart.Form<br>    Trailer Header<br>    RemoteAddr string<br>    RequestURI string<br>    TLS *tls.ConnectionState<br>}<br>func NewRequest(method, urlStr string, body io.Reader) (*Request, error)<br>func ReadRequest(b *bufio.Reader) (req *Request, err error)<br>func (r *Request) UserAgent() string<br>func (r *Request) Referer() string<br>func (r *Request) SetBasicAuth(username, password string)<br></code></pre></td></tr></table></figure>
 
-        </div>
+<h2 id="type-Response"><a href="#type-Response" class="headerlink" title="type Response"></a>type Response</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre class=" language-hljs bash"><span class="hljs-built_in">type</span> Response struct &#123;<br>    Status     string // 例如<span class="hljs-string">&quot;200 OK&quot;</span><br>    StatusCode int    // 例如200<br>    Proto      string // 例如<span class="hljs-string">&quot;HTTP/1.0&quot;</span><br>    ProtoMajor int    // 例如1<br>    ProtoMinor int    // 例如0<br>    // Header保管头域的键值对。<br>    // 如果回复中有多个头的键相同，Header中保存为该键对应用逗号分隔串联起来的这些头的值<br>    // （参见RFC 2616 Section 4.2）<br>    // 被本结构体中的其他字段复制保管的头（如ContentLength）会从Header中删掉。<br>    //<br>    // Header中的键都是规范化的，参见CanonicalHeaderKey函数<br>    Header Header<br>    // Body代表回复的主体。<br>    // Client类型和Transport类型会保证Body字段总是非nil的，即使回复没有主体或主体长度为0。<br>    // 关闭主体是调用者的责任。<br>    // 如果服务端采用<span class="hljs-string">&quot;chunked&quot;</span>传输编码发送的回复，Body字段会自动进行解码。<br>    Body io.ReadCloser<br>    // ContentLength记录相关内容的长度。<br>    // 其值为-1表示长度未知（采用chunked传输编码）<br>    // 除非对应的Request.Method是<span class="hljs-string">&quot;HEAD&quot;</span>，其值&gt;=0表示可以从Body读取的字节数<br>    ContentLength int64<br>    // TransferEncoding按从最外到最里的顺序列出传输编码，空切片表示<span class="hljs-string"><code class="language-hljs bash"><span class="hljs-built_in">type</span> Response struct &#123;<br>    Status     string // 例如<span class="hljs-string">&quot;200 OK&quot;</span><br>    StatusCode int    // 例如200<br>    Proto      string // 例如<span class="hljs-string">&quot;HTTP/1.0&quot;</span><br>    ProtoMajor int    // 例如1<br>    ProtoMinor int    // 例如0<br>    // Header保管头域的键值对。<br>    // 如果回复中有多个头的键相同，Header中保存为该键对应用逗号分隔串联起来的这些头的值<br>    // （参见RFC 2616 Section 4.2）<br>    // 被本结构体中的其他字段复制保管的头（如ContentLength）会从Header中删掉。<br>    //<br>    // Header中的键都是规范化的，参见CanonicalHeaderKey函数<br>    Header Header<br>    // Body代表回复的主体。<br>    // Client类型和Transport类型会保证Body字段总是非nil的，即使回复没有主体或主体长度为0。<br>    // 关闭主体是调用者的责任。<br>    // 如果服务端采用<span class="hljs-string">&quot;chunked&quot;</span>传输编码发送的回复，Body字段会自动进行解码。<br>    Body io.ReadCloser<br>    // ContentLength记录相关内容的长度。<br>    // 其值为-1表示长度未知（采用chunked传输编码）<br>    // 除非对应的Request.Method是<span class="hljs-string">&quot;HEAD&quot;</span>，其值&gt;=0表示可以从Body读取的字节数<br>    ContentLength int64<br>    // TransferEncoding按从最外到最里的顺序列出传输编码，空切片表示<span class="hljs-string">"identity"</span>编码。<br>    TransferEncoding []string<br>    // Close记录头域是否指定应在读取完主体后关闭连接。（即Connection头）<br>    // 该值是给客户端的建议，Response.Write方法的ReadResponse函数都不会关闭连接。<br>    Close bool<br>    // Trailer字段保存和头域相同格式的trailer键值对，和Header字段相同类型<br>    Trailer Header<br>    // Request是用来获取此回复的请求<br>    // Request的Body字段是nil（因为已经被用掉了）<br>    // 这个字段是被Client类型发出请求并获得回复后填充的<br>    Request *Request<br>    // TLS包含接收到该回复的TLS连接的信息。 对未加密的回复，本字段为nil。<br>    // 返回的指针是被（同一TLS连接接收到的）回复共享的，不应被修改。<br>    TLS *tls.ConnectionState<br>}<br></code></pre></td></tr></table></figure>
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/golang/">golang</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/golang/">golang</a>
+                    
+                      <a class="hover-with-bg" href="/tags/go-library/">go-library</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/12/16/blog_back_new/golang/go%E5%BA%93ioutil/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">go库ioutil</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/12/11/blog_back_new/golang/go%E5%BA%93net/">
+                        <span class="hidden-mobile">go库net</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
 
-        
-        <section class="post-tags">
-            <div>
-                <span>标签：</span>
-                <span class="tag">
-                    
-                    
-                    <a href="/tags/golang/"># golang</a>
-                    
-                    <a href="/tags/go-library/"># go-library</a>
-                    
-                    
-                </span>
-            </div>
-            <div>
-                <a href="javascript：window.history.back();">后退</a>
-                <span>· </span>
-                <a href="/">主页</a>
-            </div>
-        </section>
-        <section class="post-nav">
             
-            <a class="prev" rel="prev" href="/2020/12/16/blog_back_new/golang/go%E5%BA%93ioutil/">go库ioutil</a>
-            
-            
-            <a class="next" rel="next" href="/2020/12/11/blog_back_new/golang/go%E5%BA%93net/">go库net</a>
-            
-        </section>
-    </article>
-</div>
+          </article>
         </div>
-        <footer id="footer" class="footer">
-    <div class="copyright">
+      </div>
     </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
 </footer>
 
-    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+
+
 </body>
 </html>

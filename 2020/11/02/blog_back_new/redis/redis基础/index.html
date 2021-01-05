@@ -1,463 +1,233 @@
+
+
 <!DOCTYPE html>
-<html lang="cn">
+<html lang="cn" data-default-color-scheme=&#34;auto&#34;>
+
+
+
 <head>
-    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-<meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="hzjsea">
+  <meta name="keywords" content="">
+  <title>redis基础 - hzjsea</title>
 
-    <meta name="author" content="hzjsea">
-
-
-
-
-
-
-<title>redis基础 | hzjsea</title>
-
-
-
-    <link rel="icon" href="/favicon.ico">
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
 
 
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
 
-
-    <!-- stylesheets list from _config.yml -->
-    
-    <link rel="stylesheet" href="/css/style.css">
-    
-
-
-
-    <!-- scripts list from _config.yml -->
-    
-    <script src="/js/script.js"></script>
-    
-    <script src="/js/tocbot.min.js"></script>
-    
-    <script src="/js/jquery.min.js"></script>
-    
-
-
-
+  
     
     
-        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-    "HTML-CSS": {
-        preferredFont: "TeX",
-        availableFonts: ["STIX","TeX"],
-        linebreaks: { automatic:true },
-        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
-    },
-    tex2jax: {
-        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
-        processEscapes: true,
-        ignoreClass: "tex2jax_ignore|dno",
-        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
-    },
-    TeX: {
-        equationNumbers: { autoNumber: "AMS" },
-        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
-        Macros: { href: "{}" }
-    },
-    messageStyle: "none"
-    });
-</script>
-<!-- 给MathJax元素添加has-jax class -->
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax(), i;
-        for(i=0; i < all.length; i += 1) {
-            all[i].SourceElement().parentNode.className += ' has-jax';
-        }
-    });
-</script>
-<!-- 通过连接CDN加载MathJax的js代码 -->
-<script type="text/javascript" async
-        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
-</script>
-
-
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
     
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
 
 
 
+<!-- 主题依赖的图标库，不要自行修改 -->
 
-    <script>
-    function searchToggle() {
-        const width = $(document.body).width()
-        if(width > 479) {
-            return;
-        }
-        const search = $('.search');
-        const searchForm = $('.form-search')
-
-        if(!search.hasClass("mobile-search")) {
-            search.addClass("mobile-search");
-        } else {
-            search.removeClass("mobile-search");
-        } 
-    }
-
-    function search(searchInputEl, formEl, flag) {
-        const path = "/" + "search.json"; // 可以在public 下查看这个search.json
-        $(formEl).submit(function(e){
-            e.preventDefault();
-            let target = null
-            if(searchInputEl == null) {
-                const screenWidth = $(document.body).width();
-                target = screenWidth > 479 ? $('#pc-search-input') : $('#mobile-search-input');
-                console.log(target);
-            } else {
-                target = $(searchInputEl)
-            }
-
-            if(!flag && target.val() === '') {
-                return ;
-            }
-
-            $("#u-search").fadeIn(500, function() {
-                $("body > .wrapper").addClass("modal-active");
-
-                $.ajax({
-                    url: path,
-                    dataType: "json",
-                    beforeSend: function (xhr) {
-                        $input = target.val();
-                        $(".form-input").val($input);
-                        const loadingBar = $('.search-loading-bar') 
-                        loadingBar.css({
-                            width:'100%',
-                            display: 'block'
-                        });
-                    },
-                    success: function( datas ) {
-                        console.log(datas);
-                        const $resultPanel = $(".modal-body")[0];
-                        let str = `<ul class="modal-results">`;
-                        var keywords = $(".form-input").val().trim().toLowerCase().split(/[\s\-]+/);
-                        $resultPanel.innerHTML = "";
-                        let hasResult = false
-                        let text = `<div class="no-result">找不到与关键词相关的内容....</div>`;
-
-                        if ($(".form-input").val().trim().length <= 0) {
-                            // 没有结果
-                            $resultPanel.innerHTML = text;
-                            return;
-                        }
-                        datas.forEach(function (data, index) {
-                            var isMatch = true;
-                            if (!data.title || data.title.trim() === '') {
-                                data.title = "Untitled";
-                            }
-                            var data_title = data.title.trim().toLowerCase();
-                            var data_content = data.content && data.content.trim().replace(/<[^>]+>/g, "").toLowerCase() || '';
-                            var data_url = data.url;
-                            var index_title = -1;
-                            var index_content = -1;
-                            var first_occur = -1;
-                            // only match artiles with not empty contents
-                            if (data_content !== '') {
-                                keywords.forEach(function (keyword, i) {
-                                    index_title = data_title.indexOf(keyword);
-                                    index_content = data_content.indexOf(keyword);
-
-                                    if (index_title < 0 && index_content < 0) {
-                                        isMatch = false;
-                                    } else {
-                                        hasResult = true
-                                        if (index_content < 0) {
-                                            index_content = 0;
-                                        }
-                                        if (i == 0) {
-                                            first_occur = index_content;
-                                        }
-                                    }
-                                });
-                            } else {
-                                isMatch = false;
-                            }
-                            // show search results
-                            if (isMatch) {
-                                str += `<li class='result-item'><a href='${data_url}' class='result-item-detail'> <span class="title">${data_title}</span>`;
-                                var content = data.content.trim().replace(/<[^>]+>/g, "");
-                                if (first_occur >= 0) {
-                                    // cut out 200 characters
-                                    var start = first_occur - 40;
-                                    var end = first_occur + 160;
-
-                                    if (start < 0) {
-                                        start = 0;
-                                    }
-
-                                    if (start == 0) {
-                                        end = 200;
-                                    }
-
-                                    if (end > content.length) {
-                                        end = content.length;
-                                    }
-
-                                    var match_content = content.substring(start, end);
-
-                                    // highlight all keywords
-                                    keywords.forEach(function (keyword) {
-                                        var regS = new RegExp(keyword, "gi");
-                                        match_content = match_content.replace(regS, `<em class="search-keyword">${keyword}</em>`);
-                                    });
-
-                                    str += `<span class="content"> ${match_content} ...</span></a>`;
-                                }
-                                str += "</li>";
-                            }
-                        });
-                        str += "</ul>";
-                        if(hasResult) {
-                            $resultPanel.innerHTML = str;
-                        } else {
-                            $resultPanel.innerHTML = text;
-                        }
-
-                    },
-                    complete: function() {
-                        setTimeout(() => {
-                                const loadingBar = $('.search-loading-bar') 
-                                loadingBar.css({
-                                    width:'0%',
-                                    display: 'none'
-                                });
-                        }, 300)
-                    }
-                });
-            })
-
-        });
-    }
-
-    $(document).ready(function() {
-        $('.modal-close').click(function () { 
-            $("#u-search").fadeOut();
-            $("body > .wrapper").removeClass("modal-active")
-        })
-
-        $('.modal-overlay').click(function() {
-            $("#u-search").fadeOut();
-            $("body > .wrapper").removeClass("modal-active")
-        })
-        search(null, ".form-search", false)
-        search("#u-search-modal-form .form-input", ".u-search-modal-form", true)
-    })
-</script>
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
 
 
 
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"www.baidu.com","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
 <meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+
+
 <body>
-    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
-        <nav class="navbar">
-    <div class="container">
-        <div class="navbar-header header-logo"><a href="/">hzjsea</a></div>
-        <div class="menu navbar-right">
-            
-            
-    <div class="search ">
-        <div class="search-btn" onClick="searchToggle()">
-            <img src="/image/search.png" class="search-btn-img" />
-        </div>
-        <form class="form-search">
-            <input class="input" placeholder="Searching" autocomplete="off" id="pc-search-input"/>
-        </form>
-    </div>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
 
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
 
-            
-                <a class="menu-item" href="/archives">文章</a>
-            
-                <a class="menu-item" href="/category">分类</a>
-            
-                <a class="menu-item" href="/tag">标签</a>
-            
-                <a class="menu-item" href="/about">关于</a>
-            
-            <input id="switch_default" type="checkbox" class="switch_default">
-            <label for="switch_default" class="toggleBtn"></label>
-        </div>
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                Home
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                Archives
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                Categories
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                Tags
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                About
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
     </div>
+  </div>
 </nav>
 
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="redis基础">
+              
+            </span>
 
-<nav class="navbar-mobile" id="nav-mobile">
-    <div class="container">
-        <div class="navbar-header">
-            <div>
-                <a href="/">hzjsea</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
-            </div>
-            <div class="navbar-mobile-right">
-                
-                
-    <div class="search ">
-        <div class="search-btn" onClick="searchToggle()">
-            <img src="/image/search.png" class="search-btn-img" />
-        </div>
-        <form class="form-search">
-            <input class="input" placeholder="Searching" autocomplete="off" id="mobile-search-input"/>
-        </form>
-    </div>
-
-
-                <div class="menu-toggle" onclick="mobileBtn()">&#9776; 目录</div>
-            </div>
             
-        </div>
-        <div class="menu" id="mobile-menu">
-            
-                <a class="menu-item" href="/archives">文章</a>
-            
-                <a class="menu-item" href="/category">分类</a>
-            
-                <a class="menu-item" href="/tag">标签</a>
-            
-                <a class="menu-item" href="/about">关于</a>
-            
-        </div>
-    </div>
-</nav>
-
-        <div class="main">
-			<!-- Chic/layout.ejs -->
- <div id="u-search">
-        <div class="modal">
-            <div class="modal-header">
-                <div class="container">
-                    <form id="u-search-modal-form" class="u-search-modal-form">
-                        <button type="submit" class="form-submit-btn">
-                            <img src="/image/search.png" class="search-btn-img" />
-                        </button>
-                        <input placeholder="搜索文章。。。" class="form-input" id="modal-form-input">
-                    </form>
-                    <a class="modal-close">x</a>
-                </div>
-                <div class="search-loading">
-                    <div class="search-loading-bar"></div>
-                </div>
-            </div>
-            <div class="modal-body">
-                <!-- ul 格式如下 -->
-                <!-- <ul class="modal-results">
-                    <li class="result-item">
-                        <a class="result-item-detail">
-                            <span class="title">页面配置</span>
-                            <span class="content">
-                                content
-                            </span>
-                        </a>
-                    </li>
-                </ul> -->
-            </div>
-        </div>
-        <div class="modal-overlay"></div>
-    </div>
-            <div class="container">
-    
-    
-    <div class="post-toc">
-    <div class="tocbot-list">
-    </div>
-    <div class="tocbot-list-menu">
-        <a class="tocbot-toc-expand" onclick="expand_toc()">全部展开</a>
-        <a onclick="go_top()">回到顶部</a>
-        <a onclick="go_bottom()">回到底部</a>
-    </div>
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-11-02 10:24" pubdate>
+        November 2, 2020 am
+      </time>
+    </span>
+  
 </div>
 
-<script>
-    document.ready(
-        function () {
-            tocbot.init({
-                tocSelector: '.tocbot-list',
-                contentSelector: '.post-content',
-                headingSelector: 'h1, h2, h3, h4, h5',
-                collapseDepth: 1,
-                orderedList: false,
-                scrollSmooth: true,
-            })
-        }
-    )
-
-    function expand_toc() {
-        var b = document.querySelector(".tocbot-toc-expand");
-        tocbot.init({
-            tocSelector: '.tocbot-list',
-            contentSelector: '.post-content',
-            headingSelector: 'h1, h2, h3, h4, h5',
-            collapseDepth: 6,
-            orderedList: false,
-            scrollSmooth: true,
-        });
-        b.setAttribute("onclick", "collapse_toc()");
-        b.innerHTML = "全部折叠"
-    }
-
-    function collapse_toc() {
-        var b = document.querySelector(".tocbot-toc-expand");
-        tocbot.init({
-            tocSelector: '.tocbot-list',
-            contentSelector: '.post-content',
-            headingSelector: 'h1, h2, h3, h4, h5',
-            collapseDepth: 1,
-            orderedList: false,
-            scrollSmooth: true,
-        });
-        b.setAttribute("onclick", "expand_toc()");
-        b.innerHTML = "全部展开"
-    }
-
-    function go_top() {
-        window.scrollTo(0, 0);
-    }
-
-    function go_bottom() {
-        window.scrollTo(0, document.body.scrollHeight);
-    }
-
-</script>
+<div class="mt-1">
+  
     
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      5.4k 字
+    </span>
+  
 
+  
     
-    <article class="post-wrap">
-        <header class="post-header">
-            <h1 class="post-title">redis基础</h1>
-            
-            <div class="post-meta">
-                
-                作者： <a itemprop="author" rel="author" href="/">hzjsea</a>&nbsp;
-                
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      80
+       分钟
+    </span>
+  
 
-                
-                <span class="post-time">
-                    创建日期： <a
-                        href="#">November 2, 2020&nbsp;&nbsp;10:24:45</a>
-                </span>&nbsp;
-                
-                
-                <span class="post-category">
-                    分类：
-                    
-                    <a href="/categories/redis/">redis</a>&nbsp;
-                    
-                </span>
-                
-                
-                状态：<a href="#">SNAPSHOT</a>
-                
-            </div>
-            
-        </header>
+  
+  
+</div>
 
-        <div class="post-content">
-            <p><img src="http://img.noback.top/2020-10-28-17-47-35.png" alt="2020-10-28-17-47-35"></p>
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">redis基础</h1>
+            
+            <div class="markdown-body">
+              <p><img src="http://img.noback.top/2020-10-28-17-47-35.png" srcset="/img/loading.gif" alt="2020-10-28-17-47-35"></p>
 <a id="more"></a>
 
 <h1 id="redis基础"><a href="#redis基础" class="headerlink" title="redis基础"></a>redis基础</h1><h2 id="Redis通用指令"><a href="#Redis通用指令" class="headerlink" title="Redis通用指令"></a>Redis通用指令</h2><pre class=" language-r"><code class="language-r"><span class="token comment" spellcheck="true"># keys* 查看所有的键</span>
@@ -535,7 +305,7 @@ OK
 2<span class="token punctuation">)</span> <span class="token string">"200"</span>
 3<span class="token punctuation">)</span> <span class="token string">"300"</span>
 </code></pre>
-<p><img src="http://img.noback.top/2020-05-18-11-35-48.png" alt="2020-05-18-11-35-48"></p>
+<p><img src="http://img.noback.top/2020-05-18-11-35-48.png" srcset="/img/loading.gif" alt="2020-05-18-11-35-48"></p>
 <p>批量获取可以加快返回速度，多次get+网络时间 = 单次mget</p>
 <h4 id="键值对的中的类型转换"><a href="#键值对的中的类型转换" class="headerlink" title="键值对的中的类型转换"></a>键值对的中的类型转换</h4><p>上面可以看到，我们存进去的<code>&#123;&quot;age&quot;:&quot;12&quot;&#125;</code>中12是一个string类型，也就是一个字符串类型，但是在redis中可以进行原子增量，在执行的过程中，12会被转换成int 类型，并添加后转换成字符串类型</p>
 <pre class=" language-bash"><code class="language-bash">10.0.43.102:6379<span class="token operator">></span> incr age <span class="token comment" spellcheck="true"># 这里进行原子递增，redis内部进行变量类型转换</span>
@@ -630,7 +400,7 @@ OK
 <span class="token punctuation">(</span>integer<span class="token punctuation">)</span> <span class="token operator">-</span><span class="token number">1</span>
 <span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> get age
 <span class="token string">"200"</span></code></pre>
-<p>使用ttl可以查看时间,<br>不存在的键 ttl值为-2<br>存在的值但是没有计时的 ttl值为-1<br>存在的值但是计时了的 ttl值为设置值<br><img src="http://img.noback.top/2020-05-18-14-17-45.png" alt="2020-05-18-14-17-45"></p>
+<p>使用ttl可以查看时间,<br>不存在的键 ttl值为-2<br>存在的值但是没有计时的 ttl值为-1<br>存在的值但是计时了的 ttl值为设置值<br><img src="http://img.noback.top/2020-05-18-14-17-45.png" srcset="/img/loading.gif" alt="2020-05-18-14-17-45"></p>
 <h3 id="根据键的状态更新和添加"><a href="#根据键的状态更新和添加" class="headerlink" title="根据键的状态更新和添加"></a>根据键的状态更新和添加</h3><p>xx 键必须存在，才可以设置成功<br>nx 键必须不存在，才可以设置成功</p>
 <pre class=" language-r"><code class="language-r"><span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> get xx
 <span class="token punctuation">(</span>nil<span class="token punctuation">)</span>
@@ -688,7 +458,7 @@ OK</code></pre>
 <span class="token number">3</span><span class="token punctuation">)</span> <span class="token string">"B"</span>
 <span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> lrange hellolist <span class="token number">0</span> <span class="token number">0</span>
 <span class="token number">1</span><span class="token punctuation">)</span> <span class="token string">"C"</span></code></pre>
-<p><code>lrange</code>可以根据范围来获取列表中的内容，需要提供两个数据作为范围的边界，第一个表示起始位置，第二个表示结束的位置<br>其中第一个位置可以表示为<br><code>lrange hellolist 0 0</code><br>最后一个位置为列表长度-1  -1<br><code>lrange hellolist 2 -1</code><br><img src="http://img.noback.top/2020-05-18-23-26-24.png" alt="2020-05-18-23-26-24"></p>
+<p><code>lrange</code>可以根据范围来获取列表中的内容，需要提供两个数据作为范围的边界，第一个表示起始位置，第二个表示结束的位置<br>其中第一个位置可以表示为<br><code>lrange hellolist 0 0</code><br>最后一个位置为列表长度-1  -1<br><code>lrange hellolist 2 -1</code><br><img src="http://img.noback.top/2020-05-18-23-26-24.png" srcset="/img/loading.gif" alt="2020-05-18-23-26-24"></p>
 <h3 id="批量添加元素"><a href="#批量添加元素" class="headerlink" title="批量添加元素"></a>批量添加元素</h3><pre class=" language-r"><code class="language-r"><span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> rpush hellolist   <span class="token number">6</span> <span class="token number">5</span> <span class="token string">"foo bar"</span>
 <span class="token punctuation">(</span>integer<span class="token punctuation">)</span> <span class="token number">10</span>
 <span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> lrange hellolist <span class="token number">0</span> <span class="token operator">-</span><span class="token number">1</span>
@@ -787,7 +557,7 @@ OK
 <span class="token number">1</span><span class="token punctuation">)</span> <span class="token string">"o"</span>
 <span class="token number">2</span><span class="token punctuation">)</span> <span class="token string">"ll"</span>
 <span class="token number">3</span><span class="token punctuation">)</span> <span class="token string">"e"</span></code></pre>
-<h3 id="列表等待"><a href="#列表等待" class="headerlink" title="列表等待"></a>列表等待</h3><p>列表类型中，如果我们请求一个空的列表，如果没有元素，则redis会返回一个<code>(nil)</code>的元素，但是在某些场景下并不适合这样的操作，<br>假设用户想要获取到一个固定的值，但是返回的是一个nil的值，需要等待其他的操作往redis中push值，如果这种需求是及时的，那么该用户则需要不间断的快速的<code>lrange mylist 0 0</code>来获取元素，很明显这样的设计会增加两边的压力<br>于是redis提供一个列表等待的功能，也就是用户可以对列表的请求中加一个计时器，在计时器结束前，一旦有值被push进来就直接将他pop出去<br><img src="http://img.noback.top/2020-05-18-23-54-05.png" alt="2020-05-18-23-54-05"><br>如图使用blpop 或者brpop这里如果只是添加一个元素的话，没啥效果，但是如果一次性push多个内容的话，就有效果了<br>另外如果需要表明永久等待的话,时间可以设置为0<br>格式: <code>blpop key [key ...] timeout</code> <code>brpop key [key ...] timeout</code></p>
+<h3 id="列表等待"><a href="#列表等待" class="headerlink" title="列表等待"></a>列表等待</h3><p>列表类型中，如果我们请求一个空的列表，如果没有元素，则redis会返回一个<code>(nil)</code>的元素，但是在某些场景下并不适合这样的操作，<br>假设用户想要获取到一个固定的值，但是返回的是一个nil的值，需要等待其他的操作往redis中push值，如果这种需求是及时的，那么该用户则需要不间断的快速的<code>lrange mylist 0 0</code>来获取元素，很明显这样的设计会增加两边的压力<br>于是redis提供一个列表等待的功能，也就是用户可以对列表的请求中加一个计时器，在计时器结束前，一旦有值被push进来就直接将他pop出去<br><img src="http://img.noback.top/2020-05-18-23-54-05.png" srcset="/img/loading.gif" alt="2020-05-18-23-54-05"><br>如图使用blpop 或者brpop这里如果只是添加一个元素的话，没啥效果，但是如果一次性push多个内容的话，就有效果了<br>另外如果需要表明永久等待的话,时间可以设置为0<br>格式: <code>blpop key [key ...] timeout</code> <code>brpop key [key ...] timeout</code></p>
 <pre class=" language-bash"><code class="language-bash">·lpush+lpop<span class="token operator">=</span>Stack（栈）
 
 ·lpush+rpop<span class="token operator">=</span>Queue（队列）
@@ -873,7 +643,7 @@ hmset key field value
 <span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> hstrlen user<span class="token operator">:</span><span class="token number">1000</span> username
 <span class="token punctuation">(</span>integer<span class="token punctuation">)</span> <span class="token number">7</span>
 </code></pre>
-<p><img src="http://img.noback.top/2020-05-19-00-05-08.png" alt="2020-05-19-00-05-08"><br><img src="http://img.noback.top/2020-05-20-22-33-36.png" alt="2020-05-20-22-33-36"><br><img src="http://img.noback.top/2020-05-20-22-35-08.png" alt="2020-05-20-22-35-08"></p>
+<p><img src="http://img.noback.top/2020-05-19-00-05-08.png" srcset="/img/loading.gif" alt="2020-05-19-00-05-08"><br><img src="http://img.noback.top/2020-05-20-22-33-36.png" srcset="/img/loading.gif" alt="2020-05-20-22-33-36"><br><img src="http://img.noback.top/2020-05-20-22-35-08.png" srcset="/img/loading.gif" alt="2020-05-20-22-35-08"></p>
 <p><font color='red'>序列化类型数据库与redis行存储的区别 序列化数据库需要在加入计入每条数据之前需要规定好字段，并且当介入值得时候，如果有一个字段为空，则必须设置为null 但是在redis中则无需这样的操作</font></p>
 <h2 id="Redis集合"><a href="#Redis集合" class="headerlink" title="Redis集合"></a>Redis集合</h2><p>Redis集是字符串的无序集合，Redis可以在每次调用时自由以任何顺序返回元素，因为与用户之间没有关于元素顺序的约定。<br>集合（set）类型也是用来保存多个的字符串元素，但和列表类型不一样的是，集合中不允许有重复元素，并且集合中的元素是无序的，不能通过索引下标获取元素。</p>
 <pre class=" language-r"><code class="language-r"><span class="token number">10.0</span>.<span class="token number">43.102</span><span class="token operator">:</span><span class="token number">6379</span><span class="token operator">></span> sadd myset <span class="token number">1</span> <span class="token number">2</span> <span class="token number">3</span>  <span class="token comment" spellcheck="true"># 就是一个集合就行了</span>
@@ -962,7 +732,7 @@ Your Call<span class="token operator">!</span><span class="token operator">!</sp
 <span class="token punctuation">(</span>integer<span class="token punctuation">)</span> 5
 10.0.43.102:6379<span class="token operator">></span> sadd set2 it is safe , you can play it
 <span class="token punctuation">(</span>integer<span class="token punctuation">)</span> 7</code></pre>
-<p><img src="http://img.noback.top/2020-05-20-23-02-05.png" alt="2020-05-20-23-02-05"></p>
+<p><img src="http://img.noback.top/2020-05-20-23-02-05.png" srcset="/img/loading.gif" alt="2020-05-20-23-02-05"></p>
 <p><font color='red'>多个集合都适用，并不是只适用于两个集合</font></p>
 <p>求两个集合的交集</p>
 <pre class=" language-bash"><code class="language-bash">10.0.43.102:6379<span class="token operator">></span> sinter set2 set1
@@ -1005,7 +775,7 @@ sdiffstore  destination key <span class="token punctuation">[</span>key <span cl
 <pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># zadd key score member [score member ...]</span>
 10.0.43.102:6379<span class="token operator">></span> zadd user:ranking 220 hzj 220 ccc 210 jjj
 <span class="token punctuation">(</span>integer<span class="token punctuation">)</span> 3</code></pre>
-<p>可以看一下有序集合和无序集合的差别， <code>set</code>为无序集合， <code>zset</code>为有序集合<br><img src="http://img.noback.top/2020-05-20-23-48-15.png" alt="2020-05-20-23-48-15"><br>有序集合相比集合提供了排序字段，但是也产生了代价，zadd的时间复杂度为O（log（n）），sadd的时间复杂度为O（1）</p>
+<p>可以看一下有序集合和无序集合的差别， <code>set</code>为无序集合， <code>zset</code>为有序集合<br><img src="http://img.noback.top/2020-05-20-23-48-15.png" srcset="/img/loading.gif" alt="2020-05-20-23-48-15"><br>有序集合相比集合提供了排序字段，但是也产生了代价，zadd的时间复杂度为O（log（n）），sadd的时间复杂度为O（1）</p>
 <pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 计算成员个数</span>
 10.0.43.102:6379<span class="token operator">></span> zcard user:ranking
 <span class="token punctuation">(</span>integer<span class="token punctuation">)</span> 3
@@ -1099,44 +869,219 @@ OK
 <pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 随机返回一个键</span>
 10.0.43.102:6379<span class="token operator">></span> randomkey
 <span class="token string">"nohzj"</span></code></pre>
-<h2 id="Redis集合、有序集合、列表的区别"><a href="#Redis集合、有序集合、列表的区别" class="headerlink" title="Redis集合、有序集合、列表的区别"></a>Redis集合、有序集合、列表的区别</h2><p><img src="http://img.noback.top/2020-05-20-23-13-17.png" alt="2020-05-20-23-13-17"></p>
+<h2 id="Redis集合、有序集合、列表的区别"><a href="#Redis集合、有序集合、列表的区别" class="headerlink" title="Redis集合、有序集合、列表的区别"></a>Redis集合、有序集合、列表的区别</h2><p><img src="http://img.noback.top/2020-05-20-23-13-17.png" srcset="/img/loading.gif" alt="2020-05-20-23-13-17"></p>
 
-        </div>
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/redis/">redis</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/redis/">redis</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/11/05/blog_back_new/redis/redis%E6%8C%81%E4%B9%85%E5%8C%96/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">redis持久化</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/10/30/blog_back_new/redis/redis%E9%9B%86%E7%BE%A4%E5%AE%9E%E8%B7%B5/">
+                        <span class="hidden-mobile">redis集群实践</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
 
-        
-        <section class="post-tags">
-            <div>
-                <span>标签：</span>
-                <span class="tag">
-                    
-                    
-                    <a href="/tags/redis/"># redis</a>
-                    
-                    
-                </span>
-            </div>
-            <div>
-                <a href="javascript：window.history.back();">后退</a>
-                <span>· </span>
-                <a href="/">主页</a>
-            </div>
-        </section>
-        <section class="post-nav">
             
-            <a class="prev" rel="prev" href="/2020/11/05/blog_back_new/redis/redis%E6%8C%81%E4%B9%85%E5%8C%96/">redis持久化</a>
-            
-            
-            <a class="next" rel="next" href="/2020/10/30/blog_back_new/redis/redis%E9%9B%86%E7%BE%A4%E5%AE%9E%E8%B7%B5/">redis集群实践</a>
-            
-        </section>
-    </article>
-</div>
+          </article>
         </div>
-        <footer id="footer" class="footer">
-    <div class="copyright">
+      </div>
     </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
 </footer>
 
-    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+
+
 </body>
 </html>

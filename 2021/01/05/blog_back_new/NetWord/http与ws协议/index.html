@@ -1,0 +1,532 @@
+
+
+<!DOCTYPE html>
+<html lang="cn" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="hzjsea">
+  <meta name="keywords" content="">
+  <title>http与ws协议 - hzjsea</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"www.baidu.com","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                Home
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                Archives
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                Categories
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                Tags
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                About
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="http与ws协议">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-01-05 15:23" pubdate>
+        January 5, 2021 pm
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.5k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      18
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">http与ws协议</h1>
+            
+            <div class="markdown-body">
+              <a id="more"></a>
+
+<h1 id="http与ws协议"><a href="#http与ws协议" class="headerlink" title="http与ws协议"></a>http与ws协议</h1><blockquote>
+<p>看前须知<br>http是一种使用在应用层上的协议,ws即websocket协议是基于http连接后替换层websocket协议才实现的<br>http协议基于tcp/ip协议族才能实现</p>
+</blockquote>
+<p><code>tcp/ip -&gt; http -&gt; websocket</code></p>
+<p>http协议全名为(HyperText Transfer Protocol) 超文本传输协议(超文本转移协议) web以该协议为规范,完成从客户端到服务端等一系列的运作流程,而协议是指规则的规定.</p>
+<h2 id="tcp-ip协议族"><a href="#tcp-ip协议族" class="headerlink" title="tcp/ip协议族"></a>tcp/ip协议族</h2><p><code>tcp/ip</code>协议族并不只包括tcp协议与ip协议,它是互联网相关的各类协议的总称<br><img src="http://img.noback.top/2021-01-05-16-02-23.png" srcset="/img/loading.gif" alt="2021-01-05-16-02-23"><br><code>TCP/IP</code>取自OSI五层模型中的前四层 也就是 应用层,传输层,网络层以及数据链路层<br><img src="http://img.noback.top/2021-01-05-16-05-28.png" srcset="/img/loading.gif" alt="2021-01-05-16-05-28"></p>
+<ul>
+<li>用户在web页面发送一个http请求</li>
+<li>http请求达到传输层后,TCP协议把从应用层处收到的数据(HTTP请求报文)进行分割,并在各个报文上打上标记序号及端口号后转发给网络层</li>
+<li>在网络层,增加座作为通信目的地的MAC地址后转发给链路层</li>
+<li>链路层通过物理层线路达到另一端的物理层,再到达链路层,一步步拆分到应用层</li>
+</ul>
+<h2 id="ip协议-arp协议-tcp协议-DNS协议"><a href="#ip协议-arp协议-tcp协议-DNS协议" class="headerlink" title="ip协议 arp协议 tcp协议 DNS协议"></a>ip协议 arp协议 tcp协议 DNS协议</h2><p>ip arp mac地址  路由选择<br><img src="http://img.noback.top/2021-01-05-16-15-28.png" srcset="/img/loading.gif" alt="2021-01-05-16-15-28"><br><img src="http://img.noback.top/2021-01-05-16-18-07.png" srcset="/img/loading.gif" alt="2021-01-05-16-18-07"><br><img src="http://img.noback.top/2021-01-05-16-19-22.png" srcset="/img/loading.gif" alt="2021-01-05-16-19-22"><br><img src="http://img.noback.top/2021-01-05-16-20-05.png" srcset="/img/loading.gif" alt="2021-01-05-16-20-05"><br><img src="http://img.noback.top/2021-01-05-16-20-47.png" srcset="/img/loading.gif" alt="2021-01-05-16-20-47"></p>
+<h2 id="URL与URI"><a href="#URL与URI" class="headerlink" title="URL与URI"></a>URL与URI</h2><p>URI(统一资源表示符), URL(统一资源定位符) URI是URL的超集<br><img src="http://img.noback.top/2021-01-05-16-27-04.png" srcset="/img/loading.gif" alt="2021-01-05-16-27-04"></p>
+<h2 id="http协议"><a href="#http协议" class="headerlink" title="http协议"></a>http协议</h2><p>无状态协议,HTTP是一种不保存状态,即无状态(stateless)协议.HTTP协议自身不对请求和响应之间的通信状态进行保存</p>
+<p>使用HTTP协议，每当有新的请求发送时，就会有对应的新响应产生。协议本事并不保留之前的请求或响应报文的信息。这是为了处理大量事务，确保协议的课伸缩性，而特意把HTTP协议设计成如此简单的。但是也存在弊端，当业务处理变得棘手的情况多了,比如用户登录一家网站，即使他跳转到别的页面后，也需要保持登录状态，然而cookie就诞生了。有了cookie再用http协议通信，就可以管理状态了。</p>
+<h3 id="http请求报文"><a href="#http请求报文" class="headerlink" title="http请求报文"></a>http请求报文</h3><p><img src="http://img.noback.top/2021-01-05-16-31-00.png" srcset="/img/loading.gif" alt="2021-01-05-16-31-00"><br>下面是客户端发送给HTTP服务端的请求报文中的内容</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre class=" language-hljs http"><span class="hljs-keyword">GET</span> <span class="hljs-string">/</span> HTTP/1.1<br><span class="hljs-attribute"><code class="language-hljs http"><span class="hljs-keyword">GET</span> <span class="hljs-string">/</span> HTTP/1.1<br><span class="hljs-attribute">HOST</span>: HACKR.JP<br></code></pre></td></tr></table></figure>
+<p>内容分别为 </p>
+<ul>
+<li>GET 请求访问服务器的类型</li>
+<li>/index.html 请求地址, 也叫做URI</li>
+<li>HTTP/1.1 http协议版本</li>
+</ul>
+<p>请求报文是由 <code>请求方法</code> <code>请求URI</code> <code>协议版本</code> <code>可选的请求首部字段</code> <code>内容实体</code>构造而成的<br><img src="http://img.noback.top/2021-01-05-16-34-33.png" srcset="/img/loading.gif" alt="2021-01-05-16-34-33"></p>
+<blockquote>
+<p>响应内容</p>
+</blockquote>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre class=" language-hljs angelscript">HTTP /<span class="hljs-number">1.1</span> <span class="hljs-number">200</span> OK<br><br>Date：Tue，<span class="hljs-number">10</span> JUL <span class="hljs-number">2016</span> <span class="hljs-number">10</span>:<span class="hljs-number">50</span>:<span class="hljs-number">20</span> GMT   <br>Content-length：<span class="hljs-number"><code class="language-hljs angelscript">HTTP /<span class="hljs-number">1.1</span> <span class="hljs-number">200</span> OK<br><br>Date：Tue，<span class="hljs-number">10</span> JUL <span class="hljs-number">2016</span> <span class="hljs-number">10</span>:<span class="hljs-number">50</span>:<span class="hljs-number">20</span> GMT   <br>Content-length：<span class="hljs-number">398</span><br>Content-Type：text/html<br><br><html><br>...<br></code></pre></td></tr></table></figure>
+<ul>
+<li>HTTP /1.1 协议版本 200 OK 响应状态码以及原因短语</li>
+<li>响应首部字段 Date  创建响应的时间</li>
+<li><code>&lt;html&gt;</code> 资源实体的主体(body)</li>
+</ul>
+<h3 id="请求访问服务器的类型"><a href="#请求访问服务器的类型" class="headerlink" title="请求访问服务器的类型"></a>请求访问服务器的类型</h3><blockquote>
+<p>GET获取资源</p>
+</blockquote>
+<p><img src="http://img.noback.top/2021-01-05-16-43-38.png" srcset="/img/loading.gif" alt="2021-01-05-16-43-38"></p>
+<blockquote>
+<p>POST传输实体主体</p>
+</blockquote>
+<p><img src="http://img.noback.top/2021-01-05-16-44-02.png" srcset="/img/loading.gif" alt="2021-01-05-16-44-02"></p>
+<blockquote>
+<p>PUT传输文件</p>
+</blockquote>
+<p><img src="http://img.noback.top/2021-01-05-16-44-15.png" srcset="/img/loading.gif" alt="2021-01-05-16-44-15"></p>
+<blockquote>
+<p>HEAD获取报文首部</p>
+</blockquote>
+<p><img src="http://img.noback.top/2021-01-05-16-44-35.png" srcset="/img/loading.gif" alt="2021-01-05-16-44-35"></p>
+<blockquote>
+<p>DELETE删除文件</p>
+</blockquote>
+<p><img src="http://img.noback.top/2021-01-05-16-45-25.png" srcset="/img/loading.gif" alt="2021-01-05-16-45-25"></p>
+<h3 id="持久化"><a href="#持久化" class="headerlink" title="持久化"></a>持久化</h3><p>之前有讲过http本身是一种不持久的协议,每次建立http都需要进行TCP/IP通信,就要做三次握手以及四次断开的行为,一旦量高了,流量就会飙升,于是有了持久连接的方法, 特点是任意一段没有明确提出断开的请求,则保持TCP连接状态<br>持久化之前<br><img src="http://img.noback.top/2021-01-05-16-48-07.png" srcset="/img/loading.gif" alt="2021-01-05-16-48-07"><br>持久化以后<br><img src="http://img.noback.top/2021-01-05-16-49-38.png" srcset="/img/loading.gif" alt="2021-01-05-16-49-38"><br>在<code>http/1.1</code>中,所有的连接默认都是持久连接,持久连接的方法就是在首部字段中添加</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre class=" language-hljs bash"><code class="language-hljs bash">Keep-Alive：300<br>Connection：keep-alive<br></code></pre></td></tr></table></figure>
+<p>比如</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre class=" language-hljs bash"><code class="language-hljs bash">GET / HTTP/1.1<br>HOST: HACKR.JP<br>Keep-Alive：300<br>Connection：keep-alive<br></code></pre></td></tr></table></figure>
+
+<h3 id="管线化"><a href="#管线化" class="headerlink" title="管线化"></a>管线化</h3><p>持久化连接使得多数请求以管线化方式发送,也就是不会堵塞请求.<br><img src="http://img.noback.top/2021-01-05-16-55-11.png" srcset="/img/loading.gif" alt="2021-01-05-16-55-11"></p>
+<h3 id="cookie-有状态"><a href="#cookie-有状态" class="headerlink" title="cookie 有状态"></a>cookie 有状态</h3><p>为了解决http是一种无状态请求的问题,产生了cookie,使用cookie来对http的状态进行管理<br>cookie会根据服务端发送的像一个报文内的一个叫做<code>Set-Cookie</code>的首部字段信息,通知客户端保存Cookie,当下次客户端再次发送请求的时候,客户端会自动在请求报文中加入Cookie值后发送到服务端<br>服务端发现客户端发送过来的Cookie后,会去检查究竟是哪一个客户端发来的连接请求,然后对比服务器上的记录, 最后得到之前的状态信息</p>
+<blockquote>
+<p>流程<br><img src="http://img.noback.top/2021-01-05-17-14-24.png" srcset="/img/loading.gif" alt="2021-01-05-17-14-24"><br><img src="http://img.noback.top/2021-01-05-17-14-31.png" srcset="/img/loading.gif" alt="2021-01-05-17-14-31"></p>
+</blockquote>
+<blockquote>
+<p>请求报文的变化</p>
+</blockquote>
+<p>没有cookie信息时候的状态</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre class=" language-hljs awk">GET <span class="hljs-regexp">/reader/</span> HTTP/<span class="hljs-number"><code class="language-hljs awk">GET <span class="hljs-regexp">/reader/</span> HTTP/<span class="hljs-number">1.1</span><br>Host: hackr.jp<br>*首部字段内没有Cookie的相关信息<br></code></pre></td></tr></table></figure>
+<p>服务端返回的响应报文中的cookie信息</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre class=" language-hljs angelscript">HTTP/<span class="hljs-number">1.1</span> <span class="hljs-number">200</span> OK<br>Date: Thu, <span class="hljs-number">12</span> Jul <span class="hljs-number">2012</span> <span class="hljs-number">07</span>:<span class="hljs-number">12</span>:<span class="hljs-number">20</span> GMT<br>Server: Apache<br>＜Set-Cookie: sid=<span class="hljs-number">1342077140226724</span>; path=/; expires=Wed,<br><span class="hljs-number">10</span>-Oct<span class="hljs-number">-12</span> <span class="hljs-number">07</span>:<span class="hljs-number">12</span>:<span class="hljs-number">20</span> GMT＞<br>Content-Type: text/plain; charset=UTF<span class="hljs-number"><code class="language-hljs angelscript">HTTP/<span class="hljs-number">1.1</span> <span class="hljs-number">200</span> OK<br>Date: Thu, <span class="hljs-number">12</span> Jul <span class="hljs-number">2012</span> <span class="hljs-number">07</span>:<span class="hljs-number">12</span>:<span class="hljs-number">20</span> GMT<br>Server: Apache<br>＜Set-Cookie: sid=<span class="hljs-number">1342077140226724</span>; path=/; expires=Wed,<br><span class="hljs-number">10</span>-Oct<span class="hljs-number">-12</span> <span class="hljs-number">07</span>:<span class="hljs-number">12</span>:<span class="hljs-number">20</span> GMT＞<br>Content-Type: text/plain; charset=UTF<span class="hljs-number">-8</span><br></code></pre></td></tr></table></figure>
+<p>客户端再次请求时,自带的cookie信息</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre class=" language-hljs http"><span class="hljs-keyword">GET</span> <span class="hljs-string">/image/</span> HTTP/1.1<br><span class="hljs-attribute">Host</span>: hackr.jp<br><span class="hljs-attribute"><code class="language-hljs http"><span class="hljs-keyword">GET</span> <span class="hljs-string">/image/</span> HTTP/1.1<br><span class="hljs-attribute">Host</span>: hackr.jp<br><span class="hljs-attribute">Cookie</span>: sid=1342077140226724<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="sesssion"><a href="#sesssion" class="headerlink" title="sesssion"></a>sesssion</h3><p>pass</p>
+<h2 id="HTTP报文"><a href="#HTTP报文" class="headerlink" title="HTTP报文"></a>HTTP报文</h2><p>http报文组成<br><img src="http://img.noback.top/2021-01-05-17-22-52.png" srcset="/img/loading.gif" alt="2021-01-05-17-22-52"><br>请求报文与响应报文结构<br><img src="http://img.noback.top/2021-01-05-17-23-55.png" srcset="/img/loading.gif" alt="2021-01-05-17-23-55"><br>详细版本<br><img src="http://img.noback.top/2021-01-05-17-24-04.png" srcset="/img/loading.gif" alt="2021-01-05-17-24-04"></p>
+<h2 id="HTTP报文首部"><a href="#HTTP报文首部" class="headerlink" title="HTTP报文首部"></a>HTTP报文首部</h2><blockquote>
+<p>请求报文<br><img src="http://img.noback.top/2021-01-05-17-27-20.png" srcset="/img/loading.gif" alt="2021-01-05-17-27-20"></p>
+</blockquote>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre class=" language-hljs apache"><span class="hljs-attribute">GET</span> / HTTP/<span class="hljs-number">1</span>.<span class="hljs-number">1</span><br><span class="hljs-attribute">Host</span>: hackr.jp<br><span class="hljs-attribute">User</span>-Agent: Mozilla/<span class="hljs-number">5</span>.<span class="hljs-number">0</span> (Windows NT <span class="hljs-number">6</span>.<span class="hljs-number">1</span>; WOW<span class="hljs-number">64</span>; rv:<span class="hljs-number">13</span>.<span class="hljs-number">0</span>) Gecko/<span class="hljs-number">20100101</span> Firefox/<span class="hljs-number">13</span>.<span class="hljs-number">0</span><br><span class="hljs-attribute">Accept</span>: text/html,application/xhtml+xml,application/xml;q=<span class="hljs-number">0</span>.<span class="hljs-number">9</span>,*/*; q=<span class="hljs-number">0</span>.<span class="hljs-number">8</span><br><span class="hljs-attribute">Accept</span>-Language: ja,en-us;q=<span class="hljs-number">0</span>.<span class="hljs-number">7</span>,en;q=<span class="hljs-number">0</span>.<span class="hljs-number">3</span><br><span class="hljs-attribute">Accept</span>-Encoding: gzip, deflate<br><span class="hljs-attribute">DNT</span>: <span class="hljs-number">1</span><br><span class="hljs-attribute">Connection</span>: keep-alive<br><span class="hljs-attribute">If</span>-Modified-Since: Fri, <span class="hljs-number">31</span> Aug <span class="hljs-number">2007</span> <span class="hljs-number">02</span>:<span class="hljs-number">02</span>:<span class="hljs-number">20</span> GMT<br><span class="hljs-attribute">If</span>-None-Match: <span class="hljs-string">&quot;45bae1-16a-46d776ac&quot;</span><br><span class="hljs-attribute">Cache</span>-Control: max-age=<span class="hljs-number"><code class="language-hljs apache"><span class="hljs-attribute">GET</span> / HTTP/<span class="hljs-number">1</span>.<span class="hljs-number">1</span><br><span class="hljs-attribute">Host</span>: hackr.jp<br><span class="hljs-attribute">User</span>-Agent: Mozilla/<span class="hljs-number">5</span>.<span class="hljs-number">0</span> (Windows NT <span class="hljs-number">6</span>.<span class="hljs-number">1</span>; WOW<span class="hljs-number">64</span>; rv:<span class="hljs-number">13</span>.<span class="hljs-number">0</span>) Gecko/<span class="hljs-number">20100101</span> Firefox/<span class="hljs-number">13</span>.<span class="hljs-number">0</span><br><span class="hljs-attribute">Accept</span>: text/html,application/xhtml+xml,application/xml;q=<span class="hljs-number">0</span>.<span class="hljs-number">9</span>,*/*; q=<span class="hljs-number">0</span>.<span class="hljs-number">8</span><br><span class="hljs-attribute">Accept</span>-Language: ja,en-us;q=<span class="hljs-number">0</span>.<span class="hljs-number">7</span>,en;q=<span class="hljs-number">0</span>.<span class="hljs-number">3</span><br><span class="hljs-attribute">Accept</span>-Encoding: gzip, deflate<br><span class="hljs-attribute">DNT</span>: <span class="hljs-number">1</span><br><span class="hljs-attribute">Connection</span>: keep-alive<br><span class="hljs-attribute">If</span>-Modified-Since: Fri, <span class="hljs-number">31</span> Aug <span class="hljs-number">2007</span> <span class="hljs-number">02</span>:<span class="hljs-number">02</span>:<span class="hljs-number">20</span> GMT<br><span class="hljs-attribute">If</span>-None-Match: <span class="hljs-string">&quot;45bae1-16a-46d776ac&quot;</span><br><span class="hljs-attribute">Cache</span>-Control: max-age=<span class="hljs-number">0</span><br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>响应报文</p>
+</blockquote>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/web/">web</a>
+                    
+                      <a class="hover-with-bg" href="/categories/web/%E7%BD%91%E7%BB%9C/">网络</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E7%BD%91%E7%BB%9C/">网络</a>
+                    
+                      <a class="hover-with-bg" href="/tags/web/">web</a>
+                    
+                      <a class="hover-with-bg" href="/tags/%E5%8D%8F%E8%AE%AE/">协议</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/12/31/blog_back_new/golang/golang%E5%A4%87%E6%B3%A8/">
+                        <span class="hidden-mobile">golang备注</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+
+
+</body>
+</html>

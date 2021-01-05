@@ -1,463 +1,233 @@
+
+
 <!DOCTYPE html>
-<html lang="cn">
+<html lang="cn" data-default-color-scheme=&#34;auto&#34;>
+
+
+
 <head>
-    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-<meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="hzjsea">
+  <meta name="keywords" content="">
+  <title>go库os - hzjsea</title>
 
-    <meta name="author" content="hzjsea">
-
-
-
-
-
-
-<title>go库os | hzjsea</title>
-
-
-
-    <link rel="icon" href="/favicon.ico">
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
 
 
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
 
-
-    <!-- stylesheets list from _config.yml -->
-    
-    <link rel="stylesheet" href="/css/style.css">
-    
-
-
-
-    <!-- scripts list from _config.yml -->
-    
-    <script src="/js/script.js"></script>
-    
-    <script src="/js/tocbot.min.js"></script>
-    
-    <script src="/js/jquery.min.js"></script>
-    
-
-
-
+  
     
     
-        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-    "HTML-CSS": {
-        preferredFont: "TeX",
-        availableFonts: ["STIX","TeX"],
-        linebreaks: { automatic:true },
-        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
-    },
-    tex2jax: {
-        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
-        processEscapes: true,
-        ignoreClass: "tex2jax_ignore|dno",
-        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
-    },
-    TeX: {
-        equationNumbers: { autoNumber: "AMS" },
-        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
-        Macros: { href: "{}" }
-    },
-    messageStyle: "none"
-    });
-</script>
-<!-- 给MathJax元素添加has-jax class -->
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax(), i;
-        for(i=0; i < all.length; i += 1) {
-            all[i].SourceElement().parentNode.className += ' has-jax';
-        }
-    });
-</script>
-<!-- 通过连接CDN加载MathJax的js代码 -->
-<script type="text/javascript" async
-        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
-</script>
-
-
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
     
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
 
 
 
+<!-- 主题依赖的图标库，不要自行修改 -->
 
-    <script>
-    function searchToggle() {
-        const width = $(document.body).width()
-        if(width > 479) {
-            return;
-        }
-        const search = $('.search');
-        const searchForm = $('.form-search')
-
-        if(!search.hasClass("mobile-search")) {
-            search.addClass("mobile-search");
-        } else {
-            search.removeClass("mobile-search");
-        } 
-    }
-
-    function search(searchInputEl, formEl, flag) {
-        const path = "/" + "search.json"; // 可以在public 下查看这个search.json
-        $(formEl).submit(function(e){
-            e.preventDefault();
-            let target = null
-            if(searchInputEl == null) {
-                const screenWidth = $(document.body).width();
-                target = screenWidth > 479 ? $('#pc-search-input') : $('#mobile-search-input');
-                console.log(target);
-            } else {
-                target = $(searchInputEl)
-            }
-
-            if(!flag && target.val() === '') {
-                return ;
-            }
-
-            $("#u-search").fadeIn(500, function() {
-                $("body > .wrapper").addClass("modal-active");
-
-                $.ajax({
-                    url: path,
-                    dataType: "json",
-                    beforeSend: function (xhr) {
-                        $input = target.val();
-                        $(".form-input").val($input);
-                        const loadingBar = $('.search-loading-bar') 
-                        loadingBar.css({
-                            width:'100%',
-                            display: 'block'
-                        });
-                    },
-                    success: function( datas ) {
-                        console.log(datas);
-                        const $resultPanel = $(".modal-body")[0];
-                        let str = `<ul class="modal-results">`;
-                        var keywords = $(".form-input").val().trim().toLowerCase().split(/[\s\-]+/);
-                        $resultPanel.innerHTML = "";
-                        let hasResult = false
-                        let text = `<div class="no-result">找不到与关键词相关的内容....</div>`;
-
-                        if ($(".form-input").val().trim().length <= 0) {
-                            // 没有结果
-                            $resultPanel.innerHTML = text;
-                            return;
-                        }
-                        datas.forEach(function (data, index) {
-                            var isMatch = true;
-                            if (!data.title || data.title.trim() === '') {
-                                data.title = "Untitled";
-                            }
-                            var data_title = data.title.trim().toLowerCase();
-                            var data_content = data.content && data.content.trim().replace(/<[^>]+>/g, "").toLowerCase() || '';
-                            var data_url = data.url;
-                            var index_title = -1;
-                            var index_content = -1;
-                            var first_occur = -1;
-                            // only match artiles with not empty contents
-                            if (data_content !== '') {
-                                keywords.forEach(function (keyword, i) {
-                                    index_title = data_title.indexOf(keyword);
-                                    index_content = data_content.indexOf(keyword);
-
-                                    if (index_title < 0 && index_content < 0) {
-                                        isMatch = false;
-                                    } else {
-                                        hasResult = true
-                                        if (index_content < 0) {
-                                            index_content = 0;
-                                        }
-                                        if (i == 0) {
-                                            first_occur = index_content;
-                                        }
-                                    }
-                                });
-                            } else {
-                                isMatch = false;
-                            }
-                            // show search results
-                            if (isMatch) {
-                                str += `<li class='result-item'><a href='${data_url}' class='result-item-detail'> <span class="title">${data_title}</span>`;
-                                var content = data.content.trim().replace(/<[^>]+>/g, "");
-                                if (first_occur >= 0) {
-                                    // cut out 200 characters
-                                    var start = first_occur - 40;
-                                    var end = first_occur + 160;
-
-                                    if (start < 0) {
-                                        start = 0;
-                                    }
-
-                                    if (start == 0) {
-                                        end = 200;
-                                    }
-
-                                    if (end > content.length) {
-                                        end = content.length;
-                                    }
-
-                                    var match_content = content.substring(start, end);
-
-                                    // highlight all keywords
-                                    keywords.forEach(function (keyword) {
-                                        var regS = new RegExp(keyword, "gi");
-                                        match_content = match_content.replace(regS, `<em class="search-keyword">${keyword}</em>`);
-                                    });
-
-                                    str += `<span class="content"> ${match_content} ...</span></a>`;
-                                }
-                                str += "</li>";
-                            }
-                        });
-                        str += "</ul>";
-                        if(hasResult) {
-                            $resultPanel.innerHTML = str;
-                        } else {
-                            $resultPanel.innerHTML = text;
-                        }
-
-                    },
-                    complete: function() {
-                        setTimeout(() => {
-                                const loadingBar = $('.search-loading-bar') 
-                                loadingBar.css({
-                                    width:'0%',
-                                    display: 'none'
-                                });
-                        }, 300)
-                    }
-                });
-            })
-
-        });
-    }
-
-    $(document).ready(function() {
-        $('.modal-close').click(function () { 
-            $("#u-search").fadeOut();
-            $("body > .wrapper").removeClass("modal-active")
-        })
-
-        $('.modal-overlay').click(function() {
-            $("#u-search").fadeOut();
-            $("body > .wrapper").removeClass("modal-active")
-        })
-        search(null, ".form-search", false)
-        search("#u-search-modal-form .form-input", ".u-search-modal-form", true)
-    })
-</script>
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
 
 
 
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"www.baidu.com","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
 <meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+
+
 <body>
-    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
-        <nav class="navbar">
-    <div class="container">
-        <div class="navbar-header header-logo"><a href="/">hzjsea</a></div>
-        <div class="menu navbar-right">
-            
-            
-    <div class="search ">
-        <div class="search-btn" onClick="searchToggle()">
-            <img src="/image/search.png" class="search-btn-img" />
-        </div>
-        <form class="form-search">
-            <input class="input" placeholder="Searching" autocomplete="off" id="pc-search-input"/>
-        </form>
-    </div>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
 
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
 
-            
-                <a class="menu-item" href="/archives">文章</a>
-            
-                <a class="menu-item" href="/category">分类</a>
-            
-                <a class="menu-item" href="/tag">标签</a>
-            
-                <a class="menu-item" href="/about">关于</a>
-            
-            <input id="switch_default" type="checkbox" class="switch_default">
-            <label for="switch_default" class="toggleBtn"></label>
-        </div>
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                Home
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                Archives
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                Categories
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                Tags
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                About
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
     </div>
+  </div>
 </nav>
 
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="go库os">
+              
+            </span>
 
-<nav class="navbar-mobile" id="nav-mobile">
-    <div class="container">
-        <div class="navbar-header">
-            <div>
-                <a href="/">hzjsea</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
-            </div>
-            <div class="navbar-mobile-right">
-                
-                
-    <div class="search ">
-        <div class="search-btn" onClick="searchToggle()">
-            <img src="/image/search.png" class="search-btn-img" />
-        </div>
-        <form class="form-search">
-            <input class="input" placeholder="Searching" autocomplete="off" id="mobile-search-input"/>
-        </form>
-    </div>
-
-
-                <div class="menu-toggle" onclick="mobileBtn()">&#9776; 目录</div>
-            </div>
             
-        </div>
-        <div class="menu" id="mobile-menu">
-            
-                <a class="menu-item" href="/archives">文章</a>
-            
-                <a class="menu-item" href="/category">分类</a>
-            
-                <a class="menu-item" href="/tag">标签</a>
-            
-                <a class="menu-item" href="/about">关于</a>
-            
-        </div>
-    </div>
-</nav>
-
-        <div class="main">
-			<!-- Chic/layout.ejs -->
- <div id="u-search">
-        <div class="modal">
-            <div class="modal-header">
-                <div class="container">
-                    <form id="u-search-modal-form" class="u-search-modal-form">
-                        <button type="submit" class="form-submit-btn">
-                            <img src="/image/search.png" class="search-btn-img" />
-                        </button>
-                        <input placeholder="搜索文章。。。" class="form-input" id="modal-form-input">
-                    </form>
-                    <a class="modal-close">x</a>
-                </div>
-                <div class="search-loading">
-                    <div class="search-loading-bar"></div>
-                </div>
-            </div>
-            <div class="modal-body">
-                <!-- ul 格式如下 -->
-                <!-- <ul class="modal-results">
-                    <li class="result-item">
-                        <a class="result-item-detail">
-                            <span class="title">页面配置</span>
-                            <span class="content">
-                                content
-                            </span>
-                        </a>
-                    </li>
-                </ul> -->
-            </div>
-        </div>
-        <div class="modal-overlay"></div>
-    </div>
-            <div class="container">
-    
-    
-    <div class="post-toc">
-    <div class="tocbot-list">
-    </div>
-    <div class="tocbot-list-menu">
-        <a class="tocbot-toc-expand" onclick="expand_toc()">全部展开</a>
-        <a onclick="go_top()">回到顶部</a>
-        <a onclick="go_bottom()">回到底部</a>
-    </div>
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-12-16 18:28" pubdate>
+        December 16, 2020 pm
+      </time>
+    </span>
+  
 </div>
 
-<script>
-    document.ready(
-        function () {
-            tocbot.init({
-                tocSelector: '.tocbot-list',
-                contentSelector: '.post-content',
-                headingSelector: 'h1, h2, h3, h4, h5',
-                collapseDepth: 1,
-                orderedList: false,
-                scrollSmooth: true,
-            })
-        }
-    )
-
-    function expand_toc() {
-        var b = document.querySelector(".tocbot-toc-expand");
-        tocbot.init({
-            tocSelector: '.tocbot-list',
-            contentSelector: '.post-content',
-            headingSelector: 'h1, h2, h3, h4, h5',
-            collapseDepth: 6,
-            orderedList: false,
-            scrollSmooth: true,
-        });
-        b.setAttribute("onclick", "collapse_toc()");
-        b.innerHTML = "全部折叠"
-    }
-
-    function collapse_toc() {
-        var b = document.querySelector(".tocbot-toc-expand");
-        tocbot.init({
-            tocSelector: '.tocbot-list',
-            contentSelector: '.post-content',
-            headingSelector: 'h1, h2, h3, h4, h5',
-            collapseDepth: 1,
-            orderedList: false,
-            scrollSmooth: true,
-        });
-        b.setAttribute("onclick", "expand_toc()");
-        b.innerHTML = "全部展开"
-    }
-
-    function go_top() {
-        window.scrollTo(0, 0);
-    }
-
-    function go_bottom() {
-        window.scrollTo(0, document.body.scrollHeight);
-    }
-
-</script>
+<div class="mt-1">
+  
     
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      180 字
+    </span>
+  
 
+  
     
-    <article class="post-wrap">
-        <header class="post-header">
-            <h1 class="post-title">go库os</h1>
-            
-            <div class="post-meta">
-                
-                作者： <a itemprop="author" rel="author" href="/">hzjsea</a>&nbsp;
-                
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      2
+       分钟
+    </span>
+  
 
-                
-                <span class="post-time">
-                    创建日期： <a
-                        href="#">December 16, 2020&nbsp;&nbsp;18:28:38</a>
-                </span>&nbsp;
-                
-                
-                <span class="post-category">
-                    分类：
-                    
-                    <a href="/categories/go/">go</a>&nbsp;
-                    
-                </span>
-                
-                
-                状态：<a href="#">SNAPSHOT</a>
-                
-            </div>
-            
-        </header>
+  
+  
+</div>
 
-        <div class="post-content">
-            <a id="more"></a>
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">go库os</h1>
+            
+            <div class="markdown-body">
+              <a id="more"></a>
 
 <h1 id="go库os"><a href="#go库os" class="headerlink" title="go库os"></a>go库os</h1><p>os包提供了操作系统函数的不依赖平台的接口</p>
 <ul>
@@ -466,393 +236,246 @@
 <li>文件对象</li>
 </ul>
 <p>os-exec 库</p>
-<h2 id="系统指令"><a href="#系统指令" class="headerlink" title="系统指令"></a>系统指令</h2><pre class=" language-bash"><code class="language-bash"><span class="token function">hostname</span> <span class="token comment" spellcheck="true"># 获取主机名</span>
-getpagesize <span class="token comment" spellcheck="true"># 内存页尺寸</span>
-environ <span class="token comment" spellcheck="true"># 环境变量</span>
-getenv <span class="token comment" spellcheck="true"># 根据key获取变量</span>
-setenv <span class="token comment" spellcheck="true"># 设置环境变量</span>
-clearenv <span class="token comment" spellcheck="true"># 清除所有环境变量</span>
-<span class="token keyword">exit</span> <span class="token comment" spellcheck="true"># 以当前状态码退出程序 0表示成功  非0表示出错</span></code></pre>
+<h2 id="系统指令"><a href="#系统指令" class="headerlink" title="系统指令"></a>系统指令</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre class=" language-hljs bash">hostname <span class="hljs-comment"># 获取主机名</span><br>getpagesize <span class="hljs-comment"># 内存页尺寸</span><br>environ <span class="hljs-comment"># 环境变量</span><br>getenv <span class="hljs-comment"># 根据key获取变量</span><br>setenv <span class="hljs-comment"># 设置环境变量</span><br>clearenv <span class="hljs-comment"># 清除所有环境变量</span><br><span class="hljs-built_in">exit</span> <span class="hljs-comment"><code class="language-hljs bash">hostname <span class="hljs-comment"># 获取主机名</span><br>getpagesize <span class="hljs-comment"># 内存页尺寸</span><br>environ <span class="hljs-comment"># 环境变量</span><br>getenv <span class="hljs-comment"># 根据key获取变量</span><br>setenv <span class="hljs-comment"># 设置环境变量</span><br>clearenv <span class="hljs-comment"># 清除所有环境变量</span><br><span class="hljs-built_in">exit</span> <span class="hljs-comment"># 以当前状态码退出程序 0表示成功  非0表示出错</span><br></code></pre></td></tr></table></figure>
+
 <h2 id="文件指令-FileMode"><a href="#文件指令-FileMode" class="headerlink" title="文件指令 FileMode"></a>文件指令 FileMode</h2><p>文件权限</p>
-<pre class=" language-bash"><code class="language-bash">const <span class="token punctuation">(</span>
-    // 单字符是被String方法用于格式化的属性缩写。
-    ModeDir        FileMode <span class="token operator">=</span> 1 <span class="token operator">&lt;&lt;</span> <span class="token punctuation">(</span>32 - 1 - iota<span class="token punctuation">)</span> // d: 目录
-    ModeAppend                                     // a: 只能写入，且只能写入到末尾
-    ModeExclusive                                  // l: 用于执行
-    ModeTemporary                                  // T: 临时文件（非备份文件）
-    ModeSymlink                                    // L: 符号链接（不是快捷方式文件）
-    ModeDevice                                     // D: 设备
-    ModeNamedPipe                                  // p: 命名管道（FIFO）
-    ModeSocket                                     // S: Unix域socket
-    ModeSetuid                                     // u: 表示文件具有其创建者用户id权限
-    ModeSetgid                                     // g: 表示文件具有其创建者组id的权限
-    ModeCharDevice                                 // c: 字符设备，需已设置ModeDevice
-    ModeSticky                                     // t: 只有root/创建者能删除/移动文件
-    // 覆盖所有类型位（用于通过<span class="token operator">&amp;</span>获取类型位），对普通文件，所有这些位都不应被设置
-    ModeType <span class="token operator">=</span> ModeDir <span class="token operator">|</span> ModeSymlink <span class="token operator">|</span> ModeNamedPipe <span class="token operator">|</span> ModeSocket <span class="token operator">|</span> ModeDevice
-    ModePerm FileMode <span class="token operator">=</span> 0777 // 覆盖所有Unix权限位（用于通过<span class="token operator">&amp;</span>获取类型位）
-<span class="token punctuation">)</span></code></pre>
-<pre class=" language-bash"><code class="language-bash">isdir <span class="token comment" spellcheck="true"># 是否是个目录</span>
-isregular <span class="token comment" spellcheck="true"># 是否是一个普通文件</span>
-perm <span class="token comment" spellcheck="true"># 返回权限位</span>
-String <span class="token comment" spellcheck="true"># 字符串格式化</span>
-</code></pre>
-<h2 id="文件对象-FileInfo"><a href="#文件对象-FileInfo" class="headerlink" title="文件对象  FileInfo"></a>文件对象  FileInfo</h2><pre class=" language-bash"><code class="language-bash"><span class="token function">type</span> FileInfo interface <span class="token punctuation">{</span>
-    Name<span class="token punctuation">(</span><span class="token punctuation">)</span> string       // 文件的名字（不含扩展名）
-    Size<span class="token punctuation">(</span><span class="token punctuation">)</span> int64        // 普通文件返回值表示其大小；其他文件的返回值含义各系统不同
-    Mode<span class="token punctuation">(</span><span class="token punctuation">)</span> FileMode     // 文件的模式位
-    ModTime<span class="token punctuation">(</span><span class="token punctuation">)</span> time.Time // 文件的修改时间
-    IsDir<span class="token punctuation">(</span><span class="token punctuation">)</span> bool        // 等价于Mode<span class="token punctuation">(</span><span class="token punctuation">)</span>.IsDir<span class="token punctuation">(</span><span class="token punctuation">)</span>
-    Sys<span class="token punctuation">(</span><span class="token punctuation">)</span> interface<span class="token punctuation">{</span><span class="token punctuation">}</span>   // 底层数据来源（可以返回nil）
-<span class="token punctuation">}</span></code></pre>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre class=" language-hljs bash"><code class="language-hljs bash">const (<br>    // 单字符是被String方法用于格式化的属性缩写。<br>    ModeDir        FileMode = 1 << (32 - 1 - iota) // d: 目录<br>    ModeAppend                                     // a: 只能写入，且只能写入到末尾<br>    ModeExclusive                                  // l: 用于执行<br>    ModeTemporary                                  // T: 临时文件（非备份文件）<br>    ModeSymlink                                    // L: 符号链接（不是快捷方式文件）<br>    ModeDevice                                     // D: 设备<br>    ModeNamedPipe                                  // p: 命名管道（FIFO）<br>    ModeSocket                                     // S: Unix域socket<br>    ModeSetuid                                     // u: 表示文件具有其创建者用户id权限<br>    ModeSetgid                                     // g: 表示文件具有其创建者组id的权限<br>    ModeCharDevice                                 // c: 字符设备，需已设置ModeDevice<br>    ModeSticky                                     // t: 只有root/创建者能删除/移动文件<br>    // 覆盖所有类型位（用于通过&获取类型位），对普通文件，所有这些位都不应被设置<br>    ModeType = ModeDir | ModeSymlink | ModeNamedPipe | ModeSocket | ModeDevice<br>    ModePerm FileMode = 0777 // 覆盖所有Unix权限位（用于通过&获取类型位）<br>)<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre class=" language-hljs bash">isdir <span class="hljs-comment"># 是否是个目录</span><br>isregular <span class="hljs-comment"># 是否是一个普通文件</span><br>perm <span class="hljs-comment"># 返回权限位</span><br>String <span class="hljs-comment"><code class="language-hljs bash">isdir <span class="hljs-comment"># 是否是个目录</span><br>isregular <span class="hljs-comment"># 是否是一个普通文件</span><br>perm <span class="hljs-comment"># 返回权限位</span><br>String <span class="hljs-comment"># 字符串格式化</span><br><br></code></pre></td></tr></table></figure>
+
+<h2 id="文件对象-FileInfo"><a href="#文件对象-FileInfo" class="headerlink" title="文件对象  FileInfo"></a>文件对象  FileInfo</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre class=" language-hljs bash"><span class="hljs-built_in"><code class="language-hljs bash"><span class="hljs-built_in">type</span> FileInfo interface {<br>    Name() string       // 文件的名字（不含扩展名）<br>    Size() int64        // 普通文件返回值表示其大小；其他文件的返回值含义各系统不同<br>    Mode() FileMode     // 文件的模式位<br>    ModTime() time.Time // 文件的修改时间<br>    IsDir() bool        // 等价于Mode().IsDir()<br>    Sys() interface{}   // 底层数据来源（可以返回nil）<br>}<br></code></pre></td></tr></table></figure>
 <p>获取文件对象</p>
-<pre class=" language-bash"><code class="language-bash">os.stat
-os.lstat
-os.isexist
-os.isnoexist
-os.isPermission
-os.getwd
-os.chdir
-os.chmod
-os.chowd
-os.mkdir
-os.mkdirall
-os.rename
-os.remove
-os.removeall</code></pre>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre class=" language-hljs bash"><code class="language-hljs bash">os.stat<br>os.lstat<br>os.isexist<br>os.isnoexist<br>os.isPermission<br>os.getwd<br>os.chdir<br>os.chmod<br>os.chowd<br>os.mkdir<br>os.mkdirall<br>os.rename<br>os.remove<br>os.removeall<br></code></pre></td></tr></table></figure>
+
+
 <p>打开一个文件对象</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token function">type</span> File struct <span class="token punctuation">{</span>
-    // 内含隐藏或非导出字段
-<span class="token punctuation">}</span>
-
-os.create
-os.open
-
-file.Name
-file.stat
-file.Size
-file.fd
-file.chdir
-file.chmod
-file.chowd
-</code></pre>
-<pre class=" language-go"><code class="language-go"><span class="token keyword">package</span> main
-
-<span class="token keyword">import</span> <span class="token punctuation">(</span>
-    <span class="token string">"fmt"</span>
-    <span class="token string">"log"</span>
-    <span class="token string">"os"</span>
-    <span class="token string">"os/exec"</span>
-<span class="token punctuation">)</span>
-
-<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>os<span class="token punctuation">.</span><span class="token function">Getpagesize</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-    pwd<span class="token punctuation">,</span>err<span class="token operator">:=</span> os<span class="token punctuation">.</span><span class="token function">Getwd</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token punctuation">{</span>
-        log<span class="token punctuation">.</span><span class="token function">Fatal</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-    <span class="token punctuation">}</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>pwd<span class="token punctuation">)</span>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre class=" language-hljs bash"><span class="hljs-built_in"><code class="language-hljs bash"><span class="hljs-built_in">type</span> File struct {<br>    // 内含隐藏或非导出字段<br>}<br><br>os.create<br>os.open<br><br>file.Name<br>file.stat<br>file.Size<br>file.fd<br>file.chdir<br>file.chmod<br>file.chowd<br><br></code></pre></td></tr></table></figure>
 
 
-    <span class="token comment" spellcheck="true">// 获取文件信息  stat检测的如果是链接文件会跳转过去,但是lstat不会</span>
-    fileinfo<span class="token punctuation">,</span>err <span class="token operator">:=</span> os<span class="token punctuation">.</span><span class="token function">Stat</span><span class="token punctuation">(</span>pwd<span class="token operator">+</span><span class="token string">"/client.go"</span><span class="token punctuation">)</span>
-    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token punctuation">{</span>
-        log<span class="token punctuation">.</span><span class="token function">Fatal</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-    <span class="token punctuation">}</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>fileinfo<span class="token punctuation">)</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>fileinfo<span class="token punctuation">)</span>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br></pre></td><td class="code"><pre class=" language-hljs go"><span class="hljs-keyword">package</span> main<br><br><span class="hljs-keyword">import</span> (<br>	<span class="hljs-string">&quot;fmt&quot;</span><br>	<span class="hljs-string">&quot;log&quot;</span><br>	<span class="hljs-string">&quot;os&quot;</span><br>	<span class="hljs-string">&quot;os/exec&quot;</span><br>)<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;<br>	fmt.Println(os.Getpagesize())<br>	pwd,err:= os.Getwd()<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span>&#123;<br>		log.Fatal()<br>	&#125;<br>	fmt.Println(pwd)<br><br><br>	<span class="hljs-comment">// 获取文件信息  stat检测的如果是链接文件会跳转过去,但是lstat不会</span><br>	fileinfo,err := os.Stat(pwd+<span class="hljs-string">&quot;/client.go&quot;</span>)<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span>&#123;<br>		log.Fatal()<br>	&#125;<br>	fmt.Println(fileinfo)<br>	fmt.Println(fileinfo)<br><br>	fileinfo2,err := os.Lstat(pwd+<span class="hljs-string">&quot;/client.go&quot;</span>)<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span>&#123;<br>		log.Fatal()<br>	&#125;<br>	fmt.Println(fileinfo2)<br><br>	<span class="hljs-comment">// 判断一个错误 是不是因为文件或目录不存在 而导致的</span><br>	fileinfo,err = os.Lstat(<span class="hljs-string">&quot;ds&quot;</span>)<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span>&#123;<br>	 	fmt.Println(os.IsExist(err))<br>	&#125;<span class="hljs-keyword">else</span> &#123;<br>		fmt.Println(fileinfo.Name())<br>	&#125;<br><br>	<span class="hljs-comment">// 返回一个布尔值说明该错误是否表示因权限不足要求被拒绝</span><br>	fileinfo,err = os.Lstat(<span class="hljs-string">&quot;ds&quot;</span>)<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span>&#123;<br>		fmt.Println(os.IsPermission(err))<br>	&#125;<span class="hljs-keyword">else</span>&#123;<br>		fmt.Println(fileinfo.Name())<br>	&#125;<br><br>	<span class="hljs-comment">// Getwd返回一个对应当前工作目录的根路径</span><br>	pwd,_ = os.Getwd()<br>	fmt.Println(pwd)<br><br>	<span class="hljs-comment">// 修改工作目录</span><br>	<span class="hljs-comment">//pwd,_ = os.Getwd()</span><br>	<span class="hljs-comment">//fmt.Println(pwd)</span><br>	<span class="hljs-comment">//os.Chdir(&quot;/etc/&quot;)</span><br>	<span class="hljs-comment">//pwd,_ = os.Getwd()</span><br>	<span class="hljs-comment">//fmt.Println(pwd)</span><br><br>	<span class="hljs-comment">// 修改文件权限</span><br>	<span class="hljs-comment">//os.Chmod()</span><br>	<span class="hljs-comment">// 修改用户组</span><br>	<span class="hljs-comment">//os.Chown()</span><br><br>	<span class="hljs-comment">// 创建文件夹</span><br>	<span class="hljs-comment">//pwd,_= os.Getwd()</span><br>	<span class="hljs-comment">//fmt.Println(pwd)</span><br>	<span class="hljs-comment">//os.Chdir(&quot;/&quot;)</span><br>	pwd,_ = os.Getwd()<br>	fmt.Println(pwd)<br>	os.Mkdir(pwd+<span class="hljs-string">&quot;/helloword.txt&quot;</span>,os.ModePerm)<br><br>	<span class="hljs-comment">// 递归创建文件 相当于 mkdir -p</span><br>	pwd,_ = os.Getwd()<br>	fmt.Println(pwd)<br>	os.MkdirAll(pwd+<span class="hljs-string">&quot;/xx/helloworld.txt&quot;</span>,os.ModePerm)<br>	listfile,err := os.Stat(pwd)<br>	<span class="hljs-keyword">if</span> err !=<span class="hljs-literal">nil</span>&#123;<br>		log.Fatal()<br>	&#125;<br>	fmt.Println(listfile.Name())<br><br>	<span class="hljs-comment">// 删除文件</span><br>	os.Remove(pwd+<span class="hljs-string">&quot;/helloworld.txt&quot;</span>)<br><br>	<span class="hljs-comment">// 递归删除文件</span><br>	os.RemoveAll(pwd+<span class="hljs-string">&quot;/xx/helloworld.txt&quot;</span>)<br><br>	<span class="hljs-comment">// TempDir返回一个用于保管临时文件的默认目录。</span><br>	<span class="hljs-comment">//temdir := os.TempDir()</span><br>	<span class="hljs-comment">//fmt.Println(temdir)</span><br>	<span class="hljs-comment">//temdir_info,err := os.Stat(temdir)</span><br>	<span class="hljs-comment">//fmt.Println(temdir_info.Name())</span><br><br><br>	<span class="hljs-comment">// 创建一个模式为0666的文件,可读写不可运行</span><br>	file,err:=os.Create(<span class="hljs-string">&quot;helloworld&quot;</span>)<br>	fmt.Println(file.Name())<br>	<span class="hljs-comment">// 读取一个文件 或者一个文件夹</span><br>	file,err = os.Open(<span class="hljs-string">&quot;helloworld&quot;</span>)<br><br>	<span class="hljs-comment">// 返回文件名字</span><br>	fmt.Println(file.Name())<br>	<span class="hljs-comment">// 返回Unix文件描述符</span><br>	fmt.Println(file.Fd())<br><br>	file,err = os.Open(<span class="hljs-string">&quot;xx&quot;</span>)<br>	fmt.Println(file.Name())<br>	file.Chdir()<br>	pwd,err = os.Getwd()<br>	fmt.Println(pwd)<br><br><br><br>	<span class="hljs-comment">// 进程</span><br>	<span class="hljs-comment">// StartProcess使用提供的属性、程序名、命令行参数开始一个新进程</span><br><br>	<span class="hljs-comment"><code class="language-hljs go"><span class="hljs-keyword">package</span> main<br><br><span class="hljs-keyword">import</span> (<br>	<span class="hljs-string">&quot;fmt&quot;</span><br>	<span class="hljs-string">&quot;log&quot;</span><br>	<span class="hljs-string">&quot;os&quot;</span><br>	<span class="hljs-string">&quot;os/exec&quot;</span><br>)<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;<br>	fmt.Println(os.Getpagesize())<br>	pwd,err:= os.Getwd()<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span>&#123;<br>		log.Fatal()<br>	&#125;<br>	fmt.Println(pwd)<br><br><br>	<span class="hljs-comment">// 获取文件信息  stat检测的如果是链接文件会跳转过去,但是lstat不会</span><br>	fileinfo,err := os.Stat(pwd+<span class="hljs-string">&quot;/client.go&quot;</span>)<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span>&#123;<br>		log.Fatal()<br>	&#125;<br>	fmt.Println(fileinfo)<br>	fmt.Println(fileinfo)<br><br>	fileinfo2,err := os.Lstat(pwd+<span class="hljs-string">&quot;/client.go&quot;</span>)<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span>&#123;<br>		log.Fatal()<br>	&#125;<br>	fmt.Println(fileinfo2)<br><br>	<span class="hljs-comment">// 判断一个错误 是不是因为文件或目录不存在 而导致的</span><br>	fileinfo,err = os.Lstat(<span class="hljs-string">&quot;ds&quot;</span>)<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span>&#123;<br>	 	fmt.Println(os.IsExist(err))<br>	&#125;<span class="hljs-keyword">else</span> &#123;<br>		fmt.Println(fileinfo.Name())<br>	&#125;<br><br>	<span class="hljs-comment">// 返回一个布尔值说明该错误是否表示因权限不足要求被拒绝</span><br>	fileinfo,err = os.Lstat(<span class="hljs-string">&quot;ds&quot;</span>)<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span>&#123;<br>		fmt.Println(os.IsPermission(err))<br>	&#125;<span class="hljs-keyword">else</span>&#123;<br>		fmt.Println(fileinfo.Name())<br>	&#125;<br><br>	<span class="hljs-comment">// Getwd返回一个对应当前工作目录的根路径</span><br>	pwd,_ = os.Getwd()<br>	fmt.Println(pwd)<br><br>	<span class="hljs-comment">// 修改工作目录</span><br>	<span class="hljs-comment">//pwd,_ = os.Getwd()</span><br>	<span class="hljs-comment">//fmt.Println(pwd)</span><br>	<span class="hljs-comment">//os.Chdir(&quot;/etc/&quot;)</span><br>	<span class="hljs-comment">//pwd,_ = os.Getwd()</span><br>	<span class="hljs-comment">//fmt.Println(pwd)</span><br><br>	<span class="hljs-comment">// 修改文件权限</span><br>	<span class="hljs-comment">//os.Chmod()</span><br>	<span class="hljs-comment">// 修改用户组</span><br>	<span class="hljs-comment">//os.Chown()</span><br><br>	<span class="hljs-comment">// 创建文件夹</span><br>	<span class="hljs-comment">//pwd,_= os.Getwd()</span><br>	<span class="hljs-comment">//fmt.Println(pwd)</span><br>	<span class="hljs-comment">//os.Chdir(&quot;/&quot;)</span><br>	pwd,_ = os.Getwd()<br>	fmt.Println(pwd)<br>	os.Mkdir(pwd+<span class="hljs-string">&quot;/helloword.txt&quot;</span>,os.ModePerm)<br><br>	<span class="hljs-comment">// 递归创建文件 相当于 mkdir -p</span><br>	pwd,_ = os.Getwd()<br>	fmt.Println(pwd)<br>	os.MkdirAll(pwd+<span class="hljs-string">&quot;/xx/helloworld.txt&quot;</span>,os.ModePerm)<br>	listfile,err := os.Stat(pwd)<br>	<span class="hljs-keyword">if</span> err !=<span class="hljs-literal">nil</span>&#123;<br>		log.Fatal()<br>	&#125;<br>	fmt.Println(listfile.Name())<br><br>	<span class="hljs-comment">// 删除文件</span><br>	os.Remove(pwd+<span class="hljs-string">&quot;/helloworld.txt&quot;</span>)<br><br>	<span class="hljs-comment">// 递归删除文件</span><br>	os.RemoveAll(pwd+<span class="hljs-string">&quot;/xx/helloworld.txt&quot;</span>)<br><br>	<span class="hljs-comment">// TempDir返回一个用于保管临时文件的默认目录。</span><br>	<span class="hljs-comment">//temdir := os.TempDir()</span><br>	<span class="hljs-comment">//fmt.Println(temdir)</span><br>	<span class="hljs-comment">//temdir_info,err := os.Stat(temdir)</span><br>	<span class="hljs-comment">//fmt.Println(temdir_info.Name())</span><br><br><br>	<span class="hljs-comment">// 创建一个模式为0666的文件,可读写不可运行</span><br>	file,err:=os.Create(<span class="hljs-string">&quot;helloworld&quot;</span>)<br>	fmt.Println(file.Name())<br>	<span class="hljs-comment">// 读取一个文件 或者一个文件夹</span><br>	file,err = os.Open(<span class="hljs-string">&quot;helloworld&quot;</span>)<br><br>	<span class="hljs-comment">// 返回文件名字</span><br>	fmt.Println(file.Name())<br>	<span class="hljs-comment">// 返回Unix文件描述符</span><br>	fmt.Println(file.Fd())<br><br>	file,err = os.Open(<span class="hljs-string">&quot;xx&quot;</span>)<br>	fmt.Println(file.Name())<br>	file.Chdir()<br>	pwd,err = os.Getwd()<br>	fmt.Println(pwd)<br><br><br><br>	<span class="hljs-comment">// 进程</span><br>	<span class="hljs-comment">// StartProcess使用提供的属性、程序名、命令行参数开始一个新进程</span><br><br>	<span class="hljs-comment">// FindProcess根据进程id查找一个运行中的进程</span><br>}<br><br><br></code></pre></td></tr></table></figure>
 
-    fileinfo2<span class="token punctuation">,</span>err <span class="token operator">:=</span> os<span class="token punctuation">.</span><span class="token function">Lstat</span><span class="token punctuation">(</span>pwd<span class="token operator">+</span><span class="token string">"/client.go"</span><span class="token punctuation">)</span>
-    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token punctuation">{</span>
-        log<span class="token punctuation">.</span><span class="token function">Fatal</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-    <span class="token punctuation">}</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>fileinfo2<span class="token punctuation">)</span>
-
-    <span class="token comment" spellcheck="true">// 判断一个错误 是不是因为文件或目录不存在 而导致的</span>
-    fileinfo<span class="token punctuation">,</span>err <span class="token operator">=</span> os<span class="token punctuation">.</span><span class="token function">Lstat</span><span class="token punctuation">(</span><span class="token string">"ds"</span><span class="token punctuation">)</span>
-    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token punctuation">{</span>
-         fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>os<span class="token punctuation">.</span><span class="token function">IsExist</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span><span class="token punctuation">)</span>
-    <span class="token punctuation">}</span><span class="token keyword">else</span> <span class="token punctuation">{</span>
-        fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>fileinfo<span class="token punctuation">.</span><span class="token function">Name</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-    <span class="token punctuation">}</span>
-
-    <span class="token comment" spellcheck="true">// 返回一个布尔值说明该错误是否表示因权限不足要求被拒绝</span>
-    fileinfo<span class="token punctuation">,</span>err <span class="token operator">=</span> os<span class="token punctuation">.</span><span class="token function">Lstat</span><span class="token punctuation">(</span><span class="token string">"ds"</span><span class="token punctuation">)</span>
-    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token punctuation">{</span>
-        fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>os<span class="token punctuation">.</span><span class="token function">IsPermission</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span><span class="token punctuation">)</span>
-    <span class="token punctuation">}</span><span class="token keyword">else</span><span class="token punctuation">{</span>
-        fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>fileinfo<span class="token punctuation">.</span><span class="token function">Name</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-    <span class="token punctuation">}</span>
-
-    <span class="token comment" spellcheck="true">// Getwd返回一个对应当前工作目录的根路径</span>
-    pwd<span class="token punctuation">,</span><span class="token boolean">_</span> <span class="token operator">=</span> os<span class="token punctuation">.</span><span class="token function">Getwd</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>pwd<span class="token punctuation">)</span>
-
-    <span class="token comment" spellcheck="true">// 修改工作目录</span>
-    <span class="token comment" spellcheck="true">//pwd,_ = os.Getwd()</span>
-    <span class="token comment" spellcheck="true">//fmt.Println(pwd)</span>
-    <span class="token comment" spellcheck="true">//os.Chdir("/etc/")</span>
-    <span class="token comment" spellcheck="true">//pwd,_ = os.Getwd()</span>
-    <span class="token comment" spellcheck="true">//fmt.Println(pwd)</span>
-
-    <span class="token comment" spellcheck="true">// 修改文件权限</span>
-    <span class="token comment" spellcheck="true">//os.Chmod()</span>
-    <span class="token comment" spellcheck="true">// 修改用户组</span>
-    <span class="token comment" spellcheck="true">//os.Chown()</span>
-
-    <span class="token comment" spellcheck="true">// 创建文件夹</span>
-    <span class="token comment" spellcheck="true">//pwd,_= os.Getwd()</span>
-    <span class="token comment" spellcheck="true">//fmt.Println(pwd)</span>
-    <span class="token comment" spellcheck="true">//os.Chdir("/")</span>
-    pwd<span class="token punctuation">,</span><span class="token boolean">_</span> <span class="token operator">=</span> os<span class="token punctuation">.</span><span class="token function">Getwd</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>pwd<span class="token punctuation">)</span>
-    os<span class="token punctuation">.</span><span class="token function">Mkdir</span><span class="token punctuation">(</span>pwd<span class="token operator">+</span><span class="token string">"/helloword.txt"</span><span class="token punctuation">,</span>os<span class="token punctuation">.</span>ModePerm<span class="token punctuation">)</span>
-
-    <span class="token comment" spellcheck="true">// 递归创建文件 相当于 mkdir -p</span>
-    pwd<span class="token punctuation">,</span><span class="token boolean">_</span> <span class="token operator">=</span> os<span class="token punctuation">.</span><span class="token function">Getwd</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>pwd<span class="token punctuation">)</span>
-    os<span class="token punctuation">.</span><span class="token function">MkdirAll</span><span class="token punctuation">(</span>pwd<span class="token operator">+</span><span class="token string">"/xx/helloworld.txt"</span><span class="token punctuation">,</span>os<span class="token punctuation">.</span>ModePerm<span class="token punctuation">)</span>
-    listfile<span class="token punctuation">,</span>err <span class="token operator">:=</span> os<span class="token punctuation">.</span><span class="token function">Stat</span><span class="token punctuation">(</span>pwd<span class="token punctuation">)</span>
-    <span class="token keyword">if</span> err <span class="token operator">!=</span><span class="token boolean">nil</span><span class="token punctuation">{</span>
-        log<span class="token punctuation">.</span><span class="token function">Fatal</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-    <span class="token punctuation">}</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>listfile<span class="token punctuation">.</span><span class="token function">Name</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-
-    <span class="token comment" spellcheck="true">// 删除文件</span>
-    os<span class="token punctuation">.</span><span class="token function">Remove</span><span class="token punctuation">(</span>pwd<span class="token operator">+</span><span class="token string">"/helloworld.txt"</span><span class="token punctuation">)</span>
-
-    <span class="token comment" spellcheck="true">// 递归删除文件</span>
-    os<span class="token punctuation">.</span><span class="token function">RemoveAll</span><span class="token punctuation">(</span>pwd<span class="token operator">+</span><span class="token string">"/xx/helloworld.txt"</span><span class="token punctuation">)</span>
-
-    <span class="token comment" spellcheck="true">// TempDir返回一个用于保管临时文件的默认目录。</span>
-    <span class="token comment" spellcheck="true">//temdir := os.TempDir()</span>
-    <span class="token comment" spellcheck="true">//fmt.Println(temdir)</span>
-    <span class="token comment" spellcheck="true">//temdir_info,err := os.Stat(temdir)</span>
-    <span class="token comment" spellcheck="true">//fmt.Println(temdir_info.Name())</span>
-
-
-    <span class="token comment" spellcheck="true">// 创建一个模式为0666的文件,可读写不可运行</span>
-    file<span class="token punctuation">,</span>err<span class="token operator">:=</span>os<span class="token punctuation">.</span><span class="token function">Create</span><span class="token punctuation">(</span><span class="token string">"helloworld"</span><span class="token punctuation">)</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>file<span class="token punctuation">.</span><span class="token function">Name</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-    <span class="token comment" spellcheck="true">// 读取一个文件 或者一个文件夹</span>
-    file<span class="token punctuation">,</span>err <span class="token operator">=</span> os<span class="token punctuation">.</span><span class="token function">Open</span><span class="token punctuation">(</span><span class="token string">"helloworld"</span><span class="token punctuation">)</span>
-
-    <span class="token comment" spellcheck="true">// 返回文件名字</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>file<span class="token punctuation">.</span><span class="token function">Name</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-    <span class="token comment" spellcheck="true">// 返回Unix文件描述符</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>file<span class="token punctuation">.</span><span class="token function">Fd</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-
-    file<span class="token punctuation">,</span>err <span class="token operator">=</span> os<span class="token punctuation">.</span><span class="token function">Open</span><span class="token punctuation">(</span><span class="token string">"xx"</span><span class="token punctuation">)</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>file<span class="token punctuation">.</span><span class="token function">Name</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-    file<span class="token punctuation">.</span><span class="token function">Chdir</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-    pwd<span class="token punctuation">,</span>err <span class="token operator">=</span> os<span class="token punctuation">.</span><span class="token function">Getwd</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>pwd<span class="token punctuation">)</span>
-
-
-
-    <span class="token comment" spellcheck="true">// 进程</span>
-    <span class="token comment" spellcheck="true">// StartProcess使用提供的属性、程序名、命令行参数开始一个新进程</span>
-
-    <span class="token comment" spellcheck="true">// FindProcess根据进程id查找一个运行中的进程</span>
-<span class="token punctuation">}</span>
-
-</code></pre>
 <h2 id="os-exec"><a href="#os-exec" class="headerlink" title="os-exec"></a>os-exec</h2><p>os-exec包用来执行外部的命令,他创建了一个cmd实例</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token function">type</span> Cmd struct <span class="token punctuation">{</span>
-    // Path是将要执行的命令的路径。
-    //
-    // 该字段不能为空，如为相对路径会相对于Dir字段。
-    Path string
-    // Args保管命令的参数，包括命令名作为第一个参数；如果为空切片或者nil，相当于无参数命令。
-    //
-    // 典型用法下，Path和Args都应被Command函数设定。
-    Args <span class="token punctuation">[</span><span class="token punctuation">]</span>string
-    // Env指定进程的环境，如为nil，则是在当前进程的环境下执行。
-    Env <span class="token punctuation">[</span><span class="token punctuation">]</span>string
-    // Dir指定命令的工作目录。如为空字符串，会在调用者的进程当前目录下执行。
-    Dir string
-    // Stdin指定进程的标准输入，如为nil，进程会从空设备读取（os.DevNull）
-    Stdin io.Reader
-    // Stdout和Stderr指定进程的标准输出和标准错误输出。
-    //
-    // 如果任一个为nil，Run方法会将对应的文件描述符关联到空设备（os.DevNull）
-    //
-    // 如果两个字段相同，同一时间最多有一个线程可以写入。
-    Stdout io.Writer
-    Stderr io.Writer
-    // ExtraFiles指定额外被新进程继承的已打开文件流，不包括标准输入、标准输出、标准错误输出。
-    // 如果本字段非nil，entry i会变成文件描述符3+i。
-    //
-    // BUG: 在OS X 10.6系统中，子进程可能会继承不期望的文件描述符。
-    // http://golang.org/issue/2603
-    ExtraFiles <span class="token punctuation">[</span><span class="token punctuation">]</span>*os.File
-    // SysProcAttr保管可选的、各操作系统特定的sys执行属性。
-    // Run方法会将它作为os.ProcAttr的Sys字段传递给os.StartProcess函数。
-    SysProcAttr *syscall.SysProcAttr
-    // Process是底层的，只执行一次的进程。
-    Process *os.Process
-    // ProcessState包含一个已经存在的进程的信息，只有在调用Wait或Run后才可用。
-    ProcessState *os.ProcessState
-    // 内含隐藏或非导出字段
-<span class="token punctuation">}</span></code></pre>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre class=" language-hljs bash"><span class="hljs-built_in"><code class="language-hljs bash"><span class="hljs-built_in">type</span> Cmd struct {<br>    // Path是将要执行的命令的路径。<br>    //<br>    // 该字段不能为空，如为相对路径会相对于Dir字段。<br>    Path string<br>    // Args保管命令的参数，包括命令名作为第一个参数；如果为空切片或者nil，相当于无参数命令。<br>    //<br>    // 典型用法下，Path和Args都应被Command函数设定。<br>    Args []string<br>    // Env指定进程的环境，如为nil，则是在当前进程的环境下执行。<br>    Env []string<br>    // Dir指定命令的工作目录。如为空字符串，会在调用者的进程当前目录下执行。<br>    Dir string<br>    // Stdin指定进程的标准输入，如为nil，进程会从空设备读取（os.DevNull）<br>    Stdin io.Reader<br>    // Stdout和Stderr指定进程的标准输出和标准错误输出。<br>    //<br>    // 如果任一个为nil，Run方法会将对应的文件描述符关联到空设备（os.DevNull）<br>    //<br>    // 如果两个字段相同，同一时间最多有一个线程可以写入。<br>    Stdout io.Writer<br>    Stderr io.Writer<br>    // ExtraFiles指定额外被新进程继承的已打开文件流，不包括标准输入、标准输出、标准错误输出。<br>    // 如果本字段非nil，entry i会变成文件描述符3+i。<br>    //<br>    // BUG: 在OS X 10.6系统中，子进程可能会继承不期望的文件描述符。<br>    // http://golang.org/issue/2603<br>    ExtraFiles []*os.File<br>    // SysProcAttr保管可选的、各操作系统特定的sys执行属性。<br>    // Run方法会将它作为os.ProcAttr的Sys字段传递给os.StartProcess函数。<br>    SysProcAttr *syscall.SysProcAttr<br>    // Process是底层的，只执行一次的进程。<br>    Process *os.Process<br>    // ProcessState包含一个已经存在的进程的信息，只有在调用Wait或Run后才可用。<br>    ProcessState *os.ProcessState<br>    // 内含隐藏或非导出字段<br>}<br></code></pre></td></tr></table></figure>
 <p>使用command生成</p>
-<pre class=" language-bash"><code class="language-bash">func Command<span class="token punctuation">(</span>name string, arg <span class="token punctuation">..</span>.string<span class="token punctuation">)</span> *Cmd</code></pre>
-<pre class=" language-go"><code class="language-go">    cmd <span class="token operator">:=</span>exec<span class="token punctuation">.</span><span class="token function">Command</span><span class="token punctuation">(</span><span class="token string">"tr"</span><span class="token punctuation">,</span><span class="token string">"a-z"</span><span class="token punctuation">,</span><span class="token string">"A-Z"</span><span class="token punctuation">)</span>
-    cmd<span class="token punctuation">.</span>Stdin <span class="token operator">=</span> strings<span class="token punctuation">.</span><span class="token function">NewReader</span><span class="token punctuation">(</span><span class="token string">"some"</span><span class="token punctuation">)</span>
-
-    <span class="token keyword">var</span> out bytes<span class="token punctuation">.</span>Buffer
-    cmd<span class="token punctuation">.</span>Stdout <span class="token operator">=</span> <span class="token operator">&amp;</span>out
-
-    err <span class="token operator">:=</span> cmd<span class="token punctuation">.</span><span class="token function">Run</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token punctuation">{</span>
-        log<span class="token punctuation">.</span><span class="token function">Fatal</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-    <span class="token punctuation">}</span>
-
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>out<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span></code></pre>
-<pre class=" language-go"><code class="language-go"><span class="token keyword">package</span> main
-
-<span class="token keyword">import</span> <span class="token punctuation">(</span>
-    <span class="token string">"bytes"</span>
-    <span class="token string">"fmt"</span>
-    <span class="token string">"log"</span>
-    <span class="token string">"os/exec"</span>
-    <span class="token string">"strings"</span>
-    <span class="token string">"unsafe"</span>
-<span class="token punctuation">)</span>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre class=" language-hljs bash"><code class="language-hljs bash">func Command(name string, arg ...string) *Cmd<br></code></pre></td></tr></table></figure>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre class=" language-hljs go">cmd :=exec.Command(<span class="hljs-string">&quot;tr&quot;</span>,<span class="hljs-string">&quot;a-z&quot;</span>,<span class="hljs-string">&quot;A-Z&quot;</span>)<br>   cmd.Stdin = strings.NewReader(<span class="hljs-string">&quot;some&quot;</span>)<br>   <br><span class="hljs-keyword">var</span> out bytes.Buffer<br>cmd.Stdout = &amp;out<br>   <br>   err := cmd.Run()<br><span class="hljs-keyword">if</span> err != <span class="hljs-literal"><code class="language-hljs go">cmd :=exec.Command(<span class="hljs-string">&quot;tr&quot;</span>,<span class="hljs-string">&quot;a-z&quot;</span>,<span class="hljs-string">&quot;A-Z&quot;</span>)<br>   cmd.Stdin = strings.NewReader(<span class="hljs-string">&quot;some&quot;</span>)<br>   <br><span class="hljs-keyword">var</span> out bytes.Buffer<br>cmd.Stdout = &amp;out<br>   <br>   err := cmd.Run()<br><span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span>{<br>	log.Fatal()<br>}<br>   <br>   fmt.Println(out.String())<br></code></pre></td></tr></table></figure>
 
 
-<span class="token comment" spellcheck="true">//https://studygolang.com/static/pkgdoc/pkg/os_exec.htm#example-Cmd-Output</span>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br></pre></td><td class="code"><pre class=" language-hljs go"><span class="hljs-keyword">package</span> main<br><br><span class="hljs-keyword">import</span> (<br>	<span class="hljs-string">&quot;bytes&quot;</span><br>	<span class="hljs-string">&quot;fmt&quot;</span><br>	<span class="hljs-string">&quot;log&quot;</span><br>	<span class="hljs-string">&quot;os/exec&quot;</span><br>	<span class="hljs-string">&quot;strings&quot;</span><br>	<span class="hljs-string">&quot;unsafe&quot;</span><br>)<br><br><br><span class="hljs-comment">//https://studygolang.com/static/pkgdoc/pkg/os_exec.htm#example-Cmd-Output</span><br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">displaydir</span><span class="hljs-params">()</span></span>&#123;<br>	<span class="hljs-comment">// 返回一个对象实例</span><br>	cmd := exec.Command(<span class="hljs-string">&quot;find&quot;</span>, <span class="hljs-string">&quot;.&quot;</span>, <span class="hljs-string">&quot;-name&quot;</span> ,<span class="hljs-string">&quot;xx&quot;</span>)<br><br>	<span class="hljs-comment">// 指定cmd的输出</span><br>	<span class="hljs-keyword">var</span> out bytes.Buffer<br>	cmd.Stdout = &amp;out<br>	err := cmd.Run()<br>	<span class="hljs-keyword">if</span> err !=<span class="hljs-literal">nil</span>&#123;<br>		log.Fatal(err)<br>	&#125;<br>	fmt.Println(out.String())<br><br>	fmt.Println(cmd.String()) <span class="hljs-comment">// /usr/bin/find . -name xx</span><br><br><br>&#125;<br><br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">pipecmd</span><span class="hljs-params">()</span></span>&#123;<br>	cmd := exec.Command(<span class="hljs-string">&quot;echo&quot;</span>,<span class="hljs-string">&quot;-n&quot;</span>,<span class="hljs-string">`&#123;&quot;Name&quot;: &quot;Bob&quot;, &quot;Age&quot;: 32&#125;`</span>)<br>	<span class="hljs-keyword">var</span> out bytes.Buffer<br>	cmd.Stdout = &amp;out<br>	err := cmd.Run()<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span>&#123;<br>		log.Fatal(err)<br>	&#125;<br>	fmt.Println(out.String())<br>	<span class="hljs-comment">//fmt.Println(cmd.Output())</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">cmdstratanddwait</span><span class="hljs-params">()</span></span>&#123;<br>	cmd := exec.Command(<span class="hljs-string">&quot;sleep&quot;</span>,<span class="hljs-string">&quot;5&quot;</span>)<br>	err := cmd.Start() <span class="hljs-comment">// 不会进行阻塞ned</span><br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span>&#123;<br>		log.Fatal(err)<br>	&#125;<br>	err = cmd.Wait() <span class="hljs-comment">// 阻塞进行</span><br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span>&#123;<br>		log.Fatal(err)<br>	&#125;<br><br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">cmdoutput</span><span class="hljs-params">()</span></span>&#123;<br>	out,err := exec.Command(<span class="hljs-string">&quot;date&quot;</span>).Output()<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span>&#123;<br>		log.Fatal(err)<br>	&#125;<br>	fmt.Println(out)<br><br>	<span class="hljs-comment">// 两种[]byte转换string的方法</span><br>	fmt.Println(<span class="hljs-keyword">string</span>(out[:])) <span class="hljs-comment">// 写的简单,但是效率慢</span><br>	stringout := *(*<span class="hljs-keyword">string</span>)(unsafe.Pointer(&amp;out))<br>	fmt.Println(stringout) <span class="hljs-comment">// 效率高</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">cmdCombinedOutput</span><span class="hljs-params">()</span></span>&#123;<br>	out,err := exec.Command(<span class="hljs-string">&quot;data&quot;</span>).Output()<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span>&#123;<br>		log.Fatal(err)<br>	&#125;<br>	fmt.Println(<span class="hljs-keyword">string</span>(out[:]))<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;<br><br><br>	cmd :=exec.Command(<span class="hljs-string">&quot;tr&quot;</span>,<span class="hljs-string">&quot;a-z&quot;</span>,<span class="hljs-string">&quot;A-Z&quot;</span>)<br><br>	cmd.Stdin = strings.NewReader(<span class="hljs-string">&quot;some&quot;</span>)<br><br>	<span class="hljs-keyword">var</span> out bytes.Buffer<br>	cmd.Stdout = &amp;out<br>	err := cmd.Run()<br><br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal"><code class="language-hljs go"><span class="hljs-keyword">package</span> main<br><br><span class="hljs-keyword">import</span> (<br>	<span class="hljs-string">&quot;bytes&quot;</span><br>	<span class="hljs-string">&quot;fmt&quot;</span><br>	<span class="hljs-string">&quot;log&quot;</span><br>	<span class="hljs-string">&quot;os/exec&quot;</span><br>	<span class="hljs-string">&quot;strings&quot;</span><br>	<span class="hljs-string">&quot;unsafe&quot;</span><br>)<br><br><br><span class="hljs-comment">//https://studygolang.com/static/pkgdoc/pkg/os_exec.htm#example-Cmd-Output</span><br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">displaydir</span><span class="hljs-params">()</span></span>&#123;<br>	<span class="hljs-comment">// 返回一个对象实例</span><br>	cmd := exec.Command(<span class="hljs-string">&quot;find&quot;</span>, <span class="hljs-string">&quot;.&quot;</span>, <span class="hljs-string">&quot;-name&quot;</span> ,<span class="hljs-string">&quot;xx&quot;</span>)<br><br>	<span class="hljs-comment">// 指定cmd的输出</span><br>	<span class="hljs-keyword">var</span> out bytes.Buffer<br>	cmd.Stdout = &amp;out<br>	err := cmd.Run()<br>	<span class="hljs-keyword">if</span> err !=<span class="hljs-literal">nil</span>&#123;<br>		log.Fatal(err)<br>	&#125;<br>	fmt.Println(out.String())<br><br>	fmt.Println(cmd.String()) <span class="hljs-comment">// /usr/bin/find . -name xx</span><br><br><br>&#125;<br><br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">pipecmd</span><span class="hljs-params">()</span></span>&#123;<br>	cmd := exec.Command(<span class="hljs-string">&quot;echo&quot;</span>,<span class="hljs-string">&quot;-n&quot;</span>,<span class="hljs-string">`&#123;&quot;Name&quot;: &quot;Bob&quot;, &quot;Age&quot;: 32&#125;`</span>)<br>	<span class="hljs-keyword">var</span> out bytes.Buffer<br>	cmd.Stdout = &amp;out<br>	err := cmd.Run()<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span>&#123;<br>		log.Fatal(err)<br>	&#125;<br>	fmt.Println(out.String())<br>	<span class="hljs-comment">//fmt.Println(cmd.Output())</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">cmdstratanddwait</span><span class="hljs-params">()</span></span>&#123;<br>	cmd := exec.Command(<span class="hljs-string">&quot;sleep&quot;</span>,<span class="hljs-string">&quot;5&quot;</span>)<br>	err := cmd.Start() <span class="hljs-comment">// 不会进行阻塞ned</span><br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span>&#123;<br>		log.Fatal(err)<br>	&#125;<br>	err = cmd.Wait() <span class="hljs-comment">// 阻塞进行</span><br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span>&#123;<br>		log.Fatal(err)<br>	&#125;<br><br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">cmdoutput</span><span class="hljs-params">()</span></span>&#123;<br>	out,err := exec.Command(<span class="hljs-string">&quot;date&quot;</span>).Output()<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span>&#123;<br>		log.Fatal(err)<br>	&#125;<br>	fmt.Println(out)<br><br>	<span class="hljs-comment">// 两种[]byte转换string的方法</span><br>	fmt.Println(<span class="hljs-keyword">string</span>(out[:])) <span class="hljs-comment">// 写的简单,但是效率慢</span><br>	stringout := *(*<span class="hljs-keyword">string</span>)(unsafe.Pointer(&amp;out))<br>	fmt.Println(stringout) <span class="hljs-comment">// 效率高</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">cmdCombinedOutput</span><span class="hljs-params">()</span></span>&#123;<br>	out,err := exec.Command(<span class="hljs-string">&quot;data&quot;</span>).Output()<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span>&#123;<br>		log.Fatal(err)<br>	&#125;<br>	fmt.Println(<span class="hljs-keyword">string</span>(out[:]))<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;<br><br><br>	cmd :=exec.Command(<span class="hljs-string">&quot;tr&quot;</span>,<span class="hljs-string">&quot;a-z&quot;</span>,<span class="hljs-string">&quot;A-Z&quot;</span>)<br><br>	cmd.Stdin = strings.NewReader(<span class="hljs-string">&quot;some&quot;</span>)<br><br>	<span class="hljs-keyword">var</span> out bytes.Buffer<br>	cmd.Stdout = &amp;out<br>	err := cmd.Run()<br><br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span>{<br>		log.Fatal()<br>	}<br><br>	fmt.Println(out.String())<br><br>	displaydir()<br>	pipecmd()<br>	cmdoutput()<br>	cmdCombinedOutput()<br>	cmdstratanddwait()<br><br>}<br><br><br></code></pre></td></tr></table></figure>
 
-<span class="token keyword">func</span> <span class="token function">displaydir</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-    <span class="token comment" spellcheck="true">// 返回一个对象实例</span>
-    cmd <span class="token operator">:=</span> exec<span class="token punctuation">.</span><span class="token function">Command</span><span class="token punctuation">(</span><span class="token string">"find"</span><span class="token punctuation">,</span> <span class="token string">"."</span><span class="token punctuation">,</span> <span class="token string">"-name"</span> <span class="token punctuation">,</span><span class="token string">"xx"</span><span class="token punctuation">)</span>
-
-    <span class="token comment" spellcheck="true">// 指定cmd的输出</span>
-    <span class="token keyword">var</span> out bytes<span class="token punctuation">.</span>Buffer
-    cmd<span class="token punctuation">.</span>Stdout <span class="token operator">=</span> <span class="token operator">&amp;</span>out
-    err <span class="token operator">:=</span> cmd<span class="token punctuation">.</span><span class="token function">Run</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-    <span class="token keyword">if</span> err <span class="token operator">!=</span><span class="token boolean">nil</span><span class="token punctuation">{</span>
-        log<span class="token punctuation">.</span><span class="token function">Fatal</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
-    <span class="token punctuation">}</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>out<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>cmd<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// /usr/bin/find . -name xx</span>
-
-
-<span class="token punctuation">}</span>
-
-
-<span class="token keyword">func</span> <span class="token function">pipecmd</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-    cmd <span class="token operator">:=</span> exec<span class="token punctuation">.</span><span class="token function">Command</span><span class="token punctuation">(</span><span class="token string">"echo"</span><span class="token punctuation">,</span><span class="token string">"-n"</span><span class="token punctuation">,</span><span class="token string">`{"Name": "Bob", "Age": 32}`</span><span class="token punctuation">)</span>
-    <span class="token keyword">var</span> out bytes<span class="token punctuation">.</span>Buffer
-    cmd<span class="token punctuation">.</span>Stdout <span class="token operator">=</span> <span class="token operator">&amp;</span>out
-    err <span class="token operator">:=</span> cmd<span class="token punctuation">.</span><span class="token function">Run</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token punctuation">{</span>
-        log<span class="token punctuation">.</span><span class="token function">Fatal</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
-    <span class="token punctuation">}</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>out<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-    <span class="token comment" spellcheck="true">//fmt.Println(cmd.Output())</span>
-<span class="token punctuation">}</span>
-
-<span class="token keyword">func</span> <span class="token function">cmdstratanddwait</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-    cmd <span class="token operator">:=</span> exec<span class="token punctuation">.</span><span class="token function">Command</span><span class="token punctuation">(</span><span class="token string">"sleep"</span><span class="token punctuation">,</span><span class="token string">"5"</span><span class="token punctuation">)</span>
-    err <span class="token operator">:=</span> cmd<span class="token punctuation">.</span><span class="token function">Start</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// 不会进行阻塞ned</span>
-    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token punctuation">{</span>
-        log<span class="token punctuation">.</span><span class="token function">Fatal</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
-    <span class="token punctuation">}</span>
-    err <span class="token operator">=</span> cmd<span class="token punctuation">.</span><span class="token function">Wait</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// 阻塞进行</span>
-    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token punctuation">{</span>
-        log<span class="token punctuation">.</span><span class="token function">Fatal</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
-    <span class="token punctuation">}</span>
-
-<span class="token punctuation">}</span>
-
-<span class="token keyword">func</span> <span class="token function">cmdoutput</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-    out<span class="token punctuation">,</span>err <span class="token operator">:=</span> exec<span class="token punctuation">.</span><span class="token function">Command</span><span class="token punctuation">(</span><span class="token string">"date"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Output</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token punctuation">{</span>
-        log<span class="token punctuation">.</span><span class="token function">Fatal</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
-    <span class="token punctuation">}</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>out<span class="token punctuation">)</span>
-
-    <span class="token comment" spellcheck="true">// 两种[]byte转换string的方法</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token function">string</span><span class="token punctuation">(</span>out<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// 写的简单,但是效率慢</span>
-    stringout <span class="token operator">:=</span> <span class="token operator">*</span><span class="token punctuation">(</span><span class="token operator">*</span><span class="token builtin">string</span><span class="token punctuation">)</span><span class="token punctuation">(</span>unsafe<span class="token punctuation">.</span><span class="token function">Pointer</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>out<span class="token punctuation">)</span><span class="token punctuation">)</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>stringout<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// 效率高</span>
-<span class="token punctuation">}</span>
-
-<span class="token keyword">func</span> <span class="token function">cmdCombinedOutput</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-    out<span class="token punctuation">,</span>err <span class="token operator">:=</span> exec<span class="token punctuation">.</span><span class="token function">Command</span><span class="token punctuation">(</span><span class="token string">"data"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Output</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token punctuation">{</span>
-        log<span class="token punctuation">.</span><span class="token function">Fatal</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
-    <span class="token punctuation">}</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token function">string</span><span class="token punctuation">(</span>out<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-<span class="token punctuation">}</span>
-
-<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-
-
-    cmd <span class="token operator">:=</span>exec<span class="token punctuation">.</span><span class="token function">Command</span><span class="token punctuation">(</span><span class="token string">"tr"</span><span class="token punctuation">,</span><span class="token string">"a-z"</span><span class="token punctuation">,</span><span class="token string">"A-Z"</span><span class="token punctuation">)</span>
-
-    cmd<span class="token punctuation">.</span>Stdin <span class="token operator">=</span> strings<span class="token punctuation">.</span><span class="token function">NewReader</span><span class="token punctuation">(</span><span class="token string">"some"</span><span class="token punctuation">)</span>
-
-    <span class="token keyword">var</span> out bytes<span class="token punctuation">.</span>Buffer
-    cmd<span class="token punctuation">.</span>Stdout <span class="token operator">=</span> <span class="token operator">&amp;</span>out
-    err <span class="token operator">:=</span> cmd<span class="token punctuation">.</span><span class="token function">Run</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-
-    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token punctuation">{</span>
-        log<span class="token punctuation">.</span><span class="token function">Fatal</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-    <span class="token punctuation">}</span>
-
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>out<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-
-    <span class="token function">displaydir</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-    <span class="token function">pipecmd</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-    <span class="token function">cmdoutput</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-    <span class="token function">cmdCombinedOutput</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-    <span class="token function">cmdstratanddwait</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-
-<span class="token punctuation">}</span>
-
-</code></pre>
-
-        </div>
-
-        
-        <section class="post-tags">
-            <div>
-                <span>标签：</span>
-                <span class="tag">
-                    
-                    
-                    <a href="/tags/golang/"># golang</a>
-                    
-                    <a href="/tags/go-library/"># go-library</a>
-                    
-                    
-                </span>
             </div>
+            <hr>
             <div>
-                <a href="javascript：window.history.back();">后退</a>
-                <span>· </span>
-                <a href="/">主页</a>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/go/">go</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/golang/">golang</a>
+                    
+                      <a class="hover-with-bg" href="/tags/go-library/">go-library</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/12/17/blog_back_new/NetWord/%E4%BA%A4%E6%8D%A2%E6%9C%BA/%E4%BA%A4%E6%8D%A2%E6%9C%BA%E5%A0%86%E5%8F%A0/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">交换机irf堆叠</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/12/16/blog_back_new/golang/go%E5%BA%93iobase/">
+                        <span class="hidden-mobile">go库iobase</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
             </div>
-        </section>
-        <section class="post-nav">
+
             
-            <a class="prev" rel="prev" href="/2020/12/17/blog_back_new/NetWord/%E4%BA%A4%E6%8D%A2%E6%9C%BA/%E4%BA%A4%E6%8D%A2%E6%9C%BA%E5%A0%86%E5%8F%A0/">交换机irf堆叠</a>
-            
-            
-            <a class="next" rel="next" href="/2020/12/16/blog_back_new/golang/go%E5%BA%93iobase/">go库iobase</a>
-            
-        </section>
-    </article>
-</div>
+          </article>
         </div>
-        <footer id="footer" class="footer">
-    <div class="copyright">
+      </div>
     </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
 </footer>
 
-    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+
+
 </body>
 </html>

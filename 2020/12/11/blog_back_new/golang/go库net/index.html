@@ -1,463 +1,233 @@
+
+
 <!DOCTYPE html>
-<html lang="cn">
+<html lang="cn" data-default-color-scheme=&#34;auto&#34;>
+
+
+
 <head>
-    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-<meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="hzjsea">
+  <meta name="keywords" content="">
+  <title>go库net - hzjsea</title>
 
-    <meta name="author" content="hzjsea">
-
-
-
-
-
-
-<title>go库net | hzjsea</title>
-
-
-
-    <link rel="icon" href="/favicon.ico">
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
 
 
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
 
-
-    <!-- stylesheets list from _config.yml -->
-    
-    <link rel="stylesheet" href="/css/style.css">
-    
-
-
-
-    <!-- scripts list from _config.yml -->
-    
-    <script src="/js/script.js"></script>
-    
-    <script src="/js/tocbot.min.js"></script>
-    
-    <script src="/js/jquery.min.js"></script>
-    
-
-
-
+  
     
     
-        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-    "HTML-CSS": {
-        preferredFont: "TeX",
-        availableFonts: ["STIX","TeX"],
-        linebreaks: { automatic:true },
-        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
-    },
-    tex2jax: {
-        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
-        processEscapes: true,
-        ignoreClass: "tex2jax_ignore|dno",
-        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
-    },
-    TeX: {
-        equationNumbers: { autoNumber: "AMS" },
-        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
-        Macros: { href: "{}" }
-    },
-    messageStyle: "none"
-    });
-</script>
-<!-- 给MathJax元素添加has-jax class -->
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax(), i;
-        for(i=0; i < all.length; i += 1) {
-            all[i].SourceElement().parentNode.className += ' has-jax';
-        }
-    });
-</script>
-<!-- 通过连接CDN加载MathJax的js代码 -->
-<script type="text/javascript" async
-        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
-</script>
-
-
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
     
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
 
 
 
+<!-- 主题依赖的图标库，不要自行修改 -->
 
-    <script>
-    function searchToggle() {
-        const width = $(document.body).width()
-        if(width > 479) {
-            return;
-        }
-        const search = $('.search');
-        const searchForm = $('.form-search')
-
-        if(!search.hasClass("mobile-search")) {
-            search.addClass("mobile-search");
-        } else {
-            search.removeClass("mobile-search");
-        } 
-    }
-
-    function search(searchInputEl, formEl, flag) {
-        const path = "/" + "search.json"; // 可以在public 下查看这个search.json
-        $(formEl).submit(function(e){
-            e.preventDefault();
-            let target = null
-            if(searchInputEl == null) {
-                const screenWidth = $(document.body).width();
-                target = screenWidth > 479 ? $('#pc-search-input') : $('#mobile-search-input');
-                console.log(target);
-            } else {
-                target = $(searchInputEl)
-            }
-
-            if(!flag && target.val() === '') {
-                return ;
-            }
-
-            $("#u-search").fadeIn(500, function() {
-                $("body > .wrapper").addClass("modal-active");
-
-                $.ajax({
-                    url: path,
-                    dataType: "json",
-                    beforeSend: function (xhr) {
-                        $input = target.val();
-                        $(".form-input").val($input);
-                        const loadingBar = $('.search-loading-bar') 
-                        loadingBar.css({
-                            width:'100%',
-                            display: 'block'
-                        });
-                    },
-                    success: function( datas ) {
-                        console.log(datas);
-                        const $resultPanel = $(".modal-body")[0];
-                        let str = `<ul class="modal-results">`;
-                        var keywords = $(".form-input").val().trim().toLowerCase().split(/[\s\-]+/);
-                        $resultPanel.innerHTML = "";
-                        let hasResult = false
-                        let text = `<div class="no-result">找不到与关键词相关的内容....</div>`;
-
-                        if ($(".form-input").val().trim().length <= 0) {
-                            // 没有结果
-                            $resultPanel.innerHTML = text;
-                            return;
-                        }
-                        datas.forEach(function (data, index) {
-                            var isMatch = true;
-                            if (!data.title || data.title.trim() === '') {
-                                data.title = "Untitled";
-                            }
-                            var data_title = data.title.trim().toLowerCase();
-                            var data_content = data.content && data.content.trim().replace(/<[^>]+>/g, "").toLowerCase() || '';
-                            var data_url = data.url;
-                            var index_title = -1;
-                            var index_content = -1;
-                            var first_occur = -1;
-                            // only match artiles with not empty contents
-                            if (data_content !== '') {
-                                keywords.forEach(function (keyword, i) {
-                                    index_title = data_title.indexOf(keyword);
-                                    index_content = data_content.indexOf(keyword);
-
-                                    if (index_title < 0 && index_content < 0) {
-                                        isMatch = false;
-                                    } else {
-                                        hasResult = true
-                                        if (index_content < 0) {
-                                            index_content = 0;
-                                        }
-                                        if (i == 0) {
-                                            first_occur = index_content;
-                                        }
-                                    }
-                                });
-                            } else {
-                                isMatch = false;
-                            }
-                            // show search results
-                            if (isMatch) {
-                                str += `<li class='result-item'><a href='${data_url}' class='result-item-detail'> <span class="title">${data_title}</span>`;
-                                var content = data.content.trim().replace(/<[^>]+>/g, "");
-                                if (first_occur >= 0) {
-                                    // cut out 200 characters
-                                    var start = first_occur - 40;
-                                    var end = first_occur + 160;
-
-                                    if (start < 0) {
-                                        start = 0;
-                                    }
-
-                                    if (start == 0) {
-                                        end = 200;
-                                    }
-
-                                    if (end > content.length) {
-                                        end = content.length;
-                                    }
-
-                                    var match_content = content.substring(start, end);
-
-                                    // highlight all keywords
-                                    keywords.forEach(function (keyword) {
-                                        var regS = new RegExp(keyword, "gi");
-                                        match_content = match_content.replace(regS, `<em class="search-keyword">${keyword}</em>`);
-                                    });
-
-                                    str += `<span class="content"> ${match_content} ...</span></a>`;
-                                }
-                                str += "</li>";
-                            }
-                        });
-                        str += "</ul>";
-                        if(hasResult) {
-                            $resultPanel.innerHTML = str;
-                        } else {
-                            $resultPanel.innerHTML = text;
-                        }
-
-                    },
-                    complete: function() {
-                        setTimeout(() => {
-                                const loadingBar = $('.search-loading-bar') 
-                                loadingBar.css({
-                                    width:'0%',
-                                    display: 'none'
-                                });
-                        }, 300)
-                    }
-                });
-            })
-
-        });
-    }
-
-    $(document).ready(function() {
-        $('.modal-close').click(function () { 
-            $("#u-search").fadeOut();
-            $("body > .wrapper").removeClass("modal-active")
-        })
-
-        $('.modal-overlay').click(function() {
-            $("#u-search").fadeOut();
-            $("body > .wrapper").removeClass("modal-active")
-        })
-        search(null, ".form-search", false)
-        search("#u-search-modal-form .form-input", ".u-search-modal-form", true)
-    })
-</script>
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
 
 
 
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"www.baidu.com","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
 <meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+
+
 <body>
-    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
-        <nav class="navbar">
-    <div class="container">
-        <div class="navbar-header header-logo"><a href="/">hzjsea</a></div>
-        <div class="menu navbar-right">
-            
-            
-    <div class="search ">
-        <div class="search-btn" onClick="searchToggle()">
-            <img src="/image/search.png" class="search-btn-img" />
-        </div>
-        <form class="form-search">
-            <input class="input" placeholder="Searching" autocomplete="off" id="pc-search-input"/>
-        </form>
-    </div>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
 
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
 
-            
-                <a class="menu-item" href="/archives">文章</a>
-            
-                <a class="menu-item" href="/category">分类</a>
-            
-                <a class="menu-item" href="/tag">标签</a>
-            
-                <a class="menu-item" href="/about">关于</a>
-            
-            <input id="switch_default" type="checkbox" class="switch_default">
-            <label for="switch_default" class="toggleBtn"></label>
-        </div>
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                Home
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                Archives
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                Categories
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                Tags
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                About
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
     </div>
+  </div>
 </nav>
 
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="go库net">
+              
+            </span>
 
-<nav class="navbar-mobile" id="nav-mobile">
-    <div class="container">
-        <div class="navbar-header">
-            <div>
-                <a href="/">hzjsea</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
-            </div>
-            <div class="navbar-mobile-right">
-                
-                
-    <div class="search ">
-        <div class="search-btn" onClick="searchToggle()">
-            <img src="/image/search.png" class="search-btn-img" />
-        </div>
-        <form class="form-search">
-            <input class="input" placeholder="Searching" autocomplete="off" id="mobile-search-input"/>
-        </form>
-    </div>
-
-
-                <div class="menu-toggle" onclick="mobileBtn()">&#9776; 目录</div>
-            </div>
             
-        </div>
-        <div class="menu" id="mobile-menu">
-            
-                <a class="menu-item" href="/archives">文章</a>
-            
-                <a class="menu-item" href="/category">分类</a>
-            
-                <a class="menu-item" href="/tag">标签</a>
-            
-                <a class="menu-item" href="/about">关于</a>
-            
-        </div>
-    </div>
-</nav>
-
-        <div class="main">
-			<!-- Chic/layout.ejs -->
- <div id="u-search">
-        <div class="modal">
-            <div class="modal-header">
-                <div class="container">
-                    <form id="u-search-modal-form" class="u-search-modal-form">
-                        <button type="submit" class="form-submit-btn">
-                            <img src="/image/search.png" class="search-btn-img" />
-                        </button>
-                        <input placeholder="搜索文章。。。" class="form-input" id="modal-form-input">
-                    </form>
-                    <a class="modal-close">x</a>
-                </div>
-                <div class="search-loading">
-                    <div class="search-loading-bar"></div>
-                </div>
-            </div>
-            <div class="modal-body">
-                <!-- ul 格式如下 -->
-                <!-- <ul class="modal-results">
-                    <li class="result-item">
-                        <a class="result-item-detail">
-                            <span class="title">页面配置</span>
-                            <span class="content">
-                                content
-                            </span>
-                        </a>
-                    </li>
-                </ul> -->
-            </div>
-        </div>
-        <div class="modal-overlay"></div>
-    </div>
-            <div class="container">
-    
-    
-    <div class="post-toc">
-    <div class="tocbot-list">
-    </div>
-    <div class="tocbot-list-menu">
-        <a class="tocbot-toc-expand" onclick="expand_toc()">全部展开</a>
-        <a onclick="go_top()">回到顶部</a>
-        <a onclick="go_bottom()">回到底部</a>
-    </div>
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-12-11 11:57" pubdate>
+        December 11, 2020 am
+      </time>
+    </span>
+  
 </div>
 
-<script>
-    document.ready(
-        function () {
-            tocbot.init({
-                tocSelector: '.tocbot-list',
-                contentSelector: '.post-content',
-                headingSelector: 'h1, h2, h3, h4, h5',
-                collapseDepth: 1,
-                orderedList: false,
-                scrollSmooth: true,
-            })
-        }
-    )
-
-    function expand_toc() {
-        var b = document.querySelector(".tocbot-toc-expand");
-        tocbot.init({
-            tocSelector: '.tocbot-list',
-            contentSelector: '.post-content',
-            headingSelector: 'h1, h2, h3, h4, h5',
-            collapseDepth: 6,
-            orderedList: false,
-            scrollSmooth: true,
-        });
-        b.setAttribute("onclick", "collapse_toc()");
-        b.innerHTML = "全部折叠"
-    }
-
-    function collapse_toc() {
-        var b = document.querySelector(".tocbot-toc-expand");
-        tocbot.init({
-            tocSelector: '.tocbot-list',
-            contentSelector: '.post-content',
-            headingSelector: 'h1, h2, h3, h4, h5',
-            collapseDepth: 1,
-            orderedList: false,
-            scrollSmooth: true,
-        });
-        b.setAttribute("onclick", "expand_toc()");
-        b.innerHTML = "全部展开"
-    }
-
-    function go_top() {
-        window.scrollTo(0, 0);
-    }
-
-    function go_bottom() {
-        window.scrollTo(0, document.body.scrollHeight);
-    }
-
-</script>
+<div class="mt-1">
+  
     
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2.3k 字
+    </span>
+  
 
+  
     
-    <article class="post-wrap">
-        <header class="post-header">
-            <h1 class="post-title">go库net</h1>
-            
-            <div class="post-meta">
-                
-                作者： <a itemprop="author" rel="author" href="/">hzjsea</a>&nbsp;
-                
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      34
+       分钟
+    </span>
+  
 
-                
-                <span class="post-time">
-                    创建日期： <a
-                        href="#">December 11, 2020&nbsp;&nbsp;11:57:08</a>
-                </span>&nbsp;
-                
-                
-                <span class="post-category">
-                    分类：
-                    
-                    <a href="/categories/golang/">golang</a>&nbsp;
-                    
-                </span>
-                
-                
-                状态：<a href="#">SNAPSHOT</a>
-                
-            </div>
-            
-        </header>
+  
+  
+</div>
 
-        <div class="post-content">
-            <a id="more"></a>
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">go库net</h1>
+            
+            <div class="markdown-body">
+              <a id="more"></a>
 
 <h1 id="go库net"><a href="#go库net" class="headerlink" title="go库net"></a>go库net</h1><p>官方库 中文文档<br><a target="_blank" rel="noopener" href="https://studygolang.com/pkgdoc">https://studygolang.com/pkgdoc</a><br>官方库 英文文档<br><a target="_blank" rel="noopener" href="https://golang.org/pkg/net/#IP">https://golang.org/pkg/net/#IP</a></p>
 <h2 id="Net库"><a href="#Net库" class="headerlink" title="Net库"></a>Net库</h2><p>首先是net库下的方法,我们先过滤掉interface的内容,先来看实例类的生成也就是struct这一块</p>
@@ -469,273 +239,246 @@
 <li>拨号dail</li>
 <li>监听</li>
 </ul>
-<p><img src="http://img.noback.top/2020-12-15-15-44-41.png" alt="2020-12-15-15-44-41"></p>
-<h2 id="IP地址"><a href="#IP地址" class="headerlink" title="IP地址"></a>IP地址</h2><pre class=" language-bash"><code class="language-bash"><span class="token function">type</span> IP <span class="token punctuation">[</span><span class="token punctuation">]</span>byte
-func IPv4<span class="token punctuation">(</span>a, b, c, d byte<span class="token punctuation">)</span> IP
-func ParseIP<span class="token punctuation">(</span>s string<span class="token punctuation">)</span> IP</code></pre>
+<p><img src="http://img.noback.top/2020-12-15-15-44-41.png" srcset="/img/loading.gif" alt="2020-12-15-15-44-41"></p>
+<h2 id="IP地址"><a href="#IP地址" class="headerlink" title="IP地址"></a>IP地址</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre class=" language-hljs bash"><span class="hljs-built_in"><code class="language-hljs bash"><span class="hljs-built_in">type</span> IP []byte<br>func IPv4(a, b, c, d byte) IP<br>func ParseIP(s string) IP<br></code></pre></td></tr></table></figure>
 <p>实例化IP地址有如下两种方法</p>
-<pre class=" language-go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-    ip2 <span class="token operator">:=</span> net<span class="token punctuation">.</span><span class="token function">IPv4</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">,</span><span class="token number">5</span><span class="token punctuation">,</span><span class="token number">41</span><span class="token punctuation">)</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>ip2<span class="token punctuation">)</span>
-
-    ip3 <span class="token operator">:=</span> <span class="token string">"127.0.0.1"</span>
-    res<span class="token operator">:=</span>net<span class="token punctuation">.</span><span class="token function">ParseIP</span><span class="token punctuation">(</span>ip3<span class="token punctuation">)</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>res<span class="token punctuation">)</span>
-<span class="token punctuation">}</span></code></pre>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre class=" language-hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span>&#123;<br>	ip2 := net.IPv4(<span class="hljs-number">10</span>,<span class="hljs-number">0</span>,<span class="hljs-number">5</span>,<span class="hljs-number">41</span>)<br>	fmt.Println(ip2)<br>	<br>	ip3 := <span class="hljs-string"><code class="language-hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span>&#123;<br>	ip2 := net.IPv4(<span class="hljs-number">10</span>,<span class="hljs-number">0</span>,<span class="hljs-number">5</span>,<span class="hljs-number">41</span>)<br>	fmt.Println(ip2)<br>	<br>	ip3 := <span class="hljs-string">"127.0.0.1"</span><br>	res:=net.ParseIP(ip3)<br>	fmt.Println(res)<br>}<br></code></pre></td></tr></table></figure>
 <p>IP类型是代表单个IP地址的<code>[]byte</code>切片。本包的函数都可以接受4字节（IPv4）和16字节（IPv6）的切片作为输入。<br>注意，IP地址是IPv4地址还是IPv6地址是语义上的属性，而不取决于切片的长度：16字节的切片也可以是IPv4地址。</p>
-<h2 id="掩码"><a href="#掩码" class="headerlink" title="掩码"></a>掩码</h2><pre class=" language-bash"><code class="language-bash"><span class="token function">type</span> IPMask <span class="token punctuation">[</span><span class="token punctuation">]</span>byte
-func IPv4Mask<span class="token punctuation">(</span>a, b, c, d byte<span class="token punctuation">)</span> IPMask
-func CIDRMask<span class="token punctuation">(</span>ones, bits int<span class="token punctuation">)</span> IPMask</code></pre>
+<h2 id="掩码"><a href="#掩码" class="headerlink" title="掩码"></a>掩码</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre class=" language-hljs bash"><span class="hljs-built_in"><code class="language-hljs bash"><span class="hljs-built_in">type</span> IPMask []byte<br>func IPv4Mask(a, b, c, d byte) IPMask<br>func CIDRMask(ones, bits int) IPMask<br></code></pre></td></tr></table></figure>
 <p>IPMask代表一个IP地址的掩码<br>IPv4Mask返回一个4字节格式的IPv4掩码a.b.c.d<br>CIDRMask返回一个IPMask类型值，该返回值总共有bits个字位，其中前ones个字位都是1，其余字位都是0</p>
-<pre class=" language-go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre class=" language-hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span>&#123;<br><br>	mask:=net.IPv4Mask(<span class="hljs-number">255</span>,<span class="hljs-number">255</span>,<span class="hljs-number">255</span>,<span class="hljs-number">0</span>)<br>    fmt.Println(mask)<br>    <br>    mask2:=net.CIDRMask(<span class="hljs-number">20</span>,<span class="hljs-number">32</span>)<br>	fmt.Println(mask2) <span class="hljs-comment"><code class="language-hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span>&#123;<br><br>	mask:=net.IPv4Mask(<span class="hljs-number">255</span>,<span class="hljs-number">255</span>,<span class="hljs-number">255</span>,<span class="hljs-number">0</span>)<br>    fmt.Println(mask)<br>    <br>    mask2:=net.CIDRMask(<span class="hljs-number">20</span>,<span class="hljs-number">32</span>)<br>	fmt.Println(mask2) <span class="hljs-comment">// fffff000</span><br>}<br></code></pre></td></tr></table></figure>
 
-    mask<span class="token operator">:=</span>net<span class="token punctuation">.</span><span class="token function">IPv4Mask</span><span class="token punctuation">(</span><span class="token number">255</span><span class="token punctuation">,</span><span class="token number">255</span><span class="token punctuation">,</span><span class="token number">255</span><span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">)</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>mask<span class="token punctuation">)</span>
 
-    mask2<span class="token operator">:=</span>net<span class="token punctuation">.</span><span class="token function">CIDRMask</span><span class="token punctuation">(</span><span class="token number">20</span><span class="token punctuation">,</span><span class="token number">32</span><span class="token punctuation">)</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>mask2<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// fffff000</span>
-<span class="token punctuation">}</span></code></pre>
 <h2 id="IPNet"><a href="#IPNet" class="headerlink" title="IPNet"></a>IPNet</h2><p>IPNet表示一个ip网络</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token function">type</span> IPNet struct <span class="token punctuation">{</span>
-    IP   IP     // 网络地址
-    Mask IPMask // 子网掩码
-<span class="token punctuation">}</span>
-func ParseCIDR<span class="token punctuation">(</span>s string<span class="token punctuation">)</span> <span class="token punctuation">(</span>IP, *IPNet, error<span class="token punctuation">)</span>
-func <span class="token punctuation">(</span>n *IPNet<span class="token punctuation">)</span> Contains<span class="token punctuation">(</span>ip IP<span class="token punctuation">)</span> bool
-func <span class="token punctuation">(</span>n *IPNet<span class="token punctuation">)</span> Network<span class="token punctuation">(</span><span class="token punctuation">)</span> string
-func <span class="token punctuation">(</span>n *IPNet<span class="token punctuation">)</span> String<span class="token punctuation">(</span><span class="token punctuation">)</span> string</code></pre>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre class=" language-hljs bash"><span class="hljs-built_in"><code class="language-hljs bash"><span class="hljs-built_in">type</span> IPNet struct {<br>    IP   IP     // 网络地址<br>    Mask IPMask // 子网掩码<br>}<br>func ParseCIDR(s string) (IP, *IPNet, error)<br>func (n *IPNet) Contains(ip IP) bool<br>func (n *IPNet) Network() string<br>func (n *IPNet) String() string<br></code></pre></td></tr></table></figure>
 <p>ParseCIDR 返回一个IP地址和一个IPNET实例<br>Contains报告该网络是否包含地址ip。<br>Network返回网络类型名：”ip+net”，注意该类型名是不合法的<br>String 字符串输出</p>
-<pre class=" language-go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-    ip<span class="token punctuation">,</span>ipadress<span class="token punctuation">,</span>err <span class="token operator">:=</span> net<span class="token punctuation">.</span><span class="token function">ParseCIDR</span><span class="token punctuation">(</span><span class="token string">"192.168.20.1/20"</span><span class="token punctuation">)</span>
-    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token punctuation">{</span>
-        fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token boolean">nil</span><span class="token punctuation">)</span>
-    <span class="token punctuation">}</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"ip地址是"</span><span class="token punctuation">,</span>ip<span class="token punctuation">)</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"ipaddress是"</span><span class="token punctuation">,</span>ipadress<span class="token punctuation">)</span>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre class=" language-hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span>&#123;<br>	ip,ipadress,err := net.ParseCIDR(<span class="hljs-string">&quot;192.168.20.1/20&quot;</span>)<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span>&#123;<br>		fmt.Println(<span class="hljs-literal">nil</span>)<br>	&#125;<br>	fmt.Println(<span class="hljs-string">&quot;ip地址是&quot;</span>,ip)<br>	fmt.Println(<span class="hljs-string">&quot;ipaddress是&quot;</span>,ipadress)<br><br>	<span class="hljs-comment">// 查看ip是否在ip段内</span><br>	ip2:=net.IPv4(<span class="hljs-number">10</span>,<span class="hljs-number">0</span>,<span class="hljs-number">6</span>,<span class="hljs-number">55</span>)<br>	res:=ipadress.Contains(ip2)<br>	fmt.Println(res)<br><br>	<span class="hljs-comment">// 返回网络类型</span><br>	fmt.Println(ipadress.Network())<br><br>	<span class="hljs-comment"><code class="language-hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span>&#123;<br>	ip,ipadress,err := net.ParseCIDR(<span class="hljs-string">&quot;192.168.20.1/20&quot;</span>)<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span>&#123;<br>		fmt.Println(<span class="hljs-literal">nil</span>)<br>	&#125;<br>	fmt.Println(<span class="hljs-string">&quot;ip地址是&quot;</span>,ip)<br>	fmt.Println(<span class="hljs-string">&quot;ipaddress是&quot;</span>,ipadress)<br><br>	<span class="hljs-comment">// 查看ip是否在ip段内</span><br>	ip2:=net.IPv4(<span class="hljs-number">10</span>,<span class="hljs-number">0</span>,<span class="hljs-number">6</span>,<span class="hljs-number">55</span>)<br>	res:=ipadress.Contains(ip2)<br>	fmt.Println(res)<br><br>	<span class="hljs-comment">// 返回网络类型</span><br>	fmt.Println(ipadress.Network())<br><br>	<span class="hljs-comment">//</span><br>	fmt.Println(ipadress.String())<br>}<br></code></pre></td></tr></table></figure>
 
-    <span class="token comment" spellcheck="true">// 查看ip是否在ip段内</span>
-    ip2<span class="token operator">:=</span>net<span class="token punctuation">.</span><span class="token function">IPv4</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">,</span><span class="token number">6</span><span class="token punctuation">,</span><span class="token number">55</span><span class="token punctuation">)</span>
-    res<span class="token operator">:=</span>ipadress<span class="token punctuation">.</span><span class="token function">Contains</span><span class="token punctuation">(</span>ip2<span class="token punctuation">)</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>res<span class="token punctuation">)</span>
-
-    <span class="token comment" spellcheck="true">// 返回网络类型</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>ipadress<span class="token punctuation">.</span><span class="token function">Network</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-
-    <span class="token comment" spellcheck="true">//</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>ipadress<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-<span class="token punctuation">}</span></code></pre>
-<h2 id="拨号dail"><a href="#拨号dail" class="headerlink" title="拨号dail"></a>拨号dail</h2><pre class=" language-bash"><code class="language-bash"><span class="token function">type</span> Conn interface <span class="token punctuation">{</span>
-    // Read从连接中读取数据
-    // Read方法可能会在超过某个固定时间限制后超时返回错误，该错误的Timeout<span class="token punctuation">(</span><span class="token punctuation">)</span>方法返回真
-    Read<span class="token punctuation">(</span>b <span class="token punctuation">[</span><span class="token punctuation">]</span>byte<span class="token punctuation">)</span> <span class="token punctuation">(</span>n int, err error<span class="token punctuation">)</span>
-    // Write从连接中写入数据
-    // Write方法可能会在超过某个固定时间限制后超时返回错误，该错误的Timeout<span class="token punctuation">(</span><span class="token punctuation">)</span>方法返回真
-    Write<span class="token punctuation">(</span>b <span class="token punctuation">[</span><span class="token punctuation">]</span>byte<span class="token punctuation">)</span> <span class="token punctuation">(</span>n int, err error<span class="token punctuation">)</span>
-    // Close方法关闭该连接
-    // 并会导致任何阻塞中的Read或Write方法不再阻塞并返回错误
-    Close<span class="token punctuation">(</span><span class="token punctuation">)</span> error
-    // 返回本地网络地址
-    LocalAddr<span class="token punctuation">(</span><span class="token punctuation">)</span> Addr
-    // 返回远端网络地址
-    RemoteAddr<span class="token punctuation">(</span><span class="token punctuation">)</span> Addr
-    // 设定该连接的读写deadline，等价于同时调用SetReadDeadline和SetWriteDeadline
-    // deadline是一个绝对时间，超过该时间后I/O操作就会直接因超时失败返回而不会阻塞
-    // deadline对之后的所有I/O操作都起效，而不仅仅是下一次的读或写操作
-    // 参数t为零值表示不设置期限
-    SetDeadline<span class="token punctuation">(</span>t time.Time<span class="token punctuation">)</span> error
-    // 设定该连接的读操作deadline，参数t为零值表示不设置期限
-    SetReadDeadline<span class="token punctuation">(</span>t time.Time<span class="token punctuation">)</span> error
-    // 设定该连接的写操作deadline，参数t为零值表示不设置期限
-    // 即使写入超时，返回值n也可能<span class="token operator">></span>0，说明成功写入了部分数据
-    SetWriteDeadline<span class="token punctuation">(</span>t time.Time<span class="token punctuation">)</span> error
-<span class="token punctuation">}</span>
-
-func Dial<span class="token punctuation">(</span>network, address string<span class="token punctuation">)</span> <span class="token punctuation">(</span>Conn, error<span class="token punctuation">)</span>
-func DialTimeout<span class="token punctuation">(</span>network, address string, <span class="token function">timeout</span> time.Duration<span class="token punctuation">)</span> <span class="token punctuation">(</span>Conn, error<span class="token punctuation">)</span>
-func Pipe<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">(</span>Conn, Conn<span class="token punctuation">)</span></code></pre>
+<h2 id="拨号dail"><a href="#拨号dail" class="headerlink" title="拨号dail"></a>拨号dail</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre class=" language-hljs bash"><span class="hljs-built_in"><code class="language-hljs bash"><span class="hljs-built_in">type</span> Conn interface {<br>    // Read从连接中读取数据<br>    // Read方法可能会在超过某个固定时间限制后超时返回错误，该错误的Timeout()方法返回真<br>    Read(b []byte) (n int, err error)<br>    // Write从连接中写入数据<br>    // Write方法可能会在超过某个固定时间限制后超时返回错误，该错误的Timeout()方法返回真<br>    Write(b []byte) (n int, err error)<br>    // Close方法关闭该连接<br>    // 并会导致任何阻塞中的Read或Write方法不再阻塞并返回错误<br>    Close() error<br>    // 返回本地网络地址<br>    LocalAddr() Addr<br>    // 返回远端网络地址<br>    RemoteAddr() Addr<br>    // 设定该连接的读写deadline，等价于同时调用SetReadDeadline和SetWriteDeadline<br>    // deadline是一个绝对时间，超过该时间后I/O操作就会直接因超时失败返回而不会阻塞<br>    // deadline对之后的所有I/O操作都起效，而不仅仅是下一次的读或写操作<br>    // 参数t为零值表示不设置期限<br>    SetDeadline(t time.Time) error<br>    // 设定该连接的读操作deadline，参数t为零值表示不设置期限<br>    SetReadDeadline(t time.Time) error<br>    // 设定该连接的写操作deadline，参数t为零值表示不设置期限<br>    // 即使写入超时，返回值n也可能>0，说明成功写入了部分数据<br>    SetWriteDeadline(t time.Time) error<br>}<br><br>func Dial(network, address string) (Conn, error)<br>func DialTimeout(network, address string, timeout time.Duration) (Conn, error)<br>func Pipe() (Conn, Conn)<br></code></pre></td></tr></table></figure>
 <p>在网络network上连接地址address，并返回一个Conn接口。可用的网络类型有：<br>“tcp”、”tcp4”、”tcp6”、”udp”、”udp4”、”udp6”、”ip”、”ip4”、”ip6”、”unix”、”unixgram”、”unixpacket”</p>
-<pre class=" language-go"><code class="language-go"><span class="token keyword">package</span> main
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre class=" language-hljs go"><span class="hljs-keyword">package</span> main<br><br><span class="hljs-keyword">import</span> (<br>	<span class="hljs-string">&quot;fmt&quot;</span><br>	<span class="hljs-string">&quot;log&quot;</span><br>	<span class="hljs-string">&quot;net&quot;</span><br>	<span class="hljs-string">&quot;time&quot;</span><br>)<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span>&#123;<br>	ip3:= net.ParseIP(<span class="hljs-string">&quot;10.0.6.55&quot;</span>).String()<br>	fmt.Println(ip3)<br>	<span class="hljs-comment">// 几种连接的方式</span><br>	<span class="hljs-comment">// tcp 指定端口</span><br>	conn,err := net.Dial(<span class="hljs-string">&quot;tcp&quot;</span>,ip3+<span class="hljs-string">&quot;:89&quot;</span>)<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span>&#123;<br>		log.Fatal(err)<br>	&#125;<br>	<span class="hljs-comment">// udp 指定端口</span><br>	<span class="hljs-comment">//conn,err = net.Dial(&quot;udp&quot;,ip3+&quot;:888&quot;)</span><br>	<span class="hljs-comment">//if err!=nil&#123;</span><br>	<span class="hljs-comment">//	log.Fatal(err)</span><br>	<span class="hljs-comment">//&#125;</span><br>	<span class="hljs-comment">//// icmp连接 不需要端口</span><br>	<span class="hljs-comment">//conn,err = net.Dial(&quot;ip4:icmp&quot;,ip3)</span><br>	<span class="hljs-comment">//if err != nil&#123;</span><br>	<span class="hljs-comment">//	log.Fatal(err)</span><br>	<span class="hljs-comment">//&#125;</span><br>	<span class="hljs-comment">//</span><br>	<span class="hljs-comment">//// icmp连接,使用协议编号</span><br>	<span class="hljs-comment">//conn,err = net.Dial(&quot;ip4:1&quot;,ip3)</span><br>	<span class="hljs-comment">//if err != nil&#123;</span><br>	<span class="hljs-comment">//	log.Fatal(err)</span><br>	<span class="hljs-comment">//&#125;</span><br>	<span class="hljs-comment">// conn是一个实例化后的Conn实例</span><br>	<span class="hljs-comment">// 关闭连接</span><br>	<span class="hljs-comment">//defer conn.Close()</span><br>	<span class="hljs-comment">// 本地地址</span><br>	fmt.Println(conn.LocalAddr())<br>	<span class="hljs-comment">// 设置连接死亡时间</span><br>	err = conn.SetDeadline(time.Now().Add(time.Second*<span class="hljs-number">5</span>))<br>	fmt.Println(err)<br>	<span class="hljs-comment">// 设置连接读的死亡时间</span><br>	err = conn.SetReadDeadline(time.Now().Add(time.Second*<span class="hljs-number">5</span>))<br>	<span class="hljs-comment">// 设置连接写的死亡时间</span><br>	err = conn.SetWriteDeadline(time.Now().Add(time.Second*<span class="hljs-number">5</span>))<br>	<span class="hljs-comment">// 显示远端地址</span><br>	fmt.Println(conn.RemoteAddr())<br>	<span class="hljs-comment">// 从连接中读取数据写入到变量当中去</span><br>	message := <span class="hljs-built_in">make</span>([]<span class="hljs-keyword">byte</span>,<span class="hljs-number">512</span>)<br>	n,err  := conn.Read(message)<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span>&#123;<br>		fmt.Println(<span class="hljs-string">&quot;读取不到数据&quot;</span>)<br>	&#125;<br>	fmt.Println(n)<br>	<span class="hljs-comment">// 像连接中写入数据</span><br>	n,err = conn.Write([]<span class="hljs-keyword">byte</span>(<span class="hljs-string">&quot;helloworld&quot;</span>))<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span>&#123;<br>		fmt.Println(<span class="hljs-string"><code class="language-hljs go"><span class="hljs-keyword">package</span> main<br><br><span class="hljs-keyword">import</span> (<br>	<span class="hljs-string">&quot;fmt&quot;</span><br>	<span class="hljs-string">&quot;log&quot;</span><br>	<span class="hljs-string">&quot;net&quot;</span><br>	<span class="hljs-string">&quot;time&quot;</span><br>)<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span>&#123;<br>	ip3:= net.ParseIP(<span class="hljs-string">&quot;10.0.6.55&quot;</span>).String()<br>	fmt.Println(ip3)<br>	<span class="hljs-comment">// 几种连接的方式</span><br>	<span class="hljs-comment">// tcp 指定端口</span><br>	conn,err := net.Dial(<span class="hljs-string">&quot;tcp&quot;</span>,ip3+<span class="hljs-string">&quot;:89&quot;</span>)<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span>&#123;<br>		log.Fatal(err)<br>	&#125;<br>	<span class="hljs-comment">// udp 指定端口</span><br>	<span class="hljs-comment">//conn,err = net.Dial(&quot;udp&quot;,ip3+&quot;:888&quot;)</span><br>	<span class="hljs-comment">//if err!=nil&#123;</span><br>	<span class="hljs-comment">//	log.Fatal(err)</span><br>	<span class="hljs-comment">//&#125;</span><br>	<span class="hljs-comment">//// icmp连接 不需要端口</span><br>	<span class="hljs-comment">//conn,err = net.Dial(&quot;ip4:icmp&quot;,ip3)</span><br>	<span class="hljs-comment">//if err != nil&#123;</span><br>	<span class="hljs-comment">//	log.Fatal(err)</span><br>	<span class="hljs-comment">//&#125;</span><br>	<span class="hljs-comment">//</span><br>	<span class="hljs-comment">//// icmp连接,使用协议编号</span><br>	<span class="hljs-comment">//conn,err = net.Dial(&quot;ip4:1&quot;,ip3)</span><br>	<span class="hljs-comment">//if err != nil&#123;</span><br>	<span class="hljs-comment">//	log.Fatal(err)</span><br>	<span class="hljs-comment">//&#125;</span><br>	<span class="hljs-comment">// conn是一个实例化后的Conn实例</span><br>	<span class="hljs-comment">// 关闭连接</span><br>	<span class="hljs-comment">//defer conn.Close()</span><br>	<span class="hljs-comment">// 本地地址</span><br>	fmt.Println(conn.LocalAddr())<br>	<span class="hljs-comment">// 设置连接死亡时间</span><br>	err = conn.SetDeadline(time.Now().Add(time.Second*<span class="hljs-number">5</span>))<br>	fmt.Println(err)<br>	<span class="hljs-comment">// 设置连接读的死亡时间</span><br>	err = conn.SetReadDeadline(time.Now().Add(time.Second*<span class="hljs-number">5</span>))<br>	<span class="hljs-comment">// 设置连接写的死亡时间</span><br>	err = conn.SetWriteDeadline(time.Now().Add(time.Second*<span class="hljs-number">5</span>))<br>	<span class="hljs-comment">// 显示远端地址</span><br>	fmt.Println(conn.RemoteAddr())<br>	<span class="hljs-comment">// 从连接中读取数据写入到变量当中去</span><br>	message := <span class="hljs-built_in">make</span>([]<span class="hljs-keyword">byte</span>,<span class="hljs-number">512</span>)<br>	n,err  := conn.Read(message)<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span>&#123;<br>		fmt.Println(<span class="hljs-string">&quot;读取不到数据&quot;</span>)<br>	&#125;<br>	fmt.Println(n)<br>	<span class="hljs-comment">// 像连接中写入数据</span><br>	n,err = conn.Write([]<span class="hljs-keyword">byte</span>(<span class="hljs-string">&quot;helloworld&quot;</span>))<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span>&#123;<br>		fmt.Println(<span class="hljs-string">"写不了数据"</span>)<br>	}<br>	fmt.Println(r)<br>}<br></code></pre></td></tr></table></figure>
 
-<span class="token keyword">import</span> <span class="token punctuation">(</span>
-    <span class="token string">"fmt"</span>
-    <span class="token string">"log"</span>
-    <span class="token string">"net"</span>
-    <span class="token string">"time"</span>
-<span class="token punctuation">)</span>
+<h2 id="监听"><a href="#监听" class="headerlink" title="监听"></a>监听</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre class=" language-hljs bash"><span class="hljs-built_in">type</span> Listener interface &#123;<br>    // Addr返回该接口的网络地址<br>    Addr() Addr<br>    // Accept等待并返回下一个连接到该接口的连接<br>    Accept() (c Conn, err error)<br>    // Close关闭该接口，并使任何阻塞的Accept操作都会不再阻塞并返回错误。<br>    Close() error<br>&#125;<br>func Listen(net, laddr string) (Listener, error)<br><span class="hljs-built_in"><code class="language-hljs bash"><span class="hljs-built_in">type</span> Listener interface &#123;<br>    // Addr返回该接口的网络地址<br>    Addr() Addr<br>    // Accept等待并返回下一个连接到该接口的连接<br>    Accept() (c Conn, err error)<br>    // Close关闭该接口，并使任何阻塞的Accept操作都会不再阻塞并返回错误。<br>    Close() error<br>&#125;<br>func Listen(net, laddr string) (Listener, error)<br><span class="hljs-built_in">type</span> Addr interface {<br>    Network() string // 网络名<br>    String() string  // 字符串格式的地址<br>}<br></code></pre></td></tr></table></figure>
 
-<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-    ip3<span class="token operator">:=</span> net<span class="token punctuation">.</span><span class="token function">ParseIP</span><span class="token punctuation">(</span><span class="token string">"10.0.6.55"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>ip3<span class="token punctuation">)</span>
-    <span class="token comment" spellcheck="true">// 几种连接的方式</span>
-    <span class="token comment" spellcheck="true">// tcp 指定端口</span>
-    conn<span class="token punctuation">,</span>err <span class="token operator">:=</span> net<span class="token punctuation">.</span><span class="token function">Dial</span><span class="token punctuation">(</span><span class="token string">"tcp"</span><span class="token punctuation">,</span>ip3<span class="token operator">+</span><span class="token string">":89"</span><span class="token punctuation">)</span>
-    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token punctuation">{</span>
-        log<span class="token punctuation">.</span><span class="token function">Fatal</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
-    <span class="token punctuation">}</span>
-    <span class="token comment" spellcheck="true">// udp 指定端口</span>
-    <span class="token comment" spellcheck="true">//conn,err = net.Dial("udp",ip3+":888")</span>
-    <span class="token comment" spellcheck="true">//if err!=nil{</span>
-    <span class="token comment" spellcheck="true">//    log.Fatal(err)</span>
-    <span class="token comment" spellcheck="true">//}</span>
-    <span class="token comment" spellcheck="true">//// icmp连接 不需要端口</span>
-    <span class="token comment" spellcheck="true">//conn,err = net.Dial("ip4:icmp",ip3)</span>
-    <span class="token comment" spellcheck="true">//if err != nil{</span>
-    <span class="token comment" spellcheck="true">//    log.Fatal(err)</span>
-    <span class="token comment" spellcheck="true">//}</span>
-    <span class="token comment" spellcheck="true">//</span>
-    <span class="token comment" spellcheck="true">//// icmp连接,使用协议编号</span>
-    <span class="token comment" spellcheck="true">//conn,err = net.Dial("ip4:1",ip3)</span>
-    <span class="token comment" spellcheck="true">//if err != nil{</span>
-    <span class="token comment" spellcheck="true">//    log.Fatal(err)</span>
-    <span class="token comment" spellcheck="true">//}</span>
-    <span class="token comment" spellcheck="true">// conn是一个实例化后的Conn实例</span>
-    <span class="token comment" spellcheck="true">// 关闭连接</span>
-    <span class="token comment" spellcheck="true">//defer conn.Close()</span>
-    <span class="token comment" spellcheck="true">// 本地地址</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>conn<span class="token punctuation">.</span><span class="token function">LocalAddr</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-    <span class="token comment" spellcheck="true">// 设置连接死亡时间</span>
-    err <span class="token operator">=</span> conn<span class="token punctuation">.</span><span class="token function">SetDeadline</span><span class="token punctuation">(</span>time<span class="token punctuation">.</span><span class="token function">Now</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Add</span><span class="token punctuation">(</span>time<span class="token punctuation">.</span>Second<span class="token operator">*</span><span class="token number">5</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
-    <span class="token comment" spellcheck="true">// 设置连接读的死亡时间</span>
-    err <span class="token operator">=</span> conn<span class="token punctuation">.</span><span class="token function">SetReadDeadline</span><span class="token punctuation">(</span>time<span class="token punctuation">.</span><span class="token function">Now</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Add</span><span class="token punctuation">(</span>time<span class="token punctuation">.</span>Second<span class="token operator">*</span><span class="token number">5</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-    <span class="token comment" spellcheck="true">// 设置连接写的死亡时间</span>
-    err <span class="token operator">=</span> conn<span class="token punctuation">.</span><span class="token function">SetWriteDeadline</span><span class="token punctuation">(</span>time<span class="token punctuation">.</span><span class="token function">Now</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Add</span><span class="token punctuation">(</span>time<span class="token punctuation">.</span>Second<span class="token operator">*</span><span class="token number">5</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-    <span class="token comment" spellcheck="true">// 显示远端地址</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>conn<span class="token punctuation">.</span><span class="token function">RemoteAddr</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-    <span class="token comment" spellcheck="true">// 从连接中读取数据写入到变量当中去</span>
-    message <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">,</span><span class="token number">512</span><span class="token punctuation">)</span>
-    n<span class="token punctuation">,</span>err  <span class="token operator">:=</span> conn<span class="token punctuation">.</span><span class="token function">Read</span><span class="token punctuation">(</span>message<span class="token punctuation">)</span>
-    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token punctuation">{</span>
-        fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"读取不到数据"</span><span class="token punctuation">)</span>
-    <span class="token punctuation">}</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>n<span class="token punctuation">)</span>
-    <span class="token comment" spellcheck="true">// 像连接中写入数据</span>
-    n<span class="token punctuation">,</span>err <span class="token operator">=</span> conn<span class="token punctuation">.</span><span class="token function">Write</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token function">byte</span><span class="token punctuation">(</span><span class="token string">"helloworld"</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token punctuation">{</span>
-        fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"写不了数据"</span><span class="token punctuation">)</span>
-    <span class="token punctuation">}</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>r<span class="token punctuation">)</span>
-<span class="token punctuation">}</span></code></pre>
-<h2 id="监听"><a href="#监听" class="headerlink" title="监听"></a>监听</h2><pre class=" language-bash"><code class="language-bash"><span class="token function">type</span> Listener interface <span class="token punctuation">{</span>
-    // Addr返回该接口的网络地址
-    Addr<span class="token punctuation">(</span><span class="token punctuation">)</span> Addr
-    // Accept等待并返回下一个连接到该接口的连接
-    Accept<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">(</span>c Conn, err error<span class="token punctuation">)</span>
-    // Close关闭该接口，并使任何阻塞的Accept操作都会不再阻塞并返回错误。
-    Close<span class="token punctuation">(</span><span class="token punctuation">)</span> error
-<span class="token punctuation">}</span>
-func Listen<span class="token punctuation">(</span>net, laddr string<span class="token punctuation">)</span> <span class="token punctuation">(</span>Listener, error<span class="token punctuation">)</span>
-<span class="token function">type</span> Addr interface <span class="token punctuation">{</span>
-    Network<span class="token punctuation">(</span><span class="token punctuation">)</span> string // 网络名
-    String<span class="token punctuation">(</span><span class="token punctuation">)</span> string  // 字符串格式的地址
-<span class="token punctuation">}</span></code></pre>
-<pre class=" language-go"><code class="language-go"><span class="token keyword">package</span> main
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre class=" language-hljs go"><span class="hljs-keyword">package</span> main<br><br><span class="hljs-keyword">import</span> (<br>	<span class="hljs-string">&quot;fmt&quot;</span><br>	<span class="hljs-string">&quot;log&quot;</span><br>	<span class="hljs-string">&quot;net&quot;</span><br>)<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;<br>	ip3 := net.ParseIP(<span class="hljs-string">&quot;10.0.6.55&quot;</span>).String()<br>	fmt.Println(ip3)<br><br>	localhost:=net.ParseIP(<span class="hljs-string">&quot;127.0.0.1&quot;</span>).String()<br>	fmt.Println(localhost)<br><br>	l,err := net.Listen(<span class="hljs-string">&quot;tcp&quot;</span>,localhost+<span class="hljs-string">&quot;:8080&quot;</span>)<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span>&#123;<br>		log.Fatal(err)<br>	&#125;<br>	<span class="hljs-keyword">defer</span> l.Close()<br><br>	<span class="hljs-comment">// 建立长连接</span><br>	<span class="hljs-comment">// 返回监听地址</span><br>	fmt.Println(l.Addr())<br>	<span class="hljs-comment">// 返回监听地址网络协议</span><br>	fmt.Println(l.Addr().Network())<br>	<span class="hljs-comment">// 返回监听地址字符串</span><br>	fmt.Println(l.Addr().String())<br><br>	<span class="hljs-keyword">for</span> &#123;<br>		<span class="hljs-comment">// 返回监听地址</span><br>		conn,err := l.Accept()<br>		<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span>&#123;<br>			log.Fatal(err)<br>		&#125;<br>		fmt.Printf(<span class="hljs-string">&quot;返回监听地址&quot;</span>,l.Addr())<br>		fmt.Println(conn)<br><br>		fmt.Println(conn.LocalAddr())<br>		<span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">package</span> main<br><br><span class="hljs-keyword">import</span> (<br>	<span class="hljs-string">&quot;fmt&quot;</span><br>	<span class="hljs-string">&quot;log&quot;</span><br>	<span class="hljs-string">&quot;net&quot;</span><br>)<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;<br>	ip3 := net.ParseIP(<span class="hljs-string">&quot;10.0.6.55&quot;</span>).String()<br>	fmt.Println(ip3)<br><br>	localhost:=net.ParseIP(<span class="hljs-string">&quot;127.0.0.1&quot;</span>).String()<br>	fmt.Println(localhost)<br><br>	l,err := net.Listen(<span class="hljs-string">&quot;tcp&quot;</span>,localhost+<span class="hljs-string">&quot;:8080&quot;</span>)<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span>&#123;<br>		log.Fatal(err)<br>	&#125;<br>	<span class="hljs-keyword">defer</span> l.Close()<br><br>	<span class="hljs-comment">// 建立长连接</span><br>	<span class="hljs-comment">// 返回监听地址</span><br>	fmt.Println(l.Addr())<br>	<span class="hljs-comment">// 返回监听地址网络协议</span><br>	fmt.Println(l.Addr().Network())<br>	<span class="hljs-comment">// 返回监听地址字符串</span><br>	fmt.Println(l.Addr().String())<br><br>	<span class="hljs-keyword">for</span> &#123;<br>		<span class="hljs-comment">// 返回监听地址</span><br>		conn,err := l.Accept()<br>		<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span>&#123;<br>			log.Fatal(err)<br>		&#125;<br>		fmt.Printf(<span class="hljs-string">&quot;返回监听地址&quot;</span>,l.Addr())<br>		fmt.Println(conn)<br><br>		fmt.Println(conn.LocalAddr())<br>		<span class="hljs-keyword">defer</span> conn.Close()<br>	}<br><br>}<br></code></pre></td></tr></table></figure>
 
-<span class="token keyword">import</span> <span class="token punctuation">(</span>
-    <span class="token string">"fmt"</span>
-    <span class="token string">"log"</span>
-    <span class="token string">"net"</span>
-<span class="token punctuation">)</span>
-
-<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    ip3 <span class="token operator">:=</span> net<span class="token punctuation">.</span><span class="token function">ParseIP</span><span class="token punctuation">(</span><span class="token string">"10.0.6.55"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>ip3<span class="token punctuation">)</span>
-
-    localhost<span class="token operator">:=</span>net<span class="token punctuation">.</span><span class="token function">ParseIP</span><span class="token punctuation">(</span><span class="token string">"127.0.0.1"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>localhost<span class="token punctuation">)</span>
-
-    l<span class="token punctuation">,</span>err <span class="token operator">:=</span> net<span class="token punctuation">.</span><span class="token function">Listen</span><span class="token punctuation">(</span><span class="token string">"tcp"</span><span class="token punctuation">,</span>localhost<span class="token operator">+</span><span class="token string">":8080"</span><span class="token punctuation">)</span>
-    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token punctuation">{</span>
-        log<span class="token punctuation">.</span><span class="token function">Fatal</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
-    <span class="token punctuation">}</span>
-    <span class="token keyword">defer</span> l<span class="token punctuation">.</span><span class="token function">Close</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-
-    <span class="token comment" spellcheck="true">// 建立长连接</span>
-    <span class="token comment" spellcheck="true">// 返回监听地址</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>l<span class="token punctuation">.</span><span class="token function">Addr</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-    <span class="token comment" spellcheck="true">// 返回监听地址网络协议</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>l<span class="token punctuation">.</span><span class="token function">Addr</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Network</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-    <span class="token comment" spellcheck="true">// 返回监听地址字符串</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>l<span class="token punctuation">.</span><span class="token function">Addr</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-
-    <span class="token keyword">for</span> <span class="token punctuation">{</span>
-        <span class="token comment" spellcheck="true">// 返回监听地址</span>
-        conn<span class="token punctuation">,</span>err <span class="token operator">:=</span> l<span class="token punctuation">.</span><span class="token function">Accept</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-        <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token punctuation">{</span>
-            log<span class="token punctuation">.</span><span class="token function">Fatal</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
-        <span class="token punctuation">}</span>
-        fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"返回监听地址"</span><span class="token punctuation">,</span>l<span class="token punctuation">.</span><span class="token function">Addr</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-        fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>conn<span class="token punctuation">)</span>
-
-        fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>conn<span class="token punctuation">.</span><span class="token function">LocalAddr</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-        <span class="token keyword">defer</span> conn<span class="token punctuation">.</span><span class="token function">Close</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-    <span class="token punctuation">}</span>
-
-<span class="token punctuation">}</span></code></pre>
 <h2 id="数值之间的比较"><a href="#数值之间的比较" class="headerlink" title="数值之间的比较"></a>数值之间的比较</h2><p>go里面最基本的就是以byte存在,他们之间的比较如下</p>
-<pre class=" language-go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">doti</span><span class="token punctuation">(</span> s <span class="token builtin">string</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-    <span class="token keyword">for</span> i<span class="token operator">:=</span><span class="token number">0</span><span class="token punctuation">;</span>i<span class="token operator">&lt;</span><span class="token function">len</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span><span class="token punctuation">;</span>i<span class="token operator">++</span> <span class="token punctuation">{</span>
-        <span class="token comment" spellcheck="true">//fmt.Println(s[i])</span>
-        fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token function">byte</span><span class="token punctuation">(</span><span class="token string">'0'</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-        fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token function">byte</span><span class="token punctuation">(</span><span class="token string">'9'</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre class=" language-hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">doti</span><span class="hljs-params">( s <span class="hljs-keyword">string</span>)</span><span class="hljs-params">()</span></span>&#123;<br>	<span class="hljs-keyword">for</span> i:=<span class="hljs-number">0</span>;i&lt;<span class="hljs-built_in">len</span>(s);i++ &#123;<br>		<span class="hljs-comment">//fmt.Println(s[i])</span><br>		fmt.Println(<span class="hljs-keyword">byte</span>(<span class="hljs-string">&#x27;0&#x27;</span>))<br>		fmt.Println(<span class="hljs-keyword">byte</span>(<span class="hljs-string">&#x27;9&#x27;</span>))<br><br>		<span class="hljs-keyword">if</span> s[i] &gt;= <span class="hljs-string">&#x27;0&#x27;</span> || s[i] &lt;= <span class="hljs-string">&#x27;9&#x27;</span>&#123;<br>			fmt.Println(<span class="hljs-string">&quot;存在于0-9之间&quot;</span>)<br>		&#125;<br>	&#125;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span>&#123;<br>    doti(<span class="hljs-string">&quot;127&quot;</span>)<br>&#125;<br><span class="hljs-comment">// 48</span><br><span class="hljs-comment">// 57</span><br><span class="hljs-comment">// 存在于0-9之间</span><br><span class="hljs-comment">// 48</span><br><span class="hljs-comment">// 57</span><br><span class="hljs-comment">// 存在于0-9之间</span><br><span class="hljs-comment">// 48</span><br><span class="hljs-comment">// 57</span><br><span class="hljs-comment"><code class="language-hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">doti</span><span class="hljs-params">( s <span class="hljs-keyword">string</span>)</span><span class="hljs-params">()</span></span>&#123;<br>	<span class="hljs-keyword">for</span> i:=<span class="hljs-number">0</span>;i&lt;<span class="hljs-built_in">len</span>(s);i++ &#123;<br>		<span class="hljs-comment">//fmt.Println(s[i])</span><br>		fmt.Println(<span class="hljs-keyword">byte</span>(<span class="hljs-string">&#x27;0&#x27;</span>))<br>		fmt.Println(<span class="hljs-keyword">byte</span>(<span class="hljs-string">&#x27;9&#x27;</span>))<br><br>		<span class="hljs-keyword">if</span> s[i] &gt;= <span class="hljs-string">&#x27;0&#x27;</span> || s[i] &lt;= <span class="hljs-string">&#x27;9&#x27;</span>&#123;<br>			fmt.Println(<span class="hljs-string">&quot;存在于0-9之间&quot;</span>)<br>		&#125;<br>	&#125;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span>&#123;<br>    doti(<span class="hljs-string">&quot;127&quot;</span>)<br>&#125;<br><span class="hljs-comment">// 48</span><br><span class="hljs-comment">// 57</span><br><span class="hljs-comment">// 存在于0-9之间</span><br><span class="hljs-comment">// 48</span><br><span class="hljs-comment">// 57</span><br><span class="hljs-comment">// 存在于0-9之间</span><br><span class="hljs-comment">// 48</span><br><span class="hljs-comment">// 57</span><br><span class="hljs-comment">// 存在于0-9之间</span><br></code></pre></td></tr></table></figure>
 
-        <span class="token keyword">if</span> s<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">>=</span> <span class="token string">'0'</span> <span class="token operator">||</span> s<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">&lt;=</span> <span class="token string">'9'</span><span class="token punctuation">{</span>
-            fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"存在于0-9之间"</span><span class="token punctuation">)</span>
-        <span class="token punctuation">}</span>
-    <span class="token punctuation">}</span>
-<span class="token punctuation">}</span>
 
-<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-    <span class="token function">doti</span><span class="token punctuation">(</span><span class="token string">"127"</span><span class="token punctuation">)</span>
-<span class="token punctuation">}</span>
-<span class="token comment" spellcheck="true">// 48</span>
-<span class="token comment" spellcheck="true">// 57</span>
-<span class="token comment" spellcheck="true">// 存在于0-9之间</span>
-<span class="token comment" spellcheck="true">// 48</span>
-<span class="token comment" spellcheck="true">// 57</span>
-<span class="token comment" spellcheck="true">// 存在于0-9之间</span>
-<span class="token comment" spellcheck="true">// 48</span>
-<span class="token comment" spellcheck="true">// 57</span>
-<span class="token comment" spellcheck="true">// 存在于0-9之间</span></code></pre>
-
-        </div>
-
-        
-        <section class="post-tags">
-            <div>
-                <span>标签：</span>
-                <span class="tag">
-                    
-                    
-                    <a href="/tags/go-library/"># go-library</a>
-                    
-                    <a href="/tags/go/"># go</a>
-                    
-                    
-                </span>
             </div>
+            <hr>
             <div>
-                <a href="javascript：window.history.back();">后退</a>
-                <span>· </span>
-                <a href="/">主页</a>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/golang/">golang</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/go/">go</a>
+                    
+                      <a class="hover-with-bg" href="/tags/go-library/">go-library</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/12/15/blog_back_new/golang/go%E5%BA%93net-http/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">go库net-http</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/12/11/blog_back_new/linux/linux%E5%91%BD%E4%BB%A4ncat/">
+                        <span class="hidden-mobile">linux命令ncat</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
             </div>
-        </section>
-        <section class="post-nav">
+
             
-            <a class="prev" rel="prev" href="/2020/12/15/blog_back_new/golang/go%E5%BA%93net-http/">go库net-http</a>
-            
-            
-            <a class="next" rel="next" href="/2020/12/11/blog_back_new/linux/linux%E5%91%BD%E4%BB%A4ncat/">linux命令ncat</a>
-            
-        </section>
-    </article>
-</div>
+          </article>
         </div>
-        <footer id="footer" class="footer">
-    <div class="copyright">
+      </div>
     </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
 </footer>
 
-    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+
+
 </body>
 </html>

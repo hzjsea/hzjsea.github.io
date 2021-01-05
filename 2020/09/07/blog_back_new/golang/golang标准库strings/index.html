@@ -1,463 +1,233 @@
+
+
 <!DOCTYPE html>
-<html lang="cn">
+<html lang="cn" data-default-color-scheme=&#34;auto&#34;>
+
+
+
 <head>
-    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-<meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="hzjsea">
+  <meta name="keywords" content="">
+  <title>golang标准库strings - hzjsea</title>
 
-    <meta name="author" content="hzjsea">
-
-
-
-
-
-
-<title>golang标准库strings | hzjsea</title>
-
-
-
-    <link rel="icon" href="/favicon.ico">
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
 
 
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
 
-
-    <!-- stylesheets list from _config.yml -->
-    
-    <link rel="stylesheet" href="/css/style.css">
-    
-
-
-
-    <!-- scripts list from _config.yml -->
-    
-    <script src="/js/script.js"></script>
-    
-    <script src="/js/tocbot.min.js"></script>
-    
-    <script src="/js/jquery.min.js"></script>
-    
-
-
-
+  
     
     
-        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-    "HTML-CSS": {
-        preferredFont: "TeX",
-        availableFonts: ["STIX","TeX"],
-        linebreaks: { automatic:true },
-        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
-    },
-    tex2jax: {
-        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
-        processEscapes: true,
-        ignoreClass: "tex2jax_ignore|dno",
-        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
-    },
-    TeX: {
-        equationNumbers: { autoNumber: "AMS" },
-        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
-        Macros: { href: "{}" }
-    },
-    messageStyle: "none"
-    });
-</script>
-<!-- 给MathJax元素添加has-jax class -->
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax(), i;
-        for(i=0; i < all.length; i += 1) {
-            all[i].SourceElement().parentNode.className += ' has-jax';
-        }
-    });
-</script>
-<!-- 通过连接CDN加载MathJax的js代码 -->
-<script type="text/javascript" async
-        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
-</script>
-
-
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
     
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
 
 
 
+<!-- 主题依赖的图标库，不要自行修改 -->
 
-    <script>
-    function searchToggle() {
-        const width = $(document.body).width()
-        if(width > 479) {
-            return;
-        }
-        const search = $('.search');
-        const searchForm = $('.form-search')
-
-        if(!search.hasClass("mobile-search")) {
-            search.addClass("mobile-search");
-        } else {
-            search.removeClass("mobile-search");
-        } 
-    }
-
-    function search(searchInputEl, formEl, flag) {
-        const path = "/" + "search.json"; // 可以在public 下查看这个search.json
-        $(formEl).submit(function(e){
-            e.preventDefault();
-            let target = null
-            if(searchInputEl == null) {
-                const screenWidth = $(document.body).width();
-                target = screenWidth > 479 ? $('#pc-search-input') : $('#mobile-search-input');
-                console.log(target);
-            } else {
-                target = $(searchInputEl)
-            }
-
-            if(!flag && target.val() === '') {
-                return ;
-            }
-
-            $("#u-search").fadeIn(500, function() {
-                $("body > .wrapper").addClass("modal-active");
-
-                $.ajax({
-                    url: path,
-                    dataType: "json",
-                    beforeSend: function (xhr) {
-                        $input = target.val();
-                        $(".form-input").val($input);
-                        const loadingBar = $('.search-loading-bar') 
-                        loadingBar.css({
-                            width:'100%',
-                            display: 'block'
-                        });
-                    },
-                    success: function( datas ) {
-                        console.log(datas);
-                        const $resultPanel = $(".modal-body")[0];
-                        let str = `<ul class="modal-results">`;
-                        var keywords = $(".form-input").val().trim().toLowerCase().split(/[\s\-]+/);
-                        $resultPanel.innerHTML = "";
-                        let hasResult = false
-                        let text = `<div class="no-result">找不到与关键词相关的内容....</div>`;
-
-                        if ($(".form-input").val().trim().length <= 0) {
-                            // 没有结果
-                            $resultPanel.innerHTML = text;
-                            return;
-                        }
-                        datas.forEach(function (data, index) {
-                            var isMatch = true;
-                            if (!data.title || data.title.trim() === '') {
-                                data.title = "Untitled";
-                            }
-                            var data_title = data.title.trim().toLowerCase();
-                            var data_content = data.content && data.content.trim().replace(/<[^>]+>/g, "").toLowerCase() || '';
-                            var data_url = data.url;
-                            var index_title = -1;
-                            var index_content = -1;
-                            var first_occur = -1;
-                            // only match artiles with not empty contents
-                            if (data_content !== '') {
-                                keywords.forEach(function (keyword, i) {
-                                    index_title = data_title.indexOf(keyword);
-                                    index_content = data_content.indexOf(keyword);
-
-                                    if (index_title < 0 && index_content < 0) {
-                                        isMatch = false;
-                                    } else {
-                                        hasResult = true
-                                        if (index_content < 0) {
-                                            index_content = 0;
-                                        }
-                                        if (i == 0) {
-                                            first_occur = index_content;
-                                        }
-                                    }
-                                });
-                            } else {
-                                isMatch = false;
-                            }
-                            // show search results
-                            if (isMatch) {
-                                str += `<li class='result-item'><a href='${data_url}' class='result-item-detail'> <span class="title">${data_title}</span>`;
-                                var content = data.content.trim().replace(/<[^>]+>/g, "");
-                                if (first_occur >= 0) {
-                                    // cut out 200 characters
-                                    var start = first_occur - 40;
-                                    var end = first_occur + 160;
-
-                                    if (start < 0) {
-                                        start = 0;
-                                    }
-
-                                    if (start == 0) {
-                                        end = 200;
-                                    }
-
-                                    if (end > content.length) {
-                                        end = content.length;
-                                    }
-
-                                    var match_content = content.substring(start, end);
-
-                                    // highlight all keywords
-                                    keywords.forEach(function (keyword) {
-                                        var regS = new RegExp(keyword, "gi");
-                                        match_content = match_content.replace(regS, `<em class="search-keyword">${keyword}</em>`);
-                                    });
-
-                                    str += `<span class="content"> ${match_content} ...</span></a>`;
-                                }
-                                str += "</li>";
-                            }
-                        });
-                        str += "</ul>";
-                        if(hasResult) {
-                            $resultPanel.innerHTML = str;
-                        } else {
-                            $resultPanel.innerHTML = text;
-                        }
-
-                    },
-                    complete: function() {
-                        setTimeout(() => {
-                                const loadingBar = $('.search-loading-bar') 
-                                loadingBar.css({
-                                    width:'0%',
-                                    display: 'none'
-                                });
-                        }, 300)
-                    }
-                });
-            })
-
-        });
-    }
-
-    $(document).ready(function() {
-        $('.modal-close').click(function () { 
-            $("#u-search").fadeOut();
-            $("body > .wrapper").removeClass("modal-active")
-        })
-
-        $('.modal-overlay').click(function() {
-            $("#u-search").fadeOut();
-            $("body > .wrapper").removeClass("modal-active")
-        })
-        search(null, ".form-search", false)
-        search("#u-search-modal-form .form-input", ".u-search-modal-form", true)
-    })
-</script>
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
 
 
 
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"www.baidu.com","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
 <meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+
+
 <body>
-    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
-        <nav class="navbar">
-    <div class="container">
-        <div class="navbar-header header-logo"><a href="/">hzjsea</a></div>
-        <div class="menu navbar-right">
-            
-            
-    <div class="search ">
-        <div class="search-btn" onClick="searchToggle()">
-            <img src="/image/search.png" class="search-btn-img" />
-        </div>
-        <form class="form-search">
-            <input class="input" placeholder="Searching" autocomplete="off" id="pc-search-input"/>
-        </form>
-    </div>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
 
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
 
-            
-                <a class="menu-item" href="/archives">文章</a>
-            
-                <a class="menu-item" href="/category">分类</a>
-            
-                <a class="menu-item" href="/tag">标签</a>
-            
-                <a class="menu-item" href="/about">关于</a>
-            
-            <input id="switch_default" type="checkbox" class="switch_default">
-            <label for="switch_default" class="toggleBtn"></label>
-        </div>
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                Home
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                Archives
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                Categories
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                Tags
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                About
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
     </div>
+  </div>
 </nav>
 
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="golang标准库strings">
+              
+            </span>
 
-<nav class="navbar-mobile" id="nav-mobile">
-    <div class="container">
-        <div class="navbar-header">
-            <div>
-                <a href="/">hzjsea</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
-            </div>
-            <div class="navbar-mobile-right">
-                
-                
-    <div class="search ">
-        <div class="search-btn" onClick="searchToggle()">
-            <img src="/image/search.png" class="search-btn-img" />
-        </div>
-        <form class="form-search">
-            <input class="input" placeholder="Searching" autocomplete="off" id="mobile-search-input"/>
-        </form>
-    </div>
-
-
-                <div class="menu-toggle" onclick="mobileBtn()">&#9776; 目录</div>
-            </div>
             
-        </div>
-        <div class="menu" id="mobile-menu">
-            
-                <a class="menu-item" href="/archives">文章</a>
-            
-                <a class="menu-item" href="/category">分类</a>
-            
-                <a class="menu-item" href="/tag">标签</a>
-            
-                <a class="menu-item" href="/about">关于</a>
-            
-        </div>
-    </div>
-</nav>
-
-        <div class="main">
-			<!-- Chic/layout.ejs -->
- <div id="u-search">
-        <div class="modal">
-            <div class="modal-header">
-                <div class="container">
-                    <form id="u-search-modal-form" class="u-search-modal-form">
-                        <button type="submit" class="form-submit-btn">
-                            <img src="/image/search.png" class="search-btn-img" />
-                        </button>
-                        <input placeholder="搜索文章。。。" class="form-input" id="modal-form-input">
-                    </form>
-                    <a class="modal-close">x</a>
-                </div>
-                <div class="search-loading">
-                    <div class="search-loading-bar"></div>
-                </div>
-            </div>
-            <div class="modal-body">
-                <!-- ul 格式如下 -->
-                <!-- <ul class="modal-results">
-                    <li class="result-item">
-                        <a class="result-item-detail">
-                            <span class="title">页面配置</span>
-                            <span class="content">
-                                content
-                            </span>
-                        </a>
-                    </li>
-                </ul> -->
-            </div>
-        </div>
-        <div class="modal-overlay"></div>
-    </div>
-            <div class="container">
-    
-    
-    <div class="post-toc">
-    <div class="tocbot-list">
-    </div>
-    <div class="tocbot-list-menu">
-        <a class="tocbot-toc-expand" onclick="expand_toc()">全部展开</a>
-        <a onclick="go_top()">回到顶部</a>
-        <a onclick="go_bottom()">回到底部</a>
-    </div>
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-09-07 14:13" pubdate>
+        September 7, 2020 pm
+      </time>
+    </span>
+  
 </div>
 
-<script>
-    document.ready(
-        function () {
-            tocbot.init({
-                tocSelector: '.tocbot-list',
-                contentSelector: '.post-content',
-                headingSelector: 'h1, h2, h3, h4, h5',
-                collapseDepth: 1,
-                orderedList: false,
-                scrollSmooth: true,
-            })
-        }
-    )
-
-    function expand_toc() {
-        var b = document.querySelector(".tocbot-toc-expand");
-        tocbot.init({
-            tocSelector: '.tocbot-list',
-            contentSelector: '.post-content',
-            headingSelector: 'h1, h2, h3, h4, h5',
-            collapseDepth: 6,
-            orderedList: false,
-            scrollSmooth: true,
-        });
-        b.setAttribute("onclick", "collapse_toc()");
-        b.innerHTML = "全部折叠"
-    }
-
-    function collapse_toc() {
-        var b = document.querySelector(".tocbot-toc-expand");
-        tocbot.init({
-            tocSelector: '.tocbot-list',
-            contentSelector: '.post-content',
-            headingSelector: 'h1, h2, h3, h4, h5',
-            collapseDepth: 1,
-            orderedList: false,
-            scrollSmooth: true,
-        });
-        b.setAttribute("onclick", "expand_toc()");
-        b.innerHTML = "全部展开"
-    }
-
-    function go_top() {
-        window.scrollTo(0, 0);
-    }
-
-    function go_bottom() {
-        window.scrollTo(0, document.body.scrollHeight);
-    }
-
-</script>
+<div class="mt-1">
+  
     
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.7k 字
+    </span>
+  
 
+  
     
-    <article class="post-wrap">
-        <header class="post-header">
-            <h1 class="post-title">golang标准库strings</h1>
-            
-            <div class="post-meta">
-                
-                作者： <a itemprop="author" rel="author" href="/">hzjsea</a>&nbsp;
-                
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      25
+       分钟
+    </span>
+  
 
-                
-                <span class="post-time">
-                    创建日期： <a
-                        href="#">September 7, 2020&nbsp;&nbsp;14:13:59</a>
-                </span>&nbsp;
-                
-                
-                <span class="post-category">
-                    分类：
-                    
-                    <a href="/categories/golang/">golang</a>&nbsp;
-                    
-                </span>
-                
-                
-                状态：<a href="#">SNAPSHOT</a>
-                
-            </div>
-            
-        </header>
+  
+  
+</div>
 
-        <div class="post-content">
-            <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">golang标准库strings</h1>
+            
+            <div class="markdown-body">
+              <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 
 <!-- code_chunk_output -->
 
@@ -465,6 +235,7 @@
 <li><a href="#golang%E6%A0%87%E5%87%86%E5%BA%93strings">golang标准库strings</a><ul>
 <li><a href="#%E6%8B%BC%E6%8E%A5%E5%AD%97%E7%AC%A6%E4%B8%B2string">拼接字符串string</a></li>
 <li><a href="#builder%E6%96%B9%E6%B3%95">Builder方法</a></li>
+<li><a href="#golang-strings%E5%8C%85">golang strings包</a></li>
 </ul>
 </li>
 </ul>
@@ -472,63 +243,16 @@
 <a id="more"></a>
 
 
-<h1 id="golang标准库strings"><a href="#golang标准库strings" class="headerlink" title="golang标准库strings"></a>golang标准库strings</h1><h2 id="拼接字符串string"><a href="#拼接字符串string" class="headerlink" title="拼接字符串string"></a>拼接字符串string</h2><pre class=" language-go"><code class="language-go"><span class="token keyword">package</span> main
+<h1 id="golang标准库strings"><a href="#golang标准库strings" class="headerlink" title="golang标准库strings"></a>golang标准库strings</h1><h2 id="拼接字符串string"><a href="#拼接字符串string" class="headerlink" title="拼接字符串string"></a>拼接字符串string</h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre class=" language-hljs go"><span class="hljs-keyword">package</span> main<br><br><span class="hljs-keyword">import</span> (<br>	<span class="hljs-string">&quot;bytes&quot;</span><br>	<span class="hljs-string">&quot;fmt&quot;</span><br>	<span class="hljs-string">&quot;strings&quot;</span><br>)<br><br><span class="hljs-comment">// 拼接字符串</span><br><br><span class="hljs-comment">// 因此，这种拼接字符串的方式会导致大量的string创建、销毁和内存分配 这样的写法是错误的</span><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">func1</span><span class="hljs-params">(ss []<span class="hljs-keyword">string</span>)</span> <span class="hljs-title">string</span></span>&#123;<br>	<span class="hljs-keyword">var</span> str <span class="hljs-keyword">string</span><br>	<span class="hljs-keyword">for</span> _,v :=<span class="hljs-keyword">range</span> ss&#123;<br>		str +=v<br>	&#125;<br>	fmt.Println(str)<br>	<span class="hljs-keyword">return</span> str<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">func2</span><span class="hljs-params">(ss []<span class="hljs-keyword">string</span>)</span> <span class="hljs-title">string</span></span>&#123;<br>	<span class="hljs-keyword">var</span> str bytes.Buffer<br>	<span class="hljs-keyword">for</span> _,v := <span class="hljs-keyword">range</span> ss &#123;<br>		fmt.Fprint(&amp;str,v)<br>	&#125;<br>	fmt.Println(str.String())<br>	<span class="hljs-keyword">return</span> str.String()<br>&#125;<br><br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">func3</span><span class="hljs-params">(ss []<span class="hljs-keyword">string</span>)</span><span class="hljs-title">string</span></span>&#123;<br>	<span class="hljs-keyword">var</span> str strings.Builder<br>	<span class="hljs-keyword">for</span> _,v := <span class="hljs-keyword">range</span> ss &#123;<br>		fmt.Fprint(&amp;str,v) <span class="hljs-comment">// 这个io stdin</span><br>	&#125;<br>	fmt.Println(str.String())<br>	<span class="hljs-keyword">return</span> str.String()<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;<br>	ss := []<span class="hljs-keyword">string</span>&#123;<br>		<span class="hljs-string">&quot;A&quot;</span>,<span class="hljs-string">&quot;B&quot;</span>,<span class="hljs-string"><code class="language-hljs go"><span class="hljs-keyword">package</span> main<br><br><span class="hljs-keyword">import</span> (<br>	<span class="hljs-string">&quot;bytes&quot;</span><br>	<span class="hljs-string">&quot;fmt&quot;</span><br>	<span class="hljs-string">&quot;strings&quot;</span><br>)<br><br><span class="hljs-comment">// 拼接字符串</span><br><br><span class="hljs-comment">// 因此，这种拼接字符串的方式会导致大量的string创建、销毁和内存分配 这样的写法是错误的</span><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">func1</span><span class="hljs-params">(ss []<span class="hljs-keyword">string</span>)</span> <span class="hljs-title">string</span></span>&#123;<br>	<span class="hljs-keyword">var</span> str <span class="hljs-keyword">string</span><br>	<span class="hljs-keyword">for</span> _,v :=<span class="hljs-keyword">range</span> ss&#123;<br>		str +=v<br>	&#125;<br>	fmt.Println(str)<br>	<span class="hljs-keyword">return</span> str<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">func2</span><span class="hljs-params">(ss []<span class="hljs-keyword">string</span>)</span> <span class="hljs-title">string</span></span>&#123;<br>	<span class="hljs-keyword">var</span> str bytes.Buffer<br>	<span class="hljs-keyword">for</span> _,v := <span class="hljs-keyword">range</span> ss &#123;<br>		fmt.Fprint(&amp;str,v)<br>	&#125;<br>	fmt.Println(str.String())<br>	<span class="hljs-keyword">return</span> str.String()<br>&#125;<br><br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">func3</span><span class="hljs-params">(ss []<span class="hljs-keyword">string</span>)</span><span class="hljs-title">string</span></span>&#123;<br>	<span class="hljs-keyword">var</span> str strings.Builder<br>	<span class="hljs-keyword">for</span> _,v := <span class="hljs-keyword">range</span> ss &#123;<br>		fmt.Fprint(&amp;str,v) <span class="hljs-comment">// 这个io stdin</span><br>	&#125;<br>	fmt.Println(str.String())<br>	<span class="hljs-keyword">return</span> str.String()<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;<br>	ss := []<span class="hljs-keyword">string</span>&#123;<br>		<span class="hljs-string">&quot;A&quot;</span>,<span class="hljs-string">&quot;B&quot;</span>,<span class="hljs-string">"C"</span>,<br>	}<br>	func1(ss)<br>	func2(ss)<br>	func3(ss)<br>}<br></code></pre></td></tr></table></figure>
 
-<span class="token keyword">import</span> <span class="token punctuation">(</span>
-    <span class="token string">"bytes"</span>
-    <span class="token string">"fmt"</span>
-    <span class="token string">"strings"</span>
-<span class="token punctuation">)</span>
-
-<span class="token comment" spellcheck="true">// 拼接字符串</span>
-
-<span class="token comment" spellcheck="true">// 因此，这种拼接字符串的方式会导致大量的string创建、销毁和内存分配 这样的写法是错误的</span>
-<span class="token keyword">func</span> <span class="token function">func1</span><span class="token punctuation">(</span>ss <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token builtin">string</span><span class="token punctuation">{</span>
-    <span class="token keyword">var</span> str <span class="token builtin">string</span>
-    <span class="token keyword">for</span> <span class="token boolean">_</span><span class="token punctuation">,</span>v <span class="token operator">:=</span><span class="token keyword">range</span> ss<span class="token punctuation">{</span>
-        str <span class="token operator">+=</span>v
-    <span class="token punctuation">}</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>str<span class="token punctuation">)</span>
-    <span class="token keyword">return</span> str
-<span class="token punctuation">}</span>
-
-<span class="token keyword">func</span> <span class="token function">func2</span><span class="token punctuation">(</span>ss <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token builtin">string</span><span class="token punctuation">{</span>
-    <span class="token keyword">var</span> str bytes<span class="token punctuation">.</span>Buffer
-    <span class="token keyword">for</span> <span class="token boolean">_</span><span class="token punctuation">,</span>v <span class="token operator">:=</span> <span class="token keyword">range</span> ss <span class="token punctuation">{</span>
-        fmt<span class="token punctuation">.</span><span class="token function">Fprint</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>str<span class="token punctuation">,</span>v<span class="token punctuation">)</span>
-    <span class="token punctuation">}</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>str<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-    <span class="token keyword">return</span> str<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-<span class="token punctuation">}</span>
-
-
-<span class="token keyword">func</span> <span class="token function">func3</span><span class="token punctuation">(</span>ss <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">string</span><span class="token punctuation">)</span><span class="token builtin">string</span><span class="token punctuation">{</span>
-    <span class="token keyword">var</span> str strings<span class="token punctuation">.</span>Builder
-    <span class="token keyword">for</span> <span class="token boolean">_</span><span class="token punctuation">,</span>v <span class="token operator">:=</span> <span class="token keyword">range</span> ss <span class="token punctuation">{</span>
-        fmt<span class="token punctuation">.</span><span class="token function">Fprint</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>str<span class="token punctuation">,</span>v<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// 这个io stdin</span>
-    <span class="token punctuation">}</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>str<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-    <span class="token keyword">return</span> str<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-<span class="token punctuation">}</span>
-
-<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    ss <span class="token operator">:=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">string</span><span class="token punctuation">{</span>
-        <span class="token string">"A"</span><span class="token punctuation">,</span><span class="token string">"B"</span><span class="token punctuation">,</span><span class="token string">"C"</span><span class="token punctuation">,</span>
-    <span class="token punctuation">}</span>
-    <span class="token function">func1</span><span class="token punctuation">(</span>ss<span class="token punctuation">)</span>
-    <span class="token function">func2</span><span class="token punctuation">(</span>ss<span class="token punctuation">)</span>
-    <span class="token function">func3</span><span class="token punctuation">(</span>ss<span class="token punctuation">)</span>
-<span class="token punctuation">}</span></code></pre>
 <p>最受用的是func3 速度快，占内存少</p>
-<h2 id="Builder方法"><a href="#Builder方法" class="headerlink" title="Builder方法"></a>Builder方法</h2><pre class=" language-go"><code class="language-go"><span class="token keyword">func</span> <span class="token punctuation">(</span>b <span class="token operator">*</span>Builder<span class="token punctuation">)</span> <span class="token function">Write</span><span class="token punctuation">(</span>p <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token builtin">int</span><span class="token punctuation">,</span> <span class="token builtin">error</span><span class="token punctuation">)</span>
-<span class="token keyword">func</span> <span class="token punctuation">(</span>b <span class="token operator">*</span>Builder<span class="token punctuation">)</span> <span class="token function">WriteByte</span><span class="token punctuation">(</span>c <span class="token builtin">byte</span><span class="token punctuation">)</span> <span class="token builtin">error</span>
-<span class="token keyword">func</span> <span class="token punctuation">(</span>b <span class="token operator">*</span>Builder<span class="token punctuation">)</span> <span class="token function">WriteRune</span><span class="token punctuation">(</span>r <span class="token builtin">rune</span><span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token builtin">int</span><span class="token punctuation">,</span> <span class="token builtin">error</span><span class="token punctuation">)</span>
-<span class="token keyword">func</span> <span class="token punctuation">(</span>b <span class="token operator">*</span>Builder<span class="token punctuation">)</span> <span class="token function">WriteString</span><span class="token punctuation">(</span>s <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token builtin">int</span><span class="token punctuation">,</span> <span class="token builtin">error</span><span class="token punctuation">)</span></code></pre>
+<h2 id="Builder方法"><a href="#Builder方法" class="headerlink" title="Builder方法"></a>Builder方法</h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre class=" language-hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(b *Builder)</span> <span class="hljs-title">Write</span><span class="hljs-params">(p []<span class="hljs-keyword">byte</span>)</span> <span class="hljs-params">(<span class="hljs-keyword">int</span>, error)</span></span><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(b *Builder)</span> <span class="hljs-title">WriteByte</span><span class="hljs-params">(c <span class="hljs-keyword">byte</span>)</span> <span class="hljs-title">error</span></span><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(b *Builder)</span> <span class="hljs-title">WriteRune</span><span class="hljs-params">(r <span class="hljs-keyword">rune</span>)</span> <span class="hljs-params">(<span class="hljs-keyword">int</span>, error)</span></span><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(b *Builder)</span> <span class="hljs-title">WriteString</span><span class="hljs-params">(s <span class="hljs-keyword">string</span>)</span> <span class="hljs-params">(<span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(b *Builder)</span> <span class="hljs-title">Write</span><span class="hljs-params">(p []<span class="hljs-keyword">byte</span>)</span> <span class="hljs-params">(<span class="hljs-keyword">int</span>, error)</span></span><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(b *Builder)</span> <span class="hljs-title">WriteByte</span><span class="hljs-params">(c <span class="hljs-keyword">byte</span>)</span> <span class="hljs-title">error</span></span><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(b *Builder)</span> <span class="hljs-title">WriteRune</span><span class="hljs-params">(r <span class="hljs-keyword">rune</span>)</span> <span class="hljs-params">(<span class="hljs-keyword">int</span>, error)</span></span><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(b *Builder)</span> <span class="hljs-title">WriteString</span><span class="hljs-params">(s <span class="hljs-keyword">string</span>)</span> <span class="hljs-params">(<span class="hljs-keyword">int</span>, error)</span></span><br></code></pre></td></tr></table></figure>
 <p>分别对应了四种内容<br><code>byte数组</code>、<code>byte</code>、<code>rune</code>、<code>string</code></p>
-<p><code>strings.Builder</code> 通过使用一个内部的 slice 来存储数据片段。当开发者调用写入方法的时候，数据实际上是被追加（append）到了其内部的 slice 上。<br><img src="http://img.noback.top/2020-09-08-18-15-33.png" alt="2020-09-08-18-15-33"></p>
+<p><code>strings.Builder</code> 通过使用一个内部的 slice 来存储数据片段。当开发者调用写入方法的时候，数据实际上是被追加（append）到了其内部的 slice 上。<br><img src="http://img.noback.top/2020-09-08-18-15-33.png" srcset="/img/loading.gif" alt="2020-09-08-18-15-33"></p>
 <p>根据上图可以知道strings通过不断的像buffer这个slice append内容来拼接字符串的，当你调用写入方法的时候，新的字节数据就被追加到 slice 上。如果达到了 slice 的容量（capacity）限制，一个新的 slice 就会被分配，然后老的 slice 上的内容会被拷贝到新的 slice 上。当 slice 长度很大时，这个操作就会很消耗资源甚至引起 内存问题。我们需要避免这一情况</p>
 <p>在我们创建slice的时候，我们使用了<code>var ss = make([]string,10,10)</code>来规定初始的长度和容量，同样的<code>Grow</code>也可以初始化<code>Strings.Builder</code>的长度</p>
-<pre class=" language-go"><code class="language-go"><span class="token keyword">func</span> <span class="token punctuation">(</span>b <span class="token operator">*</span>Builder<span class="token punctuation">)</span> <span class="token function">Grow</span><span class="token punctuation">(</span>n <span class="token builtin">int</span><span class="token punctuation">)</span></code></pre>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre class=" language-hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(b *Builder)</span> <span class="hljs-title">Grow</span><span class="hljs-params">(n <span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(b *Builder)</span> <span class="hljs-title">Grow</span><span class="hljs-params">(n <span class="hljs-keyword">int</span>)</span></span><br></code></pre></td></tr></table></figure>
+
 <p>当调用 <code>Grow(n)</code> 时，我们必须定义要扩容的字节数n,<code>Grow(n)</code> 方法保证了其内部的 slice 一定能够写入 n 个字节。只有当 slice 空余空间不足以写入 n 个字节时，扩容才有可能发生<br>也就是说grow其实就是发生在扩容不足的时添加容量的那一个阶段</p>
 <ul>
 <li>builder len = 5</li>
@@ -536,50 +260,222 @@
 <li>当我们调用<code>grow(3)</code> 并不会扩容 因为够用</li>
 <li>当我们调用<code>grow(10)</code> 会扩容 因为不够用<br>他会去和剩余长度进行比较</li>
 </ul>
-<pre class=" language-go"><code class="language-go"><span class="token keyword">if</span> <span class="token builtin">cap</span> <span class="token operator">-</span> <span class="token builtin">len</span> <span class="token operator">></span> n<span class="token punctuation">{</span>
-    <span class="token boolean">true</span>
-<span class="token punctuation">}</span> eles<span class="token punctuation">{</span>
-    <span class="token boolean">false</span>
-<span class="token punctuation">}</span></code></pre>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre class=" language-hljs go"><span class="hljs-keyword">if</span> <span class="hljs-built_in">cap</span> - <span class="hljs-built_in">len</span> &gt; n&#123;<br>    <span class="hljs-literal">true</span><br>&#125; eles&#123;<br>    <span class="hljs-literal"><code class="language-hljs go"><span class="hljs-keyword">if</span> <span class="hljs-built_in">cap</span> - <span class="hljs-built_in">len</span> &gt; n&#123;<br>    <span class="hljs-literal">true</span><br>&#125; eles&#123;<br>    <span class="hljs-literal">false</span><br>}<br></code></pre></td></tr></table></figure>
+
 <p>最后得出的容量公式为 <code>原有容量*2+n</code></p>
 <p>当你预定义 strings.Builder 容量的时候还要注意一点。调用 <code>WriteRune()</code> 和 <code>WriteString()</code> 时，rune 和 string 的字符可能不止 1 个字节。因为，你懂的，<code>UTF-8</code> 的原因。</p>
-
-        </div>
-
-        
-        <section class="post-tags">
-            <div>
-                <span>标签：</span>
-                <span class="tag">
-                    
-                    
-                    <a href="/tags/golang/"># golang</a>
-                    
-                    
-                </span>
+<h2 id="golang-strings包"><a href="#golang-strings包" class="headerlink" title="golang strings包"></a>golang strings包</h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br></pre></td><td class="code"><pre class=" language-hljs go"><span class="hljs-keyword">package</span> main<br><br><span class="hljs-keyword">import</span> (<br>	<span class="hljs-string">&quot;bytes&quot;</span><br>	<span class="hljs-string">&quot;fmt&quot;</span><br>	<span class="hljs-string">&quot;log&quot;</span><br>	<span class="hljs-string">&quot;strings&quot;</span><br>)<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;<br><br>	str_reader := strings.NewReader(<span class="hljs-string">&quot;helloworld&quot;</span>); <span class="hljs-comment">// *Reader</span><br><br>	<span class="hljs-comment">// 获取字符串长度</span><br>	fmt.Printf(<span class="hljs-string">&quot;字符串长度,%d\n&quot;</span>,str_reader.Len()) <span class="hljs-comment">// *Reader.Len()</span><br><br>	<span class="hljs-comment">// 实例并初始化一个数组</span><br>	b := <span class="hljs-built_in">make</span>([]<span class="hljs-keyword">byte</span>,<span class="hljs-number">10</span>)<br>	<span class="hljs-comment">// 将字符串读取到数组b当中去</span><br>	n,err := str_reader.Read(b)  <span class="hljs-comment">// *Reader.Read()</span><br><br>	<span class="hljs-keyword">if</span> err!=<span class="hljs-literal">nil</span>&#123;<br>		log.Fatal(err)<br>	&#125;<br><br>	fmt.Printf(<span class="hljs-string">&quot;读取的字节数%d\n&quot;</span>,n)<br>	fmt.Printf(<span class="hljs-string">&quot;读取后b数组中的内容%s\n&quot;</span>,<span class="hljs-keyword">string</span>(b[:]))<br>	fmt.Printf(<span class="hljs-string">&quot;被读取后的长度%d\n&quot;</span>,str_reader.Len())<br><br><br>	<span class="hljs-comment">//</span><br>	str_reader = strings.NewReader(<span class="hljs-string">&quot;helloworld&quot;</span>)<br>	bb,err := str_reader.ReadByte()<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span>&#123;<br>		log.Fatal(err)<br>	&#125;<br>	fmt.Println(<span class="hljs-keyword">string</span>(bb))<br><br><br>	<span class="hljs-comment">// 替换</span><br>	<span class="hljs-comment">// 1. 替换规则</span><br>	rule := strings.NewReplacer(<span class="hljs-string">&quot;foo&quot;</span>,<span class="hljs-string">&quot;bar&quot;</span>) <span class="hljs-comment">// *Replacer</span><br>	<span class="hljs-comment">// 返回oldstrings替换后的拷贝内容</span><br>	newwords := rule.Replace(<span class="hljs-string">&quot;foofoo&quot;</span>) <span class="hljs-comment">// *Replacer.Replace</span><br>	fmt.Println(newwords)<br><br>	<span class="hljs-comment">//</span><br>	buf := bytes.NewBufferString(<span class="hljs-string">&quot;hellowolrd&quot;</span>) <span class="hljs-comment">// 创建io.writer</span><br>	n,err = rule.WriteString(buf,<span class="hljs-string">&quot;foofoo&quot;</span>)<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span>&#123;<br>		log.Fatal(err)<br>	&#125;<br>	fmt.Println(n)<br>	fmt.Println(buf)<br><br>	<span class="hljs-comment">// 合并</span><br>	s := []<span class="hljs-keyword">string</span>&#123;<span class="hljs-string">&quot;foo&quot;</span>, <span class="hljs-string">&quot;bar&quot;</span>, <span class="hljs-string">&quot;baz&quot;</span>&#125;<br>	fmt.Println(strings.Join(s, <span class="hljs-string">&quot;, &quot;</span>))<br><br>	<span class="hljs-comment">// 判断两个编码字符是否相同</span><br>	fmt.Println(strings.EqualFold(<span class="hljs-string">&quot;go&quot;</span>,<span class="hljs-string">&quot;GO&quot;</span>))  <span class="hljs-comment">// true</span><br><br>	<span class="hljs-comment">// 判断s是否有前缀字符串prefix</span><br>	fmt.Println(strings.HasPrefix(<span class="hljs-string">&quot;network&quot;</span>,<span class="hljs-string">&quot;net&quot;</span>)) <span class="hljs-comment">// true</span><br><br>	<span class="hljs-comment">// 判断s是否有后缀字符串suffix</span><br>	fmt.Println(strings.HasSuffix(<span class="hljs-string">&quot;network&quot;</span>,<span class="hljs-string">&quot;work&quot;</span>))<span class="hljs-comment">// true</span><br><br>	<span class="hljs-comment">// 判断s中是否含有子字符串substr</span><br>	fmt.Println(strings.Contains(<span class="hljs-string">&quot;foobar&quot;</span>,<span class="hljs-string">&quot;oo&quot;</span>))<span class="hljs-comment">// true</span><br><br>	<span class="hljs-comment">// 判断字符串s是否包含字符串chars中的任一字符。</span><br>	fmt.Println(strings.ContainsAny(<span class="hljs-string">&quot;foobar&quot;</span>,<span class="hljs-string">&quot;o a&quot;</span>)) <span class="hljs-comment">// true</span><br><br>	<span class="hljs-comment">// 返回子串sep在字符串s中第一次出现的文职</span><br>	fmt.Println(strings.Index(<span class="hljs-string">&quot;foobar&quot;</span>,<span class="hljs-string">&quot;oo&quot;</span>)) <span class="hljs-comment"><code class="language-hljs go"><span class="hljs-keyword">package</span> main<br><br><span class="hljs-keyword">import</span> (<br>	<span class="hljs-string">&quot;bytes&quot;</span><br>	<span class="hljs-string">&quot;fmt&quot;</span><br>	<span class="hljs-string">&quot;log&quot;</span><br>	<span class="hljs-string">&quot;strings&quot;</span><br>)<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;<br><br>	str_reader := strings.NewReader(<span class="hljs-string">&quot;helloworld&quot;</span>); <span class="hljs-comment">// *Reader</span><br><br>	<span class="hljs-comment">// 获取字符串长度</span><br>	fmt.Printf(<span class="hljs-string">&quot;字符串长度,%d\n&quot;</span>,str_reader.Len()) <span class="hljs-comment">// *Reader.Len()</span><br><br>	<span class="hljs-comment">// 实例并初始化一个数组</span><br>	b := <span class="hljs-built_in">make</span>([]<span class="hljs-keyword">byte</span>,<span class="hljs-number">10</span>)<br>	<span class="hljs-comment">// 将字符串读取到数组b当中去</span><br>	n,err := str_reader.Read(b)  <span class="hljs-comment">// *Reader.Read()</span><br><br>	<span class="hljs-keyword">if</span> err!=<span class="hljs-literal">nil</span>&#123;<br>		log.Fatal(err)<br>	&#125;<br><br>	fmt.Printf(<span class="hljs-string">&quot;读取的字节数%d\n&quot;</span>,n)<br>	fmt.Printf(<span class="hljs-string">&quot;读取后b数组中的内容%s\n&quot;</span>,<span class="hljs-keyword">string</span>(b[:]))<br>	fmt.Printf(<span class="hljs-string">&quot;被读取后的长度%d\n&quot;</span>,str_reader.Len())<br><br><br>	<span class="hljs-comment">//</span><br>	str_reader = strings.NewReader(<span class="hljs-string">&quot;helloworld&quot;</span>)<br>	bb,err := str_reader.ReadByte()<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span>&#123;<br>		log.Fatal(err)<br>	&#125;<br>	fmt.Println(<span class="hljs-keyword">string</span>(bb))<br><br><br>	<span class="hljs-comment">// 替换</span><br>	<span class="hljs-comment">// 1. 替换规则</span><br>	rule := strings.NewReplacer(<span class="hljs-string">&quot;foo&quot;</span>,<span class="hljs-string">&quot;bar&quot;</span>) <span class="hljs-comment">// *Replacer</span><br>	<span class="hljs-comment">// 返回oldstrings替换后的拷贝内容</span><br>	newwords := rule.Replace(<span class="hljs-string">&quot;foofoo&quot;</span>) <span class="hljs-comment">// *Replacer.Replace</span><br>	fmt.Println(newwords)<br><br>	<span class="hljs-comment">//</span><br>	buf := bytes.NewBufferString(<span class="hljs-string">&quot;hellowolrd&quot;</span>) <span class="hljs-comment">// 创建io.writer</span><br>	n,err = rule.WriteString(buf,<span class="hljs-string">&quot;foofoo&quot;</span>)<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span>&#123;<br>		log.Fatal(err)<br>	&#125;<br>	fmt.Println(n)<br>	fmt.Println(buf)<br><br>	<span class="hljs-comment">// 合并</span><br>	s := []<span class="hljs-keyword">string</span>&#123;<span class="hljs-string">&quot;foo&quot;</span>, <span class="hljs-string">&quot;bar&quot;</span>, <span class="hljs-string">&quot;baz&quot;</span>&#125;<br>	fmt.Println(strings.Join(s, <span class="hljs-string">&quot;, &quot;</span>))<br><br>	<span class="hljs-comment">// 判断两个编码字符是否相同</span><br>	fmt.Println(strings.EqualFold(<span class="hljs-string">&quot;go&quot;</span>,<span class="hljs-string">&quot;GO&quot;</span>))  <span class="hljs-comment">// true</span><br><br>	<span class="hljs-comment">// 判断s是否有前缀字符串prefix</span><br>	fmt.Println(strings.HasPrefix(<span class="hljs-string">&quot;network&quot;</span>,<span class="hljs-string">&quot;net&quot;</span>)) <span class="hljs-comment">// true</span><br><br>	<span class="hljs-comment">// 判断s是否有后缀字符串suffix</span><br>	fmt.Println(strings.HasSuffix(<span class="hljs-string">&quot;network&quot;</span>,<span class="hljs-string">&quot;work&quot;</span>))<span class="hljs-comment">// true</span><br><br>	<span class="hljs-comment">// 判断s中是否含有子字符串substr</span><br>	fmt.Println(strings.Contains(<span class="hljs-string">&quot;foobar&quot;</span>,<span class="hljs-string">&quot;oo&quot;</span>))<span class="hljs-comment">// true</span><br><br>	<span class="hljs-comment">// 判断字符串s是否包含字符串chars中的任一字符。</span><br>	fmt.Println(strings.ContainsAny(<span class="hljs-string">&quot;foobar&quot;</span>,<span class="hljs-string">&quot;o a&quot;</span>)) <span class="hljs-comment">// true</span><br><br>	<span class="hljs-comment">// 返回子串sep在字符串s中第一次出现的文职</span><br>	fmt.Println(strings.Index(<span class="hljs-string">&quot;foobar&quot;</span>,<span class="hljs-string">&quot;oo&quot;</span>)) <span class="hljs-comment">// 1</span><br><br><br>}<br><br></code></pre></td></tr></table></figure>
             </div>
+            <hr>
             <div>
-                <a href="javascript：window.history.back();">后退</a>
-                <span>· </span>
-                <a href="/">主页</a>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/golang/">golang</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/golang/">golang</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/09/07/blog_back_new/golang/golang%E6%A0%87%E5%87%86%E5%BA%93Io/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">golang标准库io</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/09/07/blog_back_new/golang/golang%E7%BC%96%E8%AF%91/">
+                        <span class="hidden-mobile">golang编译</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
             </div>
-        </section>
-        <section class="post-nav">
+
             
-            <a class="prev" rel="prev" href="/2020/09/07/blog_back_new/golang/golang%E6%A0%87%E5%87%86%E5%BA%93Io/">golang标准库io</a>
-            
-            
-            <a class="next" rel="next" href="/2020/09/07/blog_back_new/golang/golang%E7%BC%96%E8%AF%91/">golang编译</a>
-            
-        </section>
-    </article>
-</div>
+          </article>
         </div>
-        <footer id="footer" class="footer">
-    <div class="copyright">
+      </div>
     </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
 </footer>
 
-    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+
+
 </body>
 </html>

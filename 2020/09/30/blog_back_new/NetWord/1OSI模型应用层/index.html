@@ -1,463 +1,233 @@
+
+
 <!DOCTYPE html>
-<html lang="cn">
+<html lang="cn" data-default-color-scheme=&#34;auto&#34;>
+
+
+
 <head>
-    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-<meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="hzjsea">
+  <meta name="keywords" content="">
+  <title>OSI模型应用层 - hzjsea</title>
 
-    <meta name="author" content="hzjsea">
-
-
-
-
-
-
-<title>OSI模型应用层 | hzjsea</title>
-
-
-
-    <link rel="icon" href="/favicon.ico">
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
 
 
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
 
-
-    <!-- stylesheets list from _config.yml -->
-    
-    <link rel="stylesheet" href="/css/style.css">
-    
-
-
-
-    <!-- scripts list from _config.yml -->
-    
-    <script src="/js/script.js"></script>
-    
-    <script src="/js/tocbot.min.js"></script>
-    
-    <script src="/js/jquery.min.js"></script>
-    
-
-
-
+  
     
     
-        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-    "HTML-CSS": {
-        preferredFont: "TeX",
-        availableFonts: ["STIX","TeX"],
-        linebreaks: { automatic:true },
-        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
-    },
-    tex2jax: {
-        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
-        processEscapes: true,
-        ignoreClass: "tex2jax_ignore|dno",
-        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
-    },
-    TeX: {
-        equationNumbers: { autoNumber: "AMS" },
-        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
-        Macros: { href: "{}" }
-    },
-    messageStyle: "none"
-    });
-</script>
-<!-- 给MathJax元素添加has-jax class -->
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax(), i;
-        for(i=0; i < all.length; i += 1) {
-            all[i].SourceElement().parentNode.className += ' has-jax';
-        }
-    });
-</script>
-<!-- 通过连接CDN加载MathJax的js代码 -->
-<script type="text/javascript" async
-        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
-</script>
-
-
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
     
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
 
 
 
+<!-- 主题依赖的图标库，不要自行修改 -->
 
-    <script>
-    function searchToggle() {
-        const width = $(document.body).width()
-        if(width > 479) {
-            return;
-        }
-        const search = $('.search');
-        const searchForm = $('.form-search')
-
-        if(!search.hasClass("mobile-search")) {
-            search.addClass("mobile-search");
-        } else {
-            search.removeClass("mobile-search");
-        } 
-    }
-
-    function search(searchInputEl, formEl, flag) {
-        const path = "/" + "search.json"; // 可以在public 下查看这个search.json
-        $(formEl).submit(function(e){
-            e.preventDefault();
-            let target = null
-            if(searchInputEl == null) {
-                const screenWidth = $(document.body).width();
-                target = screenWidth > 479 ? $('#pc-search-input') : $('#mobile-search-input');
-                console.log(target);
-            } else {
-                target = $(searchInputEl)
-            }
-
-            if(!flag && target.val() === '') {
-                return ;
-            }
-
-            $("#u-search").fadeIn(500, function() {
-                $("body > .wrapper").addClass("modal-active");
-
-                $.ajax({
-                    url: path,
-                    dataType: "json",
-                    beforeSend: function (xhr) {
-                        $input = target.val();
-                        $(".form-input").val($input);
-                        const loadingBar = $('.search-loading-bar') 
-                        loadingBar.css({
-                            width:'100%',
-                            display: 'block'
-                        });
-                    },
-                    success: function( datas ) {
-                        console.log(datas);
-                        const $resultPanel = $(".modal-body")[0];
-                        let str = `<ul class="modal-results">`;
-                        var keywords = $(".form-input").val().trim().toLowerCase().split(/[\s\-]+/);
-                        $resultPanel.innerHTML = "";
-                        let hasResult = false
-                        let text = `<div class="no-result">找不到与关键词相关的内容....</div>`;
-
-                        if ($(".form-input").val().trim().length <= 0) {
-                            // 没有结果
-                            $resultPanel.innerHTML = text;
-                            return;
-                        }
-                        datas.forEach(function (data, index) {
-                            var isMatch = true;
-                            if (!data.title || data.title.trim() === '') {
-                                data.title = "Untitled";
-                            }
-                            var data_title = data.title.trim().toLowerCase();
-                            var data_content = data.content && data.content.trim().replace(/<[^>]+>/g, "").toLowerCase() || '';
-                            var data_url = data.url;
-                            var index_title = -1;
-                            var index_content = -1;
-                            var first_occur = -1;
-                            // only match artiles with not empty contents
-                            if (data_content !== '') {
-                                keywords.forEach(function (keyword, i) {
-                                    index_title = data_title.indexOf(keyword);
-                                    index_content = data_content.indexOf(keyword);
-
-                                    if (index_title < 0 && index_content < 0) {
-                                        isMatch = false;
-                                    } else {
-                                        hasResult = true
-                                        if (index_content < 0) {
-                                            index_content = 0;
-                                        }
-                                        if (i == 0) {
-                                            first_occur = index_content;
-                                        }
-                                    }
-                                });
-                            } else {
-                                isMatch = false;
-                            }
-                            // show search results
-                            if (isMatch) {
-                                str += `<li class='result-item'><a href='${data_url}' class='result-item-detail'> <span class="title">${data_title}</span>`;
-                                var content = data.content.trim().replace(/<[^>]+>/g, "");
-                                if (first_occur >= 0) {
-                                    // cut out 200 characters
-                                    var start = first_occur - 40;
-                                    var end = first_occur + 160;
-
-                                    if (start < 0) {
-                                        start = 0;
-                                    }
-
-                                    if (start == 0) {
-                                        end = 200;
-                                    }
-
-                                    if (end > content.length) {
-                                        end = content.length;
-                                    }
-
-                                    var match_content = content.substring(start, end);
-
-                                    // highlight all keywords
-                                    keywords.forEach(function (keyword) {
-                                        var regS = new RegExp(keyword, "gi");
-                                        match_content = match_content.replace(regS, `<em class="search-keyword">${keyword}</em>`);
-                                    });
-
-                                    str += `<span class="content"> ${match_content} ...</span></a>`;
-                                }
-                                str += "</li>";
-                            }
-                        });
-                        str += "</ul>";
-                        if(hasResult) {
-                            $resultPanel.innerHTML = str;
-                        } else {
-                            $resultPanel.innerHTML = text;
-                        }
-
-                    },
-                    complete: function() {
-                        setTimeout(() => {
-                                const loadingBar = $('.search-loading-bar') 
-                                loadingBar.css({
-                                    width:'0%',
-                                    display: 'none'
-                                });
-                        }, 300)
-                    }
-                });
-            })
-
-        });
-    }
-
-    $(document).ready(function() {
-        $('.modal-close').click(function () { 
-            $("#u-search").fadeOut();
-            $("body > .wrapper").removeClass("modal-active")
-        })
-
-        $('.modal-overlay').click(function() {
-            $("#u-search").fadeOut();
-            $("body > .wrapper").removeClass("modal-active")
-        })
-        search(null, ".form-search", false)
-        search("#u-search-modal-form .form-input", ".u-search-modal-form", true)
-    })
-</script>
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
 
 
 
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"www.baidu.com","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
 <meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+
+
 <body>
-    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
-        <nav class="navbar">
-    <div class="container">
-        <div class="navbar-header header-logo"><a href="/">hzjsea</a></div>
-        <div class="menu navbar-right">
-            
-            
-    <div class="search ">
-        <div class="search-btn" onClick="searchToggle()">
-            <img src="/image/search.png" class="search-btn-img" />
-        </div>
-        <form class="form-search">
-            <input class="input" placeholder="Searching" autocomplete="off" id="pc-search-input"/>
-        </form>
-    </div>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
 
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
 
-            
-                <a class="menu-item" href="/archives">文章</a>
-            
-                <a class="menu-item" href="/category">分类</a>
-            
-                <a class="menu-item" href="/tag">标签</a>
-            
-                <a class="menu-item" href="/about">关于</a>
-            
-            <input id="switch_default" type="checkbox" class="switch_default">
-            <label for="switch_default" class="toggleBtn"></label>
-        </div>
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                Home
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                Archives
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                Categories
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                Tags
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                About
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
     </div>
+  </div>
 </nav>
 
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="OSI模型应用层">
+              
+            </span>
 
-<nav class="navbar-mobile" id="nav-mobile">
-    <div class="container">
-        <div class="navbar-header">
-            <div>
-                <a href="/">hzjsea</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
-            </div>
-            <div class="navbar-mobile-right">
-                
-                
-    <div class="search ">
-        <div class="search-btn" onClick="searchToggle()">
-            <img src="/image/search.png" class="search-btn-img" />
-        </div>
-        <form class="form-search">
-            <input class="input" placeholder="Searching" autocomplete="off" id="mobile-search-input"/>
-        </form>
-    </div>
-
-
-                <div class="menu-toggle" onclick="mobileBtn()">&#9776; 目录</div>
-            </div>
             
-        </div>
-        <div class="menu" id="mobile-menu">
-            
-                <a class="menu-item" href="/archives">文章</a>
-            
-                <a class="menu-item" href="/category">分类</a>
-            
-                <a class="menu-item" href="/tag">标签</a>
-            
-                <a class="menu-item" href="/about">关于</a>
-            
-        </div>
-    </div>
-</nav>
-
-        <div class="main">
-			<!-- Chic/layout.ejs -->
- <div id="u-search">
-        <div class="modal">
-            <div class="modal-header">
-                <div class="container">
-                    <form id="u-search-modal-form" class="u-search-modal-form">
-                        <button type="submit" class="form-submit-btn">
-                            <img src="/image/search.png" class="search-btn-img" />
-                        </button>
-                        <input placeholder="搜索文章。。。" class="form-input" id="modal-form-input">
-                    </form>
-                    <a class="modal-close">x</a>
-                </div>
-                <div class="search-loading">
-                    <div class="search-loading-bar"></div>
-                </div>
-            </div>
-            <div class="modal-body">
-                <!-- ul 格式如下 -->
-                <!-- <ul class="modal-results">
-                    <li class="result-item">
-                        <a class="result-item-detail">
-                            <span class="title">页面配置</span>
-                            <span class="content">
-                                content
-                            </span>
-                        </a>
-                    </li>
-                </ul> -->
-            </div>
-        </div>
-        <div class="modal-overlay"></div>
-    </div>
-            <div class="container">
-    
-    
-    <div class="post-toc">
-    <div class="tocbot-list">
-    </div>
-    <div class="tocbot-list-menu">
-        <a class="tocbot-toc-expand" onclick="expand_toc()">全部展开</a>
-        <a onclick="go_top()">回到顶部</a>
-        <a onclick="go_bottom()">回到底部</a>
-    </div>
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-09-30 10:18" pubdate>
+        September 30, 2020 am
+      </time>
+    </span>
+  
 </div>
 
-<script>
-    document.ready(
-        function () {
-            tocbot.init({
-                tocSelector: '.tocbot-list',
-                contentSelector: '.post-content',
-                headingSelector: 'h1, h2, h3, h4, h5',
-                collapseDepth: 1,
-                orderedList: false,
-                scrollSmooth: true,
-            })
-        }
-    )
-
-    function expand_toc() {
-        var b = document.querySelector(".tocbot-toc-expand");
-        tocbot.init({
-            tocSelector: '.tocbot-list',
-            contentSelector: '.post-content',
-            headingSelector: 'h1, h2, h3, h4, h5',
-            collapseDepth: 6,
-            orderedList: false,
-            scrollSmooth: true,
-        });
-        b.setAttribute("onclick", "collapse_toc()");
-        b.innerHTML = "全部折叠"
-    }
-
-    function collapse_toc() {
-        var b = document.querySelector(".tocbot-toc-expand");
-        tocbot.init({
-            tocSelector: '.tocbot-list',
-            contentSelector: '.post-content',
-            headingSelector: 'h1, h2, h3, h4, h5',
-            collapseDepth: 1,
-            orderedList: false,
-            scrollSmooth: true,
-        });
-        b.setAttribute("onclick", "expand_toc()");
-        b.innerHTML = "全部展开"
-    }
-
-    function go_top() {
-        window.scrollTo(0, 0);
-    }
-
-    function go_bottom() {
-        window.scrollTo(0, document.body.scrollHeight);
-    }
-
-</script>
+<div class="mt-1">
+  
     
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      4k 字
+    </span>
+  
 
+  
     
-    <article class="post-wrap">
-        <header class="post-header">
-            <h1 class="post-title">OSI模型应用层</h1>
-            
-            <div class="post-meta">
-                
-                作者： <a itemprop="author" rel="author" href="/">hzjsea</a>&nbsp;
-                
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      41
+       分钟
+    </span>
+  
 
-                
-                <span class="post-time">
-                    创建日期： <a
-                        href="#">September 30, 2020&nbsp;&nbsp;10:18:28</a>
-                </span>&nbsp;
-                
-                
-                <span class="post-category">
-                    分类：
-                    
-                    <a href="/categories/%E7%BD%91%E7%BB%9C/">网络</a>&nbsp;
-                    
-                </span>
-                
-                
-                状态：<a href="#">SNAPSHOT</a>
-                
-            </div>
-            
-        </header>
+  
+  
+</div>
 
-        <div class="post-content">
-            <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">OSI模型应用层</h1>
+            
+            <div class="markdown-body">
+              <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 
 <!-- code_chunk_output -->
 
@@ -509,7 +279,7 @@
 <p>::: tip<br>域名解析流程<br>:::<br>当某一个应用进程需要把主机名解析为IP地址时，该应用进程就调用解析程序，并成为DNS的一个客户，把待解析的域名放在DNS请求中，以UDP用户数据方式发给本地域名服务器(UDP)主要是为了减少开销。本地域名服务器在查找域名后，把对应的IP地址放在回答报文中返回，应用进程获得目的主机的IP地址后即可通信</p>
 <p>请求失败，当本地域名服务器不能回答该请求，则此域名服务器就暂时成为DNS中的另一个客户，并向其他域名服务器发出查询请求，这种过程直到找到能够回答该请求的域名服务器为止。]</p>
 <p>假设运行在用户主机上的某些应用程序（如Webl浏览器或者邮件阅读器）需要将主机名转换为IP地址。这些应用程序将调用DNS的客户机端，并指明需要被转换的主机名。（在很多基于UNIX的机器上，应用程序为了执行这种转换需要调用函数gethostbyname（））。用户主机的DNS客户端接收到后，向网络中发送一个DNS查询报文。所有DNS请求和回答报文使用的UDP数据报经过端口53发送（至于为什么使用UDP，请参看为什么域名根服务器只能有13台呢？ - 郭无心的回答）经过若干ms到若干s的延时后，用户主机上的DNS客户端接收到一个提供所希望映射的DNS回答报文。这个查询结果则被传递到调用DNS的应用程序。因此，从用户主机上调用应用程序的角度看，DNS是一个提供简单、直接的转换服务的黑盒子。但事实上，实现这个服务的黑盒子非常复杂，它由分布于全球的大量DNS服务器以及定义了DNS服务器与查询主机通信方式的应用层协议组成</p>
-<h3 id="域名结构"><a href="#域名结构" class="headerlink" title="域名结构"></a>域名结构</h3><p>早起域名结构使用 <code>非等级划分</code>的名字空间，优点是名字简短。但是当用户数量变多之后，非等级划分的名字空间就显得不合常理了，一个是经常变化，一个是太多。<br>后来采用了层次树状结构的命名方法, 域名被分为顶级域和子域，子域还可以继续划分子域的子域。分别叫做顶级域、二级域、三级域<br><code>格式分时由标号.来隔开不同的等级域</code><br><img src="http://img.noback.top/2020-09-30-15-23-26.png" alt="2020-09-30-15-23-26"></p>
+<h3 id="域名结构"><a href="#域名结构" class="headerlink" title="域名结构"></a>域名结构</h3><p>早起域名结构使用 <code>非等级划分</code>的名字空间，优点是名字简短。但是当用户数量变多之后，非等级划分的名字空间就显得不合常理了，一个是经常变化，一个是太多。<br>后来采用了层次树状结构的命名方法, 域名被分为顶级域和子域，子域还可以继续划分子域的子域。分别叫做顶级域、二级域、三级域<br><code>格式分时由标号.来隔开不同的等级域</code><br><img src="http://img.noback.top/2020-09-30-15-23-26.png" srcset="/img/loading.gif" alt="2020-09-30-15-23-26"></p>
 <p>域名DNS规定，域名中的标号都由英文字母和数字组成，<code>每一个标号不超过63个字符，不区分大小写字母</code></p>
 <p>::: tip<br>顶级域名分类<br>:::</p>
 <ul>
@@ -517,8 +287,8 @@
 <li>通用顶级域名gTLD<br>com(公司企业) net(网络服务机构) org(非盈利性安组织) int(国际组织) edu(美国专用的教育机构)</li>
 <li>基础结构域名(infrastucture Domain)<br>这种顶级域名只有一个,即arpa 用于反向域名解析，因此被称为反向域名</li>
 </ul>
-<p><img src="http://img.noback.top/2020-09-30-15-52-41.png" alt="2020-09-30-15-52-41"></p>
-<h3 id="DNS查询流程"><a href="#DNS查询流程" class="headerlink" title="DNS查询流程"></a>DNS查询流程</h3><p><img src="http://img.noback.top/2020-09-30-15-57-51.png" alt="2020-09-30-15-57-51"></p>
+<p><img src="http://img.noback.top/2020-09-30-15-52-41.png" srcset="/img/loading.gif" alt="2020-09-30-15-52-41"></p>
+<h3 id="DNS查询流程"><a href="#DNS查询流程" class="headerlink" title="DNS查询流程"></a>DNS查询流程</h3><p><img src="http://img.noback.top/2020-09-30-15-57-51.png" srcset="/img/loading.gif" alt="2020-09-30-15-57-51"></p>
 <h3 id="DNS解析流程"><a href="#DNS解析流程" class="headerlink" title="DNS解析流程"></a>DNS解析流程</h3><ul>
 <li>浏览器缓存<br>当用户通过浏览器访问某域名时，浏览器首先会在自己的缓存中查找是否有该域名对应的IP地址（若曾经访问过该域名且没有清空缓存便存在）；</li>
 <li>系统缓存<br>当浏览器缓存中无域名对应IP则会自动检查用户计算机系统Hosts文件DNS缓存是否有该域名对应IP；</li>
@@ -536,9 +306,9 @@
 <li>TFTP 基于UDP协议</li>
 </ul>
 <h2 id="TELNET远程终端协议"><a href="#TELNET远程终端协议" class="headerlink" title="TELNET远程终端协议"></a>TELNET远程终端协议</h2><p>一个简单的远程终端协议RFC 854</p>
-<h2 id="超文本传输协议-HTTP"><a href="#超文本传输协议-HTTP" class="headerlink" title="超文本传输协议 HTTP"></a>超文本传输协议 HTTP</h2><p>HTTP是面向事务的应用层协议<br><img src="http://img.noback.top/2020-09-30-16-11-36.png" alt="2020-09-30-16-11-36"><br>每一个万维网网点都有一个服务器进程，他不断的监听TCP的80端口，以便发现是否有浏览器想他发出连接建立请求。一旦监听到连接建立情趣并见了TCP连接之后，浏览器就像万维网服务器发出浏览某个页面的请求，<br>服务器接着就返回所请求的页面作为相应。最后TCP连接就被释放。在浏览器和服务器之间的请求和响应的交互，必须按照规定的格式和遵循一定的规则，这些全来自于HTTP超文本传输协议<br><img src="http://img.noback.top/2020-09-30-16-17-22.png" alt="2020-09-30-16-17-22"><br><img src="http://img.noback.top/2020-09-30-16-20-29.png" alt="2020-09-30-16-20-29"><br><img src="http://img.noback.top/2020-09-30-16-20-37.png" alt="2020-09-30-16-20-37"></p>
+<h2 id="超文本传输协议-HTTP"><a href="#超文本传输协议-HTTP" class="headerlink" title="超文本传输协议 HTTP"></a>超文本传输协议 HTTP</h2><p>HTTP是面向事务的应用层协议<br><img src="http://img.noback.top/2020-09-30-16-11-36.png" srcset="/img/loading.gif" alt="2020-09-30-16-11-36"><br>每一个万维网网点都有一个服务器进程，他不断的监听TCP的80端口，以便发现是否有浏览器想他发出连接建立请求。一旦监听到连接建立情趣并见了TCP连接之后，浏览器就像万维网服务器发出浏览某个页面的请求，<br>服务器接着就返回所请求的页面作为相应。最后TCP连接就被释放。在浏览器和服务器之间的请求和响应的交互，必须按照规定的格式和遵循一定的规则，这些全来自于HTTP超文本传输协议<br><img src="http://img.noback.top/2020-09-30-16-17-22.png" srcset="/img/loading.gif" alt="2020-09-30-16-17-22"><br><img src="http://img.noback.top/2020-09-30-16-20-29.png" srcset="/img/loading.gif" alt="2020-09-30-16-20-29"><br><img src="http://img.noback.top/2020-09-30-16-20-37.png" srcset="/img/loading.gif" alt="2020-09-30-16-20-37"></p>
 <h3 id="代理服务器"><a href="#代理服务器" class="headerlink" title="代理服务器"></a>代理服务器</h3><p>代理服务器(proxy server)是一种网络实体，他又称为 万维网高速缓存。代理服务器把最近的一些请求和响应暂存在本地磁盘中，当新请求到达时，若代理服务器发现这个请求与暂时存放的请求相同，就返回暂存的响应，而不需要按URL的地址再次去互联网访问该资源</p>
-<h2 id="SMTP协议"><a href="#SMTP协议" class="headerlink" title="SMTP协议"></a>SMTP协议</h2><p>简单邮件传输协议<br><img src="http://img.noback.top/2020-10-21-11-56-09.png" alt="2020-10-21-11-56-09"></p>
+<h2 id="SMTP协议"><a href="#SMTP协议" class="headerlink" title="SMTP协议"></a>SMTP协议</h2><p>简单邮件传输协议<br><img src="http://img.noback.top/2020-10-21-11-56-09.png" srcset="/img/loading.gif" alt="2020-10-21-11-56-09"></p>
 <h2 id="动态主机配置协议DHCP"><a href="#动态主机配置协议DHCP" class="headerlink" title="动态主机配置协议DHCP"></a>动态主机配置协议DHCP</h2><p>为了把协议软件做成通用和便于移植的，协议软件中的细节内容不会固定在源代码中，他们会把协议软件参数化。给这些参数赋值的动作叫做协议配置。配置的项目主要包括</p>
 <ul>
 <li>IP地址</li>
@@ -547,49 +317,224 @@
 <li>域名服务器的IP地址</li>
 </ul>
 <p>如果是固定了IP地址的话，这样的适配性不高 因为不同网络的掩码网关都不一样。人工配置很不方便，于是有了自动协议配置的方法。这种方法采用的协议就是DHCP动态主机配置协议，即插即用联网。</p>
-<h3 id="DHCP配置流程"><a href="#DHCP配置流程" class="headerlink" title="DHCP配置流程"></a>DHCP配置流程</h3><p>DHCP使用客户服务器方式，DHCP开启后，需要IP地址的主机在启动时就向DHCP服务器广播发送<code>发现报文</code>(将目的IP地址全部置为1，即255.255.255.255),这时该主机就成为DHCP客户。<br>发送广播报文是因为现在还不知道DHCP服务器在什么地方，因此他将IP数据报的源IP地址设置为0，这样本地网络上的所有主机都能够收到这个广播报文。但只有DHCP服务器才对此广播报文进行回答。DHCP服务器先在其数据库中查找该计算机的配置信息。<br>若找到，则返回找到的信息，若找不到则从服务器的IP地址池中取一个地址分配给该计算机。DHCP服务器的回答报文叫做<code>提供报文</code><br>::: tip<br>DHCP的服务器建设在哪里？<br>:::<br>DHCP通常设置在路由器上，每一个网络至少有一个DHCP中继代理，他配置了DHCP服务器的IP地址信息，当DHCP中继代理收到主机A以广播形式发送的报文后，就以单播方式向DHCP服务器转发报文，并等待其回答，收到DHCP服务器回答的提供报文后，DHCP中继代理再把此提供报文发回给主机A。实际上DHCP报文只是UDP用户数据报的数据，他还要加上UDP首部，IP数据报首部以及以太网的MAC帧的首部和尾部后，才能在链路传送。也就是他还要经历 运输层，网络层，数据链路层的封装<br><img src="http://img.noback.top/2020-10-21-15-27-12.png" alt="2020-10-21-15-27-12"></p>
+<h3 id="DHCP配置流程"><a href="#DHCP配置流程" class="headerlink" title="DHCP配置流程"></a>DHCP配置流程</h3><p>DHCP使用客户服务器方式，DHCP开启后，需要IP地址的主机在启动时就向DHCP服务器广播发送<code>发现报文</code>(将目的IP地址全部置为1，即255.255.255.255),这时该主机就成为DHCP客户。<br>发送广播报文是因为现在还不知道DHCP服务器在什么地方，因此他将IP数据报的源IP地址设置为0，这样本地网络上的所有主机都能够收到这个广播报文。但只有DHCP服务器才对此广播报文进行回答。DHCP服务器先在其数据库中查找该计算机的配置信息。<br>若找到，则返回找到的信息，若找不到则从服务器的IP地址池中取一个地址分配给该计算机。DHCP服务器的回答报文叫做<code>提供报文</code><br>::: tip<br>DHCP的服务器建设在哪里？<br>:::<br>DHCP通常设置在路由器上，每一个网络至少有一个DHCP中继代理，他配置了DHCP服务器的IP地址信息，当DHCP中继代理收到主机A以广播形式发送的报文后，就以单播方式向DHCP服务器转发报文，并等待其回答，收到DHCP服务器回答的提供报文后，DHCP中继代理再把此提供报文发回给主机A。实际上DHCP报文只是UDP用户数据报的数据，他还要加上UDP首部，IP数据报首部以及以太网的MAC帧的首部和尾部后，才能在链路传送。也就是他还要经历 运输层，网络层，数据链路层的封装<br><img src="http://img.noback.top/2020-10-21-15-27-12.png" srcset="/img/loading.gif" alt="2020-10-21-15-27-12"></p>
 <h3 id="DHCP租用期"><a href="#DHCP租用期" class="headerlink" title="DHCP租用期"></a>DHCP租用期</h3><p>DHCP服务器分配给DHCP客户的IP地址是临时的，因为DHCP客户只能在一段有限的时间内使用这个分配到的IP地址。DHCP协议把这段时间叫做<code>租用期</code>,这个时间由DHCP服务器决定，租用期用4字节的二进制数字表示，单位是秒。 因此可供选择的时间是1s到136年。DHCP客户也可以在客户端提出对租用期的要求，比如windows更新dhcp <code>https://cloud.tencent.com/developer/news/454392</code> macos更新dhcp时间 <code>https://support.apple.com/zh-hk/guide/mac-help/mchlp1545/mac</code></p>
-<p>dhcp客户使用的udp端口是68 而dhcp服务器使用的udp端口是67<br><img src="http://img.noback.top/2020-10-21-15-36-11.png" alt="2020-10-21-15-36-11"><br><img src="http://img.noback.top/2020-10-21-15-36-33.png" alt="2020-10-21-15-36-33"></p>
-<h2 id="简单网络管理协议SNMP"><a href="#简单网络管理协议SNMP" class="headerlink" title="简单网络管理协议SNMP"></a>简单网络管理协议SNMP</h2><p>SNMP主要用来管理网络设备之间的状态信息。网络管理包括对硬件、软件和人力的使用、综合与协调，以便对网络资源进行监视、测试、配置、分析、评价和控制，这样就能以合理的价格满足网络的一些需求，如实时的运行性能，服务质量等。网络管理常简称为网管。<br><img src="http://img.noback.top/2020-10-21-15-40-26.png" alt="2020-10-21-15-40-26">-<br>被管设备需要运行一个程序以便和管理站中的管理程序进行通信，这些运行着的程序叫做网络管理代理程序，简称为<code>代理</code>。这些代理程序通过<code>网络管理协议</code>来通信。管理程序运行<code>SNMP客户程序</code>，而代理程序运行<code>SNMP服务程序</code> ，在被管对象上运行的SNMP服务器程序不停的监听来自管理站的SNMP客户端程序的请求。一旦发现就返回管理站所需要的信息  这是一种方式，也就是被动，另外一种则是主动发送的方式。</p>
+<p>dhcp客户使用的udp端口是68 而dhcp服务器使用的udp端口是67<br><img src="http://img.noback.top/2020-10-21-15-36-11.png" srcset="/img/loading.gif" alt="2020-10-21-15-36-11"><br><img src="http://img.noback.top/2020-10-21-15-36-33.png" srcset="/img/loading.gif" alt="2020-10-21-15-36-33"></p>
+<h2 id="简单网络管理协议SNMP"><a href="#简单网络管理协议SNMP" class="headerlink" title="简单网络管理协议SNMP"></a>简单网络管理协议SNMP</h2><p>SNMP主要用来管理网络设备之间的状态信息。网络管理包括对硬件、软件和人力的使用、综合与协调，以便对网络资源进行监视、测试、配置、分析、评价和控制，这样就能以合理的价格满足网络的一些需求，如实时的运行性能，服务质量等。网络管理常简称为网管。<br><img src="http://img.noback.top/2020-10-21-15-40-26.png" srcset="/img/loading.gif" alt="2020-10-21-15-40-26">-<br>被管设备需要运行一个程序以便和管理站中的管理程序进行通信，这些运行着的程序叫做网络管理代理程序，简称为<code>代理</code>。这些代理程序通过<code>网络管理协议</code>来通信。管理程序运行<code>SNMP客户程序</code>，而代理程序运行<code>SNMP服务程序</code> ，在被管对象上运行的SNMP服务器程序不停的监听来自管理站的SNMP客户端程序的请求。一旦发现就返回管理站所需要的信息  这是一种方式，也就是被动，另外一种则是主动发送的方式。</p>
 <p>网络管理协议所要做到的一点就是，若要管理某个对象，就必然会对该对象添加一些软件或者硬件，但是要尽量避免对原有对象的影响。</p>
 <p>SNMP的网络管理由三个部分组成，即<code>SNMP本身</code>，<code>管理信息结构SMI</code>和<code>管理信息库MIB</code><br>SNMP定义了管理站和代理之间所交换的分组格式，所交换的分组包含各代理中的对象名以及状态值。SNMP负责读取和改变这些数值。</p>
 
-        </div>
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E7%BD%91%E7%BB%9C/">网络</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E7%BD%91%E7%BB%9C/">网络</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/10/09/blog_back_new/java/java%E5%9F%BA%E7%A1%80/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">java基础</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/09/29/blog_back_new/NetWord/5OSI%E6%A8%A1%E5%9E%8B%E7%89%A9%E7%90%86%E5%B1%82/">
+                        <span class="hidden-mobile">OSI模型物理层</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
 
-        
-        <section class="post-tags">
-            <div>
-                <span>标签：</span>
-                <span class="tag">
-                    
-                    
-                    <a href="/tags/%E7%BD%91%E7%BB%9C/"># 网络</a>
-                    
-                    
-                </span>
-            </div>
-            <div>
-                <a href="javascript：window.history.back();">后退</a>
-                <span>· </span>
-                <a href="/">主页</a>
-            </div>
-        </section>
-        <section class="post-nav">
             
-            <a class="prev" rel="prev" href="/2020/10/09/blog_back_new/java/java%E5%9F%BA%E7%A1%80/">java基础</a>
-            
-            
-            <a class="next" rel="next" href="/2020/09/29/blog_back_new/NetWord/5OSI%E6%A8%A1%E5%9E%8B%E7%89%A9%E7%90%86%E5%B1%82/">OSI模型物理层</a>
-            
-        </section>
-    </article>
-</div>
+          </article>
         </div>
-        <footer id="footer" class="footer">
-    <div class="copyright">
+      </div>
     </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
 </footer>
 
-    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+
+
 </body>
 </html>
