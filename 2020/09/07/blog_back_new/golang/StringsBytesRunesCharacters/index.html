@@ -67,7 +67,7 @@
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
-       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
+       href="/">&nbsp;<strong>hzjsea</strong>&nbsp;</a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
             data-target="#navbarSupportedContent"
@@ -194,7 +194,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      39
+      40
        分钟
     </span>
   
@@ -275,140 +275,143 @@
 <p>举例<br>严的 Unicode 是4E25（100111000100101），根据上表，可以发现4E25处在第三行的范围内（0000 0800 - 0000 FFFF），因此严的 UTF-8 编码需要三个字节，即格式是1110xxxx 10xxxxxx 10xxxxxx。然后，从严的最后一个二进制位开始，依次从后向前填入格式中的x，多出的位补0。这样就得到了，严的 UTF-8 编码是11100100 10111000 10100101，转换成十六进制就是E4B8A5</p>
 <p>::: tip<br>顺便提一句，中文windows下面，默认使用的是GB2312编码，Linux下面的是UTF-8编码<br>:::</p>
 <h2 id="编码转换"><a href="#编码转换" class="headerlink" title="编码转换"></a>编码转换</h2><p>编码查看<br><code>file filename</code><br>或者在vim中查看编码</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token function">vi</span> xx.txt
-<span class="token keyword">set</span> fileencoding
-<span class="token comment" spellcheck="true"># 设置编码</span>
-<span class="token keyword">set</span> fileencoding<span class="token operator">=</span>utf-8</code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">vi xx.txt
+<span class="hljs-built_in">set</span> fileencoding
+<span class="hljs-comment"># 设置编码</span>
+<span class="hljs-built_in">set</span> fileencoding=utf-8</code></pre></div>
 <p>在<code>.vimrc</code>中设置编码格式，这样vim在打开的时候回自动判断编码，保证不会出现乱码</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token string">" 设置新文件的编码为iUTF-8"</span>
-<span class="token keyword">set</span> encoding<span class="token operator">=</span>utf-8
-<span class="token string">" 自动判断编码时，依次尝试一下的编码"</span>
-<span class="token keyword">set</span> fileencodings<span class="token operator">=</span>usc-bom,utf-8,cp936,gb18030,big5,euc-jp,euc-kr,latin1</code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-string"><code class="language-hljs bash"><span class="hljs-string">" 设置新文件的编码为iUTF-8"</span>
+<span class="hljs-built_in">set</span> encoding=utf-8
+<span class="hljs-string">" 自动判断编码时，依次尝试一下的编码"</span>
+<span class="hljs-built_in">set</span> fileencodings=usc-bom,utf-8,cp936,gb18030,big5,euc-jp,euc-kr,latin1</code></pre></div>
 <p>跨平台之间难免会存在一些编码问题，在linux下可以使用iconv转换编码<br><img src="http://img.noback.top/2020-10-22-14-31-16.png" srcset="/img/loading.gif" alt="2020-10-22-14-31-16"><br>批量处理</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token shebang important">#!/bin/bash</span>
-<span class="token comment" spellcheck="true"># 功能：将GB2312文件 转换成 UTF-8【解决Windows文件复制到Linux之后乱码问题】</span>
-<span class="token comment" spellcheck="true">#read -p "Input Path:" SPATH</span>
-SPATH<span class="token operator">=</span><span class="token string">"."</span>
-<span class="token comment" spellcheck="true">#echo $SPATH</span>
-POSTFIX<span class="token operator">=</span><span class="token string">"m"</span>
-param1<span class="token operator">=</span><span class="token string">"<span class="token variable">$1</span>"</span>
-<span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token string">"<span class="token variable">$param1</span>"</span> <span class="token operator">==</span> <span class="token string">"win"</span> <span class="token punctuation">]</span><span class="token punctuation">;</span><span class="token keyword">then</span>
-   sys1<span class="token operator">=</span><span class="token string">"Linux"</span>
-   sys2<span class="token operator">=</span><span class="token string">"Windows"</span>
-   format1<span class="token operator">=</span><span class="token string">"UTF-8"</span>
-   format2<span class="token operator">=</span><span class="token string">"GB2312"</span>
-<span class="token keyword">elif</span> <span class="token punctuation">[</span> <span class="token string">"<span class="token variable">$param1</span>"</span> <span class="token operator">==</span> <span class="token string">"linux"</span> <span class="token punctuation">]</span><span class="token punctuation">;</span><span class="token keyword">then</span>
-   sys1<span class="token operator">=</span><span class="token string">"Windows"</span>
-   sys2<span class="token operator">=</span><span class="token string">"Linux"</span>
-   format1<span class="token operator">=</span><span class="token string">"GB2312"</span>
-   format2<span class="token operator">=</span><span class="token string">"UTF-8"</span>
-<span class="token keyword">else</span>
-   <span class="token keyword">echo</span> <span class="token string">"************** 功能 ************"</span>
-   <span class="token keyword">echo</span> <span class="token string">"  解决matlab脚本文件在Windows和Linux中移动时出现的乱码问题！"</span>
-   <span class="token keyword">echo</span> <span class="token string">"  将该脚本复制到程序文件夹中，运行该脚本，它会对当前文件夹及子文件夹中的所有*.m文件进行格式转换，解决乱码问题。"</span>
-   <span class="token keyword">echo</span> <span class="token string">"  转换到 Linux 的命令: <span class="token variable">$0</span> linux"</span>
-   <span class="token keyword">echo</span> <span class="token string">"  转换到 Window的命令: <span class="token variable">$0</span> win"</span>
-   <span class="token keyword">exit</span>
-<span class="token keyword">fi</span>
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-meta"><code class="language-hljs bash"><span class="hljs-meta">#!/bin/bash</span>
+<span class="hljs-comment"># 功能：将GB2312文件 转换成 UTF-8【解决Windows文件复制到Linux之后乱码问题】</span>
+<span class="hljs-comment">#read -p "Input Path:" SPATH</span>
+SPATH=<span class="hljs-string">"."</span>
+<span class="hljs-comment">#echo $SPATH</span>
+POSTFIX=<span class="hljs-string">"m"</span>
+param1=<span class="hljs-string">"<span class="hljs-variable">$1</span>"</span>
+<span class="hljs-keyword">if</span> [ <span class="hljs-string">"<span class="hljs-variable">$param1</span>"</span> == <span class="hljs-string">"win"</span> ];<span class="hljs-keyword">then</span>
+   sys1=<span class="hljs-string">"Linux"</span>
+   sys2=<span class="hljs-string">"Windows"</span>
+   format1=<span class="hljs-string">"UTF-8"</span>
+   format2=<span class="hljs-string">"GB2312"</span>
+<span class="hljs-keyword">elif</span> [ <span class="hljs-string">"<span class="hljs-variable">$param1</span>"</span> == <span class="hljs-string">"linux"</span> ];<span class="hljs-keyword">then</span>
+   sys1=<span class="hljs-string">"Windows"</span>
+   sys2=<span class="hljs-string">"Linux"</span>
+   format1=<span class="hljs-string">"GB2312"</span>
+   format2=<span class="hljs-string">"UTF-8"</span>
+<span class="hljs-keyword">else</span>
+   <span class="hljs-built_in">echo</span> <span class="hljs-string">"************** 功能 ************"</span>
+   <span class="hljs-built_in">echo</span> <span class="hljs-string">"  解决matlab脚本文件在Windows和Linux中移动时出现的乱码问题！"</span>
+   <span class="hljs-built_in">echo</span> <span class="hljs-string">"  将该脚本复制到程序文件夹中，运行该脚本，它会对当前文件夹及子文件夹中的所有*.m文件进行格式转换，解决乱码问题。"</span>
+   <span class="hljs-built_in">echo</span> <span class="hljs-string">"  转换到 Linux 的命令: <span class="hljs-variable">$0</span> linux"</span>
+   <span class="hljs-built_in">echo</span> <span class="hljs-string">"  转换到 Window的命令: <span class="hljs-variable">$0</span> win"</span>
+   <span class="hljs-built_in">exit</span>
+<span class="hljs-keyword">fi</span>
 
-<span class="token keyword">echo</span> <span class="token string">"********************************"</span>
-<span class="token keyword">echo</span> <span class="token string">"  格式转换中......"</span>
-<span class="token keyword">echo</span> <span class="token string">"  从"</span><span class="token variable">$sys1</span><span class="token string">"("</span><span class="token variable">$format1</span><span class="token string">") 转换到 "</span><span class="token variable">$sys2</span><span class="token string">"("</span><span class="token variable">$format2</span><span class="token string">")"</span>
-<span class="token keyword">echo</span> <span class="token string">"********************************"</span>
+<span class="hljs-built_in">echo</span> <span class="hljs-string">"********************************"</span>
+<span class="hljs-built_in">echo</span> <span class="hljs-string">"  格式转换中......"</span>
+<span class="hljs-built_in">echo</span> <span class="hljs-string">"  从"</span><span class="hljs-variable">$sys1</span><span class="hljs-string">"("</span><span class="hljs-variable">$format1</span><span class="hljs-string">") 转换到 "</span><span class="hljs-variable">$sys2</span><span class="hljs-string">"("</span><span class="hljs-variable">$format2</span><span class="hljs-string">")"</span>
+<span class="hljs-built_in">echo</span> <span class="hljs-string">"********************************"</span>
 
 
-FILELIST<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-filelist<span class="token operator">=</span><span class="token variable"><span class="token variable">`</span><span class="token function">ls</span> $SPATH <span class="token variable">`</span></span>
-<span class="token keyword">for</span> filename <span class="token keyword">in</span> <span class="token variable">$filelist</span><span class="token punctuation">;</span> <span class="token keyword">do</span>
-    <span class="token keyword">if</span> <span class="token punctuation">[</span> -f <span class="token variable">$filename</span> <span class="token punctuation">]</span><span class="token punctuation">;</span><span class="token keyword">then</span>
-        <span class="token comment" spellcheck="true">#echo File:$filename</span>
-        <span class="token comment" spellcheck="true">#echo "${filename#*.}"</span>
-        EXTENSION<span class="token operator">=</span><span class="token string">"<span class="token variable">${filename#*.}</span>"</span>
-        <span class="token comment" spellcheck="true">#echo $EXTENSION</span>
-        <span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token string">"<span class="token variable">$EXTENSION</span>"</span> <span class="token operator">==</span> <span class="token string">"<span class="token variable">$POSTFIX</span>"</span> <span class="token punctuation">]</span><span class="token punctuation">;</span><span class="token keyword">then</span>
-           <span class="token comment" spellcheck="true">#echo "${filename%%.*}"</span>
-           <span class="token keyword">echo</span> Processing: <span class="token variable">$filename</span>
-           <span class="token function">iconv</span> -f <span class="token variable">$format1</span> -t <span class="token variable">$format2</span> <span class="token variable">$filename</span> -o <span class="token variable">$filename</span>
-           <span class="token comment" spellcheck="true">#iconv -f GB2312 -t UTF-8 $filename -o $filename</span>
-        <span class="token keyword">fi</span>
+<span class="hljs-function"><span class="hljs-title">FILELIST</span></span>(){
+filelist=`ls <span class="hljs-variable">$SPATH</span> `
+<span class="hljs-keyword">for</span> filename <span class="hljs-keyword">in</span> <span class="hljs-variable">$filelist</span>; <span class="hljs-keyword">do</span>
+    <span class="hljs-keyword">if</span> [ -f <span class="hljs-variable">$filename</span> ];<span class="hljs-keyword">then</span>
+        <span class="hljs-comment">#echo File:$filename</span>
+        <span class="hljs-comment">#echo "${filename#*.}"</span>
+        EXTENSION=<span class="hljs-string">"<span class="hljs-variable">${filename#*.}</span>"</span>
+        <span class="hljs-comment">#echo $EXTENSION</span>
+        <span class="hljs-keyword">if</span> [ <span class="hljs-string">"<span class="hljs-variable">$EXTENSION</span>"</span> == <span class="hljs-string">"<span class="hljs-variable">$POSTFIX</span>"</span> ];<span class="hljs-keyword">then</span>
+           <span class="hljs-comment">#echo "${filename%%.*}"</span>
+           <span class="hljs-built_in">echo</span> Processing: <span class="hljs-variable">$filename</span>
+           iconv -f <span class="hljs-variable">$format1</span> -t <span class="hljs-variable">$format2</span> <span class="hljs-variable">$filename</span> -o <span class="hljs-variable">$filename</span>
+           <span class="hljs-comment">#iconv -f GB2312 -t UTF-8 $filename -o $filename</span>
+        <span class="hljs-keyword">fi</span>
 
-    <span class="token keyword">elif</span> <span class="token punctuation">[</span> -d <span class="token variable">$filename</span> <span class="token punctuation">]</span><span class="token punctuation">;</span><span class="token keyword">then</span>
-        <span class="token function">cd</span> <span class="token variable">$filename</span>
-        SPATH<span class="token operator">=</span><span class="token variable"><span class="token variable">`</span><span class="token function">pwd</span><span class="token variable">`</span></span>
-        <span class="token comment" spellcheck="true">#echo $SPATH</span>
+    <span class="hljs-keyword">elif</span> [ -d <span class="hljs-variable">$filename</span> ];<span class="hljs-keyword">then</span>
+        <span class="hljs-built_in">cd</span> <span class="hljs-variable">$filename</span>
+        SPATH=`<span class="hljs-built_in">pwd</span>`
+        <span class="hljs-comment">#echo $SPATH</span>
         FILELIST
-        <span class="token function">cd</span> <span class="token punctuation">..</span>
-    <span class="token keyword">else</span>
-        <span class="token keyword">echo</span> <span class="token string">"<span class="token variable">$SPATH</span>/<span class="token variable">$filename</span> is not a common file."</span>
-    <span class="token keyword">fi</span>
-<span class="token keyword">done</span>
-<span class="token punctuation">}</span>
-<span class="token function">cd</span> <span class="token variable">$SPATH</span>
+        <span class="hljs-built_in">cd</span> ..
+    <span class="hljs-keyword">else</span>
+        <span class="hljs-built_in">echo</span> <span class="hljs-string">"<span class="hljs-variable">$SPATH</span>/<span class="hljs-variable">$filename</span> is not a common file."</span>
+    <span class="hljs-keyword">fi</span>
+<span class="hljs-keyword">done</span>
+}
+<span class="hljs-built_in">cd</span> <span class="hljs-variable">$SPATH</span>
 FILELIST
-<span class="token keyword">echo</span> <span class="token string">"======== Convert Done. ========"</span></code></pre>
+<span class="hljs-built_in">echo</span> <span class="hljs-string">"======== Convert Done. ========"</span></code></pre></div>
+
 <h2 id="格式化输出规定符"><a href="#格式化输出规定符" class="headerlink" title="格式化输出规定符"></a>格式化输出规定符</h2><p>格式化输出固定符号，基本每个语言都是相同的<br>%d 十进制有符号整数<br>%u 十进制无符号整数<br>%f 浮点数<br>%s 字符串<br>%c 单个字符<br>%p 指针的值<br>%e 指数形式的浮点数<br>%x, %X 无符号以十六进制表示的整数<br>%0 无符号以八进制表示的整数<br>/n 换行<br>/f 清屏并换页<br>/r 回车<br>/t Tab符</p>
 <h2 id="golang中的字符串字节符文和字符"><a href="#golang中的字符串字节符文和字符" class="headerlink" title="golang中的字符串字节符文和字符"></a>golang中的字符串字节符文和字符</h2><p><a target="_blank" rel="noopener" href="https://blog.golang.org/strings">https://blog.golang.org/strings</a></p>
 <h2 id="golang各个字符类数据类型区别"><a href="#golang各个字符类数据类型区别" class="headerlink" title="golang各个字符类数据类型区别"></a>golang各个字符类数据类型区别</h2><p>首先来看单字节的 byte 和unit8，他们是一样都，都是8个bite位 ，表示1个byte。单字节的字符遵守ASCII码表的内容，于是内容如下</p>
-<pre class=" language-go"><code class="language-go"><span class="token keyword">var</span> a <span class="token builtin">byte</span> <span class="token operator">=</span> <span class="token number">65</span>
-<span class="token comment" spellcheck="true">// 8进制写法</span>
-<span class="token keyword">var</span> c <span class="token builtin">byte</span> <span class="token operator">=</span> <span class="token string">'\101'</span>
-<span class="token comment" spellcheck="true">// 16进制写法</span>
-<span class="token keyword">var</span> d <span class="token builtin">byte</span> <span class="token operator">=</span> <span class="token string">'\x41'</span>
-<span class="token keyword">var</span> b <span class="token builtin">uint8</span> <span class="token operator">=</span> <span class="token number">66</span>
-fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"65 is %c, 66 is %c\n"</span><span class="token punctuation">,</span> a<span class="token punctuation">,</span> b<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// 65 is A , 66 is B</span>
-fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"%c,%c\n"</span><span class="token punctuation">,</span> c<span class="token punctuation">,</span> d<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// A,A</span></code></pre>
+<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword">var</span> a <span class="hljs-keyword">byte</span> = <span class="hljs-number"><code class="language-hljs go"><span class="hljs-keyword">var</span> a <span class="hljs-keyword">byte</span> = <span class="hljs-number">65</span>
+<span class="hljs-comment">// 8进制写法</span>
+<span class="hljs-keyword">var</span> c <span class="hljs-keyword">byte</span> = <span class="hljs-string">&#x27;\101&#x27;</span>
+<span class="hljs-comment">// 16进制写法</span>
+<span class="hljs-keyword">var</span> d <span class="hljs-keyword">byte</span> = <span class="hljs-string">&#x27;\x41&#x27;</span>
+<span class="hljs-keyword">var</span> b <span class="hljs-keyword">uint8</span> = <span class="hljs-number">66</span>
+fmt.Printf(<span class="hljs-string">"65 is %c, 66 is %c\n"</span>, a, b) <span class="hljs-comment">// 65 is A , 66 is B</span>
+fmt.Printf(<span class="hljs-string">"%c,%c\n"</span>, c, d) <span class="hljs-comment">// A,A</span></code></pre></div>
 <p>接下来是4个byte的内容，也就是uint32的内容，他们表示用来表示Unicode字符<br>如何区分Unicode与ASCII 就看第一组的前缀是否为0</p>
-<pre class=" language-go"><code class="language-go"><span class="token keyword">var</span> xx <span class="token builtin">rune</span> <span class="token operator">=</span> <span class="token string">'A'</span>
-<span class="token keyword">var</span> yy <span class="token builtin">rune</span> <span class="token operator">=</span> <span class="token string">'B'</span>
-<span class="token keyword">var</span> qq <span class="token operator">=</span> <span class="token string">'C'</span>
-fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"x占用字节数为%d"</span><span class="token punctuation">,</span> unsafe<span class="token punctuation">.</span><span class="token function">Sizeof</span><span class="token punctuation">(</span>x<span class="token punctuation">)</span><span class="token punctuation">)</span>                            <span class="token comment" spellcheck="true">// 4</span>
-fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"xx,yy占用字节数为%d,%d"</span><span class="token punctuation">,</span> unsafe<span class="token punctuation">.</span><span class="token function">Sizeof</span><span class="token punctuation">(</span>xx<span class="token punctuation">)</span><span class="token punctuation">,</span> unsafe<span class="token punctuation">.</span><span class="token function">Sizeof</span><span class="token punctuation">(</span>yy<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// 4,4</span>
-fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"x占用字节数为%d"</span><span class="token punctuation">,</span> unsafe<span class="token punctuation">.</span><span class="token function">Sizeof</span><span class="token punctuation">(</span>qq<span class="token punctuation">)</span><span class="token punctuation">)</span>                           <span class="token comment" spellcheck="true">// 4</span></code></pre>
+<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword">var</span> xx <span class="hljs-keyword">rune</span> = <span class="hljs-string"><code class="language-hljs go"><span class="hljs-keyword">var</span> xx <span class="hljs-keyword">rune</span> = <span class="hljs-string">&#x27;A&#x27;</span>
+<span class="hljs-keyword">var</span> yy <span class="hljs-keyword">rune</span> = <span class="hljs-string">&#x27;B&#x27;</span>
+<span class="hljs-keyword">var</span> qq = <span class="hljs-string">&#x27;C&#x27;</span>
+fmt.Printf(<span class="hljs-string">"x占用字节数为%d"</span>, unsafe.Sizeof(x))                            <span class="hljs-comment">// 4</span>
+fmt.Printf(<span class="hljs-string">"xx,yy占用字节数为%d,%d"</span>, unsafe.Sizeof(xx), unsafe.Sizeof(yy)) <span class="hljs-comment">// 4,4</span>
+fmt.Printf(<span class="hljs-string">"x占用字节数为%d"</span>, unsafe.Sizeof(qq))                           <span class="hljs-comment">// 4</span></code></pre></div>
 <p>默认情况下字符都是以rune的形式出现的 ，也就是表示为 uint32<br>使用rune的好处就是可以保存更多的字符类型，包括中文，内容如下</p>
-<pre class=" language-go"><code class="language-go"><span class="token keyword">var</span> qqxx <span class="token builtin">rune</span> <span class="token operator">=</span> <span class="token string">'中'</span>
-fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"qqxx size is %d\n"</span><span class="token punctuation">,</span> unsafe<span class="token punctuation">.</span><span class="token function">Sizeof</span><span class="token punctuation">(</span>qqxx<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// 4</span>
-<span class="token comment" spellcheck="true">//var qqxxx byte = '中' // 这里报错 超出字节大小   constant 20013 overflows byte</span>
-<span class="token comment" spellcheck="true">//fmt.Println(unsafe.Sizeof(qqxxx))</span>
+<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword">var</span> qqxx <span class="hljs-keyword">rune</span> = <span class="hljs-string"><code class="language-hljs go"><span class="hljs-keyword">var</span> qqxx <span class="hljs-keyword">rune</span> = <span class="hljs-string">&#x27;中&#x27;</span>
+fmt.Printf(<span class="hljs-string">"qqxx size is %d\n"</span>, unsafe.Sizeof(qqxx)) <span class="hljs-comment">// 4</span>
+<span class="hljs-comment">//var qqxxx byte = &#x27;中&#x27; // 这里报错 超出字节大小   constant 20013 overflows byte</span>
+<span class="hljs-comment">//fmt.Println(unsafe.Sizeof(qqxxx))</span>
 
 
-<span class="token keyword">var</span> xx <span class="token keyword">interface</span><span class="token punctuation">{</span><span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token string">"hellowrold"</span>  <span class="token comment" spellcheck="true">// is string</span>
-<span class="token keyword">var</span> xxx <span class="token keyword">interface</span><span class="token punctuation">{</span><span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token string">'x'</span> <span class="token comment" spellcheck="true">// is rune</span>
-<span class="token keyword">switch</span> xxx<span class="token punctuation">.</span><span class="token punctuation">(</span><span class="token keyword">type</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-<span class="token keyword">case</span> <span class="token builtin">string</span><span class="token punctuation">:</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"is string"</span><span class="token punctuation">)</span>
-<span class="token keyword">case</span> <span class="token builtin">rune</span><span class="token punctuation">:</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"is rune"</span><span class="token punctuation">)</span>
-<span class="token keyword">case</span> <span class="token builtin">byte</span><span class="token punctuation">:</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"is byte"</span><span class="token punctuation">)</span>
-<span class="token keyword">default</span><span class="token punctuation">:</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"dont know"</span><span class="token punctuation">)</span>
-<span class="token punctuation">}</span>
+<span class="hljs-keyword">var</span> xx <span class="hljs-keyword">interface</span>{} = <span class="hljs-string">"hellowrold"</span>  <span class="hljs-comment">// is string</span>
+<span class="hljs-keyword">var</span> xxx <span class="hljs-keyword">interface</span>{} = <span class="hljs-string">&#x27;x&#x27;</span> <span class="hljs-comment">// is rune</span>
+<span class="hljs-keyword">switch</span> xxx.(<span class="hljs-keyword">type</span>) {
+<span class="hljs-keyword">case</span> <span class="hljs-keyword">string</span>:
+	fmt.Println(<span class="hljs-string">"is string"</span>)
+<span class="hljs-keyword">case</span> <span class="hljs-keyword">rune</span>:
+	fmt.Println(<span class="hljs-string">"is rune"</span>)
+<span class="hljs-keyword">case</span> <span class="hljs-keyword">byte</span>:
+	fmt.Println(<span class="hljs-string">"is byte"</span>)
+<span class="hljs-keyword">default</span>:
+	fmt.Println(<span class="hljs-string">"dont know"</span>)
+}
 
-</code></pre>
+</code></pre></div>
+
 <p>接下来是字符串，上面讲的都是字符，也就是用单引号包裹起来的，但是字符串则是用双引号包裹起来的。字符串的字节数为16</p>
-<pre class=" language-go"><code class="language-go">fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"-------"</span><span class="token punctuation">)</span>
-<span class="token keyword">var</span> zz <span class="token builtin">string</span> <span class="token operator">=</span> <span class="token string">"hello,中国"</span>
-<span class="token keyword">var</span> zzz <span class="token builtin">string</span> <span class="token operator">=</span> <span class="token string">"中"</span>
-fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token function">len</span><span class="token punctuation">(</span>zzz<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// 3</span>
-fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token function">len</span><span class="token punctuation">(</span>zz<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// 12</span>
-fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>unsafe<span class="token punctuation">.</span><span class="token function">Sizeof</span><span class="token punctuation">(</span>zz<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// 16</span>
-fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>unsafe<span class="token punctuation">.</span><span class="token function">Sizeof</span><span class="token punctuation">(</span>zzz<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// 16</span>
-<span class="token keyword">var</span> zzbyte <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span> <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token function">byte</span><span class="token punctuation">(</span>zz<span class="token punctuation">)</span>  
-<span class="token keyword">var</span> zzzbyte <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span> <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token function">byte</span><span class="token punctuation">(</span>zzz<span class="token punctuation">)</span>
-fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>zzbyte<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// [104 101 108 108 111 44 228 184 173 229 155 189] 12</span>
-fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>zzzbyte<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// [228 184 173] 3</span></code></pre>
+<div class="code-wrapper"><pre class=" language-hljs go">fmt.Println(<span class="hljs-string"><code class="language-hljs go">fmt.Println(<span class="hljs-string">"-------"</span>)
+<span class="hljs-keyword">var</span> zz <span class="hljs-keyword">string</span> = <span class="hljs-string">"hello,中国"</span>
+<span class="hljs-keyword">var</span> zzz <span class="hljs-keyword">string</span> = <span class="hljs-string">"中"</span>
+fmt.Println(<span class="hljs-built_in">len</span>(zzz)) <span class="hljs-comment">// 3</span>
+fmt.Println(<span class="hljs-built_in">len</span>(zz)) <span class="hljs-comment">// 12</span>
+fmt.Println(unsafe.Sizeof(zz)) <span class="hljs-comment">// 16</span>
+fmt.Println(unsafe.Sizeof(zzz)) <span class="hljs-comment">// 16</span>
+<span class="hljs-keyword">var</span> zzbyte []<span class="hljs-keyword">byte</span> = []<span class="hljs-keyword">byte</span>(zz)  
+<span class="hljs-keyword">var</span> zzzbyte []<span class="hljs-keyword">byte</span> = []<span class="hljs-keyword">byte</span>(zzz)
+fmt.Println(zzbyte) <span class="hljs-comment">// [104 101 108 108 111 44 228 184 173 229 155 189] 12</span>
+fmt.Println(zzzbyte) <span class="hljs-comment">// [228 184 173] 3</span></code></pre></div>
 <p>golang中<code>len()</code>计算的是字符串的字节的长度</p>
 <p>为什么有了uint8 和 uint32 还要出现byte和rune 这样比较好识别？<br>golang字符串可以表示为[]byte 和[]rune,因此很多方法也都类似。<br>比如</p>
-<pre class=" language-go"><code class="language-go"><span class="token comment" spellcheck="true">// 将 s 中的所有字符修改为大写格式返回</span>
-<span class="token keyword">var</span> xx <span class="token operator">=</span> <span class="token string">"helloworld"</span><span class="token punctuation">;</span>
-xx <span class="token operator">=</span> strings<span class="token punctuation">.</span><span class="token function">ToUpper</span><span class="token punctuation">(</span>xx<span class="token punctuation">)</span>
-fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>xx<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// HELLOWORLD</span>
-<span class="token keyword">var</span> ll <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span> <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">{</span><span class="token string">'h'</span><span class="token punctuation">,</span><span class="token string">'e'</span><span class="token punctuation">,</span><span class="token string">'l'</span><span class="token punctuation">,</span><span class="token string">'l'</span><span class="token punctuation">,</span><span class="token string">'o'</span><span class="token punctuation">,</span><span class="token string">'w'</span><span class="token punctuation">,</span><span class="token string">'o'</span><span class="token punctuation">,</span><span class="token string">'r'</span><span class="token punctuation">,</span><span class="token string">'l'</span><span class="token punctuation">,</span><span class="token string">'d'</span><span class="token punctuation">}</span>
-ll <span class="token operator">=</span> bytes<span class="token punctuation">.</span><span class="token function">ToUpper</span><span class="token punctuation">(</span>ll<span class="token punctuation">)</span>
-fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token function">string</span><span class="token punctuation">(</span>ll<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// HELLOWORLD</span></code></pre>
+<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-comment"><code class="language-hljs go"><span class="hljs-comment">// 将 s 中的所有字符修改为大写格式返回</span>
+<span class="hljs-keyword">var</span> xx = <span class="hljs-string">"helloworld"</span>;
+xx = strings.ToUpper(xx)
+fmt.Println(xx) <span class="hljs-comment">// HELLOWORLD</span>
+<span class="hljs-keyword">var</span> ll []<span class="hljs-keyword">byte</span> = []<span class="hljs-keyword">byte</span>{<span class="hljs-string">&#x27;h&#x27;</span>,<span class="hljs-string">&#x27;e&#x27;</span>,<span class="hljs-string">&#x27;l&#x27;</span>,<span class="hljs-string">&#x27;l&#x27;</span>,<span class="hljs-string">&#x27;o&#x27;</span>,<span class="hljs-string">&#x27;w&#x27;</span>,<span class="hljs-string">&#x27;o&#x27;</span>,<span class="hljs-string">&#x27;r&#x27;</span>,<span class="hljs-string">&#x27;l&#x27;</span>,<span class="hljs-string">&#x27;d&#x27;</span>}
+ll = bytes.ToUpper(ll)
+fmt.Println(<span class="hljs-keyword">string</span>(ll)) <span class="hljs-comment">// HELLOWORLD</span></code></pre></div>
+
 <p>Fprintf使用<br>将内容写入到一个实现了Writer接口的变量当中 比如os.stadin</p>
-<pre class=" language-go"><code class="language-go">fmt<span class="token punctuation">.</span><span class="token function">Fprint</span><span class="token punctuation">(</span>os<span class="token punctuation">.</span>Stdin<span class="token punctuation">,</span><span class="token string">"helloworld"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>os<span class="token punctuation">.</span>Stdin<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// helloworld</span></code></pre>
+<div class="code-wrapper"><pre class=" language-hljs go">fmt.Fprint(os.Stdin,<span class="hljs-string"><code class="language-hljs go">fmt.Fprint(os.Stdin,<span class="hljs-string">"helloworld"</span>);
+fmt.Println(os.Stdin) <span class="hljs-comment">// helloworld</span></code></pre></div>
 <h2 id="参考文章如下"><a href="#参考文章如下" class="headerlink" title="参考文章如下"></a>参考文章如下</h2><p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/mp/appmsgalbum?__biz=MzU1NzU1MTM2NA==&amp;action=getalbum&amp;album_id=1337200768771866624&amp;scene=173&amp;from_msgid=2247483669&amp;from_itemidx=1&amp;count=3#wechat_redirect">https://mp.weixin.qq.com/mp/appmsgalbum?__biz=MzU1NzU1MTM2NA==&amp;action=getalbum&amp;album_id=1337200768771866624&amp;scene=173&amp;from_msgid=2247483669&amp;from_itemidx=1&amp;count=3#wechat_redirect</a><br><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzU1NzU1MTM2NA==&amp;mid=2247483673&amp;idx=1&amp;sn=09cc98b3f0b0e89e28c40a5f096c0d73&amp;chksm=fc355b72cb42d26426bd4ae986ea46284b89d3bdf78465686a799684ddfc5f48f128382cc1ae&amp;scene=21#wechat_redirect">https://mp.weixin.qq.com/s?__biz=MzU1NzU1MTM2NA==&amp;mid=2247483673&amp;idx=1&amp;sn=09cc98b3f0b0e89e28c40a5f096c0d73&amp;chksm=fc355b72cb42d26426bd4ae986ea46284b89d3bdf78465686a799684ddfc5f48f128382cc1ae&amp;scene=21#wechat_redirect</a></p>
 
             </div>
@@ -518,7 +521,7 @@ fmt<span class="token punctuation">.</span><span class="token function">Println<
 
   <footer class="text-center mt-5 py-3">
   <div class="footer-content">
-     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+     <a rel="nofollow noopener"><span>Hzjsea</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
   </div>
   
 

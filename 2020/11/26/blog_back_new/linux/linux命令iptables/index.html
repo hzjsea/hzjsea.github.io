@@ -67,7 +67,7 @@
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
-       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
+       href="/">&nbsp;<strong>hzjsea</strong>&nbsp;</a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
             data-target="#navbarSupportedContent"
@@ -233,8 +233,8 @@
 <h1 id="linux命令iptables"><a href="#linux命令iptables" class="headerlink" title="linux命令iptables"></a>linux命令iptables</h1><p>netfilter/iptables（简称为iptables）组成Linux平台下的包过滤防火墙，与大多数的Linux软件一样，这个包过滤防火墙是免费的，它可以代替昂贵的商业防火墙解决方案，完成封包过滤、封包重定向和网络地址转换（NAT）等功能。</p>
 <h2 id="iptables原理"><a href="#iptables原理" class="headerlink" title="iptables原理"></a>iptables原理</h2><p>iptables搭建在linux服务器上,主要工作在网络层,处理网络层的数据包,上下连通传输层和数据链路层. iptables是一种”用户态”的防火墙,管理员定义一系列规则来过滤数据包中的内容.</p>
 <h2 id="iptables"><a href="#iptables" class="headerlink" title="iptables"></a>iptables</h2><p>防火墙工具,iptables的由三部分组成,分别是<code>表</code>,<code>链</code>以及<code>规则</code></p>
-<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 层级区分为</span>
-Tables -<span class="token operator">></span> Chains -<span class="token operator">></span> Rules</code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 层级区分为</span>
+Tables -> Chains -> Rules</code></pre></div>
 <p>其中表分为4种类型的表,分别为<code>fileter</code>,<code>nat</code>,<code>mangle</code>,<code>raw</code>,四种表没有执行前后的区分不同的表也具有对应的操作链,大致结构图如下<br><img src="http://img.noback.top/2020-11-26-10-36-18.png" srcset="/img/loading.gif" alt="2020-11-26-10-36-18"></p>
 <blockquote>
 <p>Filter表</p>
@@ -286,7 +286,7 @@ Tables -<span class="token operator">></span> Chains -<span class="token operato
 </ul>
 <h2 id="iptables中的链-chain"><a href="#iptables中的链-chain" class="headerlink" title="iptables中的链(chain)"></a>iptables中的链(chain)</h2><p>链（chains）是数据包传播的路径，每一条链其实就是众多规则中的一个检查清单，每一条链中可以有一 条或数条规则。当一个数据包到达一个链时，iptables就会从链中第一条规则开始检查，看该数据包是否满足规则所定义的条件。如果满足，系统就会根据 该条规则所定义的方法处理该数据包；否则iptables将继续检查下一条规则，如果该数据包不符合链中任一条规则，iptables就会根据该链预先定 义的默认策略来处理数据包。</p>
 <h2 id="配置命令"><a href="#配置命令" class="headerlink" title="配置命令"></a>配置命令</h2><p>iptables命令的使用情况如下</p>
-<pre class=" language-bash"><code class="language-bash">iptables <span class="token punctuation">[</span>option<span class="token punctuation">]</span> CHAIN_rule <span class="token punctuation">[</span>-j target<span class="token punctuation">]</span></code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">iptables [option] CHAIN_rule [-j target]</code></pre></div>
 <ul>
 <li>–A, ––append 将规则添加到链中（最后）。</li>
 <li>–I, ––insert 将规则添加到给定位置的链中。</li>
@@ -300,64 +300,69 @@ Tables -<span class="token operator">></span> Chains -<span class="token operato
 <li>-X, –delete-chain 删除用户自定义链</li>
 <li>-E, –rename-chain 重命名用户自定义链</li>
 </ul>
-<h3 id="查看iptables规则"><a href="#查看iptables规则" class="headerlink" title="查看iptables规则"></a>查看iptables规则</h3><pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 查看规则  默认情况下是filter 所以命令等于</span>
-<span class="token comment" spellcheck="true"># iptables -t filter -L</span>
+<h3 id="查看iptables规则"><a href="#查看iptables规则" class="headerlink" title="查看iptables规则"></a>查看iptables规则</h3><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 查看规则  默认情况下是filter 所以命令等于</span>
+<span class="hljs-comment"># iptables -t filter -L</span>
 iptables -L  
-<span class="token punctuation">[</span>root@ops-2 ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># iptables -L</span>
-Chain INPUT <span class="token punctuation">(</span>policy ACCEPT<span class="token punctuation">)</span>
-target     prot opt <span class="token function">source</span>               destination
+[root@ops-2 ~]<span class="hljs-comment"># iptables -L</span>
+Chain INPUT (policy ACCEPT)
+target     prot opt <span class="hljs-built_in">source</span>               destination
 
-Chain FORWARD <span class="token punctuation">(</span>policy DROP<span class="token punctuation">)</span>
-target     prot opt <span class="token function">source</span>               destination
+Chain FORWARD (policy DROP)
+target     prot opt <span class="hljs-built_in">source</span>               destination
 
-Chain OUTPUT <span class="token punctuation">(</span>policy ACCEPT<span class="token punctuation">)</span>
-target     prot opt <span class="token function">source</span>               destination
+Chain OUTPUT (policy ACCEPT)
+target     prot opt <span class="hljs-built_in">source</span>               destination
 
-<span class="token comment" spellcheck="true"># 如上表示防火墙没有做任何的规则,接收任何的包</span>
-<span class="token comment" spellcheck="true"># 查看nat表的规则</span>
+<span class="hljs-comment"># 如上表示防火墙没有做任何的规则,接收任何的包</span>
+<span class="hljs-comment"># 查看nat表的规则</span>
 iptables -t nat -L
-<span class="token punctuation">[</span>root@ops-2 ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># iptables -t nat -L</span>
-Chain PREROUTING <span class="token punctuation">(</span>policy ACCEPT<span class="token punctuation">)</span>
-target     prot opt <span class="token function">source</span>               destination
+[root@ops-2 ~]<span class="hljs-comment"># iptables -t nat -L</span>
+Chain PREROUTING (policy ACCEPT)
+target     prot opt <span class="hljs-built_in">source</span>               destination
 
-Chain INPUT <span class="token punctuation">(</span>policy ACCEPT<span class="token punctuation">)</span>
-target     prot opt <span class="token function">source</span>               destination
+Chain INPUT (policy ACCEPT)
+target     prot opt <span class="hljs-built_in">source</span>               destination
 
-Chain OUTPUT <span class="token punctuation">(</span>policy ACCEPT<span class="token punctuation">)</span>
-target     prot opt <span class="token function">source</span>               destination
+Chain OUTPUT (policy ACCEPT)
+target     prot opt <span class="hljs-built_in">source</span>               destination
 
-Chain POSTROUTING <span class="token punctuation">(</span>policy ACCEPT<span class="token punctuation">)</span>
-target     prot opt <span class="token function">source</span>               destination</code></pre>
+Chain POSTROUTING (policy ACCEPT)
+target     prot opt <span class="hljs-built_in">source</span>               destination</code></pre></div>
 <p>现在我们给他来一条数据,比如禁止10.0.6.35的数据包</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 当前ip是10.0.6.39 , 并且两台机器是可以互相ping通的</span>
-iptables -t filter -A INPUT -s <span class="token string">"10.0.6.35"</span> -j DROP
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 当前ip是10.0.6.39 , 并且两台机器是可以互相ping通的</span>
+iptables -t filter -A INPUT -s <span class="hljs-string">"10.0.6.35"</span> -j DROP
 iptables -t filter -L
-<span class="token comment" spellcheck="true"># Chain INPUT (policy ACCEPT)</span>
-<span class="token comment" spellcheck="true"># target     prot opt source               destination</span>
-<span class="token comment" spellcheck="true"># DROP       all  --  10.0.6.39            anywhere</span>
+<span class="hljs-comment"># Chain INPUT (policy ACCEPT)</span>
+<span class="hljs-comment"># target     prot opt source               destination</span>
+<span class="hljs-comment"># DROP       all  --  10.0.6.39            anywhere</span>
 
-<span class="token comment" spellcheck="true"># 再次去ping的时候就不通了</span></code></pre>
-<h3 id="添加规则"><a href="#添加规则" class="headerlink" title="添加规则"></a>添加规则</h3><pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># -A表示添加一条规则</span>
-<span class="token comment" spellcheck="true"># -i指定网卡</span>
-<span class="token comment" spellcheck="true"># -s指定数据包源地址</span>
-<span class="token comment" spellcheck="true"># -j指定动作选项</span>
-<span class="token comment" spellcheck="true"># 网卡eth0上来自172.18.0.3的数据包都丢弃</span>
-iptables -A INPUT -i eth0 -s 172.18.0.3 -j DROP</code></pre>
-<h3 id="删除规则"><a href="#删除规则" class="headerlink" title="删除规则"></a>删除规则</h3><pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># -D 按规则号或者规则内容进行匹配并删除</span>
-<span class="token comment" spellcheck="true"># -D  &lt;链名> &lt;规则号码  | 具体规则内容></span>
-<span class="token comment" spellcheck="true"># 删除第三条规则</span>
+<span class="hljs-comment"># 再次去ping的时候就不通了</span></code></pre></div>
+
+<h3 id="添加规则"><a href="#添加规则" class="headerlink" title="添加规则"></a>添加规则</h3><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># -A表示添加一条规则</span>
+<span class="hljs-comment"># -i指定网卡</span>
+<span class="hljs-comment"># -s指定数据包源地址</span>
+<span class="hljs-comment"># -j指定动作选项</span>
+<span class="hljs-comment"># 网卡eth0上来自172.18.0.3的数据包都丢弃</span>
+iptables -A INPUT -i eth0 -s 172.18.0.3 -j DROP</code></pre></div>
+
+<h3 id="删除规则"><a href="#删除规则" class="headerlink" title="删除规则"></a>删除规则</h3><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># -D 按规则号或者规则内容进行匹配并删除</span>
+<span class="hljs-comment"># -D  <链名> <规则号码  | 具体规则内容></span>
+<span class="hljs-comment"># 删除第三条规则</span>
 iptables -D INPUT 3
-<span class="token comment" spellcheck="true"># 删除指定内容的数据</span>
-iptables -D INPUT -s 10.0.6.35 -j DROP</code></pre>
-<h3 id="插入规则"><a href="#插入规则" class="headerlink" title="插入规则"></a>插入规则</h3><pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># -I &lt;链名> [规则号码]</span>
-<span class="token comment" spellcheck="true"># 插入规则是按照序号来插入的 默认情况下是插入到头部</span>
-<span class="token comment" spellcheck="true"># 这里有个问题,假设filter表INPUT链中的规则号码最大是2 当你根据序号 4插入的时候就会出现报错</span>
-<span class="token comment" spellcheck="true"># iptables: Index of insertion too big. </span>
-<span class="token comment" spellcheck="true"># 插入的序号范围必须是当前已有序号的[1,最大值+1]</span>
-iptables -t filter -I INPUT 3 -s 10.0.6.35 -j DROP</code></pre>
-<h3 id="替换规则"><a href="#替换规则" class="headerlink" title="替换规则"></a>替换规则</h3><pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># -R &lt;链名> &lt;规则号> &lt;具体规则内容></span>
-<span class="token comment" spellcheck="true"># 规则号必须存在</span>
-iptables -t filter -R INPUT 3 -s 172.18.0.6 -j ACCEPT</code></pre>
+<span class="hljs-comment"># 删除指定内容的数据</span>
+iptables -D INPUT -s 10.0.6.35 -j DROP</code></pre></div>
+
+<h3 id="插入规则"><a href="#插入规则" class="headerlink" title="插入规则"></a>插入规则</h3><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># -I <链名> [规则号码]</span>
+<span class="hljs-comment"># 插入规则是按照序号来插入的 默认情况下是插入到头部</span>
+<span class="hljs-comment"># 这里有个问题,假设filter表INPUT链中的规则号码最大是2 当你根据序号 4插入的时候就会出现报错</span>
+<span class="hljs-comment"># iptables: Index of insertion too big. </span>
+<span class="hljs-comment"># 插入的序号范围必须是当前已有序号的[1,最大值+1]</span>
+iptables -t filter -I INPUT 3 -s 10.0.6.35 -j DROP</code></pre></div>
+
+<h3 id="替换规则"><a href="#替换规则" class="headerlink" title="替换规则"></a>替换规则</h3><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># -R <链名> <规则号> <具体规则内容></span>
+<span class="hljs-comment"># 规则号必须存在</span>
+iptables -t filter -R INPUT 3 -s 172.18.0.6 -j ACCEPT</code></pre></div>
+
 <h3 id="默认策略"><a href="#默认策略" class="headerlink" title="默认策略"></a>默认策略</h3><p>用于某个链的默认规则。当数据包没有被规则列表里的任何规则匹配到时，按此默认规则处理</p>
 <ul>
 <li>默认策略DROP，需要逐条允许。一般服务器上都是这么设置的，仅开放部分端口或者白名单，其他全部拒绝。</li>
@@ -368,114 +373,136 @@ iptables -t filter -R INPUT 3 -s 172.18.0.6 -j ACCEPT</code></pre>
 </blockquote>
 <p>如果防火墙之前没有任何配置，当上面的命令执行后，如果你当前是使用ssh连接的服务器，你会发现你被踢出来了<br><code>远程设置时不要一开始就写这几句默认策略，会把自己踢出服务器，应该最后设定。</code></p>
 <p>这里是 <code>大写的P</code></p>
-<pre class=" language-bash"><code class="language-bash">iptables -P INPUT DROP 
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">iptables -P INPUT DROP 
 iptables -P FORWARD DROP 
-iptables -P OUTPUT DROP</code></pre>
+iptables -P OUTPUT DROP</code></pre></div>
+
+
+
 <h3 id="清除规则"><a href="#清除规则" class="headerlink" title="清除规则"></a>清除规则</h3><p>不影响 -P 设置的默认规则<br><code>当只清除对应表链中的规则的时候 -P 设置了 DROP 后，使用 -F 一定要小心。因为相当于把所有ACCEPT的都清除了，会导致ssh连接不上</code><br>如果不写链名，默认清空某表里所有链里的所有规则。</p>
-<pre class=" language-bash"><code class="language-bash">ip tables -F
-<span class="token comment" spellcheck="true"># 只清除对应表链中的规则 </span>
-iptables -t filter -F INPUT</code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">ip tables -F
+<span class="hljs-comment"># 只清除对应表链中的规则 </span>
+iptables -t filter -F INPUT</code></pre></div>
+
 <h3 id="保存规则"><a href="#保存规则" class="headerlink" title="保存规则"></a>保存规则</h3><p>用iptables命令写的规则都是立即生效的，但只是临时的。</p>
-<pre class=" language-bash"><code class="language-bash">iptables-save <span class="token comment" spellcheck="true"># 可以查看全部的规则</span></code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash">iptables-save <span class="hljs-comment"><code class="language-hljs bash">iptables-save <span class="hljs-comment"># 可以查看全部的规则</span></code></pre></div>
 <p>centos7上面默认使用的是firewalld,如果需要使用iptables的话</p>
-<pre class=" language-bash"><code class="language-bash">systemctl disable firewalld
-yum <span class="token function">install</span> iptables-services
-systemctl <span class="token function">enable</span> iptables
-<span class="token function">service</span> iptables save</code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash">systemctl <span class="hljs-built_in"><code class="language-hljs bash">systemctl <span class="hljs-built_in">disable</span> firewalld
+yum install iptables-services
+systemctl <span class="hljs-built_in">enable</span> iptables
+service iptables save</code></pre></div>
+
+
 <h2 id="iptables匹配选项"><a href="#iptables匹配选项" class="headerlink" title="iptables匹配选项"></a>iptables匹配选项</h2><h3 id="匹配协议类型"><a href="#匹配协议类型" class="headerlink" title="匹配协议类型"></a>匹配协议类型</h3><p>用于指定规则的协议,如tcp,udp,icmp等,可以使用all来指定所有协议,这里是<code>小写的p</code>,默认值是all<br>协议的映射关系是<code>/etc/protocols</code></p>
-<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 禁止目标IP的ping ping的协议是icmp协议</span>
-iptables -A INPUT -s 172.18.0.3 -p icmp  -j DROP</code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 禁止目标IP的ping ping的协议是icmp协议</span>
+iptables -A INPUT -s 172.18.0.3 -p icmp  -j DROP</code></pre></div>
 <p>这里是禁止了来源于<code>172.18.0.3</code>这台机器的icmp协议, 所以这台机器是ping不通当前机器的,但是当前机器是可以发送icmp包到达<code>172.18.0.3</code>这台机器的(原因是因为OUTPUT链并没有禁止)</p>
 <h3 id="源地址"><a href="#源地址" class="headerlink" title="源地址"></a>源地址</h3><p>源地址可以允许单个地址,一个网段,取反等等操作</p>
-<pre class=" language-bash"><code class="language-bash">-s 192.168.0.1 匹配来自 192.168.0.1 的数据包
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">-s 192.168.0.1 匹配来自 192.168.0.1 的数据包
 -s 192.168.1.0/24 匹配来自 192.168.1.0/24 网络的数据包
 -s 192.168.0.0/16 匹配来自 192.168.0.0/16 网络的数据包
-<span class="token operator">!</span> -s 192.168.1.101除这个IP外</code></pre>
+! -s 192.168.1.101除这个IP外</code></pre></div>
+
 <h3 id="目的地址"><a href="#目的地址" class="headerlink" title="目的地址"></a>目的地址</h3><p>用于指定目的地址,参数与<code>-s</code>相同</p>
-<pre class=" language-bash"><code class="language-bash">-d 202.106.0.20 匹配去往 202.106.0.20 的数据包
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">-d 202.106.0.20 匹配去往 202.106.0.20 的数据包
 -d 202.106.0.0/16 匹配去往 202.106.0.0/16 网络的数据包
--d www.abc.com 匹配去往域名 www.abc.com 的数据包</code></pre>
+-d www.abc.com 匹配去往域名 www.abc.com 的数据包</code></pre></div>
+
 <h3 id="执行目标"><a href="#执行目标" class="headerlink" title="执行目标"></a>执行目标</h3><p>用于指定target。可能的值是ACCEPT, DROP, QUEUE, RETURN.</p>
 <h3 id="指定网卡输入"><a href="#指定网卡输入" class="headerlink" title="指定网卡输入"></a>指定网卡输入</h3><p>指定网卡</p>
-<pre class=" language-bash"><code class="language-bash">-i eth0指定了要处理经由eth0进入的数据包。
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">-i eth0指定了要处理经由eth0进入的数据包。
 如果不指定-i参数，那么将处理进入所有接口的数据包。
-如果出现<span class="token operator">!</span> -i eth0，那么将处理所有经由eth0以外的接口进入的数据包。
-如果出现-i eth +，那么将处理所有经由eth开头的接口进入的数据包。</code></pre>
+如果出现! -i eth0，那么将处理所有经由eth0以外的接口进入的数据包。
+如果出现-i eth +，那么将处理所有经由eth开头的接口进入的数据包。</code></pre></div>
+
 <h3 id="指定网卡输出"><a href="#指定网卡输出" class="headerlink" title="指定网卡输出"></a>指定网卡输出</h3><p>用于指定数据包由哪个接口输出，这些数据包即将进入FORWARD, OUTPUT, POSTROUTING链。</p>
-<pre class=" language-bash"><code class="language-bash">如果不指定-o选项，那么系统上的所有接口都可以作为输出接口。
-如果出现<span class="token operator">!</span> -o eth0，那么将从eth0以外的接口输出。
-如果出现-i eth +，那么将仅从eth开头的接口输出。</code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">如果不指定-o选项，那么系统上的所有接口都可以作为输出接口。
+如果出现! -o eth0，那么将从eth0以外的接口输出。
+如果出现-i eth +，那么将仅从eth开头的接口输出。</code></pre></div>
+
 <h3 id="指定源端口"><a href="#指定源端口" class="headerlink" title="指定源端口"></a>指定源端口</h3><p>只针对tcp 或者 udp协议</p>
-<pre class=" language-bash"><code class="language-bash">--sport 1000       匹配源端口是 1000 的数据包
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">--sport 1000       匹配源端口是 1000 的数据包
 --sport 1000:3000  匹配源端口是 1000-3000 的数据包（含1000、3000）
 --sport :3000      匹配源端口是 3000 以下的数据包（含 3000）
---sport 1000:      匹配源端口是 1000 以上的数据包（含 1000）</code></pre>
+--sport 1000:      匹配源端口是 1000 以上的数据包（含 1000）</code></pre></div>
+
 <h3 id="指定目的端口"><a href="#指定目的端口" class="headerlink" title="指定目的端口"></a>指定目的端口</h3><p>只针对tcp 或者 udp</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 允许外部数据访问本地服务器80端口</span>
-iptables -A INPUT -p tcp --dport 80 -j ACCEPT</code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 允许外部数据访问本地服务器80端口</span>
+iptables -A INPUT -p tcp --dport 80 -j ACCEPT</code></pre></div>
+
 <h2 id="iptables动作选项"><a href="#iptables动作选项" class="headerlink" title="iptables动作选项"></a>iptables动作选项</h2><h3 id="ACCEPT"><a href="#ACCEPT" class="headerlink" title="ACCEPT"></a>ACCEPT</h3><p>允许数据包通过,一般白名单的时候用</p>
-<pre class=" language-bash"><code class="language-bash">iptables -A INPUT -s 172.18.0.3 -j ACCEPT</code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">iptables -A INPUT -s 172.18.0.3 -j ACCEPT</code></pre></div>
+
 <h3 id="DROP"><a href="#DROP" class="headerlink" title="DROP"></a>DROP</h3><p>阻止数据包,直接丢弃</p>
-<pre class=" language-bash"><code class="language-bash">iptables -A INPUT -s 172.18.0.3 -j DROP</code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">iptables -A INPUT -s 172.18.0.3 -j DROP</code></pre></div>
+
+
 <h3 id="DNAT"><a href="#DNAT" class="headerlink" title="DNAT"></a>DNAT</h3><p>目的地址转换,将数据包转换到内部服务器,支持单IP ,也支持IP地址池</p>
-<pre class=" language-bash"><code class="language-bash">-j DNAT --to-destination 内网服务ip:端口</code></pre>
-<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 把流入eth0 要访问 TCP/80 的数据包目的地址转发到 172.18.0.3</span>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">-j DNAT --to-destination 内网服务ip:端口</code></pre></div>
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 把流入eth0 要访问 TCP/80 的数据包目的地址转发到 172.18.0.3</span>
 iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 80 -j DNAT --to 172.18.0.3
 
-<span class="token comment" spellcheck="true"># 把从 eth0 进来的要访问 TCP/81 的数据包目的地址改为 172.18.0.3:80</span>
+<span class="hljs-comment"># 把从 eth0 进来的要访问 TCP/81 的数据包目的地址改为 172.18.0.3:80</span>
 iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 81 -j DNAT --to 172.18.0.3:80
+    
+<span class="hljs-comment"># 把从 eth0 进来的要访问 TCP/80 的数据包目的地址改为地址池 172.18.0.3-172.18.0.10</span>
+iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 80 -j DNAT --to 172.18.0.3-172.18.0.10</code></pre></div>
 
-<span class="token comment" spellcheck="true"># 把从 eth0 进来的要访问 TCP/80 的数据包目的地址改为地址池 172.18.0.3-172.18.0.10</span>
-iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 80 -j DNAT --to 172.18.0.3-172.18.0.10</code></pre>
 <h3 id="SNAT"><a href="#SNAT" class="headerlink" title="SNAT"></a>SNAT</h3><p>源地址转换,共享内部主机上网</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 将 172.18.0.3 的原地址修改为 172.18.0.2</span>
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 将 172.18.0.3 的原地址修改为 172.18.0.2</span>
 iptables -t nat -A POSTROUTING -p tcp --dport 80 -d 172.18.0.3 -j SNAT  --to 172.18.0.2 
 
 iptables -t nat -A POSTROUTING -p tcp --dport 80 -d 172.18.0.3 -j MASQUERADE 
 
-<span class="token comment" spellcheck="true"># 将内网 172.18.0.1/24 的原地址修改为 1.1.1.1</span>
+<span class="hljs-comment"># 将内网 172.18.0.1/24 的原地址修改为 1.1.1.1</span>
 iptables -t nat -A POSTROUTING -d 172.18.0.1/24  -j SNAT --to 1.1.1.1
 
-<span class="token comment" spellcheck="true"># 同上，只不过修改成一个地址池里的 IP</span>
-iptables -t nat -A POSTROUTING -d 172.18.0.1/24  -j SNAT --to 1.1.1.1-1.1.1.10</code></pre>
+<span class="hljs-comment"># 同上，只不过修改成一个地址池里的 IP</span>
+iptables -t nat -A POSTROUTING -d 172.18.0.1/24  -j SNAT --to 1.1.1.1-1.1.1.10</code></pre></div>
+
+
 <h2 id="模块选项"><a href="#模块选项" class="headerlink" title="模块选项"></a>模块选项</h2><p><code>-m</code> 参数支持模块选项</p>
-<pre class=" language-bash"><code class="language-bash">state: 按包状态匹配
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">state: 按包状态匹配
 mac: 按来源 MAC 匹配
-limit: 按包速率匹配
+<span class="hljs-built_in">limit</span>: 按包速率匹配
 multiport: 多端口匹配
 iprange: 按IP范围匹配
-string 按字符串限定</code></pre>
-<h3 id="按包状态匹配"><a href="#按包状态匹配" class="headerlink" title="按包状态匹配"></a>按包状态匹配</h3><pre class=" language-bash"><code class="language-bash">-m state --state 状态
+string 按字符串限定</code></pre></div>
+
+<h3 id="按包状态匹配"><a href="#按包状态匹配" class="headerlink" title="按包状态匹配"></a>按包状态匹配</h3><div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">-m state --state 状态
 NEW：新建连接请求的数据包，且该数据包没有和任何已有连接相关联。
 ESTABLISHED：该连接是某NEW状态连接的回包，也就是完成了连接的双向关联。
 RELATED：衍生态，与 conntrack 关联。简而言之，A连接已经是ESTABLISHED，而B连接如果与A连接相关，那么B连接就是RELATED。
-INVALID：匹配那些无法识别或没有任何状态的数据包。这可能是由于系统内存不足或收到不属于任何已知连接的ICMP错误消息，也就是垃圾包，一般情况下我们都会DROP此类状态的包。</code></pre>
+INVALID：匹配那些无法识别或没有任何状态的数据包。这可能是由于系统内存不足或收到不属于任何已知连接的ICMP错误消息，也就是垃圾包，一般情况下我们都会DROP此类状态的包。</code></pre></div>
 <p>拒绝新包,允许已经连接或已经有连接相关的数据包</p>
-<pre class=" language-bash"><code class="language-bash">iptables -A INPUT -p tcp -m state --state NEW -j DROP
-iptables -A INPUT -p tcp -m state --state ESTABLISHED,RELATED -j ACCEPT</code></pre>
-<h3 id="按包状态匹配新"><a href="#按包状态匹配新" class="headerlink" title="按包状态匹配新"></a>按包状态匹配新</h3><pre class=" language-bash"><code class="language-bash">-m conntrack --ctstate 状态
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">iptables -A INPUT -p tcp -m state --state NEW -j DROP
+iptables -A INPUT -p tcp -m state --state ESTABLISHED,RELATED -j ACCEPT</code></pre></div>
+
+<h3 id="按包状态匹配新"><a href="#按包状态匹配新" class="headerlink" title="按包状态匹配新"></a>按包状态匹配新</h3><div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">-m conntrack --ctstate 状态
 NEW：新建连接请求的数据包，且该数据包没有和任何已有连接相关联。
 ESTABLISHED：该连接是某NEW状态连接的回包，也就是完成了连接的双向关联。
 RELATED：衍生态，与conntrack关联。简而言之，A连接已经是ESTABLISHED，而B连接如果与A连接相关，那么B连接就是RELATED。
 INVALID：匹配那些无法识别或没有任何状态的数据包。这可能是由于系统内存不足或收到不属于任何已知连接的ICMP错误消息，也就是垃圾包，一般情况下我们都会DROP此类状态的包。
-UNTRACKED:这是一种特殊状态，或者说并不是状态。它是管理员在raw表中，为连接设置NOTRACK规则后的状态。这样做，便于提高包过滤效率以及降低负载</code></pre>
+UNTRACKED:这是一种特殊状态，或者说并不是状态。它是管理员在raw表中，为连接设置NOTRACK规则后的状态。这样做，便于提高包过滤效率以及降低负载</code></pre></div>
 <p>FORWARD 链的请求如果目标是 docker0 所在的网段, 而且已经建立的连接或者和已建立连接相关那么接受请求</p>
-<pre class=" language-bash"><code class="language-bash">iptables -A FORWARD -o docker0 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT</code></pre>
-<h3 id="匹配某个mac地址"><a href="#匹配某个mac地址" class="headerlink" title="匹配某个mac地址"></a>匹配某个mac地址</h3><pre class=" language-bash"><code class="language-bash">iptables -A FORWARD -m --mac-source xx:xx:xx:xx:xx:xx -j DROP</code></pre>
-<h3 id="限速度"><a href="#限速度" class="headerlink" title="限速度"></a>限速度</h3><pre class=" language-bash"><code class="language-bash">-m limit --limit 匹配速率 <span class="token punctuation">[</span>--burst 缓冲数量<span class="token punctuation">]</span>
--m limit --limit 25/minute: 允许最多每分钟25个连接
--m limit --limit-burst 100: 当达到100个连接后，才启用上述25/minute限制
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">iptables -A FORWARD -o docker0 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT</code></pre></div>
+
+<h3 id="匹配某个mac地址"><a href="#匹配某个mac地址" class="headerlink" title="匹配某个mac地址"></a>匹配某个mac地址</h3><div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">iptables -A FORWARD -m --mac-source xx:xx:xx:xx:xx:xx -j DROP</code></pre></div>
+
+<h3 id="限速度"><a href="#限速度" class="headerlink" title="限速度"></a>限速度</h3><div class="code-wrapper"><pre class=" language-hljs bash">-m <span class="hljs-built_in">limit</span> --<span class="hljs-built_in"><code class="language-hljs bash">-m <span class="hljs-built_in">limit</span> --<span class="hljs-built_in">limit</span> 匹配速率 [--burst 缓冲数量]
+-m <span class="hljs-built_in">limit</span> --<span class="hljs-built_in">limit</span> 25/minute: 允许最多每分钟25个连接
+-m <span class="hljs-built_in">limit</span> --limit-burst 100: 当达到100个连接后，才启用上述25/minute限制
 
 
-iptables -A FORWARD -d 192.168.0.1 -m limit --limit 50/s -j ACCEPT
-iptables -A FORWARD -d 192.168.0.1 -j DROP</code></pre>
+iptables -A FORWARD -d 192.168.0.1 -m <span class="hljs-built_in">limit</span> --<span class="hljs-built_in">limit</span> 50/s -j ACCEPT
+iptables -A FORWARD -d 192.168.0.1 -j DROP</code></pre></div>
 <p>注意: limit仅仅是用一定的速率去匹配数据包,并非限制</p>
 <h2 id="防火墙实例"><a href="#防火墙实例" class="headerlink" title="防火墙实例"></a>防火墙实例</h2><h3 id="简单防火墙"><a href="#简单防火墙" class="headerlink" title="简单防火墙"></a>简单防火墙</h3><ul>
 <li>loop回环网卡流量</li>
 <li>连接状态为RELATED,ESTABLISHED的连接</li>
 <li>80,22,21端口</li>
 </ul>
-<pre class=" language-bash"><code class="language-bash">iptables -A INPUT -i lo -j ACCEPT
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">iptables -A INPUT -i lo -j ACCEPT
 iptables -A OUTPUT -i lo -j ACCEPT
 iptables -A INPUT -m state --state RELATED,ESTABLISHED  -j ACCEPT
 iptables -A OUTPUT -m state --state RELATED,ESTABLISHED  -j ACCEPT
@@ -484,68 +511,76 @@ iptables -A OUTPUT -p tcp --dport 80 -j ACCEPT
 iptables -A INPUT -p tcp --dport 22 -j ACCEPT
 iptables -A OUTPUT -p tcp --dport 22 -j ACCEPT
 iptables -P INPUT DROP
-iptables -P OUTPUT DROP</code></pre>
-<h3 id="黑名单"><a href="#黑名单" class="headerlink" title="黑名单"></a>黑名单</h3><pre class=" language-bash"><code class="language-bash">iptables -A INPUT -i eth0 -s 172.18.0.3 -j DROP</code></pre>
-<h3 id="端口转发"><a href="#端口转发" class="headerlink" title="端口转发"></a>端口转发</h3><pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># iptables -t nat -F</span>
-<span class="token comment" spellcheck="true"># 流入当前机器80端口tcp流量转发到172.18.0.3:80</span>
+iptables -P OUTPUT DROP</code></pre></div>
+
+<h3 id="黑名单"><a href="#黑名单" class="headerlink" title="黑名单"></a>黑名单</h3><div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">iptables -A INPUT -i eth0 -s 172.18.0.3 -j DROP</code></pre></div>
+
+<h3 id="端口转发"><a href="#端口转发" class="headerlink" title="端口转发"></a>端口转发</h3><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># iptables -t nat -F</span>
+<span class="hljs-comment"># 流入当前机器80端口tcp流量转发到172.18.0.3:80</span>
 iptables -t nat -A PREROUTING -p tcp --dport 80 -j DNAT --to 172.18.0.3:80
 
-<span class="token comment" spellcheck="true"># 流出当前机器80端口tcp流量源地址修改为172.18.0.2</span>
+<span class="hljs-comment"># 流出当前机器80端口tcp流量源地址修改为172.18.0.2</span>
 iptables -t nat -A POSTROUTING -p tcp --dport 80 -d 172.18.0.3 -j SNAT --to 172.18.0.2 
-<span class="token comment" spellcheck="true"># 或者使用下面的命令: 目标IP地址自动获取</span>
-<span class="token comment" spellcheck="true"># iptables -t nat -A POSTROUTING -p tcp --dport 80 -d 172.18.0.3 -j MASQUERADE</span></code></pre>
-<h2 id="iptables命令合集"><a href="#iptables命令合集" class="headerlink" title="iptables命令合集"></a>iptables命令合集</h2><pre class=" language-bash"><code class="language-bash">iptablse -t <span class="token punctuation">[</span>TABLE<span class="token punctuation">]</span> -L <span class="token comment" spellcheck="true"># 查看对应表中的规则</span>
+<span class="hljs-comment"># 或者使用下面的命令: 目标IP地址自动获取</span>
+<span class="hljs-comment"># iptables -t nat -A POSTROUTING -p tcp --dport 80 -d 172.18.0.3 -j MASQUERADE</span></code></pre></div>
 
-<span class="token comment" spellcheck="true"># -v 详细显示 -n 以数字形式显示 --line-number 打印序号,序号为添加的顺序</span>
-iptables -t <span class="token punctuation">[</span>TABLE<span class="token punctuation">]</span> -vnl  --line-number <span class="token comment" spellcheck="true"># 详细显示</span>
+<h2 id="iptables命令合集"><a href="#iptables命令合集" class="headerlink" title="iptables命令合集"></a>iptables命令合集</h2><div class="code-wrapper"><pre class=" language-hljs bash">iptablse -t [TABLE] -L <span class="hljs-comment"><code class="language-hljs bash">iptablse -t [TABLE] -L <span class="hljs-comment"># 查看对应表中的规则</span>
 
-<span class="token comment" spellcheck="true"># 网卡eth0上来自172.18.0.3的数据包都丢弃</span>
+<span class="hljs-comment"># -v 详细显示 -n 以数字形式显示 --line-number 打印序号,序号为添加的顺序</span>
+iptables -t [TABLE] -vnl  --line-number <span class="hljs-comment"># 详细显示</span>
+
+<span class="hljs-comment"># 网卡eth0上来自172.18.0.3的数据包都丢弃</span>
 iptables -A INPUT -i eth0 -s 172.18.0.3 -j DROP
 
-<span class="token comment" spellcheck="true"># 删除第三条规则</span>
+<span class="hljs-comment"># 删除第三条规则</span>
 iptables -D INPUT 3
 
-<span class="token comment" spellcheck="true"># 删除指定内容的数据</span>
-iptables -D INPUT -s 10.0.6.35 -j DROP</code></pre>
+<span class="hljs-comment"># 删除指定内容的数据</span>
+iptables -D INPUT -s 10.0.6.35 -j DROP</code></pre></div>
+
+
 <h2 id="iptables防火墙规则的保存与恢复"><a href="#iptables防火墙规则的保存与恢复" class="headerlink" title="iptables防火墙规则的保存与恢复"></a>iptables防火墙规则的保存与恢复</h2><p>iptables持久化保存,防火墙设置后, 系统重启就会消失,为了持久化防火墙规则,需要将防火墙保存到<code>rc.d</code>脚本下面</p>
-<pre class=" language-bash"><code class="language-bash">iptables-save把规则保存到文件中，再由目录rc.d下的脚本（/etc/rc.d/init.d/iptables）自动装载
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">iptables-save把规则保存到文件中，再由目录rc.d下的脚本（/etc/rc.d/init.d/iptables）自动装载
 使用命令iptables-save来保存规则。一般用
-iptables-save <span class="token operator">></span> /etc/sysconfig/iptables
+iptables-save > /etc/sysconfig/iptables
 或者
-<span class="token function">service</span> iptables save
+service iptables save
 它能把规则自动保存在/etc/sysconfig/iptables中。
-当计算机启动时，rc.d下的脚本将用命令iptables-restore调用这个文件，从而就自动恢复了规则。</code></pre>
+当计算机启动时，rc.d下的脚本将用命令iptables-restore调用这个文件，从而就自动恢复了规则。</code></pre></div>
+
 <p><font color='red'>注意这些操作之前,做好先做好测试,不然无法使用重启的方法来重置防火墙了.到时候就真的进不去了…</font></p>
 <h2 id="iptables规则执行顺序"><a href="#iptables规则执行顺序" class="headerlink" title="iptables规则执行顺序"></a>iptables规则执行顺序</h2><p>iptables规则执行顺序通俗点将就是看line-number,从大到小过滤</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span>root@ops ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># iptables -L --line-number</span>
-Chain INPUT <span class="token punctuation">(</span>policy ACCEPT<span class="token punctuation">)</span>
-num  target     prot opt <span class="token function">source</span>               destination
+<div class="code-wrapper"><pre class=" language-hljs bash">[root@ops ~]<span class="hljs-comment"><code class="language-hljs bash">[root@ops ~]<span class="hljs-comment"># iptables -L --line-number</span>
+Chain INPUT (policy ACCEPT)
+num  target     prot opt <span class="hljs-built_in">source</span>               destination
 1    ACCEPT     icmp --  10.0.6.35            anywhere
-2    DROP       icmp --  10.0.6.35            anywhere</code></pre>
+2    DROP       icmp --  10.0.6.35            anywhere</code></pre></div>
 <p>比如像这个,显示DROP 然后ACCEPT  最后结果就是 ACCEPT</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span>root@ops ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># iptables -L --line-number</span>
-Chain INPUT <span class="token punctuation">(</span>policy ACCEPT<span class="token punctuation">)</span>
-num  target     prot opt <span class="token function">source</span>               destination
+<div class="code-wrapper"><pre class=" language-hljs bash">[root@ops ~]<span class="hljs-comment"><code class="language-hljs bash">[root@ops ~]<span class="hljs-comment"># iptables -L --line-number</span>
+Chain INPUT (policy ACCEPT)
+num  target     prot opt <span class="hljs-built_in">source</span>               destination
 1    DROP       icmp --  10.0.6.35            anywhere
 2    ACCEPT     icmp --  10.0.6.35            anywhere
-3    DROP       icmp --  10.0.6.35            anywhere</code></pre>
+3    DROP       icmp --  10.0.6.35            anywhere</code></pre></div>
 <p>像这个就是拒绝</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span>root@ops ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># iptables -L --line-number</span>
-Chain INPUT <span class="token punctuation">(</span>policy ACCEPT<span class="token punctuation">)</span>
-num  target     prot opt <span class="token function">source</span>               destination
+<div class="code-wrapper"><pre class=" language-hljs bash">[root@ops ~]<span class="hljs-comment"><code class="language-hljs bash">[root@ops ~]<span class="hljs-comment"># iptables -L --line-number</span>
+Chain INPUT (policy ACCEPT)
+num  target     prot opt <span class="hljs-built_in">source</span>               destination
 1    ACCEPT     tcp  --  192.168.1.203        anywhere             tcp dpt:gt-proxy
 2    ACCEPT     tcp  --  192.168.1.202        anywhere             tcp dpt:gt-proxy
 3    ACCEPT     tcp  --  192.168.1.201        anywhere             tcp dpt:gt-proxy
-4    DROP       tcp  --  anywhere             anywhere             tcp dpt:gt-proxy</code></pre>
+4    DROP       tcp  --  anywhere             anywhere             tcp dpt:gt-proxy</code></pre></div>
 <p>通过iptables限制9889端口的访问（只允许192.168.1.201、192.168.1.202、192.168.1.203）,其他ip都禁止访问</p>
 <h2 id="iptables常用规则"><a href="#iptables常用规则" class="headerlink" title="iptables常用规则"></a>iptables常用规则</h2><p>1.拒绝进入防火墙的所有ICMP协议数据包</p>
-<pre class=" language-bash"><code class="language-bash">iptables -I INPUT -p icmp -j REJECT <span class="token comment" spellcheck="true"># 头部添加</span>
-iptables -t filter -A INPUT -p icmp -j REJECT <span class="token comment" spellcheck="true"># 末尾添加</span></code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash">iptables -I INPUT -p icmp -j REJECT <span class="hljs-comment"><code class="language-hljs bash">iptables -I INPUT -p icmp -j REJECT <span class="hljs-comment"># 头部添加</span>
+iptables -t filter -A INPUT -p icmp -j REJECT <span class="hljs-comment"># 末尾添加</span></code></pre></div>
 <p>2.允许防火墙转发除ICMP协议以外的所有数据包</p>
-<pre class=" language-bash"><code class="language-bash">iptables -A FORWARD -p <span class="token operator">!</span> icmp -j ACCEPT</code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">iptables -A FORWARD -p ! icmp -j ACCEPT</code></pre></div>
 <p>3.拒绝转发来自192.168.1.10主机的数据，允许转发来自192.168.0.0/24网段的数据</p>
-<pre class=" language-bash"><code class="language-bash">iptables -A FORWARD -s 192.168.1.11 -j REJECT
-iptables -A FORWARD -s 192.168.0.0/24 -j ACCEPT</code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">iptables -A FORWARD -s 192.168.1.11 -j REJECT
+iptables -A FORWARD -s 192.168.0.0/24 -j ACCEPT</code></pre></div>
+
+
 <p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/sunsky303/p/12327863.html">https://www.cnblogs.com/sunsky303/p/12327863.html</a><br><a target="_blank" rel="noopener" href="http://xstarcd.github.io/wiki/Linux/iptables_forward_internetshare.html">http://xstarcd.github.io/wiki/Linux/iptables_forward_internetshare.html</a><br><a target="_blank" rel="noopener" href="https://my.oschina.net/mojiewhy/blog/3039897">https://my.oschina.net/mojiewhy/blog/3039897</a><br><a target="_blank" rel="noopener" href="https://my.oschina.net/deanzhao/blog/3058904">https://my.oschina.net/deanzhao/blog/3058904</a><br><a target="_blank" rel="noopener" href="https://www.linuxprobe.com/25-iptables-common-examples.html">https://www.linuxprobe.com/25-iptables-common-examples.html</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_17004327/article/details/88630194">https://blog.csdn.net/qq_17004327/article/details/88630194</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/watermelonbig/article/details/80319766">https://blog.csdn.net/watermelonbig/article/details/80319766</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_17004327/article/details/88630194">https://blog.csdn.net/qq_17004327/article/details/88630194</a><br><a target="_blank" rel="noopener" href="https://www.cnblogs.com/52fhy/p/13195418.html">https://www.cnblogs.com/52fhy/p/13195418.html</a></p>
 
             </div>
@@ -657,7 +692,7 @@ iptables -A FORWARD -s 192.168.0.0/24 -j ACCEPT</code></pre>
 
   <footer class="text-center mt-5 py-3">
   <div class="footer-content">
-     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+     <a rel="nofollow noopener"><span>Hzjsea</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
   </div>
   
 

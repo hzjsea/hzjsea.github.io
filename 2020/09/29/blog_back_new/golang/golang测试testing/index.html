@@ -67,7 +67,7 @@
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
-       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
+       href="/">&nbsp;<strong>hzjsea</strong>&nbsp;</a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
             data-target="#navbarSupportedContent"
@@ -184,7 +184,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      322 字
+      331 字
     </span>
   
 
@@ -234,61 +234,64 @@
 <li>使用Go mod 初始化项目</li>
 </ul>
 <p>项目文件夹如下</p>
-<pre class=" language-bash"><code class="language-bash">🏃:Module/ $ tree   
-<span class="token keyword">.</span>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">🏃:Module/ $ tree   
+.
 ├── go.mod
 ├── hello.go
 └── hello_test.go
 
 0 directories, 3 files
 
-🏃:GolandProjects/ $ <span class="token function">more</span> Module/go.mod 
+🏃:GolandProjects/ $ more Module/go.mod 
 module Module/hello
 
 go 1.13
 
 
 
-<span class="token comment" spellcheck="true"># 创建Module</span>
-<span class="token function">mkdir</span> Module <span class="token operator">&amp;&amp;</span> <span class="token function">cd</span> Module
-<span class="token comment" spellcheck="true"># 初始化包管理</span>
+<span class="hljs-comment"># 创建Module</span>
+mkdir Module && <span class="hljs-built_in">cd</span> Module
+<span class="hljs-comment"># 初始化包管理</span>
 go mod init Module/hello
-<span class="token comment" spellcheck="true"># 创建hello.go项目</span>
-<span class="token function">touch</span> hello.go
-<span class="token function">touch</span> hello_test.go</code></pre>
+<span class="hljs-comment"># 创建hello.go项目</span>
+touch hello.go
+touch hello_test.go</code></pre></div>
+
 <p>编写程序</p>
-<pre class=" language-go"><code class="language-go"><span class="token comment" spellcheck="true">// hello.go</span>
-<span class="token keyword">package</span> Module
+<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-comment"><code class="language-hljs go"><span class="hljs-comment">// hello.go</span>
+<span class="hljs-keyword">package</span> Module
 
-<span class="token keyword">import</span> <span class="token string">"fmt"</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">"fmt"</span>
 
-<span class="token keyword">func</span> <span class="token function">sayhello</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token builtin">string</span> <span class="token punctuation">{</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"helloworld"</span><span class="token punctuation">)</span>
-    <span class="token keyword">return</span> <span class="token string">"helloworld"</span>
-<span class="token punctuation">}</span></code></pre>
-<pre class=" language-go"><code class="language-go"><span class="token comment" spellcheck="true">// hello_test.go</span>
-<span class="token keyword">package</span> Module
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">sayhello</span><span class="hljs-params">()</span> <span class="hljs-title">string</span></span> {
+	fmt.Println(<span class="hljs-string">"helloworld"</span>)
+	<span class="hljs-keyword">return</span> <span class="hljs-string">"helloworld"</span>
+}</code></pre></div>
+<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-comment"><code class="language-hljs go"><span class="hljs-comment">// hello_test.go</span>
+<span class="hljs-keyword">package</span> Module
 
-<span class="token keyword">import</span> <span class="token punctuation">(</span>
-    <span class="token string">"fmt"</span>
-    <span class="token string">"testing"</span>
-<span class="token punctuation">)</span>
+<span class="hljs-keyword">import</span> (
+	<span class="hljs-string">"fmt"</span>
+	<span class="hljs-string">"testing"</span>
+)
 
-<span class="token keyword">func</span> <span class="token function">helloTest</span><span class="token punctuation">(</span>t <span class="token operator">*</span>testing<span class="token punctuation">.</span>T<span class="token punctuation">)</span><span class="token punctuation">{</span>
-    want <span class="token operator">:=</span> <span class="token string">"helloworld"</span>
-    <span class="token keyword">if</span> got<span class="token operator">:=</span><span class="token function">sayhello</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>got <span class="token operator">!=</span>want<span class="token punctuation">{</span>
-        fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"is error "</span><span class="token punctuation">)</span>
-        <span class="token keyword">return</span>
-    <span class="token punctuation">}</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"is true"</span><span class="token punctuation">)</span>
-<span class="token punctuation">}</span></code></pre>
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">helloTest</span><span class="hljs-params">(t *testing.T)</span></span>{
+	want := <span class="hljs-string">"helloworld"</span>
+	<span class="hljs-keyword">if</span> got:=sayhello();got !=want{
+		fmt.Println(<span class="hljs-string">"is error "</span>)
+		<span class="hljs-keyword">return</span>
+	}
+	fmt.Println(<span class="hljs-string">"is true"</span>)
+}</code></pre></div>
+
 <p>运行<code>go test</code></p>
-<pre class=" language-bash"><code class="language-bash">🏃:Module/ $ go <span class="token function">test</span>
+<div class="code-wrapper"><pre class=" language-hljs bash">🏃:Module/ $ go <span class="hljs-built_in"><code class="language-hljs bash">🏃:Module/ $ go <span class="hljs-built_in">test</span>
 testing: warning: no tests to run
 PASS
-ok      Module/hello    0.005s</code></pre>
+ok      Module/hello    0.005s</code></pre></div>
+
 <h2 id="初始化项目包2"><a href="#初始化项目包2" class="headerlink" title="初始化项目包2"></a>初始化项目包2</h2><p>项目结构如下</p>
-<pre class=" language-bash"><code class="language-bash">🏃:GolandProjects/ $ tree mm 
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">🏃:GolandProjects/ $ tree mm 
 mm
 ├── go.mod
 └── src
@@ -297,49 +300,53 @@ mm
 
 1 directory, 3 files
 
-🏃:GolandProjects/ $ <span class="token function">more</span> mm/go.mod 
+🏃:GolandProjects/ $ more mm/go.mod 
 module mm/src
 
 go 1.13
 
-</code></pre>
+</code></pre></div>
+
 <p>构建项目</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token function">mkdir</span> -p mm/src
-<span class="token function">cd</span> mm/
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">mkdir -p mm/src
+<span class="hljs-built_in">cd</span> mm/
 go mod init mm/src/hello
-<span class="token function">touch</span> src/hello.go
-<span class="token function">touch</span> src/hello_test.go</code></pre>
+touch src/hello.go
+touch src/hello_test.go</code></pre></div>
+
 <p>程序如下</p>
-<pre class=" language-go"><code class="language-go"><span class="token comment" spellcheck="true">// hello.go</span>
-<span class="token keyword">package</span> src
+<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-comment"><code class="language-hljs go"><span class="hljs-comment">// hello.go</span>
+<span class="hljs-keyword">package</span> src
 
-<span class="token keyword">import</span> <span class="token string">"fmt"</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">"fmt"</span>
 
-<span class="token keyword">func</span> <span class="token function">sayhello</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token builtin">string</span> <span class="token punctuation">{</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"helloworld"</span><span class="token punctuation">)</span>
-    <span class="token keyword">return</span> <span class="token string">"helloworld"</span>
-<span class="token punctuation">}</span></code></pre>
-<pre class=" language-go"><code class="language-go"><span class="token comment" spellcheck="true">// hello_test.go</span>
-<span class="token keyword">package</span> src
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">sayhello</span><span class="hljs-params">()</span> <span class="hljs-title">string</span></span> {
+	fmt.Println(<span class="hljs-string">"helloworld"</span>)
+	<span class="hljs-keyword">return</span> <span class="hljs-string">"helloworld"</span>
+}</code></pre></div>
+<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-comment"><code class="language-hljs go"><span class="hljs-comment">// hello_test.go</span>
+<span class="hljs-keyword">package</span> src
 
-<span class="token keyword">import</span> <span class="token punctuation">(</span>
-    <span class="token string">"fmt"</span>
-    <span class="token string">"testing"</span>
-<span class="token punctuation">)</span>
+<span class="hljs-keyword">import</span> (
+	<span class="hljs-string">"fmt"</span>
+	<span class="hljs-string">"testing"</span>
+)
 
-<span class="token keyword">func</span> <span class="token function">HelloTest</span><span class="token punctuation">(</span>t <span class="token operator">*</span>testing<span class="token punctuation">.</span>T<span class="token punctuation">)</span><span class="token punctuation">{</span>
-    <span class="token keyword">if</span> got<span class="token operator">:=</span><span class="token function">sayhello</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>got <span class="token operator">!=</span> <span class="token string">"helloworld"</span><span class="token punctuation">{</span>
-        fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"None"</span><span class="token punctuation">)</span>
-    <span class="token punctuation">}</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"yes"</span><span class="token punctuation">)</span>
-<span class="token punctuation">}</span>
-</code></pre>
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">HelloTest</span><span class="hljs-params">(t *testing.T)</span></span>{
+	<span class="hljs-keyword">if</span> got:=sayhello();got != <span class="hljs-string">"helloworld"</span>{
+		fmt.Println(<span class="hljs-string">"None"</span>)
+	}
+	fmt.Println(<span class="hljs-string">"yes"</span>)
+}
+</code></pre></div>
 <p>运行 <code> cd mm/src/ &amp;&amp;  go test</code></p>
-<pre class=" language-go"><code class="language-go">🏃<span class="token punctuation">:</span>src<span class="token operator">/</span> $ <span class="token keyword">go</span> test               
-testing<span class="token punctuation">:</span> warning<span class="token punctuation">:</span> no tests to run
+<div class="code-wrapper"><pre class=" language-hljs go">🏃:src/ $ <span class="hljs-keyword"><code class="language-hljs go">🏃:src/ $ <span class="hljs-keyword">go</span> test               
+testing: warning: no tests to run
 PASS
-ok      mm<span class="token operator">/</span>src<span class="token operator">/</span>src      <span class="token number">0.</span>005s</code></pre>
-<h2 id="错误"><a href="#错误" class="headerlink" title="错误"></a>错误</h2><pre class=" language-bash"><code class="language-bash">go: cannot <span class="token function">find</span> main module<span class="token punctuation">;</span> see <span class="token string">'go help modules'</span></code></pre>
+ok      mm/src/src      <span class="hljs-number">0.005</span>s</code></pre></div>
+
+
+<h2 id="错误"><a href="#错误" class="headerlink" title="错误"></a>错误</h2><div class="code-wrapper"><pre class=" language-hljs bash">go: cannot find main module; see <span class="hljs-string"><code class="language-hljs bash">go: cannot find main module; see <span class="hljs-string">&#x27;go help modules&#x27;</span></code></pre></div>
 <p>因为项目根目录下面没有go.mod文件，创建这个文件，这个文件里面用来管理module的</p>
 
             </div>
@@ -449,7 +456,7 @@ ok      mm<span class="token operator">/</span>src<span class="token operator">/
 
   <footer class="text-center mt-5 py-3">
   <div class="footer-content">
-     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+     <a rel="nofollow noopener"><span>Hzjsea</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
   </div>
   
 

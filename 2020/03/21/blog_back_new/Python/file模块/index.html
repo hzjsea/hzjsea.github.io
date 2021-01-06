@@ -67,7 +67,7 @@
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
-       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
+       href="/">&nbsp;<strong>hzjsea</strong>&nbsp;</a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
             data-target="#navbarSupportedContent"
@@ -184,7 +184,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      975 字
+      1k 字
     </span>
   
 
@@ -194,7 +194,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      11
+      13
        分钟
     </span>
   
@@ -248,62 +248,64 @@
 <p>rb+ 二进制读模式 可读可写 文件不存在报错<br>wb+ 二进制写模式 可读可写 文件不存在则创建，<br>以上存在则清空再打开</p>
 <p>a 追加写模式，文件存在则追加写入<br>a+ 追加读写方式<br>以上存在则追加写入</p>
 <p>默认进入为文件末尾<br>f.seek(0) 设置读写位置为开头<br>f.truncate(0) 将文章字节阶段为0</p>
-<pre class=" language-py"><code class="language-py">with open(path, "r+") as f:
+<div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(path, <span class="hljs-string">&quot;r+&quot;</span>) <span class="hljs-keyword"><code class="language-hljs py"><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(path, <span class="hljs-string">&quot;r+&quot;</span>) <span class="hljs-keyword">as</span> f:
      old = f.read()
-     f.seek(0)
+     f.seek(<span class="hljs-number">0</span>)
      f.write(data)
-     f.write(old)</code></pre>
-<pre class=" language-py"><code class="language-py">with open(path,"a") as f:
-      f.seek(0)
+     f.write(old)</code></pre></div>
+
+<div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(path,<span class="hljs-string">&quot;a&quot;</span>) <span class="hljs-keyword"><code class="language-hljs py"><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(path,<span class="hljs-string">&quot;a&quot;</span>) <span class="hljs-keyword">as</span> f:
+      f.seek(<span class="hljs-number">0</span>)
       old = f.read()
-      # 全部删除
-      f.truncate(0)
-      f.write("---")
-      f.write("tags: xxx")
-      f.write("---")
-      f.close()</code></pre>
+      <span class="hljs-comment"># 全部删除</span>
+      f.truncate(<span class="hljs-number">0</span>)
+      f.write(<span class="hljs-string">"---"</span>)
+      f.write(<span class="hljs-string">"tags: xxx"</span>)
+      f.write(<span class="hljs-string">"---"</span>)
+      f.close()</code></pre></div>
+
 <h2 id="字符编码"><a href="#字符编码" class="headerlink" title="字符编码"></a>字符编码</h2><p>要读取非UTF-8编码的文本文件，需要给open()函数传入encoding参数，例如，读取GBK编码的文件<br>比如现在我们要读取一个utf-8的文件，但是我们给定的编码是GBK编码，当然他是报错的</p>
-<pre class=" language-py"><code class="language-py">with open('./xx.md','r',encoding='gbk',errors='ignore') as f:
+<div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&#x27;./xx.md&#x27;</span>,<span class="hljs-string">&#x27;r&#x27;</span>,encoding=<span class="hljs-string">&#x27;gbk&#x27;</span>,errors=<span class="hljs-string">&#x27;ignore&#x27;</span>) <span class="hljs-keyword"><code class="language-hljs py"><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&#x27;./xx.md&#x27;</span>,<span class="hljs-string">&#x27;r&#x27;</span>,encoding=<span class="hljs-string">&#x27;gbk&#x27;</span>,errors=<span class="hljs-string">&#x27;ignore&#x27;</span>) <span class="hljs-keyword">as</span> f:
     res = f.read()
     print(res)
-    f.close()</code></pre>
-<pre class=" language-python"><code class="language-python">Traceback <span class="token punctuation">(</span>most recent call last<span class="token punctuation">)</span><span class="token punctuation">:</span>
-  File <span class="token string">"file_module.py"</span><span class="token punctuation">,</span> line <span class="token number">4</span><span class="token punctuation">,</span> <span class="token keyword">in</span> <span class="token operator">&lt;</span>module<span class="token operator">></span>
-    res <span class="token operator">=</span> f<span class="token punctuation">.</span>read<span class="token punctuation">(</span><span class="token punctuation">)</span>
-UnicodeDecodeError<span class="token punctuation">:</span> <span class="token string">'gbk'</span> codec can't decode byte <span class="token number">0xa3</span> <span class="token keyword">in</span> position <span class="token number">167</span><span class="token punctuation">:</span> illegal multibyte sequence</code></pre>
+    f.close()</code></pre></div>
+<div class="code-wrapper"><pre class=" language-hljs python"><code class="language-hljs python">Traceback (most recent call last):
+  File <span class="hljs-string">"file_module.py"</span>, line <span class="hljs-number">4</span>, <span class="hljs-keyword">in</span> <module>
+    res = f.read()
+UnicodeDecodeError: <span class="hljs-string">&#x27;gbk&#x27;</span> codec can<span class="hljs-string">&#x27;t decode byte 0xa3 in position 167: illegal multibyte sequence</span></code></pre></div>
 <p>如果我们执意要打开，可以给他加上errors=”ignore”</p>
 <h2 id="模式介绍"><a href="#模式介绍" class="headerlink" title="模式介绍"></a>模式介绍</h2><p>write模式是写入的模式，<br>你可以反复调用write()来写入文件，但是务必要调用f.close()来关闭文件。当我们写文件时，操作系统往往不会立刻把数据写入磁盘，而是放到内存缓存起来，空闲的时候再慢慢写入。只有调用close()方法时，操作系统才保证把没有写入的数据全部写入磁盘。忘记调用close()的后果是数据可能只写了一部分到磁盘，剩下的丢失了<br>另外write在写入的是否如果不管是否存在这个文件，都会阐述</p>
 <p>a是追加的模式</p>
 <p>w+是可读可写，但是他并不会像A一样去追加内容，但是在实验中我们会发现他根本不能读取内容，比如</p>
-<pre class=" language-py"><code class="language-py">import os
+<div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-keyword"><code class="language-hljs py"><span class="hljs-keyword">import</span> os
 
-with open('./xxx.md','w+',encoding='utf-8') as f:
-    f.write("xxxx")
+<span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&#x27;./xxx.md&#x27;</span>,<span class="hljs-string">&#x27;w+&#x27;</span>,encoding=<span class="hljs-string">&#x27;utf-8&#x27;</span>) <span class="hljs-keyword">as</span> f:
+    f.write(<span class="hljs-string">"xxxx"</span>)
     res = f.read()
-    print(res)</code></pre>
+    print(res)</code></pre></div>
 <p>在这个里面 先写入xxxx但是无法读到xxx 这是因为在写文件的时候它是有一个类似游标的内容来确定位置的，写完xxxx后，游标在xxxx后面，当然就无法读到了<br><img src="http://img.noback.top/2020-03-21-21-46-34.png" srcset="/img/loading.gif" alt="2020-03-21-21-46-34"></p>
-<pre class=" language-py"><code class="language-py">import os
+<div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-keyword"><code class="language-hljs py"><span class="hljs-keyword">import</span> os
 
-with open('./xxx.md','w+',encoding='utf-8') as f:
-    f.write("xxxx")
-    f.seek(0,0)
+<span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&#x27;./xxx.md&#x27;</span>,<span class="hljs-string">&#x27;w+&#x27;</span>,encoding=<span class="hljs-string">&#x27;utf-8&#x27;</span>) <span class="hljs-keyword">as</span> f:
+    f.write(<span class="hljs-string">"xxxx"</span>)
+    f.seek(<span class="hljs-number">0</span>,<span class="hljs-number">0</span>)
 
-    # file. seek(offset[, whence])
-    # whence：0,1,2三个参数，0表示文件开头，1表示当前位置，2表示文件结尾
-    # offset:偏移量，可正可负，正数表示向后移动offset位，负数表示向前移动offset位
+    <span class="hljs-comment"># file. seek(offset[, whence])</span>
+    <span class="hljs-comment"># whence：0,1,2三个参数，0表示文件开头，1表示当前位置，2表示文件结尾</span>
+    <span class="hljs-comment"># offset:偏移量，可正可负，正数表示向后移动offset位，负数表示向前移动offset位</span>
 
     res = f.read()
-    print(res)</code></pre>
+    print(res)</code></pre></div>
+
 <p>另外我们还可以使用 <code>tell</code> 来获得当前游标的位置</p>
-<pre class=" language-py"><code class="language-py">import os
+<div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-keyword"><code class="language-hljs py"><span class="hljs-keyword">import</span> os
 
-with open('./xxx.md','w+',encoding='utf-8') as f:
-    f.write("xxxx")
-    print(f.tell()) # res: 4
-    f.seek(0,0) # res 0
+<span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&#x27;./xxx.md&#x27;</span>,<span class="hljs-string">&#x27;w+&#x27;</span>,encoding=<span class="hljs-string">&#x27;utf-8&#x27;</span>) <span class="hljs-keyword">as</span> f:
+    f.write(<span class="hljs-string">"xxxx"</span>)
+    print(f.tell()) <span class="hljs-comment"># res: 4</span>
+    f.seek(<span class="hljs-number">0</span>,<span class="hljs-number">0</span>) <span class="hljs-comment"># res 0</span>
     res = f.read()
-    print(res)</code></pre>
-
+    print(res)</code></pre></div>
             </div>
             <hr>
             <div>
@@ -411,7 +413,7 @@ with open('./xxx.md','w+',encoding='utf-8') as f:
 
   <footer class="text-center mt-5 py-3">
   <div class="footer-content">
-     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+     <a rel="nofollow noopener"><span>Hzjsea</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
   </div>
   
 

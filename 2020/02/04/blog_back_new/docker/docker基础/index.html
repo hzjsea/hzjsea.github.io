@@ -67,7 +67,7 @@
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
-       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
+       href="/">&nbsp;<strong>hzjsea</strong>&nbsp;</a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
             data-target="#navbarSupportedContent"
@@ -184,7 +184,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      3.1k 字
+      3.2k 字
     </span>
   
 
@@ -298,158 +298,167 @@
 <li>仓库(Repository)<br>存放镜像的地方，类似于代码仓库github  gitee等等</li>
 </ul>
 <p><img src="http://img.noback.top/2020-02-06-19-51-47.png" srcset="/img/loading.gif" alt="2020-02-06-19-51-47"></p>
-<h2 id="镜像"><a href="#镜像" class="headerlink" title="镜像"></a>镜像</h2><h3 id="获取镜像"><a href="#获取镜像" class="headerlink" title="获取镜像"></a>获取镜像</h3><pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 安装Ubuntu:latest镜像</span>
-<span class="token punctuation">[</span>root@CodeSheep ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># docker pull ubuntu</span>
+<h2 id="镜像"><a href="#镜像" class="headerlink" title="镜像"></a>镜像</h2><h3 id="获取镜像"><a href="#获取镜像" class="headerlink" title="获取镜像"></a>获取镜像</h3><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 安装Ubuntu:latest镜像</span>
+[root@CodeSheep ~]<span class="hljs-comment"># docker pull ubuntu</span>
 Using default tag: latest
 latest: Pulling from library/ubuntu
 5c939e3a4d10: Downloading  8.608MB/26.69MB
 c63719cdbe7a: Download complete
 19a861ea6baf: Download complete
 651c9d2d6c4f: Downloadan zhuang 
-<span class="token comment" spellcheck="true"># 安装Ubuntu:14.04镜像</span>
+<span class="hljs-comment"># 安装Ubuntu:14.04镜像</span>
 docker pull ubuntu:14.04
-<span class="token comment" spellcheck="true"># 从社区安装ubuntu镜像</span>
-docker pull dl.dockerpool.com:5000/ubuntu</code></pre>
+<span class="hljs-comment"># 从社区安装ubuntu镜像</span>
+docker pull dl.dockerpool.com:5000/ubuntu</code></pre></div>
+
 <h3 id="提交一个容器为新的镜像-不提倡"><a href="#提交一个容器为新的镜像-不提倡" class="headerlink" title="提交一个容器为新的镜像(不提倡)"></a>提交一个容器为新的镜像(不提倡)</h3><p>建议使用dockerfile创建新的镜像</p>
-<pre class=" language-bash"><code class="language-bash">docker commit CONTAINER  REPOSITORY:tag
-root:~<span class="token comment" spellcheck="true"># docker ps</span>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">docker commit CONTAINER  REPOSITORY:tag
+root:~<span class="hljs-comment"># docker ps</span>
 CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
-612090a371f6        centos              <span class="token string">"/bin/bash"</span>         5 seconds ago       Up 5 seconds                            frosty_tereshkova
-root:~<span class="token comment" spellcheck="true"># docker commit frosty_tereshkova new/centos:v4</span>
-sha256:2b405e30c679a448d9b913c19c48a4c435447655001abad264fcc3e7b2264312</code></pre>
-<h3 id="运行镜像"><a href="#运行镜像" class="headerlink" title="运行镜像"></a>运行镜像</h3><pre class=" language-bash"><code class="language-bash">docker run -t -i ubuntu /bin/bash</code></pre>
-<h3 id="查看镜像信息"><a href="#查看镜像信息" class="headerlink" title="查看镜像信息"></a>查看镜像信息</h3><pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 列出本地主机上所有镜像</span>
-<span class="token comment" spellcheck="true"># --------------------------</span>
-root:~<span class="token comment" spellcheck="true"># docker images</span>
+612090a371f6        centos              <span class="hljs-string">"/bin/bash"</span>         5 seconds ago       Up 5 seconds                            frosty_tereshkova
+root:~<span class="hljs-comment"># docker commit frosty_tereshkova new/centos:v4</span>
+sha256:2b405e30c679a448d9b913c19c48a4c435447655001abad264fcc3e7b2264312</code></pre></div>
+
+<h3 id="运行镜像"><a href="#运行镜像" class="headerlink" title="运行镜像"></a>运行镜像</h3><div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">docker run -t -i ubuntu /bin/bash</code></pre></div>
+
+<h3 id="查看镜像信息"><a href="#查看镜像信息" class="headerlink" title="查看镜像信息"></a>查看镜像信息</h3><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 列出本地主机上所有镜像</span>
+<span class="hljs-comment"># --------------------------</span>
+root:~<span class="hljs-comment"># docker images</span>
 REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
 docker.io/ubuntu    latest              ccc6e87d482b        6 days ago          64.2 MB
 
-<span class="token comment" spellcheck="true"># REPOSITORY 表示镜像的仓库源</span>
-<span class="token comment" spellcheck="true"># TAG 表示镜像的标签</span>
-<span class="token comment" spellcheck="true"># IMAGE ID 表示镜像的ID</span>
-<span class="token comment" spellcheck="true"># CREATED 镜像的创建时间</span>
-<span class="token comment" spellcheck="true"># SIZE 镜像大小</span>
-<span class="token comment" spellcheck="true"># --------------------------</span>
+<span class="hljs-comment"># REPOSITORY 表示镜像的仓库源</span>
+<span class="hljs-comment"># TAG 表示镜像的标签</span>
+<span class="hljs-comment"># IMAGE ID 表示镜像的ID</span>
+<span class="hljs-comment"># CREATED 镜像的创建时间</span>
+<span class="hljs-comment"># SIZE 镜像大小</span>
+<span class="hljs-comment"># --------------------------</span>
 
-<span class="token comment" spellcheck="true"># 显示所有镜像的ID -a 显示所有镜像 -q显示ID</span>
-root:~<span class="token comment" spellcheck="true"># docker images -qa</span>
+<span class="hljs-comment"># 显示所有镜像的ID -a 显示所有镜像 -q显示ID</span>
+root:~<span class="hljs-comment"># docker images -qa</span>
 41f1d7eba8f3
 470671670cac
 ccc6e87d482b
 fce289e99eb9
 
-<span class="token comment" spellcheck="true"># 显示镜像的摘要信息</span>
-root:~<span class="token comment" spellcheck="true"># docker images --digests</span>
+<span class="hljs-comment"># 显示镜像的摘要信息</span>
+root:~<span class="hljs-comment"># docker images --digests</span>
 
-<span class="token comment" spellcheck="true"># 显示镜像详细信息</span>
-root:~<span class="token comment" spellcheck="true"># docker images --no-trunc</span>
+<span class="hljs-comment"># 显示镜像详细信息</span>
+root:~<span class="hljs-comment"># docker images --no-trunc</span>
 
-<span class="token comment" spellcheck="true"># 添加新的镜像标签</span>
-root:～<span class="token comment" spellcheck="true"># docker tag docker.io/ubuntu:latest docker-ubuntu-version:v2</span>
-root:~<span class="token comment" spellcheck="true"># docker images</span>
+<span class="hljs-comment"># 添加新的镜像标签</span>
+root:～<span class="hljs-comment"># docker tag docker.io/ubuntu:latest docker-ubuntu-version:v2</span>
+root:~<span class="hljs-comment"># docker images</span>
 REPOSITORY              TAG                 IMAGE ID            CREATED             SIZE
 docker-ubuntu-version   v2                  ccc6e87d482b        6 days ago          64.2 MB
 docker.io/ubuntu        latest              ccc6e87d482b        6 days ago          64.2 MB
 docker.io/ubuntu        14.04               6e4f1fe62ff1        4 weeks ago         197 MB
 
-<span class="token comment" spellcheck="true"># 查看镜像相信信息</span>
+<span class="hljs-comment"># 查看镜像相信信息</span>
 docker inspect ccc6e87d482b 
 docker imspect ccc
-</code></pre>
+</code></pre></div>
 <p>REPOSITORY表示镜像来自于哪个仓库<br>TAG 标签信息，版本信息<br>IMAMGE ID 镜像的ID号码，唯一<br>CREATED 创建时间<br>SIZE  镜像大小</p>
-<h3 id="搜寻镜像"><a href="#搜寻镜像" class="headerlink" title="搜寻镜像"></a>搜寻镜像</h3><pre class=" language-bash"><code class="language-bash">docker search mysql
-<span class="token comment" spellcheck="true"># --automated=false 仅显示自动创建的镜像</span>
-<span class="token comment" spellcheck="true"># --no-trunc=false 输出信息不截断显示</span>
-<span class="token comment" spellcheck="true"># -s --starts=0 指定仅显示评价为指定星级以上的镜像</span></code></pre>
-<h3 id="删除镜像"><a href="#删除镜像" class="headerlink" title="删除镜像"></a>删除镜像</h3><pre class=" language-bash"><code class="language-bash">docker rmi IMAGE<span class="token punctuation">[</span>IMAGE<span class="token punctuation">..</span>.<span class="token punctuation">]</span>
-<span class="token comment" spellcheck="true"># IMAGE...可以是标签或者ID</span>
-<span class="token comment" spellcheck="true"># docker rmi -f IMAGE[IMAGE...] 强制删除</span>
+<h3 id="搜寻镜像"><a href="#搜寻镜像" class="headerlink" title="搜寻镜像"></a>搜寻镜像</h3><div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">docker search mysql
+<span class="hljs-comment"># --automated=false 仅显示自动创建的镜像</span>
+<span class="hljs-comment"># --no-trunc=false 输出信息不截断显示</span>
+<span class="hljs-comment"># -s --starts=0 指定仅显示评价为指定星级以上的镜像</span></code></pre></div>
 
-<span class="token comment" spellcheck="true"># 删除全部</span>
-docker rmi  -f <span class="token variable"><span class="token variable">$(</span>docker images -qa<span class="token variable">)</span></span></code></pre>
+<h3 id="删除镜像"><a href="#删除镜像" class="headerlink" title="删除镜像"></a>删除镜像</h3><div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">docker rmi IMAGE[IMAGE...]
+<span class="hljs-comment"># IMAGE...可以是标签或者ID</span>
+<span class="hljs-comment"># docker rmi -f IMAGE[IMAGE...] 强制删除</span>
+
+<span class="hljs-comment"># 删除全部</span>
+docker rmi  -f $(docker images -qa)</code></pre></div>
 <p>当前镜像有被使用于某一个容器的时候，使用docker rmi IMAGE 会出现报错的内容,可以进行强制的删除，但这样的做法并不建议，可以先删除依赖于该镜像的容器，然后再删除该镜像</p>
 <h2 id="容器"><a href="#容器" class="headerlink" title="容器"></a>容器</h2><h3 id="创建容器与启动"><a href="#创建容器与启动" class="headerlink" title="创建容器与启动"></a>创建容器与启动</h3><p>使用create创建容器后，容器是处于停止状态的，可以使用start开启</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 创建容器</span>
-docker create -it ubuntu:test 
-<span class="token comment" spellcheck="true"># 开启容器</span>
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 创建容器</span>
+docker create -it ubuntu:<span class="hljs-built_in">test</span> 
+<span class="hljs-comment"># 开启容器</span>
 docker start ID
-<span class="token comment" spellcheck="true"># 重新开启容器</span>
-docker restart ID</code></pre>
-<h3 id="新建并启动容器"><a href="#新建并启动容器" class="headerlink" title="新建并启动容器"></a>新建并启动容器</h3><pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># docker run [OPTIONS] IMAGE [COMMAND][ARG...]</span>
-<span class="token comment" spellcheck="true"># --name 指定容器名字，未指定则随机生成</span>
-<span class="token comment" spellcheck="true"># -t 给docker分一个伪终端 </span>
-<span class="token comment" spellcheck="true"># -i 提供交互模式 </span>
-<span class="token comment" spellcheck="true"># -d 后台运行容器，并返回容器ID</span>
-<span class="token comment" spellcheck="true"># -P 随机端口映射</span>
-<span class="token comment" spellcheck="true"># -p 指定端口映射 主机端口:容器端口</span>
-<span class="token comment" spellcheck="true"># -e 指定环境变量</span>
+<span class="hljs-comment"># 重新开启容器</span>
+docker restart ID</code></pre></div>
+<h3 id="新建并启动容器"><a href="#新建并启动容器" class="headerlink" title="新建并启动容器"></a>新建并启动容器</h3><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># docker run [OPTIONS] IMAGE [COMMAND][ARG...]</span>
+<span class="hljs-comment"># --name 指定容器名字，未指定则随机生成</span>
+<span class="hljs-comment"># -t 给docker分一个伪终端 </span>
+<span class="hljs-comment"># -i 提供交互模式 </span>
+<span class="hljs-comment"># -d 后台运行容器，并返回容器ID</span>
+<span class="hljs-comment"># -P 随机端口映射</span>
+<span class="hljs-comment"># -p 指定端口映射 主机端口:容器端口</span>
+<span class="hljs-comment"># -e 指定环境变量</span>
 
 docker run -i -t ubuntu:latest /bin/bash
 
-<span class="token comment" spellcheck="true"># 区分-p 与 -P的区别</span>
+<span class="hljs-comment"># 区分-p 与 -P的区别</span>
 docker pull comcat 
 docker run -it -d -p 8080:8080 tomcat
 docker run -it -d -P tomcat
-root:~<span class="token comment" spellcheck="true"># docker ps</span>
+root:~<span class="hljs-comment"># docker ps</span>
 CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS                     NAMES
-d5987c3d0257        tomcat              <span class="token string">"catalina.sh run"</span>   3 seconds ago       Up 2 seconds        0.0.0.0:32768-<span class="token operator">></span>8080/tcp   xenodochial_hugle
-ae1370718b31        tomcat              <span class="token string">"catalina.sh run"</span>   36 seconds ago      Up 35 seconds       0.0.0.0:8080-<span class="token operator">></span>8080/tcp    upbeat_beaver</code></pre>
+d5987c3d0257        tomcat              <span class="hljs-string">"catalina.sh run"</span>   3 seconds ago       Up 2 seconds        0.0.0.0:32768->8080/tcp   xenodochial_hugle
+ae1370718b31        tomcat              <span class="hljs-string">"catalina.sh run"</span>   36 seconds ago      Up 35 seconds       0.0.0.0:8080->8080/tcp    upbeat_beaver</code></pre></div>
 <p>exit后容器处于终止状态</p>
 <h3 id="守护状态运行"><a href="#守护状态运行" class="headerlink" title="守护状态运行"></a>守护状态运行</h3><p>正常情况下，退出容器后，容器处于终止状态。使用-d可以在后台运行容器</p>
-<pre class=" language-bash"><code class="language-bash">docker run -d ubuntu:latest /bin/bash -c <span class="token string">"while true;do echo helloworld > xx.txt;sleep 1;done"</span></code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash">docker run -d ubuntu:latest /bin/bash -c <span class="hljs-string"><code class="language-hljs bash">docker run -d ubuntu:latest /bin/bash -c <span class="hljs-string">"while true;do echo helloworld > xx.txt;sleep 1;done"</span></code></pre></div>
+
 <h3 id="终止容器"><a href="#终止容器" class="headerlink" title="终止容器"></a>终止容器</h3><p>使用stop终止容器的时候，会先发送一个SIGTERM信号，等待10s后发送SIGKILL信号终止容器<br>kill 会直接发送SIGKILL终止容器</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 终止容器</span>
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 终止容器</span>
 docker stop -t xxx  ID
 docker stop --time xxx  ID
-docker <span class="token function">kill</span> ID</code></pre>
+docker <span class="hljs-built_in">kill</span> ID</code></pre></div>
+
 <h3 id="进入容器"><a href="#进入容器" class="headerlink" title="进入容器"></a>进入容器</h3><ul>
-<li>attach 命令<br>attach可以进入-d开启的后台运行中的容器,但是多个窗口同时attach到同一个容器的时候，所有窗口会同步显示，当某个窗口命令阻塞的时候，其他窗口也无法执行操作了<pre class=" language-bash"><code class="language-bash">docker attach ID</code></pre>
-</li>
-<li>exec 命令<br>通常使用这个<pre class=" language-bash"><code class="language-bash">docker <span class="token function">exec</span> -it ID /bin/bash </code></pre>
+<li>attach 命令<br>attach可以进入-d开启的后台运行中的容器,但是多个窗口同时attach到同一个容器的时候，所有窗口会同步显示，当某个窗口命令阻塞的时候，其他窗口也无法执行操作了<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">docker attach ID</code></pre></div></li>
+<li>exec 命令<br>通常使用这个<div class="code-wrapper"><pre class=" language-hljs bash">docker <span class="hljs-built_in"><code class="language-hljs bash">docker <span class="hljs-built_in">exec</span> -it ID /bin/bash</code></pre></div>
+
 </li>
 </ul>
 <h3 id="删除容器"><a href="#删除容器" class="headerlink" title="删除容器"></a>删除容器</h3><p>删除终止状态下的容器</p>
-<pre class=" language-bash"><code class="language-bash">docker <span class="token function">rm</span> <span class="token punctuation">[</span>OPTIONS<span class="token punctuation">]</span> CONTAINER <span class="token punctuation">[</span>CONTAINER<span class="token punctuation">..</span>.<span class="token punctuation">]</span>
-<span class="token comment" spellcheck="true"># -f --force=false 终止并删除一个正在运行的容器</span>
-<span class="token comment" spellcheck="true"># -l --link=false 删除容器的连接，但保留容器</span>
-<span class="token comment" spellcheck="true"># -v --volumes=false 删除容器挂载的数据卷</span>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">docker rm [OPTIONS] CONTAINER [CONTAINER...]
+<span class="hljs-comment"># -f --force=false 终止并删除一个正在运行的容器</span>
+<span class="hljs-comment"># -l --link=false 删除容器的连接，但保留容器</span>
+<span class="hljs-comment"># -v --volumes=false 删除容器挂载的数据卷</span>
 
-<span class="token comment" spellcheck="true"># 停止所有容器</span>
-docker stop <span class="token variable"><span class="token variable">$(</span>dokcer <span class="token function">ps</span> -q<span class="token variable">)</span></span>
-<span class="token comment" spellcheck="true"># 删除所有容器</span>
-docker <span class="token function">rm</span> <span class="token variable"><span class="token variable">$(</span>docker <span class="token function">ps</span> -aq<span class="token variable">)</span></span> <span class="token comment" spellcheck="true">#需要先暂停</span>
-docker <span class="token function">rm</span> -f <span class="token variable"><span class="token variable">$(</span>docker <span class="token function">ps</span> -aq<span class="token variable">)</span></span> <span class="token comment" spellcheck="true"># 不需要暂停</span></code></pre>
-<h3 id="导入与导出容器"><a href="#导入与导出容器" class="headerlink" title="导入与导出容器"></a>导入与导出容器</h3><pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 导入</span>
-docker <span class="token function">export</span> ID <span class="token operator">></span> xx.tar
-<span class="token comment" spellcheck="true"># 导出</span>
-<span class="token function">cat</span> xx.tar <span class="token operator">|</span> docker <span class="token function">import</span> - test/ubuntu:v1</code></pre>
-<h3 id="查看容器"><a href="#查看容器" class="headerlink" title="查看容器"></a>查看容器</h3><pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 查看活跃的容器</span>
-root:~<span class="token comment" spellcheck="true"># docker ps</span>
+<span class="hljs-comment"># 停止所有容器</span>
+docker stop $(dokcer ps -q)
+<span class="hljs-comment"># 删除所有容器</span>
+docker rm $(docker ps -aq) <span class="hljs-comment">#需要先暂停</span>
+docker rm -f $(docker ps -aq) <span class="hljs-comment"># 不需要暂停</span></code></pre></div>
+
+<h3 id="导入与导出容器"><a href="#导入与导出容器" class="headerlink" title="导入与导出容器"></a>导入与导出容器</h3><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 导入</span>
+docker <span class="hljs-built_in">export</span> ID > xx.tar
+<span class="hljs-comment"># 导出</span>
+cat xx.tar | docker import - <span class="hljs-built_in">test</span>/ubuntu:v1</code></pre></div>
+
+<h3 id="查看容器"><a href="#查看容器" class="headerlink" title="查看容器"></a>查看容器</h3><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 查看活跃的容器</span>
+root:~<span class="hljs-comment"># docker ps</span>
 CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
-4171c783b51f        470671670cac        <span class="token string">"/bin/bash"</span>         12 days ago         Up 2 seconds                            devtest
-<span class="token comment" spellcheck="true"># 查看所有容器</span>
-root:~<span class="token comment" spellcheck="true"># docker ps -a</span>
+4171c783b51f        470671670cac        <span class="hljs-string">"/bin/bash"</span>         12 days ago         Up 2 seconds                            devtest
+<span class="hljs-comment"># 查看所有容器</span>
+root:~<span class="hljs-comment"># docker ps -a</span>
 CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS                     PORTS               NAMES
-7945b6135dda        ubuntu              <span class="token string">"echo '“hello world'"</span>   5 seconds ago       Exited <span class="token punctuation">(</span>0<span class="token punctuation">)</span> 4 seconds ago                       silly_kirch
-<span class="token comment" spellcheck="true"># -l 显示最近创建的容器</span>
-<span class="token comment" spellcheck="true"># -n 显示最近n个创建的容器</span>
+7945b6135dda        ubuntu              <span class="hljs-string">"echo &#x27;“hello world&#x27;"</span>   5 seconds ago       Exited (0) 4 seconds ago                       silly_kirch
+<span class="hljs-comment"># -l 显示最近创建的容器</span>
+<span class="hljs-comment"># -n 显示最近n个创建的容器</span>
 
-<span class="token comment" spellcheck="true"># 查看容器日志</span>
+<span class="hljs-comment"># 查看容器日志</span>
 docker logs -f -t --tail  IMAGE
 
-<span class="token comment" spellcheck="true"># 查看容器内运行进程</span>
-docker <span class="token function">top</span> IMAGE
+<span class="hljs-comment"># 查看容器内运行进程</span>
+docker top IMAGE
 
-<span class="token comment" spellcheck="true">#</span></code></pre>
+<span class="hljs-comment">#</span></code></pre></div>
 <p>status 状态表示是否在后台运行，up表示在后台运行  Exited表示终止</p>
-<h3 id="复制容器内文件"><a href="#复制容器内文件" class="headerlink" title="复制容器内文件"></a>复制容器内文件</h3><pre class=" language-bash"><code class="language-bash">docker <span class="token function">cp</span> IMAGE:file_path now_path </code></pre>
-<h2 id="帮助命令"><a href="#帮助命令" class="headerlink" title="帮助命令"></a>帮助命令</h2><pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 查看版本</span>
+<h3 id="复制容器内文件"><a href="#复制容器内文件" class="headerlink" title="复制容器内文件"></a>复制容器内文件</h3><div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">docker cp IMAGE:file_path now_path</code></pre></div>
+
+<h2 id="帮助命令"><a href="#帮助命令" class="headerlink" title="帮助命令"></a>帮助命令</h2><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 查看版本</span>
 docker version
 
-<span class="token comment" spellcheck="true"># 显示docker信息，包括容器数量，镜像数量等等</span>
-<span class="token punctuation">[</span>root@CodeSheep ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># docker info</span>
+<span class="hljs-comment"># 显示docker信息，包括容器数量，镜像数量等等</span>
+[root@CodeSheep ~]<span class="hljs-comment"># docker info</span>
 Client:
- Debug Mode: <span class="token boolean">false</span>
+ Debug Mode: <span class="hljs-literal">false</span>
 
 Server:
  Containers: 3
@@ -460,62 +469,71 @@ Server:
  Server Version: 19.03.1
  Storage Driver: overlay2
   Backing Filesystem: extfs
-  Supports d_type: <span class="token boolean">true</span>
-  Native Overlay Diff: <span class="token boolean">true</span>
+  Supports d_type: <span class="hljs-literal">true</span>
+  Native Overlay Diff: <span class="hljs-literal">true</span>
  Logging Driver: json-file
  Cgroup Driver: cgroupfs
 
 
-<span class="token comment" spellcheck="true"># 查看日志</span>
-docker logs CONTAINER</code></pre>
+<span class="hljs-comment"># 查看日志</span>
+docker logs CONTAINER</code></pre></div>
+
 <h2 id="清除容器"><a href="#清除容器" class="headerlink" title="清除容器"></a>清除容器</h2><p>默认情况下，每个container在退出时，它的文件系统也会保存下来。这样一方面调试会方便些，因为你可以通过查看日志等方式来确定最终状态。另外一方面，你也可以保存container所产生的数据。但是当你仅仅需要短期的运行一个前台container，这些数据同时不需要保留时。你可能就希望docker能在container结束时自动清理其所产生的数据。 这个时候你就需要–rm这个参数了</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token function">sudo</span> docker run --rm centos:latest</code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">sudo docker run --rm centos:latest</code></pre></div>
+
 <p><font color='red'>注意：–rm 和 -d不能共用！</font></p>
 <h2 id="数据卷容器"><a href="#数据卷容器" class="headerlink" title="数据卷容器"></a>数据卷容器</h2><p>–volumes-from 顾名思义，就是从另一个容器当中挂载容器中已经创建好的数据卷。<br>如果你有一些持续更新的数据需要在容器之间共享，最好创建数据卷容器。 数据卷容器，其实就是一个正常的容器，专门用来提供数据卷供其它容器挂载的。 我们首先先创建一个数据卷容器</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 给postgres数据库创建一个数据卷容器</span>
-<span class="token function">sudo</span> docker run -d -v /dbdata --name dbdata training/postgres <span class="token keyword">echo</span> Data-only container <span class="token keyword">for</span> postgres
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 给postgres数据库创建一个数据卷容器</span>
+sudo docker run -d -v /dbdata --name dbdata training/postgres <span class="hljs-built_in">echo</span> Data-only container <span class="hljs-keyword">for</span> postgres
 
-<span class="token comment" spellcheck="true"># 创建容器挂在数据卷</span>
-<span class="token function">sudo</span> docker run -d --volumes-from dbdata --name db1 training/postgres</code></pre>
+<span class="hljs-comment"># 创建容器挂在数据卷</span>
+sudo docker run -d --volumes-from dbdata --name db1 training/postgres</code></pre></div>
 <p>数据卷容器本身是不需要保持运行的</p>
 <p><strong>利用数据卷容器来备份、恢复、迁移数据卷</strong><br>首先使用 –volumes-from 标记来创建一个加载 dbdata 容器卷的容器，并从本地主机挂载当前到容器的 /backup 目录。命令如下：</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token function">sudo</span> docker run --volumes-from dbdata -v <span class="token variable"><span class="token variable">$(</span><span class="token function">pwd</span><span class="token variable">)</span></span>:/backup ubuntu <span class="token function">tar</span> cvf /backup/backup.tar /dbdata</code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash">sudo docker run --volumes-from dbdata -v $(<span class="hljs-built_in"><code class="language-hljs bash">sudo docker run --volumes-from dbdata -v $(<span class="hljs-built_in">pwd</span>):/backup ubuntu tar cvf /backup/backup.tar /dbdata</code></pre></div>
 <p>容器启动后，使用了 tar 命令来将 dbdata 卷备份为本地的 /backup/backup.tar。 如果要恢复数据到一个容器，首先创建一个带有数据卷的容器 dbdata2。</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token function">sudo</span> docker run -v /dbdata --name dbdata2 ubuntu /bin/bash</code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">sudo docker run -v /dbdata --name dbdata2 ubuntu /bin/bash</code></pre></div>
 <p>然后创建另一个容器，挂载 dbdata2 的容器，并使用 untar 解压备份文件到挂载的容器卷中</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token function">sudo</span> docker run --volumes-from dbdata2 -v <span class="token variable"><span class="token variable">$(</span><span class="token function">pwd</span><span class="token variable">)</span></span>:/backup busybox <span class="token function">tar</span> xvf
-/backup/backup.tar</code></pre>
-<h2 id="错误合集"><a href="#错误合集" class="headerlink" title="错误合集"></a>错误合集</h2><ul>
-<li>错误0<br>docker下载源出错<pre class=" language-bash"><code class="language-bash">base                                                                                                                                                            <span class="token operator">|</span> 3.6 kB  00:00:00     
-http://download.docker.com/linux/centos/docker-ce.rep/repodata/repomd.xml: <span class="token punctuation">[</span>Errno 14<span class="token punctuation">]</span> HTTPS Error 404 - Not Found
-Trying other mirror.
-To address this issue please refer to the below wiki article  </code></pre>
-这是因为添加源是国外源，有时候网络不对的情况下无法安装，建议添加阿里源<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 删除仓库内的国外源</span>
-<span class="token function">cd</span> /etc/yum.repos.d/
-<span class="token function">rm</span> -rf docker-ce.repo download.docker.com_linux_centos_docker-ce.rep.repo 
-<span class="token comment" spellcheck="true"># 添加阿里源</span>
-<span class="token function">sudo</span> yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo</code></pre>
-</li>
-<li>错误1<br>没有开启docker服务<pre class=" language-bash"><code class="language-bash">Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docker daemon running 
-</code></pre>
-</li>
-</ul>
-<h1 id="检测"><a href="#检测" class="headerlink" title="检测"></a>检测</h1><p>root:~# systemctl status docker</p>
-<ul>
-<li>docker.service - Docker Application Container Engine<br> Loaded: loaded (/usr/lib/systemd/system/docker.service; disabled; vendor preset: disabled)<br> Active: inactive (dead)<br>   Docs: <a target="_blank" rel="noopener" href="http://docs.docker.com/">http://docs.docker.com</a></li>
-</ul>
-<h1 id="开启服务"><a href="#开启服务" class="headerlink" title="开启服务"></a>开启服务</h1><p>systemctl start docker</p>
-<pre><code>
-- 错误2
-使用当前镜像的容器正在运行
-```bash
-root:~# docker rmi ccc6e87d482
-Error response from daemon: conflict: unable to delete ccc6e87d482b (must be forced) - image is referenced in multiple repositories
+<div class="code-wrapper"><pre class=" language-hljs bash">sudo docker run --volumes-from dbdata2 -v $(<span class="hljs-built_in"><code class="language-hljs bash">sudo docker run --volumes-from dbdata2 -v $(<span class="hljs-built_in">pwd</span>):/backup busybox tar xvf
+/backup/backup.tar</code></pre></div>
 
-# 强制删除
+
+<h2 id="错误合集"><a href="#错误合集" class="headerlink" title="错误合集"></a>错误合集</h2><ul>
+<li><p>错误0<br>docker下载源出错</p>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">base                                                                                                                                                            | 3.6 kB  00:00:00     
+http://download.docker.com/linux/centos/docker-ce.rep/repodata/repomd.xml: [Errno 14] HTTPS Error 404 - Not Found
+Trying other mirror.
+To address this issue please refer to the below wiki article</code></pre></div>
+<p>这是因为添加源是国外源，有时候网络不对的情况下无法安装，建议添加阿里源</p>
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 删除仓库内的国外源</span>
+<span class="hljs-built_in">cd</span> /etc/yum.repos.d/
+rm -rf docker-ce.repo download.docker.com_linux_centos_docker-ce.rep.repo 
+<span class="hljs-comment"># 添加阿里源</span>
+sudo yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo</code></pre></div></li>
+<li><p>错误1<br>没有开启docker服务</p>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docker daemon running 
+
+<span class="hljs-comment"># 检测</span>
+root:~<span class="hljs-comment"># systemctl status docker</span>
+* docker.service - Docker Application Container Engine
+   Loaded: loaded (/usr/lib/systemd/system/docker.service; disabled; vendor preset: disabled)
+   Active: inactive (dead)
+     Docs: http://docs.docker.com
+
+<span class="hljs-comment"># 开启服务</span>
+systemctl start docker</code></pre></div>
+</li>
+<li><p>错误2<br>使用当前镜像的容器正在运行</p>
+<div class="code-wrapper"><pre class=" language-hljs bash">root:~<span class="hljs-comment"><code class="language-hljs bash">root:~<span class="hljs-comment"># docker rmi ccc6e87d482</span>
+Error response from daemon: conflict: unable to delete ccc6e87d482b (must be forced) - image is referenced <span class="hljs-keyword">in</span> multiple repositories
+
+<span class="hljs-comment"># 强制删除</span>
 docker rmi -f ccc6e87d482
 
-# 不建议强制删除，应当先删除所有依赖于该镜像的容器，再删除镜像</code></pre>
+<span class="hljs-comment"># 不建议强制删除，应当先删除所有依赖于该镜像的容器，再删除镜像</span></code></pre></div>
+
+</li>
+</ul>
 
             </div>
             <hr>
@@ -624,7 +642,7 @@ docker rmi -f ccc6e87d482
 
   <footer class="text-center mt-5 py-3">
   <div class="footer-content">
-     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+     <a rel="nofollow noopener"><span>Hzjsea</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
   </div>
   
 

@@ -67,7 +67,7 @@
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
-       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
+       href="/">&nbsp;<strong>hzjsea</strong>&nbsp;</a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
             data-target="#navbarSupportedContent"
@@ -184,7 +184,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      2.4k 字
+      1.1k 字
     </span>
   
 
@@ -194,7 +194,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      42
+      18
        分钟
     </span>
   
@@ -249,72 +249,105 @@
 
 <h1 id="docker-k8s"><a href="#docker-k8s" class="headerlink" title="docker-k8s"></a>docker-k8s</h1><h2 id="安装k8s及其管理工具"><a href="#安装k8s及其管理工具" class="headerlink" title="安装k8s及其管理工具"></a>安装k8s及其管理工具</h2><p>一些需要准备的环境</p>
 <ul>
-<li>关闭防火墙<pre class=" language-bash"><code class="language-bash">systemctl stop firewalld
-systemctl disable firewalld</code></pre>
-</li>
-<li>禁用selinux<pre class=" language-bash"><code class="language-bash">setenforce 0
-<span class="token function">sed</span> -i <span class="token string">'s/SELINUX=permissive/SELINUX=disabled/'</span> /etc/sysconfig/selinux </code></pre>
-</li>
-<li>关闭swap<pre class=" language-bash"><code class="language-bash">swapoff -a
-<span class="token keyword">echo</span> <span class="token string">"vm.swappiness = 0"</span><span class="token operator">>></span> /etc/sysctl.conf  </code></pre>
-安装k8s <pre class=" language-bash"><code class="language-bash">
-</code></pre>
+<li>关闭防火墙<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">systemctl stop firewalld
+systemctl <span class="hljs-built_in">disable</span> firewalld</code></pre></div></li>
+<li>禁用selinux<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">setenforce 0
+sed -i <span class="hljs-string">&#x27;s/SELINUX=permissive/SELINUX=disabled/&#x27;</span> /etc/sysconfig/selinux</code></pre></div></li>
+<li>关闭swap<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">swapoff -a
+<span class="hljs-built_in">echo</span> <span class="hljs-string">"vm.swappiness = 0"</span>>> /etc/sysctl.conf</code></pre></div>
+安装k8s <div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">
+
+<span class="hljs-comment"># 国外镜像</span>
+<span class="hljs-comment"># 这里的eof会被屏蔽掉所以我在这里加了注释。让他能够完整的显示</span>
+<span class="hljs-comment"># cat << EOF > /etc/yum.repos.d/kubernetes.repo</span>
+[kubernetes]
+name=Kubernetes
+baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+enabled=1
+gpgcheck=1
+repo_gpgcheck=1
+gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg
+        https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+EOF
+
+<span class="hljs-comment"># 国内镜像</span>
+<span class="hljs-comment"># cat <<EOF > /etc/yum.repos.d/kubernetes.repo</span>
+[kubernetes]
+name=Kubernetes
+baseurl=https://mirrors.aliyun.com/kubernetes/yum/repos/kubernetes-el7-x86_64/
+enabled=1
+gpgcheck=1
+repo_gpgcheck=1
+gpgkey=https://mirrors.aliyun.com/kubernetes/yum/doc/yum-key.gpg https://mirrors.aliyun.com/kubernetes/yum/doc/rpm-package-key.gpg
+EOF
+
+<span class="hljs-comment"># 测试安装地址是否可以使用</span>
+curl https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+
+<span class="hljs-comment"># 安装</span>
+yum makecache fast
+yum install -y kubelet kubeadm kubectl</code></pre></div>
+
 </li>
 </ul>
-<h1 id="国外镜像"><a href="#国外镜像" class="headerlink" title="国外镜像"></a>国外镜像</h1><h1 id="这里的eof会被屏蔽掉所以我在这里加了注释。让他能够完整的显示"><a href="#这里的eof会被屏蔽掉所以我在这里加了注释。让他能够完整的显示" class="headerlink" title="这里的eof会被屏蔽掉所以我在这里加了注释。让他能够完整的显示"></a>这里的eof会被屏蔽掉所以我在这里加了注释。让他能够完整的显示</h1><h1 id="cat-lt-lt-EOF-gt-etc-yum-repos-d-kubernetes-repo"><a href="#cat-lt-lt-EOF-gt-etc-yum-repos-d-kubernetes-repo" class="headerlink" title="cat &lt;&lt; EOF &gt; /etc/yum.repos.d/kubernetes.repo"></a>cat &lt;&lt; EOF &gt; /etc/yum.repos.d/kubernetes.repo</h1><p>[kubernetes]<br>name=Kubernetes<br>baseurl=<a target="_blank" rel="noopener" href="https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64">https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64</a><br>enabled=1<br>gpgcheck=1<br>repo_gpgcheck=1<br>gpgkey=<a target="_blank" rel="noopener" href="https://packages.cloud.google.com/yum/doc/yum-key.gpg">https://packages.cloud.google.com/yum/doc/yum-key.gpg</a><br>        <a target="_blank" rel="noopener" href="https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg">https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg</a><br>EOF</p>
-<h1 id="国内镜像"><a href="#国内镜像" class="headerlink" title="国内镜像"></a>国内镜像</h1><h1 id="cat-lt-etc-yum-repos-d-kubernetes-repo"><a href="#cat-lt-etc-yum-repos-d-kubernetes-repo" class="headerlink" title="cat &lt; /etc/yum.repos.d/kubernetes.repo"></a>cat &lt;<EOF > /etc/yum.repos.d/kubernetes.repo</h1><p>[kubernetes]<br>name=Kubernetes<br>baseurl=<a target="_blank" rel="noopener" href="https://mirrors.aliyun.com/kubernetes/yum/repos/kubernetes-el7-x86_64/">https://mirrors.aliyun.com/kubernetes/yum/repos/kubernetes-el7-x86_64/</a><br>enabled=1<br>gpgcheck=1<br>repo_gpgcheck=1<br>gpgkey=<a target="_blank" rel="noopener" href="https://mirrors.aliyun.com/kubernetes/yum/doc/yum-key.gpg">https://mirrors.aliyun.com/kubernetes/yum/doc/yum-key.gpg</a> <a target="_blank" rel="noopener" href="https://mirrors.aliyun.com/kubernetes/yum/doc/rpm-package-key.gpg">https://mirrors.aliyun.com/kubernetes/yum/doc/rpm-package-key.gpg</a><br>EOF</p>
-<h1 id="测试安装地址是否可以使用"><a href="#测试安装地址是否可以使用" class="headerlink" title="测试安装地址是否可以使用"></a>测试安装地址是否可以使用</h1><p>curl <a target="_blank" rel="noopener" href="https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64">https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64</a></p>
-<h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><p>yum makecache fast<br>yum install -y kubelet kubeadm kubectl</p>
-<pre><code>
-## k8s单节点环境 minikube
-1. 检查Linux是否支持虚拟化
-```bash
-grep -E --color &#39;vmx|svm&#39; /proc/cpuinfo
+<h2 id="k8s单节点环境-minikube"><a href="#k8s单节点环境-minikube" class="headerlink" title="k8s单节点环境 minikube"></a>k8s单节点环境 minikube</h2><ol>
+<li>检查Linux是否支持虚拟化<div class="code-wrapper"><pre class=" language-hljs bash">grep -E --color <span class="hljs-string"><code class="language-hljs bash">grep -E --color <span class="hljs-string">&#x27;vmx|svm&#x27;</span> /proc/cpuinfo
 
-# 有两种情况
-# 如果不支持虚拟化则显示为空
-# 如果支持虚拟化则会显示具体内容，如下
-[root@work196 ~]# grep -E --color &#39;vmx|svm&#39; /proc/cpuinfo
+<span class="hljs-comment"># 有两种情况</span>
+<span class="hljs-comment"># 如果不支持虚拟化则显示为空</span>
+<span class="hljs-comment"># 如果支持虚拟化则会显示具体内容，如下</span>
+[root@work196 ~]<span class="hljs-comment"># grep -E --color &#x27;vmx|svm&#x27; /proc/cpuinfo</span>
 flags           : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc arch_perfmo
-n pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf eagerfpu pni pclmulqdq dtes64 monitor ds_cpl  ------&gt; here   -----&gt;  vmx &lt;------- smx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc
+n pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf eagerfpu pni pclmulqdq dtes64 monitor ds_cpl  ------> here   ----->  vmx <------- smx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc
 _deadline_timer aes xsave avx f16c rdrand lahf_lm abm epb invpcid_single ssbd ibrs ibpb stibp tpr_shadow vnmi flexpriority ept vpid fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid xsaveo
 pt dtherm ida arat pln pts md_clear spec_ctrl intel_stibp flush_l1d
-</code></pre>
-<ol start="2">
-<li>在linux上直接安装minikube<pre class=" language-bash"><code class="language-bash">curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 \
-<span class="token operator">&amp;&amp;</span> <span class="token function">chmod</span> +x minikube</code></pre>
-</li>
-<li>启动minikube创建一个k8s单节点集群<pre class=" language-bash"><code class="language-bash">minikube start <span class="token comment" spellcheck="true"># 这里可能会出现一个问题， 没有指定虚拟机，</span>
-<span class="token punctuation">[</span>root@ops ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># minikube start</span>
+</code></pre></div></li>
+<li>在linux上直接安装minikube<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 \
+  && chmod +x minikube</code></pre></div></li>
+<li>启动minikube创建一个k8s单节点集群<div class="code-wrapper"><pre class=" language-hljs bash">minikube start <span class="hljs-comment"><code class="language-hljs bash">minikube start <span class="hljs-comment"># 这里可能会出现一个问题， 没有指定虚拟机，</span>
+[root@ops ~]<span class="hljs-comment"># minikube start</span>
 😄  minikube v1.7.3 on Centos 7.2.1511
 💣  Unable to determine a default driver to use. Try specifying --vm-driver, or see https://minikube.sigs.k8s.io/docs/st
-</code></pre>
+
+<span class="hljs-comment"># 解决方法:</span>
+minikube start --vm-driver=none
+[root@ops ~]<span class="hljs-comment"># minikube start --vm-driver=none</span>
+😄  minikube v1.7.3 on Centos 7.2.1511
+   Using the none driver based on user configuration
+🤹  Running on localhost (CPUs=2, Memory=1989MB, Disk=20462MB) ...
+ℹ️    OS release is CentOS Linux 7 (Core)
+🐳  Preparing Kubernetes v1.17.3 on Docker 19.03.6 ...
+💾  Downloading kubectl v1.17.3
+💾  Downloading kubeadm v1.17.3
+💾  Downloading kubelet v1.17.3
+🚀  Launching Kubernetes ...
+...
+⚠️  The <span class="hljs-string">&#x27;none&#x27;</span> driver provides limited isolation and may reduce system security and reliability.
+⚠️  For more information, see:
+👉  https://minikube.sigs.k8s.io/docs/reference/drivers/none/</code></pre></div>
+
 </li>
 </ol>
-<h1 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法:"></a>解决方法:</h1><p>minikube start –vm-driver=none<br>[root@ops ~]# minikube start –vm-driver=none<br>😄  minikube v1.7.3 on Centos 7.2.1511<br>   Using the none driver based on user configuration<br>🤹  Running on localhost (CPUs=2, Memory=1989MB, Disk=20462MB) …<br>ℹ️    OS release is CentOS Linux 7 (Core)<br>🐳  Preparing Kubernetes v1.17.3 on Docker 19.03.6 …<br>💾  Downloading kubectl v1.17.3<br>💾  Downloading kubeadm v1.17.3<br>💾  Downloading kubelet v1.17.3<br>🚀  Launching Kubernetes …<br>…<br>⚠️  The ‘none’ driver provides limited isolation and may reduce system security and reliability.<br>⚠️  For more information, see:<br>👉  <a target="_blank" rel="noopener" href="https://minikube.sigs.k8s.io/docs/reference/drivers/none/">https://minikube.sigs.k8s.io/docs/reference/drivers/none/</a></p>
-<pre><code>
-### 可能会出现的错误
-```bash
-[root@ops ~]# minikube start --vm-driver=none
+<h3 id="可能会出现的错误"><a href="#可能会出现的错误" class="headerlink" title="可能会出现的错误"></a>可能会出现的错误</h3><div class="code-wrapper"><pre class=" language-hljs bash">[root@ops ~]<span class="hljs-comment"><code class="language-hljs bash">[root@ops ~]<span class="hljs-comment"># minikube start --vm-driver=none</span>
 😄  minikube v1.7.3 on Centos 7.2.1511
 ✨  Using the none driver based on user configuration
 ⌛  Reconfiguring existing host ...
-🔄  Starting existing none VM for &quot;minikube&quot; ...
+🔄  Starting existing none VM <span class="hljs-keyword">for</span> <span class="hljs-string">"minikube"</span> ...
 ℹ️   OS release is CentOS Linux 7 (Core)
 🐳  Preparing Kubernetes v1.17.3 on Docker 19.03.6 ...
 🚀  Launching Kubernetes ...
 
-💣  Error starting cluster: init failed. output: &quot;-- stdout --\n[init] Using Kubernetes version: v1.17.3\n[preflight] Running pre-flight checks\n\n-- /stdout --\n** stderr ** \nW0225 12:50:34
-.116477   31929 validation.go:28] Cannot validate kube-proxy config - no validator is available\nW0225 12:50:34.116548   31929 validation.go:28] Cannot validate kubelet config - no validator
-is available\n\t[WARNING Service-Docker]: docker service is not enabled, please run &#39;systemctl enable docker.service&#39;\n\t[WARNING IsDockerSystemdCheck]: detected \&quot;cgroupfs\&quot; as the Docker cg
-roup driver. The recommended driver is \&quot;systemd\&quot;. Please follow the guide at https://kubernetes.io/docs/setup/cri/\n\t[WARNING Hostname]: hostname \&quot;ops.novalocal\&quot; could not be reached\n\t
-[WARNING Hostname]: hostname \&quot;ops.novalocal\&quot;: lookup ops.novalocal on 114.114.114.114:53: no such host\n\t[WARNING Service-Kubelet]: kubelet service is not enabled, please run &#39;systemctl en
-able kubelet.service&#39;\nerror execution phase preflight: [preflight] Some fatal errors occurred:\n\t[ERROR FileContent--proc-sys-net-bridge-bridge-nf-call-iptables]: /proc/sys/net/bridge/bridg
-e-nf-call-iptables contents are not set to 1\n[preflight] If you know what you are doing, you can make a check non-fatal with `--ignore-preflight-errors=...`\nTo see the stack trace of this e
-rror execute with --v=5 or higher\n\n** /stderr **&quot;: /bin/bash -c &quot;sudo env PATH=/var/lib/minikube/binaries/v1.17.3:$PATH kubeadm init --config /var/tmp/minikube/kubeadm.yaml  --ignore-prefli
-ght-errors=DirAvailable--etc-kubernetes-manifests,DirAvailable--var-lib-minikube,DirAvailable--var-lib-minikube-etcd,FileAvailable--etc-kubernetes-manifests-kube-scheduler.yaml,FileAvailable-
--etc-kubernetes-manifests-kube-apiserver.yaml,FileAvailable--etc-kubernetes-manifests-kube-controller-manager.yaml,FileAvailable--etc-kubernetes-manifests-etcd.yaml,Port-10250,Swap,SystemVeri
-fication&quot;: exit status 1
+💣  Error starting cluster: init failed. output: <span class="hljs-string">"-- stdout --\n[init] Using Kubernetes version: v1.17.3\n[preflight] Running pre-flight checks\n\n-- /stdout --\n** stderr ** \nW0225 12:50:34</span>
+<span class="hljs-string">.116477   31929 validation.go:28] Cannot validate kube-proxy config - no validator is available\nW0225 12:50:34.116548   31929 validation.go:28] Cannot validate kubelet config - no validator</span>
+<span class="hljs-string">is available\n\t[WARNING Service-Docker]: docker service is not enabled, please run &#x27;systemctl enable docker.service&#x27;\n\t[WARNING IsDockerSystemdCheck]: detected \"cgroupfs\" as the Docker cg</span>
+<span class="hljs-string">roup driver. The recommended driver is \"systemd\". Please follow the guide at https://kubernetes.io/docs/setup/cri/\n\t[WARNING Hostname]: hostname \"ops.novalocal\" could not be reached\n\t</span>
+<span class="hljs-string">[WARNING Hostname]: hostname \"ops.novalocal\": lookup ops.novalocal on 114.114.114.114:53: no such host\n\t[WARNING Service-Kubelet]: kubelet service is not enabled, please run &#x27;systemctl en</span>
+<span class="hljs-string">able kubelet.service&#x27;\nerror execution phase preflight: [preflight] Some fatal errors occurred:\n\t[ERROR FileContent--proc-sys-net-bridge-bridge-nf-call-iptables]: /proc/sys/net/bridge/bridg</span>
+<span class="hljs-string">e-nf-call-iptables contents are not set to 1\n[preflight] If you know what you are doing, you can make a check non-fatal with `--ignore-preflight-errors=...`\nTo see the stack trace of this e</span>
+<span class="hljs-string">rror execute with --v=5 or higher\n\n** /stderr **"</span>: /bin/bash -c <span class="hljs-string">"sudo env PATH=/var/lib/minikube/binaries/v1.17.3:<span class="hljs-variable">$PATH</span> kubeadm init --config /var/tmp/minikube/kubeadm.yaml  --ignore-prefli</span>
+<span class="hljs-string">ght-errors=DirAvailable--etc-kubernetes-manifests,DirAvailable--var-lib-minikube,DirAvailable--var-lib-minikube-etcd,FileAvailable--etc-kubernetes-manifests-kube-scheduler.yaml,FileAvailable-</span>
+<span class="hljs-string">-etc-kubernetes-manifests-kube-apiserver.yaml,FileAvailable--etc-kubernetes-manifests-kube-controller-manager.yaml,FileAvailable--etc-kubernetes-manifests-etcd.yaml,Port-10250,Swap,SystemVeri</span>
+<span class="hljs-string">fication"</span>: <span class="hljs-built_in">exit</span> status 1
 stdout:
 [init] Using Kubernetes version: v1.17.3
 [preflight] Running pre-flight checks
@@ -322,90 +355,92 @@ stdout:
 stderr:
 W0225 12:50:34.116477   31929 validation.go:28] Cannot validate kube-proxy config - no validator is available
 W0225 12:50:34.116548   31929 validation.go:28] Cannot validate kubelet config - no validator is available
-        [WARNING Service-Docker]: docker service is not enabled, please run &#39;systemctl enable docker.service&#39;
-        [WARNING IsDockerSystemdCheck]: detected &quot;cgroupfs&quot; as the Docker cgroup driver. The recommended driver is &quot;systemd&quot;. Please follow the guide at https://kubernetes.io/docs/setup/cri/
-        [WARNING Hostname]: hostname &quot;ops.novalocal&quot; could not be reached
-        [WARNING Hostname]: hostname &quot;ops.novalocal&quot;: lookup ops.novalocal on 114.114.114.114:53: no such host
-        [WARNING Service-Kubelet]: kubelet service is not enabled, please run &#39;systemctl enable kubelet.service&#39;
+        [WARNING Service-Docker]: docker service is not enabled, please run <span class="hljs-string">&#x27;systemctl enable docker.service&#x27;</span>
+        [WARNING IsDockerSystemdCheck]: detected <span class="hljs-string">"cgroupfs"</span> as the Docker cgroup driver. The recommended driver is <span class="hljs-string">"systemd"</span>. Please follow the guide at https://kubernetes.io/docs/setup/cri/
+        [WARNING Hostname]: hostname <span class="hljs-string">"ops.novalocal"</span> could not be reached
+        [WARNING Hostname]: hostname <span class="hljs-string">"ops.novalocal"</span>: lookup ops.novalocal on 114.114.114.114:53: no such host
+        [WARNING Service-Kubelet]: kubelet service is not enabled, please run <span class="hljs-string">&#x27;systemctl enable kubelet.service&#x27;</span>
 error execution phase preflight: [preflight] Some fatal errors occurred:
-        [ERROR FileContent--proc-sys-net-bridge-bridge-nf-call-iptables]: /proc/sys/net/bridge/bridge-nf-call-iptables contents are not set to 1
+        [ERROR FileContent--proc-sys-net-bridge-bridge-nf-call-iptables]: /proc/sys/net/bridge/bridge-nf-call-iptables contents are not <span class="hljs-built_in">set</span> to 1
 [preflight] If you know what you are doing, you can make a check non-fatal with `--ignore-preflight-errors=...`
 To see the stack trace of this error execute with --v=5 or higher
 
 
 😿  minikube is exiting due to an error. If the above message is not useful, open an issue:
-👉  https://github.com/kubernetes/minikube/issues/new/choose</code></pre>
+👉  https://github.com/kubernetes/minikube/issues/new/choose</code></pre></div>
 <p>这里报错说是/proc/sys/net/bridge/bridge-nf-call-iptables没有设置1<br>解决方法</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token keyword">echo</span> <span class="token string">"1"</span> <span class="token operator">></span> /proc/sys/net/bridge/bridge-nf-call-iptables</code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-built_in">echo</span> <span class="hljs-string"><code class="language-hljs bash"><span class="hljs-built_in">echo</span> <span class="hljs-string">"1"</span> > /proc/sys/net/bridge/bridge-nf-call-iptables</code></pre></div>
+
 <p><font color='red'>minikube搭建的单节点的过程中会需要一些时间，可能就卡着不动了</font></p>
 <p>安装完成</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span>root@ops ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># minikube start --vm-driver=none</span>
+<div class="code-wrapper"><pre class=" language-hljs bash">[root@ops ~]<span class="hljs-comment"><code class="language-hljs bash">[root@ops ~]<span class="hljs-comment"># minikube start --vm-driver=none</span>
 😄  minikube v1.7.3 on Centos 7.2.1511
 ✨  Using the none driver based on user configuration
-⌛  Reconfiguring existing host <span class="token punctuation">..</span>.
-🏃  Using the running none <span class="token string">"minikube"</span> VM <span class="token punctuation">..</span>.
-ℹ️   OS release is CentOS Linux 7 <span class="token punctuation">(</span>Core<span class="token punctuation">)</span>
-🐳  Preparing Kubernetes v1.17.3 on Docker 19.03.6 <span class="token punctuation">..</span>.
-🚀  Launching Kubernetes <span class="token punctuation">..</span>.
+⌛  Reconfiguring existing host ...
+🏃  Using the running none <span class="hljs-string">"minikube"</span> VM ...
+ℹ️   OS release is CentOS Linux 7 (Core)
+🐳  Preparing Kubernetes v1.17.3 on Docker 19.03.6 ...
+🚀  Launching Kubernetes ...
 
 🌟  Enabling addons: default-storageclass, storage-provisioner
-🤹  Configuring local host environment <span class="token punctuation">..</span>.
+🤹  Configuring <span class="hljs-built_in">local</span> host environment ...
 
-⚠️  The <span class="token string">'none'</span> driver provides limited isolation and may reduce system security and reliability.
-⚠️  For <span class="token function">more</span> information, see:
+⚠️  The <span class="hljs-string">&#x27;none&#x27;</span> driver provides limited isolation and may reduce system security and reliability.
+⚠️  For more information, see:
 👉  https://minikube.sigs.k8s.io/docs/reference/drivers/none/
 
-⚠️  kubectl and minikube configuration will be stored <span class="token keyword">in</span> /root
+⚠️  kubectl and minikube configuration will be stored <span class="hljs-keyword">in</span> /root
 ⚠️  To use kubectl or minikube commands as your own user, you may need to relocate them. For example, to overwrite your own settings, run:
 
-    ▪ <span class="token function">sudo</span> <span class="token function">mv</span> /root/.kube /root/.minikube <span class="token variable">$HOME</span>
-    ▪ <span class="token function">sudo</span> <span class="token function">chown</span> -R <span class="token variable">$USER</span> <span class="token variable">$HOME</span>/.kube <span class="token variable">$HOME</span>/.minikube
+    ▪ sudo mv /root/.kube /root/.minikube <span class="hljs-variable">$HOME</span>
+    ▪ sudo chown -R <span class="hljs-variable">$USER</span> <span class="hljs-variable">$HOME</span>/.kube <span class="hljs-variable">$HOME</span>/.minikube
 
-💡  This can also be <span class="token keyword">done</span> automatically by setting the <span class="token function">env</span> var CHANGE_MINIKUBE_NONE_USER<span class="token operator">=</span>true
-🏄  Done<span class="token operator">!</span> kubectl is now configured to use <span class="token string">"minikube"</span></code></pre>
+💡  This can also be <span class="hljs-keyword">done</span> automatically by setting the env var CHANGE_MINIKUBE_NONE_USER=<span class="hljs-literal">true</span>
+🏄  Done! kubectl is now configured to use <span class="hljs-string">"minikube"</span></code></pre></div>
+
 <p><font color='red'>使用minikub ssh 进入容器，如果你是在Linux机器上的还，是无法使用minikub ssh 登陆的，因为你已经在minikue节点上了</font></p>
 <h2 id="使用k8s搭建多节点集群"><a href="#使用k8s搭建多节点集群" class="headerlink" title="使用k8s搭建多节点集群"></a>使用k8s搭建多节点集群</h2><p>机器分配<br>10.0.6.55 master<br>10.0.5.233 node1<br>10.0.5.196 node2</p>
 <p>kubeadm init on master node</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token function">sudo</span> kubeadm init --pod-network-cidr 172.100.0.0/16 --apiserver-advertise-address 192.168.205.120  <span class="token comment" spellcheck="true"># 192.168.205.120 is master node ip</span>
+<div class="code-wrapper"><pre class=" language-hljs bash">sudo kubeadm init --pod-network-cidr 172.100.0.0/16 --apiserver-advertise-address 192.168.205.120  <span class="hljs-comment"><code class="language-hljs bash">sudo kubeadm init --pod-network-cidr 172.100.0.0/16 --apiserver-advertise-address 192.168.205.120  <span class="hljs-comment"># 192.168.205.120 is master node ip</span>
 
-<span class="token comment" spellcheck="true"># result</span>
-<span class="token punctuation">[</span>addons<span class="token punctuation">]</span> Applied essential addon: CoreDNS
-<span class="token punctuation">[</span>addons<span class="token punctuation">]</span> Applied essential addon: kube-proxy
+<span class="hljs-comment"># result</span>
+[addons] Applied essential addon: CoreDNS
+[addons] Applied essential addon: kube-proxy
 
-Your Kubernetes control-plane has initialized successfully<span class="token operator">!</span>
+Your Kubernetes control-plane has initialized successfully!
 
 To start using your cluster, you need to run the following as a regular user:
 
-  <span class="token function">mkdir</span> -p <span class="token variable">$HOME</span>/.kube
-  <span class="token function">sudo</span> <span class="token function">cp</span> -i /etc/kubernetes/admin.conf <span class="token variable">$HOME</span>/.kube/config
-  <span class="token function">sudo</span> <span class="token function">chown</span> <span class="token variable"><span class="token variable">$(</span><span class="token function">id</span> -u<span class="token variable">)</span></span><span class="token keyword">:</span><span class="token variable"><span class="token variable">$(</span><span class="token function">id</span> -g<span class="token variable">)</span></span> <span class="token variable">$HOME</span>/.kube/config
+  mkdir -p <span class="hljs-variable">$HOME</span>/.kube
+  sudo cp -i /etc/kubernetes/admin.conf <span class="hljs-variable">$HOME</span>/.kube/config
+  sudo chown $(id -u):$(id -g) <span class="hljs-variable">$HOME</span>/.kube/config
 
 You should now deploy a pod network to the cluster.
-Run <span class="token string">"kubectl apply -f [podnetwork].yaml"</span> with one of the options listed at:
+Run <span class="hljs-string">"kubectl apply -f [podnetwork].yaml"</span> with one of the options listed at:
   https://kubernetes.io/docs/concepts/cluster-administration/addons/
 
-Then you can <span class="token function">join</span> any number of worker nodes by running the following on each as root:
+Then you can join any number of worker nodes by running the following on each as root:
 
-kubeadm <span class="token function">join</span> 10.0.6.55:6443 --token dbw4qc.ey3dpkozmv8yb15t \
-    --discovery-token-ca-cert-hash sha256:b1c47bc371709d90c6c381e6f3c7c9c034a7dcbfc585b18260016d480aab24a8</code></pre>
+kubeadm join 10.0.6.55:6443 --token dbw4qc.ey3dpkozmv8yb15t \
+    --discovery-token-ca-cert-hash sha256:b1c47bc371709d90c6c381e6f3c7c9c034a7dcbfc585b18260016d480aab24a8</code></pre></div>
 <p>继续运行</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token function">mkdir</span> -p <span class="token variable">$HOME</span>/.kube
-  <span class="token function">sudo</span> <span class="token function">cp</span> -i /etc/kubernetes/admin.conf <span class="token variable">$HOME</span>/.kube/config
-  <span class="token function">sudo</span> <span class="token function">chown</span> <span class="token variable"><span class="token variable">$(</span><span class="token function">id</span> -u<span class="token variable">)</span></span><span class="token keyword">:</span><span class="token variable"><span class="token variable">$(</span><span class="token function">id</span> -g<span class="token variable">)</span></span> <span class="token variable">$HOME</span>/.kube/config</code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash">mkdir -p <span class="hljs-variable"><code class="language-hljs bash">mkdir -p <span class="hljs-variable">$HOME</span>/.kube
+  sudo cp -i /etc/kubernetes/admin.conf <span class="hljs-variable">$HOME</span>/.kube/config
+  sudo chown $(id -u):$(id -g) <span class="hljs-variable">$HOME</span>/.kube/config</code></pre></div>
 <p>检查pod </p>
-<pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span>root@manager55 ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># kubectl get pod --all-namespaces</span>
+<div class="code-wrapper"><pre class=" language-hljs bash">[root@manager55 ~]<span class="hljs-comment"><code class="language-hljs bash">[root@manager55 ~]<span class="hljs-comment"># kubectl get pod --all-namespaces</span>
 NAMESPACE     NAME                                READY   STATUS    RESTARTS   AGE
-kube-system   coredns-6955765f44-2d7b4            0/1     Pending   0          7m34s   <span class="token comment" spellcheck="true"># 这两个是网络插件后面安装</span>
+kube-system   coredns-6955765f44-2d7b4            0/1     Pending   0          7m34s   <span class="hljs-comment"># 这两个是网络插件后面安装</span>
 kube-system   coredns-6955765f44-hmg9g            0/1     Pending   0          7m34s
 kube-system   etcd-manager55                      1/1     Running   0          7m49s
 kube-system   kube-apiserver-manager55            1/1     Running   0          7m49s
 kube-system   kube-controller-manager-manager55   1/1     Running   0          7m49s
 kube-system   kube-proxy-v8dxm                    1/1     Running   0          7m34s
-kube-system   kube-scheduler-manager55            1/1     Running   0          7m49s</code></pre>
+kube-system   kube-scheduler-manager55            1/1     Running   0          7m49s</code></pre></div>
 <p>安装网络插件</p>
-<pre class=" language-bash"><code class="language-bash">kubectl apply -f <span class="token string">"https://cloud.weave.works/k8s/net?k8s-version=<span class="token variable"><span class="token variable">$(</span>kubectl version <span class="token operator">|</span> base64 <span class="token operator">|</span> <span class="token function">tr</span> -d '\n'<span class="token variable">)</span></span>"</span> </code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash">kubectl apply -f <span class="hljs-string">&quot;https://cloud.weave.works/k8s/net?k8s-version=<span class="hljs-subst"><code class="language-hljs bash">kubectl apply -f <span class="hljs-string">&quot;https://cloud.weave.works/k8s/net?k8s-version=<span class="hljs-subst">$(kubectl version | base64 | tr -d &#x27;\n&#x27;)</span>"</span></code></pre></div>
 <p>检查网络插件</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span>root@manager55 ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># kubectl get pod --all-namespaces</span>
+<div class="code-wrapper"><pre class=" language-hljs bash">[root@manager55 ~]<span class="hljs-comment"><code class="language-hljs bash">[root@manager55 ~]<span class="hljs-comment"># kubectl get pod --all-namespaces</span>
 NAMESPACE     NAME                                READY   STATUS    RESTARTS   AGE
 kube-system   coredns-6955765f44-2d7b4            1/1     Running   0          9m1s
 kube-system   coredns-6955765f44-hmg9g            1/1     Running   0          9m1s
@@ -414,84 +449,89 @@ kube-system   kube-apiserver-manager55            1/1     Running   0          9
 kube-system   kube-controller-manager-manager55   1/1     Running   0          9m16s
 kube-system   kube-proxy-v8dxm                    1/1     Running   0          9m1s
 kube-system   kube-scheduler-manager55            1/1     Running   0          9m16s
-kube-system   weave-net-bf5jp                     2/2     Running   0          42s </code></pre>
+kube-system   weave-net-bf5jp                     2/2     Running   0          42s</code></pre></div>
+
 <p>将其他node机器加入到master主机群下面</p>
-<pre class=" language-bash"><code class="language-bash">kubeadm <span class="token function">join</span> 10.0.6.55:6443 --token dbw4qc.ey3dpkozmv8yb15t \
-    --discovery-token-ca-cert-hash sha256:b1c47bc371709d90c6c381e6f3c7c9c034a7dcbfc585b18260016d480aab24a8 </code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">kubeadm join 10.0.6.55:6443 --token dbw4qc.ey3dpkozmv8yb15t \
+    --discovery-token-ca-cert-hash sha256:b1c47bc371709d90c6c381e6f3c7c9c034a7dcbfc585b18260016d480aab24a8</code></pre></div>
 <p>在master主机上查看node节点加入情况</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 加入node 前</span>
-<span class="token punctuation">[</span>root@manager55 ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># kubectl get nodes</span>
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 加入node 前</span>
+[root@manager55 ~]<span class="hljs-comment"># kubectl get nodes</span>
 NAME        STATUS   ROLES    AGE   VERSION
 manager55   Ready    master   11m   v1.17.2 
-<span class="token comment" spellcheck="true"># 加入之后</span>
-<span class="token punctuation">[</span>root@manager55 ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># kubectl get nodes</span>
+<span class="hljs-comment"># 加入之后</span>
+[root@manager55 ~]<span class="hljs-comment"># kubectl get nodes</span>
 NAME        STATUS   ROLES    AGE   VERSION
 manager55   Ready    master   60m   v1.17.2
-work196     Ready    <span class="token operator">&lt;</span>none<span class="token operator">></span>   34m   v1.17.2
-work233     Ready    <span class="token operator">&lt;</span>none<span class="token operator">></span>   15m   v1.17.2</code></pre>
+work196     Ready    <none>   34m   v1.17.2
+work233     Ready    <none>   15m   v1.17.2</code></pre></div>
+
+
 <h2 id="构建docker-k8s系统环境脚本"><a href="#构建docker-k8s系统环境脚本" class="headerlink" title="构建docker+k8s系统环境脚本"></a>构建docker+k8s系统环境脚本</h2><p><font color='red'>centos7版本</font></p>
-<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true">#/bin/sh</span>
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment">#/bin/sh</span>
 
-<span class="token comment" spellcheck="true"># install some tools</span>
-<span class="token function">sudo</span> yum <span class="token function">install</span> -y vim telnet bind-utils <span class="token function">wget</span>
+<span class="hljs-comment"># install some tools</span>
+sudo yum install -y vim telnet bind-utils wget
 
 
-<span class="token comment" spellcheck="true"># install docker</span>
+<span class="hljs-comment"># install docker</span>
 curl -fsSL get.docker.com -o get-docker.sh
 sh get-docker.sh
 
-<span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token operator">!</span> <span class="token variable"><span class="token variable">$(</span>getent group docker<span class="token variable">)</span></span> <span class="token punctuation">]</span><span class="token punctuation">;</span>
-then·
-    <span class="token function">sudo</span> <span class="token function">groupadd</span> docker<span class="token punctuation">;</span>
-<span class="token keyword">else</span>
-    <span class="token keyword">echo</span> <span class="token string">"docker user group already exists"</span>
-<span class="token keyword">fi</span>
+<span class="hljs-keyword">if</span> [ ! $(getent group docker) ];
+<span class="hljs-keyword">then</span>·
+    sudo groupadd docker;
+<span class="hljs-keyword">else</span>
+    <span class="hljs-built_in">echo</span> <span class="hljs-string">"docker user group already exists"</span>
+<span class="hljs-keyword">fi</span>
 
-<span class="token function">sudo</span> gpasswd -a <span class="token variable">$USER</span> docker
-<span class="token function">sudo</span> systemctl restart docker
+sudo gpasswd -a <span class="hljs-variable">$USER</span> docker
+sudo systemctl restart docker
 
-<span class="token function">rm</span> -rf get-docker.sh
+rm -rf get-docker.sh
 
-<span class="token comment" spellcheck="true"># open password auth for backup if ssh key doesn't work, bydefault, username=vagrant password=vagrant</span>
-<span class="token function">sudo</span> <span class="token function">sed</span> -i <span class="token string">'s/PasswordAuthentication no/PasswordAuthentication yes/g'</span> /etc/ssh/sshd_config
-<span class="token function">sudo</span> systemctl restart sshd
+<span class="hljs-comment"># open password auth for backup if ssh key doesn&#x27;t work, bydefault, username=vagrant password=vagrant</span>
+sudo sed -i <span class="hljs-string">&#x27;s/PasswordAuthentication no/PasswordAuthentication yes/g&#x27;</span> /etc/ssh/sshd_config
+sudo systemctl restart sshd
 
-<span class="token function">sudo</span> <span class="token function">bash</span> -c <span class="token string">'cat &lt;&lt;EOF > /etc/yum.repos.d/kubernetes.repo
-[kubernetes]
-name=Kubernetes
-baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
-enabled=1
-gpgcheck=1
-repo_gpgcheck=1
-gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
-EOF'</span>
+sudo bash -c <span class="hljs-string">&#x27;cat <<EOF > /etc/yum.repos.d/kubernetes.repo</span>
+<span class="hljs-string">[kubernetes]</span>
+<span class="hljs-string">name=Kubernetes</span>
+<span class="hljs-string">baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64</span>
+<span class="hljs-string">enabled=1</span>
+<span class="hljs-string">gpgcheck=1</span>
+<span class="hljs-string">repo_gpgcheck=1</span>
+<span class="hljs-string">gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg</span>
+<span class="hljs-string">EOF&#x27;</span>
 
-<span class="token comment" spellcheck="true"># 也可以尝试国内的源 http://ljchen.net/2018/10/23/%E5%9F%BA%E4%BA%8E%E9%98%BF%E9%87%8C%E4%BA%91%E9%95%9C%E5%83%8F%E7%AB%99%E5%AE%89%E8%A3%85ku⟫</span>
+<span class="hljs-comment"># 也可以尝试国内的源 http://ljchen.net/2018/10/23/%E5%9F%BA%E4%BA%8E%E9%98%BF%E9%87%8C%E4%BA%91%E9%95%9C%E5%83%8F%E7%AB%99%E5%AE%89%E8%A3%85ku⟫</span>
 
-<span class="token function">sudo</span> setenforce 0
+sudo setenforce 0
 
-<span class="token comment" spellcheck="true"># install kubeadm, kubectl, and kubelet.</span>
-<span class="token function">sudo</span> yum <span class="token function">install</span> -y kubelet kubeadm kubectl
+<span class="hljs-comment"># install kubeadm, kubectl, and kubelet.</span>
+sudo yum install -y kubelet kubeadm kubectl
 
-<span class="token function">sudo</span> <span class="token function">bash</span> -c <span class="token string">'cat &lt;&lt;EOF >  /etc/sysctl.d/k8s.conf
-net.bridge.bridge-nf-call-ip6tables = 1
-net.bridge.bridge-nf-call-iptables = 1
-net.ipv4.ip_forward=1
-EOF'</span>
-<span class="token function">sudo</span> sysctl --system
+sudo bash -c <span class="hljs-string">&#x27;cat <<EOF >  /etc/sysctl.d/k8s.conf</span>
+<span class="hljs-string">net.bridge.bridge-nf-call-ip6tables = 1</span>
+<span class="hljs-string">net.bridge.bridge-nf-call-iptables = 1</span>
+<span class="hljs-string">net.ipv4.ip_forward=1</span>
+<span class="hljs-string">EOF&#x27;</span>
+sudo sysctl --system
 
-<span class="token function">sudo</span> systemctl stop firewalld
-<span class="token function">sudo</span> systemctl disable firewalld
-<span class="token function">sudo</span> swapoff -a
+sudo systemctl stop firewalld
+sudo systemctl <span class="hljs-built_in">disable</span> firewalld
+sudo swapoff -a
 
-systemctl <span class="token function">enable</span> docker.service
-systemctl <span class="token function">enable</span> kubelet.service </code></pre>
+systemctl <span class="hljs-built_in">enable</span> docker.service
+systemctl <span class="hljs-built_in">enable</span> kubelet.service</code></pre></div>
+
+
+
 <h2 id="使用kubectl"><a href="#使用kubectl" class="headerlink" title="使用kubectl"></a>使用kubectl</h2><p>在linux下面使用</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 查看补足帮助，里面会给出一些各个环境的补足帮助</span>
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 查看补足帮助，里面会给出一些各个环境的补足帮助</span>
 kubectl  completion  -h
-<span class="token comment" spellcheck="true"># linux下的补足</span>
-<span class="token function">source</span> <span class="token operator">&lt;</span><span class="token punctuation">(</span>kubectl completion bash<span class="token punctuation">)</span></code></pre>
-
+<span class="hljs-comment"># linux下的补足</span>
+<span class="hljs-built_in">source</span> <(kubectl completion bash)</code></pre></div>
             </div>
             <hr>
             <div>
@@ -599,7 +639,7 @@ kubectl  completion  -h
 
   <footer class="text-center mt-5 py-3">
   <div class="footer-content">
-     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+     <a rel="nofollow noopener"><span>Hzjsea</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
   </div>
   
 

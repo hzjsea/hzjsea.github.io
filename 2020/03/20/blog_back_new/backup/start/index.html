@@ -67,7 +67,7 @@
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
-       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
+       href="/">&nbsp;<strong>hzjsea</strong>&nbsp;</a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
             data-target="#navbarSupportedContent"
@@ -184,7 +184,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      587 字
+      608 字
     </span>
   
 
@@ -249,140 +249,148 @@
 <h1 id="sqlalchemy"><a href="#sqlalchemy" class="headerlink" title="sqlalchemy"></a>sqlalchemy</h1><h2 id="什么是sqlalchemy"><a href="#什么是sqlalchemy" class="headerlink" title="什么是sqlalchemy"></a>什么是sqlalchemy</h2><p>sqlalchemy是一个python的orm库，用于控制数据库</p>
 <h2 id="一个完整的实例"><a href="#一个完整的实例" class="headerlink" title="一个完整的实例"></a>一个完整的实例</h2><p>从创建数据库到添加第一条数据的整个实例过程</p>
 <p><code>创建数据库表结构</code></p>
-<pre class=" language-py"><code class="language-py"># 创建数据库实例，
-# echo表示在之后对数据库的操作中是否会显示提示内容
-engine = create_engine("sqlite:///memory.db",echo=True)
-# 创建基本类 这个基本类会映射到数据库中的表
+<div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-comment"><code class="language-hljs py"><span class="hljs-comment"># 创建数据库实例，</span>
+<span class="hljs-comment"># echo表示在之后对数据库的操作中是否会显示提示内容</span>
+engine = create_engine(<span class="hljs-string">"sqlite:///memory.db"</span>,echo=<span class="hljs-literal">True</span>)
+<span class="hljs-comment"># 创建基本类 这个基本类会映射到数据库中的表</span>
 Base = declarative_base()
 
-# 所有的表都要继承Base这个类
-class User(Base):
-    # 数据库中的表名字
-    __tablename__ = 'users' # 表的名字
+<span class="hljs-comment"># 所有的表都要继承Base这个类</span>
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">User</span>(<span class="hljs-params">Base</span>):</span>
+    <span class="hljs-comment"># 数据库中的表名字</span>
+    __tablename__ = <span class="hljs-string">&#x27;users&#x27;</span> <span class="hljs-comment"># 表的名字</span>
 
-    # 定义各字段
-    # 定义方式和django中的类似
-    # Sequence('user_id_seq')这个只是针对Oracle来添加的，用来申明主键标识符，其他数据库可以删除
-    # id = Column(Integer,Sequence('user_id_seq'), primary_key=True)
-    id = Column(Integer, primary_key=True)
-    name = Column(String(50))# 定义长度
+    <span class="hljs-comment"># 定义各字段</span>
+    <span class="hljs-comment"># 定义方式和django中的类似</span>
+    <span class="hljs-comment"># Sequence(&#x27;user_id_seq&#x27;)这个只是针对Oracle来添加的，用来申明主键标识符，其他数据库可以删除</span>
+    <span class="hljs-comment"># id = Column(Integer,Sequence(&#x27;user_id_seq&#x27;), primary_key=True)</span>
+    <span class="hljs-built_in">id</span> = Column(Integer, primary_key=<span class="hljs-literal">True</span>)
+    name = Column(String(<span class="hljs-number">50</span>))<span class="hljs-comment"># 定义长度</span>
     fullname = Column(String)
     password = Column(String)
 
-   # 面向用户，最终显示
-    # def __str__(self):
-        # return self.id
-
-    # 面向调试，输出所有
-    def __repr__(self):
-        return "<User(name='%s', fullname='%s', password='%s')>" % (
+   <span class="hljs-comment"># 面向用户，最终显示</span>
+    <span class="hljs-comment"># def __str__(self):</span>
+        <span class="hljs-comment"># return self.id</span>
+    
+    <span class="hljs-comment"># 面向调试，输出所有</span>
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__repr__</span>(<span class="hljs-params">self</span>):</span>
+        <span class="hljs-keyword">return</span> <span class="hljs-string">"<User(name=&#x27;%s&#x27;, fullname=&#x27;%s&#x27;, password=&#x27;%s&#x27;)>"</span> % (
                                 self.name, self.fullname, self.password)
 
-# 上诉代码会创建的表结构为
-# Table('users', MetaData(bind=None),
-#             Column('id', Integer(), table=<users>, primary_key=True, nullable=False),
-#             Column('name', String(), table=<users>),
-#             Column('fullname', String(), table=<users>),
-#             Column('nickname', String(), table=<users>), schema=None)
+<span class="hljs-comment"># 上诉代码会创建的表结构为</span>
+<span class="hljs-comment"># Table(&#x27;users&#x27;, MetaData(bind=None),</span>
+<span class="hljs-comment">#             Column(&#x27;id&#x27;, Integer(), table=<users>, primary_key=True, nullable=False),</span>
+<span class="hljs-comment">#             Column(&#x27;name&#x27;, String(), table=<users>),</span>
+<span class="hljs-comment">#             Column(&#x27;fullname&#x27;, String(), table=<users>),</span>
+<span class="hljs-comment">#             Column(&#x27;nickname&#x27;, String(), table=<users>), schema=None)</span>
 
-# 创建表
-Base.metadata.create_all(engine)</code></pre>
+<span class="hljs-comment"># 创建表</span>
+Base.metadata.create_all(engine)</code></pre></div>
+
 <p><code>插入数据</code></p>
-<pre class=" language-py"><code class="language-py"># 建立连接
+<div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-comment"><code class="language-hljs py"><span class="hljs-comment"># 建立连接</span>
 Session = sessionmaker()
-# 绑定数据库
+<span class="hljs-comment"># 绑定数据库</span>
 Session.configure(bind=engine)
-# 实例化一个session
+<span class="hljs-comment"># 实例化一个session</span>
 session = Session()
 
 
-# session = Session.configure(bind=engine) 这样写是不行的</code></pre>
+<span class="hljs-comment"># session = Session.configure(bind=engine) 这样写是不行的</span></code></pre></div>
+
 <p><code>创建并提交数据</code></p>
-<pre class=" language-py"><code class="language-py"># 创建一个数据实例
-user_data = User(name="hzj",fullname="hzj",password="zzz")
-# 添加实例到session中,这里只是缓存到了session这个实例中
+<div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-comment"><code class="language-hljs py"><span class="hljs-comment"># 创建一个数据实例</span>
+user_data = User(name=<span class="hljs-string">"hzj"</span>,fullname=<span class="hljs-string">"hzj"</span>,password=<span class="hljs-string">"zzz"</span>)
+<span class="hljs-comment"># 添加实例到session中,这里只是缓存到了session这个实例中</span>
 session.add(user_data)
-# 提交缓存在session中的所有实例
+<span class="hljs-comment"># 提交缓存在session中的所有实例</span>
 session.commit()
 
-user_data1 = User(name="hzj",fullname="hzj",password="qqq")
+user_data1 = User(name=<span class="hljs-string">"hzj"</span>,fullname=<span class="hljs-string">"hzj"</span>,password=<span class="hljs-string">"qqq"</span>)
 session.add(user_data1)
-session.commit()</code></pre>
+session.commit()</code></pre></div>
+
 <p><code>批量添加数据</code></p>
-<pre class=" language-py"><code class="language-py">user_data_list = [
-   User(name="hzj",fullname="hzj",password="zzz"),
-   User(name="hzj",fullname="hzj",password="zzz"),
-   User(name="hzj",fullname="hzj",password="zzz"),
-   User(name="hzj",fullname="hzj",password="zzz"),
-   User(name="hzj",fullname="hzj",password="zzz")
+<div class="code-wrapper"><pre class=" language-hljs py"><code class="language-hljs py">user_data_list = [
+   User(name=<span class="hljs-string">"hzj"</span>,fullname=<span class="hljs-string">"hzj"</span>,password=<span class="hljs-string">"zzz"</span>),
+   User(name=<span class="hljs-string">"hzj"</span>,fullname=<span class="hljs-string">"hzj"</span>,password=<span class="hljs-string">"zzz"</span>),
+   User(name=<span class="hljs-string">"hzj"</span>,fullname=<span class="hljs-string">"hzj"</span>,password=<span class="hljs-string">"zzz"</span>),
+   User(name=<span class="hljs-string">"hzj"</span>,fullname=<span class="hljs-string">"hzj"</span>,password=<span class="hljs-string">"zzz"</span>),
+   User(name=<span class="hljs-string">"hzj"</span>,fullname=<span class="hljs-string">"hzj"</span>,password=<span class="hljs-string">"zzz"</span>)
 ]
 
 session.add_all(user_data_list)
-session.commit()</code></pre>
+session.commit()</code></pre></div>
+
 <p>注释:</p>
-<pre class=" language-py"><code class="language-py">for i in range(1,7):
+<div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>,<span class="hljs-number"><code class="language-hljs py"><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>,<span class="hljs-number">7</span>):
     session.add(data)
-    session.commit()</code></pre>
+    session.commit()</code></pre></div>
 <p>别想着这样去加数据 没用2333</p>
 <p><img src="http://img.noback.top/2020-03-20-10-50-34.png" srcset="/img/loading.gif" alt="2020-03-20-10-50-34"></p>
 <p><code>获取数据</code></p>
-<pre class=" language-py"><code class="language-py"># 获取数据
-get_data = session.query(User).filter_by(name="hzj").first()
-print(get_data)</code></pre>
-<h2 id="获取数据操作"><a href="#获取数据操作" class="headerlink" title="获取数据操作"></a>获取数据操作</h2><pre class=" language-py"><code class="language-py"># 获取所有内容，并按照id排序
-get_data_list = session.query(User).filter_by(name="hzj").order_by(User.id)
+<div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-comment"><code class="language-hljs py"><span class="hljs-comment"># 获取数据</span>
+get_data = session.query(User).filter_by(name=<span class="hljs-string">"hzj"</span>).first()
+print(get_data)</code></pre></div>
+
+
+<h2 id="获取数据操作"><a href="#获取数据操作" class="headerlink" title="获取数据操作"></a>获取数据操作</h2><div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-comment"><code class="language-hljs py"><span class="hljs-comment"># 获取所有内容，并按照id排序</span>
+get_data_list = session.query(User).filter_by(name=<span class="hljs-string">"hzj"</span>).order_by(User.<span class="hljs-built_in">id</span>)
 print(get_data_list)
-for i in get_data_list:
-    print("by_id:{}".format(i))
-# by_id:<User(name='hzj', fullname='hzj', password='zzz')>
-# by_id:<User(name='hzj', fullname='hzj', password='zzz')>
+<span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> get_data_list:
+    print(<span class="hljs-string">"by_id:{}"</span>.<span class="hljs-built_in">format</span>(i))
+<span class="hljs-comment"># by_id:<User(name=&#x27;hzj&#x27;, fullname=&#x27;hzj&#x27;, password=&#x27;zzz&#x27;)></span>
+<span class="hljs-comment"># by_id:<User(name=&#x27;hzj&#x27;, fullname=&#x27;hzj&#x27;, password=&#x27;zzz&#x27;)></span>
 
 
 instance_list = session.query(User)
-for i in instance_list:
-    print("User:{}".format(i))
-# User:<User(name='hzj', fullname='hzj', password='zzz')>
-# User:<User(name='hzj', fullname='hzj', password='zzz')>
-# User:<User(name='hzj', fullname='hzj', password='zzz')
-</code></pre>
-<p>在没有做限制的条件下 sqlalchemy会返回一个元组</p>
-<pre class=" language-py"><code class="language-py">instance_list = session.query(User.name,User.password)  #返回的是元组
-# ('hzj', 'zzz')
-# ('hzj', 'zzz')
-# ('hzj', 'zzz')
-for name,password in instance_list:
-    print("User_name:  {},User_password:  {}".format(name,password))
-# User_name:  hzj,User_password:  zzz
-# User_name:  hzj,User_password:  zzz
-# User_name:  hzj,User_password:  zz
-instance_list = session.query(User.name,User.password)[:2]  # 返回列表
-# instance_list = session.query(User.name,User.password).all() # 返回所有
-print(instance_list)</code></pre>
-<h3 id="给获取的字段名修改名称"><a href="#给获取的字段名修改名称" class="headerlink" title="给获取的字段名修改名称"></a>给获取的字段名修改名称</h3><pre class=" language-py"><code class="language-py">for new_name in session.query(User.name):
-    print(new_name.name) 
-# 这里的name 是我们之前创建User表时， 设定的变量名，但是在某些情况下
-# 我们需要修改这个变量名，可以使用label和alias
-# hzj
-# hzj 
-# hzj
-for new_name in session.query(User.name.label("new_name")):
-    print(new_name.new_name)
-# hzj
-# hzj
-# hzj
-</code></pre>
-<h3 id="类似sql的一些查询操作"><a href="#类似sql的一些查询操作" class="headerlink" title="类似sql的一些查询操作"></a>类似sql的一些查询操作</h3><pre class=" language-py"><code class="language-py"># 筛选字段数据
-print(session.query(User.name).filter_by(password="qqq").first())
-print(session.query(User.name).filter(User.password=="qqq").first())
-print(session.query(User.name).filter(User.password=="qqq").filter(User.fullname=="hzj").first())
-# like操作
-print(session.query(User.name).filter(User.password.like('%qq%')))
-# 不区分大小写的like操作
-print(session.query(User.name).filter(User.password.ilike('%qq%')))
-# https://docs.sqlalchemy.org/en/13/orm/tutorial.html#using-textual-sql
-支持sql的一些操作
-</code></pre>
+<span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> instance_list:
+    print(<span class="hljs-string">"User:{}"</span>.<span class="hljs-built_in">format</span>(i))
+<span class="hljs-comment"># User:<User(name=&#x27;hzj&#x27;, fullname=&#x27;hzj&#x27;, password=&#x27;zzz&#x27;)></span>
+<span class="hljs-comment"># User:<User(name=&#x27;hzj&#x27;, fullname=&#x27;hzj&#x27;, password=&#x27;zzz&#x27;)></span>
+<span class="hljs-comment"># User:<User(name=&#x27;hzj&#x27;, fullname=&#x27;hzj&#x27;, password=&#x27;zzz&#x27;)</span>
+</code></pre></div>
 
+<p>在没有做限制的条件下 sqlalchemy会返回一个元组</p>
+<div class="code-wrapper"><pre class=" language-hljs py">instance_list = session.query(User.name,User.password)  <span class="hljs-comment"><code class="language-hljs py">instance_list = session.query(User.name,User.password)  <span class="hljs-comment">#返回的是元组</span>
+<span class="hljs-comment"># (&#x27;hzj&#x27;, &#x27;zzz&#x27;)</span>
+<span class="hljs-comment"># (&#x27;hzj&#x27;, &#x27;zzz&#x27;)</span>
+<span class="hljs-comment"># (&#x27;hzj&#x27;, &#x27;zzz&#x27;)</span>
+<span class="hljs-keyword">for</span> name,password <span class="hljs-keyword">in</span> instance_list:
+    print(<span class="hljs-string">"User_name:  {},User_password:  {}"</span>.<span class="hljs-built_in">format</span>(name,password))
+<span class="hljs-comment"># User_name:  hzj,User_password:  zzz</span>
+<span class="hljs-comment"># User_name:  hzj,User_password:  zzz</span>
+<span class="hljs-comment"># User_name:  hzj,User_password:  zz</span>
+instance_list = session.query(User.name,User.password)[:<span class="hljs-number">2</span>]  <span class="hljs-comment"># 返回列表</span>
+<span class="hljs-comment"># instance_list = session.query(User.name,User.password).all() # 返回所有</span>
+print(instance_list)</code></pre></div>
+
+<h3 id="给获取的字段名修改名称"><a href="#给获取的字段名修改名称" class="headerlink" title="给获取的字段名修改名称"></a>给获取的字段名修改名称</h3><div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-keyword">for</span> new_name <span class="hljs-keyword"><code class="language-hljs py"><span class="hljs-keyword">for</span> new_name <span class="hljs-keyword">in</span> session.query(User.name):
+    print(new_name.name) 
+<span class="hljs-comment"># 这里的name 是我们之前创建User表时， 设定的变量名，但是在某些情况下</span>
+<span class="hljs-comment"># 我们需要修改这个变量名，可以使用label和alias</span>
+<span class="hljs-comment"># hzj</span>
+<span class="hljs-comment"># hzj </span>
+<span class="hljs-comment"># hzj</span>
+<span class="hljs-keyword">for</span> new_name <span class="hljs-keyword">in</span> session.query(User.name.label(<span class="hljs-string">"new_name"</span>)):
+    print(new_name.new_name)
+<span class="hljs-comment"># hzj</span>
+<span class="hljs-comment"># hzj</span>
+<span class="hljs-comment"># hzj</span>
+</code></pre></div>
+
+<h3 id="类似sql的一些查询操作"><a href="#类似sql的一些查询操作" class="headerlink" title="类似sql的一些查询操作"></a>类似sql的一些查询操作</h3><div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-comment"><code class="language-hljs py"><span class="hljs-comment"># 筛选字段数据</span>
+print(session.query(User.name).filter_by(password=<span class="hljs-string">"qqq"</span>).first())
+print(session.query(User.name).<span class="hljs-built_in">filter</span>(User.password==<span class="hljs-string">"qqq"</span>).first())
+print(session.query(User.name).<span class="hljs-built_in">filter</span>(User.password==<span class="hljs-string">"qqq"</span>).<span class="hljs-built_in">filter</span>(User.fullname==<span class="hljs-string">"hzj"</span>).first())
+<span class="hljs-comment"># like操作</span>
+print(session.query(User.name).<span class="hljs-built_in">filter</span>(User.password.like(<span class="hljs-string">&#x27;%qq%&#x27;</span>)))
+<span class="hljs-comment"># 不区分大小写的like操作</span>
+print(session.query(User.name).<span class="hljs-built_in">filter</span>(User.password.ilike(<span class="hljs-string">&#x27;%qq%&#x27;</span>)))
+<span class="hljs-comment"># https://docs.sqlalchemy.org/en/13/orm/tutorial.html#using-textual-sql</span>
+支持sql的一些操作
+</code></pre></div>
             </div>
             <hr>
             <div>
@@ -492,7 +500,7 @@ print(session.query(User.name).filter(User.password.ilike('%qq%')))
 
   <footer class="text-center mt-5 py-3">
   <div class="footer-content">
-     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+     <a rel="nofollow noopener"><span>Hzjsea</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
   </div>
   
 

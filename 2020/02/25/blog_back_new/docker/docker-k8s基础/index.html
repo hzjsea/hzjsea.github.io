@@ -67,7 +67,7 @@
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
-       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
+       href="/">&nbsp;<strong>hzjsea</strong>&nbsp;</a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
             data-target="#navbarSupportedContent"
@@ -184,7 +184,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      843 字
+      851 字
     </span>
   
 
@@ -194,7 +194,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      12
+      13
        分钟
     </span>
   
@@ -250,109 +250,115 @@
 
 <h1 id="docker-k8s基础"><a href="#docker-k8s基础" class="headerlink" title="docker-k8s基础"></a>docker-k8s基础</h1><h2 id="k8s中的最小调度单元-pod"><a href="#k8s中的最小调度单元-pod" class="headerlink" title="k8s中的最小调度单元 pod"></a>k8s中的最小调度单元 pod</h2><p><img src="http://img.noback.top/2020-02-25-15-54-43.png" srcset="/img/loading.gif" alt="2020-02-25-15-54-43"><br>在k8s里面，有很多新的技术概念，其中有一个东西被称之为pod。pod是k8s集群里面运行和部署的最小单元，它的设计理念是，一个pod可以承载多个容器，并且共享网络地址和文件系统，内部的容器通过进程间的通信相互访问。<br>也就是说在k8s中，最小的单位不再是container，而是pod<br>一个pod节点中可以有多个container容器</p>
 <h3 id="根据pods-yaml文件创建一个nginx容器"><a href="#根据pods-yaml文件创建一个nginx容器" class="headerlink" title="根据pods yaml文件创建一个nginx容器"></a>根据pods yaml文件创建一个nginx容器</h3><p>创建一个pod节点，pod.yml文件</p>
-<pre class=" language-yml"><code class="language-yml">## pod_nginx.yml
-apiVersion: v1
-kind: Pod
-metadata:
-  name: nginx
-  labels:
-  ¦ app: nginx
-spec:
-  containers:
-  - name: nginx
-  ¦ image: nginx
-  ¦ ports:
-  ¦ - containerPort: 80</code></pre>
+<div class="code-wrapper"><pre class=" language-hljs yml"><span class="hljs-comment"><code class="language-hljs yml"><span class="hljs-comment">## pod_nginx.yml</span>
+<span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span>
+<span class="hljs-attr">kind:</span> <span class="hljs-string">Pod</span>
+<span class="hljs-attr">metadata:</span>
+  <span class="hljs-attr">name:</span> <span class="hljs-string">nginx</span>
+  <span class="hljs-attr">labels:</span>
+  <span class="hljs-string">¦</span> <span class="hljs-attr">app:</span> <span class="hljs-string">nginx</span>
+<span class="hljs-attr">spec:</span>
+  <span class="hljs-attr">containers:</span>
+  <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">nginx</span>
+  <span class="hljs-string">¦</span> <span class="hljs-attr">image:</span> <span class="hljs-string">nginx</span>
+  <span class="hljs-string">¦</span> <span class="hljs-attr">ports:</span>
+  <span class="hljs-string">¦</span> <span class="hljs-bullet">-</span> <span class="hljs-attr">containerPort:</span> <span class="hljs-number">80</span></code></pre></div>
 <p>创建pod节点</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 创建节点</span>
-<span class="token punctuation">[</span>root@ops ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># kubectl create -f pod_nginx.yml</span>
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 创建节点</span>
+[root@ops ~]<span class="hljs-comment"># kubectl create -f pod_nginx.yml</span>
 pod/nginx created
-<span class="token comment" spellcheck="true"># 查看节点</span>
-<span class="token punctuation">[</span>root@ops ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># kubectl get pods</span>
+<span class="hljs-comment"># 查看节点</span>
+[root@ops ~]<span class="hljs-comment"># kubectl get pods</span>
 NAME    READY   STATUS    RESTARTS   AGE
 nginx   1/1     Running   0          2m27s
-<span class="token comment" spellcheck="true"># 查看详细信息</span>
-<span class="token punctuation">[</span>root@ops ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># kubectl get pods -o wide</span>
+<span class="hljs-comment"># 查看详细信息</span>
+[root@ops ~]<span class="hljs-comment"># kubectl get pods -o wide</span>
 NAME    READY   STATUS    RESTARTS   AGE     IP           NODE            NOMINATED NODE   READINESS GATES
-nginx   1/1     Running   0          4m44s   172.17.0.4   ops.novalocal   <span class="token operator">&lt;</span>none<span class="token operator">></span>           <span class="token operator">&lt;</span>none<span class="token operator">></span></code></pre>
+nginx   1/1     Running   0          4m44s   172.17.0.4   ops.novalocal   <none>           <none></code></pre></div>
+
 <p><font color='red'>查看容器id</font></p>
 <p>如果你本身自己就是linux机器的话，机器本身就是Minikub节点了，查看docker</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span>root@ops ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># docker ps</span>
+<div class="code-wrapper"><pre class=" language-hljs bash">[root@ops ~]<span class="hljs-comment"><code class="language-hljs bash">[root@ops ~]<span class="hljs-comment"># docker ps</span>
 CONTAINER ID        IMAGE                  COMMAND                  CREATED             STATUS              PORTS               NAMES
-be7d61df08ee        nginx                  <span class="token string">"nginx -g 'daemon of…"</span>   5 minutes ago       Up 5 minutes                            k8s_nginx_nginx_default_3a2d631d-0de5-40fc-969d-1451a2190389_0
-55af5366716a        k8s.gcr.io/pause:3.1   <span class="token string">"/pause"</span>                 5 minutes ago       Up 5 minutes                            k8s_POD_nginx_default_3a2d631d-0de5-40fc-969d-1451a2190389_0
-<span class="token comment" spellcheck="true">## 进入容器,查看网络</span>
-docker <span class="token function">exec</span> be7d61df08ee -it /bin/bash</code></pre>
-<h3 id="批量创建多个容器-ReplicaSet"><a href="#批量创建多个容器-ReplicaSet" class="headerlink" title="批量创建多个容器 ReplicaSet"></a>批量创建多个容器 ReplicaSet</h3><pre class=" language-yml"><code class="language-yml">## rs_nginx.yaml
-apiVersion: apps/v1
-kind: ReplicaSet
-metadata:
-  name: nginx
-  labels:
-  ¦ tier: frontend
-spec:
-  replicas: 3
-  selector:
-  ¦ matchLabels:
-  ¦ ¦ tier: frontend
-  template:
-  ¦ metadata:
-  ¦ ¦ name: nginx
-  ¦ ¦ labels:
-  ¦ ¦ ¦ tier: frontend
-  ¦ spec:
-  ¦ ¦ containers:
-  ¦ ¦ - name: nginx
-  ¦ ¦ ¦ image: nginx
-  ¦ ¦ ¦ ports:
-  ¦ ¦ ¦ - containerPort: 80</code></pre>
+be7d61df08ee        nginx                  <span class="hljs-string">"nginx -g &#x27;daemon of…"</span>   5 minutes ago       Up 5 minutes                            k8s_nginx_nginx_default_3a2d631d-0de5-40fc-969d-1451a2190389_0
+55af5366716a        k8s.gcr.io/pause:3.1   <span class="hljs-string">"/pause"</span>                 5 minutes ago       Up 5 minutes                            k8s_POD_nginx_default_3a2d631d-0de5-40fc-969d-1451a2190389_0
+<span class="hljs-comment">## 进入容器,查看网络</span>
+docker <span class="hljs-built_in">exec</span> be7d61df08ee -it /bin/bash</code></pre></div>
+
+<h3 id="批量创建多个容器-ReplicaSet"><a href="#批量创建多个容器-ReplicaSet" class="headerlink" title="批量创建多个容器 ReplicaSet"></a>批量创建多个容器 ReplicaSet</h3><div class="code-wrapper"><pre class=" language-hljs yml"><span class="hljs-comment"><code class="language-hljs yml"><span class="hljs-comment">## rs_nginx.yaml</span>
+<span class="hljs-attr">apiVersion:</span> <span class="hljs-string">apps/v1</span>
+<span class="hljs-attr">kind:</span> <span class="hljs-string">ReplicaSet</span>
+<span class="hljs-attr">metadata:</span>
+  <span class="hljs-attr">name:</span> <span class="hljs-string">nginx</span>
+  <span class="hljs-attr">labels:</span>
+  <span class="hljs-string">¦</span> <span class="hljs-attr">tier:</span> <span class="hljs-string">frontend</span>
+<span class="hljs-attr">spec:</span>
+  <span class="hljs-attr">replicas:</span> <span class="hljs-number">3</span>
+  <span class="hljs-attr">selector:</span>
+  <span class="hljs-string">¦</span> <span class="hljs-attr">matchLabels:</span>
+  <span class="hljs-string">¦</span> <span class="hljs-string">¦</span> <span class="hljs-attr">tier:</span> <span class="hljs-string">frontend</span>
+  <span class="hljs-attr">template:</span>
+  <span class="hljs-string">¦</span> <span class="hljs-attr">metadata:</span>
+  <span class="hljs-string">¦</span> <span class="hljs-string">¦</span> <span class="hljs-attr">name:</span> <span class="hljs-string">nginx</span>
+  <span class="hljs-string">¦</span> <span class="hljs-string">¦</span> <span class="hljs-attr">labels:</span>
+  <span class="hljs-string">¦</span> <span class="hljs-string">¦</span> <span class="hljs-string">¦</span> <span class="hljs-attr">tier:</span> <span class="hljs-string">frontend</span>
+  <span class="hljs-string">¦</span> <span class="hljs-attr">spec:</span>
+  <span class="hljs-string">¦</span> <span class="hljs-string">¦</span> <span class="hljs-attr">containers:</span>
+  <span class="hljs-string">¦</span> <span class="hljs-string">¦</span> <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">nginx</span>
+  <span class="hljs-string">¦</span> <span class="hljs-string">¦</span> <span class="hljs-string">¦</span> <span class="hljs-attr">image:</span> <span class="hljs-string">nginx</span>
+  <span class="hljs-string">¦</span> <span class="hljs-string">¦</span> <span class="hljs-string">¦</span> <span class="hljs-attr">ports:</span>
+  <span class="hljs-string">¦</span> <span class="hljs-string">¦</span> <span class="hljs-string">¦</span> <span class="hljs-bullet">-</span> <span class="hljs-attr">containerPort:</span> <span class="hljs-number">80</span></code></pre></div>
 <p>创建多节点</p>
-<pre class=" language-bash"><code class="language-bash">kubectl create -f rs_nginx.yml
-<span class="token punctuation">[</span>root@ops ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># kubectl get pods</span>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">kubectl create -f rs_nginx.yml
+[root@ops ~]<span class="hljs-comment"># kubectl get pods</span>
 NAME          READY   STATUS              RESTARTS   AGE
 nginx-df6pr   1/1     Running             0          10s
 nginx-sspd2   0/1     ContainerCreating   0          10s
-nginx-vbjs6   0/1     ContainerCreating   0          10s</code></pre>
+nginx-vbjs6   0/1     ContainerCreating   0          10s</code></pre></div>
+
 <p><font color='blue'>使用这个方法创建的内容，会维持容器的数量</font></p>
-<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true">## 删除一个容器</span>
-<span class="token punctuation">[</span>root@ops ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># kubectl delete pods nginx-df6pr</span>
-pod <span class="token string">"nginx-df6pr"</span> deleted
-<span class="token comment" spellcheck="true"># 再次查看节点中的容器时，会发现他会再生成一个容器</span>
-<span class="token punctuation">[</span>root@ops ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># kubectl get pods</span>
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment">## 删除一个容器</span>
+[root@ops ~]<span class="hljs-comment"># kubectl delete pods nginx-df6pr</span>
+pod <span class="hljs-string">"nginx-df6pr"</span> deleted
+<span class="hljs-comment"># 再次查看节点中的容器时，会发现他会再生成一个容器</span>
+[root@ops ~]<span class="hljs-comment"># kubectl get pods</span>
 NAME          READY   STATUS              RESTARTS   AGE
 nginx-pnk4c   0/1     ContainerCreating   0          4s
 nginx-sspd2   1/1     Running             0          5m51s
-nginx-vbjs6   1/1     Running             0          5m51s</code></pre>
+nginx-vbjs6   1/1     Running             0          5m51s</code></pre></div>
+
 <h3 id="横向扩展与缩放"><a href="#横向扩展与缩放" class="headerlink" title="横向扩展与缩放"></a>横向扩展与缩放</h3><p>将容器减少到2个</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span>root@ops ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># kubectl scale rs nginx --replicas=2</span>
+<div class="code-wrapper"><pre class=" language-hljs bash">[root@ops ~]<span class="hljs-comment"><code class="language-hljs bash">[root@ops ~]<span class="hljs-comment"># kubectl scale rs nginx --replicas=2</span>
 replicaset.apps/nginx scaled
-<span class="token punctuation">[</span>root@ops ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># kubectl get rs</span>
+[root@ops ~]<span class="hljs-comment"># kubectl get rs</span>
 NAME    DESIRED   CURRENT   READY   AGE
 nginx   2         2         2       21m
-<span class="token punctuation">[</span>root@ops ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># kubectl get pods</span>
+[root@ops ~]<span class="hljs-comment"># kubectl get pods</span>
 NAME          READY   STATUS    RESTARTS   AGE
 nginx-sspd2   1/1     Running   0          21m
-nginx-vbjs6   1/1     Running   0          21m</code></pre>
+nginx-vbjs6   1/1     Running   0          21m</code></pre></div>
 <p>将容器增加到5个</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span>root@ops ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># kubectl scale rs nginx --replicas=2</span>
+<div class="code-wrapper"><pre class=" language-hljs bash">[root@ops ~]<span class="hljs-comment"><code class="language-hljs bash">[root@ops ~]<span class="hljs-comment"># kubectl scale rs nginx --replicas=2</span>
 replicaset.apps/nginx scaled
-<span class="token punctuation">[</span>root@ops ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># kubectl scale rs nginx --replicas=5</span>
+[root@ops ~]<span class="hljs-comment"># kubectl scale rs nginx --replicas=5</span>
 replicaset.apps/nginx scaled
-<span class="token punctuation">[</span>root@ops ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># kubectl get pods</span>
+[root@ops ~]<span class="hljs-comment"># kubectl get pods</span>
 NAME          READY   STATUS              RESTARTS   AGE
 nginx-bnnbc   0/1     ContainerCreating   0          3s
 nginx-jh5kn   0/1     ContainerCreating   0          3s
 nginx-skhqq   0/1     ContainerCreating   0          3s
 nginx-sspd2   1/1     Running             0          23m
-nginx-vbjs6   1/1     Running             0          23m</code></pre>
+nginx-vbjs6   1/1     Running             0          23m</code></pre></div>
+
 <h2 id="kubectl的使用方法"><a href="#kubectl的使用方法" class="headerlink" title="kubectl的使用方法"></a>kubectl的使用方法</h2><p>kubectl提供了许多便捷的方法，其帮助命令也很完善，这边举例几个常用的</p>
-<pre class=" language-bash"><code class="language-bash">kubectl get pods -o wide <span class="token comment" spellcheck="true"># 查看pods节点上有哪些容器</span>
-kubectl <span class="token function">exec</span> -it CONTAINER-NAME sh <span class="token comment" spellcheck="true"># 进入第一个叫CONTAINER-NAME的容器</span>
-kubectl <span class="token function">exec</span> -it -c Container name sh <span class="token comment" spellcheck="true"># 指定容器名字进入</span>
-kubectl describe pods nginx <span class="token comment" spellcheck="true"># 查看pods节点详情</span>
-kubectl get pods <span class="token comment" spellcheck="true"># 查看有哪些节点</span>
-kubectl create -f xx.yml <span class="token comment" spellcheck="true"># 根据yml文件创建pods</span>
-kubectl delete -f xx.yml <span class="token comment" spellcheck="true"># 删除由xx.yml创建的pods</span></code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash">kubectl get pods -o wide <span class="hljs-comment"><code class="language-hljs bash">kubectl get pods -o wide <span class="hljs-comment"># 查看pods节点上有哪些容器</span>
+kubectl <span class="hljs-built_in">exec</span> -it CONTAINER-NAME sh <span class="hljs-comment"># 进入第一个叫CONTAINER-NAME的容器</span>
+kubectl <span class="hljs-built_in">exec</span> -it -c Container name sh <span class="hljs-comment"># 指定容器名字进入</span>
+kubectl describe pods nginx <span class="hljs-comment"># 查看pods节点详情</span>
+kubectl get pods <span class="hljs-comment"># 查看有哪些节点</span>
+kubectl create -f xx.yml <span class="hljs-comment"># 根据yml文件创建pods</span>
+kubectl delete -f xx.yml <span class="hljs-comment"># 删除由xx.yml创建的pods</span></code></pre></div>
+
 
             </div>
             <hr>
@@ -461,7 +467,7 @@ kubectl delete -f xx.yml <span class="token comment" spellcheck="true"># 删除�
 
   <footer class="text-center mt-5 py-3">
   <div class="footer-content">
-     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+     <a rel="nofollow noopener"><span>Hzjsea</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
   </div>
   
 

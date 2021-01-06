@@ -67,7 +67,7 @@
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
-       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
+       href="/">&nbsp;<strong>hzjsea</strong>&nbsp;</a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
             data-target="#navbarSupportedContent"
@@ -269,55 +269,50 @@
 <h2 id="镜像大小的问题"><a href="#镜像大小的问题" class="headerlink" title="镜像大小的问题"></a>镜像大小的问题</h2><p>为什么tomcat镜像大小大于centos镜像大小?<br><img src="http://img.noback.top/2020-02-05-12-13-04.png" srcset="/img/loading.gif" alt="2020-02-05-12-13-04"><br>可以通过上面docker镜像的组成、加载两方面来解释<br>同样以kernel作为最底层文件系统，在centos镜像中，上层只放了一个centos的rootfs，而tomcat需要写入多层base文件系统，比如jdk8 tomcat 等等，因此tomcat的镜像大小大于centos的镜像大小</p>
 <h2 id="镜像分层的好处"><a href="#镜像分层的好处" class="headerlink" title="镜像分层的好处"></a>镜像分层的好处</h2><p><font color='red'>共享资源</font><br>有多个镜像都从相同的base镜像构建而来，那么宿主机只需在磁盘上保存一份base镜像，同时内存中也只需加载一份base镜像，就可以为所有容器服务了，饿而且镜像的每一层都可以被共享</p>
 <h2 id="创建镜像"><a href="#创建镜像" class="headerlink" title="创建镜像"></a>创建镜像</h2><ul>
-<li>基于已有镜像的容器创建<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 提交一个容器成为一个新的镜像</span>
-docker commit <span class="token punctuation">[</span>OPTIONS<span class="token punctuation">]</span> CONTAINER <span class="token punctuation">[</span>RSPOSITORY<span class="token punctuation">[</span>:TAG<span class="token punctuation">]</span><span class="token punctuation">]</span>
-<span class="token comment" spellcheck="true"># -a; --author="" 作者信息</span>
-<span class="token comment" spellcheck="true"># -m; --message="" 提交信息</span>
-<span class="token comment" spellcheck="true"># -p; --pause=true 提交时暂停容器运行</span></code></pre>
-创建流程<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># pull 一个新的image </span>
+<li>基于已有镜像的容器创建<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 提交一个容器成为一个新的镜像</span>
+docker commit [OPTIONS] CONTAINER [RSPOSITORY[:TAG]]
+<span class="hljs-comment"># -a; --author="" 作者信息</span>
+<span class="hljs-comment"># -m; --message="" 提交信息</span>
+<span class="hljs-comment"># -p; --pause=true 提交时暂停容器运行</span></code></pre></div>
+创建流程<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># pull 一个新的image </span>
 docker pull ubuntu
-<span class="token comment" spellcheck="true"># 改变ubuntu 使其与原来image不同</span>
+<span class="hljs-comment"># 改变ubuntu 使其与原来image不同</span>
 docker run -it ccc6e87d482b /bin/bash
-<span class="token keyword">echo</span> <span class="token string">"update file "</span> <span class="token operator">></span> <span class="token function">test</span>
-<span class="token keyword">exit</span>
-<span class="token comment" spellcheck="true"># 返回前记住当前容器的名字，一般都是主机名</span>
-<span class="token comment" spellcheck="true"># 提交当前容器为新的镜像文件</span>
-docker commit -m <span class="token string">"update - add a file in ubuntu "</span> -a <span class="token string">"hzj"</span> dc758c368fda <span class="token function">test</span>
-<span class="token comment" spellcheck="true"># 查看当前镜像列表</span>
-root:~<span class="token comment" spellcheck="true"># docker images</span>
+<span class="hljs-built_in">echo</span> <span class="hljs-string">"update file "</span> > <span class="hljs-built_in">test</span>
+<span class="hljs-built_in">exit</span>
+<span class="hljs-comment"># 返回前记住当前容器的名字，一般都是主机名</span>
+<span class="hljs-comment"># 提交当前容器为新的镜像文件</span>
+docker commit -m <span class="hljs-string">"update - add a file in ubuntu "</span> -a <span class="hljs-string">"hzj"</span> dc758c368fda <span class="hljs-built_in">test</span>
+<span class="hljs-comment"># 查看当前镜像列表</span>
+root:~<span class="hljs-comment"># docker images</span>
 REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
-<span class="token function">test</span>                latest              41f1d7eba8f3        10 seconds ago      64.2 MB
-docker.io/ubuntu    latest              ccc6e87d482b        6 days ago          64.2 MB</code></pre>
-</li>
-<li>基于本地模版导入<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 下载模版压缩包</span>
-<span class="token function">wget</span> xx
-<span class="token comment" spellcheck="true"># 根据压缩包导入成镜像</span>
-<span class="token function">cat</span> ubuntu-14.04.tar.gz <span class="token operator">|</span> docker <span class="token function">import</span> - ubuntu:14.04 
-</code></pre>
-</li>
+<span class="hljs-built_in">test</span>                latest              41f1d7eba8f3        10 seconds ago      64.2 MB
+docker.io/ubuntu    latest              ccc6e87d482b        6 days ago          64.2 MB</code></pre></div></li>
+<li>基于本地模版导入<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 下载模版压缩包</span>
+wget xx
+<span class="hljs-comment"># 根据压缩包导入成镜像</span>
+cat ubuntu-14.04.tar.gz | docker import - ubuntu:14.04 
+
+<span class="hljs-comment"># 保存镜像到本地文件</span>
+docker save -o ubuntu_latest.tar ubuntu:latest
+<span class="hljs-comment"># 载入镜像</span>
+docker load --input ubuntu_latest.tar
+docker load < ubuntu_latest.tar</code></pre></div></li>
+<li>基于Dockerfile创建</li>
 </ul>
-<h1 id="保存镜像到本地文件"><a href="#保存镜像到本地文件" class="headerlink" title="保存镜像到本地文件"></a>保存镜像到本地文件</h1><p>docker save -o ubuntu_latest.tar ubuntu:latest</p>
-<h1 id="载入镜像"><a href="#载入镜像" class="headerlink" title="载入镜像"></a>载入镜像</h1><p>docker load –input ubuntu_latest.tar<br>docker load &lt; ubuntu_latest.tar</p>
-<pre><code>- 基于Dockerfile创建
+<p><font color='red'>如何创建一个hello-world的docker镜像</font> </p>
+<ol>
+<li>创建一个输出hello world的c文件<div class="code-wrapper"><pre class=" language-hljs c"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span><span class="hljs-meta-string"><code class="language-hljs c"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span><span class="hljs-meta-string"><stdio.h></span></span>
 
-&lt;font color=&#39;red&#39;&gt;如何创建一个hello-world的docker镜像&lt;/font&gt; 
-1. 创建一个输出hello world的c文件
-```c
-#include&lt;stdio.h&gt;
-
-int main()
-&#123;
-  printf(&quot;hello world\n&quot;);
-&#125;</code></pre>
-<ol start="2">
-<li>编译c文件<pre class=" language-bash"><code class="language-bash">gcc -static hello.c -o hello </code></pre>
-</li>
-<li>编写dockerfile<pre class=" language-bash"><code class="language-bash">FROM scratch
+<span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span>
+<span class="hljs-function"></span>{
+  <span class="hljs-built_in">printf</span>(<span class="hljs-string">"hello world\n"</span>);
+}</code></pre></div></li>
+<li>编译c文件<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">gcc -static hello.c -o hello</code></pre></div></li>
+<li>编写dockerfile<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">FROM scratch
 ADD hello /
-CMD <span class="token punctuation">[</span><span class="token string">'/hello'</span><span class="token punctuation">]</span></code></pre>
-</li>
-<li>新建helloworld镜像<pre class=" language-bash"><code class="language-bash">docker -f /tmp/dockerfile -t helloworld <span class="token keyword">.</span> </code></pre>
-</li>
+CMD [<span class="hljs-string">&#x27;/hello&#x27;</span>]</code></pre></div></li>
+<li>新建helloworld镜像<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">docker -f /tmp/dockerfile -t helloworld .</code></pre></div></li>
 </ol>
 
             </div>
@@ -427,7 +422,7 @@ CMD <span class="token punctuation">[</span><span class="token string">'/hello'<
 
   <footer class="text-center mt-5 py-3">
   <div class="footer-content">
-     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+     <a rel="nofollow noopener"><span>Hzjsea</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
   </div>
   
 

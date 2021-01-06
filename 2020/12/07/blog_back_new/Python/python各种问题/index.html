@@ -67,7 +67,7 @@
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
-       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
+       href="/">&nbsp;<strong>hzjsea</strong>&nbsp;</a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
             data-target="#navbarSupportedContent"
@@ -184,7 +184,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      217 字
+      231 字
     </span>
   
 
@@ -229,37 +229,37 @@
             <div class="markdown-body">
               <a id="more"></a>
 
-<h1 id="python各种问题"><a href="#python各种问题" class="headerlink" title="python各种问题"></a>python各种问题</h1><h2 id="pip安装包"><a href="#pip安装包" class="headerlink" title="pip安装包"></a>pip安装包</h2><pre class=" language-bash"><code class="language-bash">解决pip安装包时出现 WARNING: Retrying <span class="token punctuation">(</span>Retry<span class="token punctuation">(</span>total<span class="token operator">=</span>4, connect<span class="token operator">=</span>None, read<span class="token operator">=</span>None, redirect<span class="token operator">=</span>None, status<span class="token operator">=</span>None<span class="token punctuation">))</span></code></pre>
+<h1 id="python各种问题"><a href="#python各种问题" class="headerlink" title="python各种问题"></a>python各种问题</h1><h2 id="pip安装包"><a href="#pip安装包" class="headerlink" title="pip安装包"></a>pip安装包</h2><div class="code-wrapper"><pre class=" language-hljs bash">解决pip安装包时出现 WARNING: Retrying (Retry(total=4, connect=None, <span class="hljs-built_in"><code class="language-hljs bash">解决pip安装包时出现 WARNING: Retrying (Retry(total=4, connect=None, <span class="hljs-built_in">read</span>=None, redirect=None, status=None))</code></pre></div>
 <p>这个是速度问题,可以切换国内的镜像源</p>
-<pre class=" language-bash"><code class="language-bash">阿里云 http://mirrors.aliyun.com/pypi/simple/
-豆瓣<span class="token punctuation">(</span>douban<span class="token punctuation">)</span> http://pypi.douban.com/simple/
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">阿里云 http://mirrors.aliyun.com/pypi/simple/
+豆瓣(douban) http://pypi.douban.com/simple/
 清华大学 https://pypi.tuna.tsinghua.edu.cn/simple/
-中国科学技术大学 http://pypi.mirrors.ustc.edu.cn/simple/</code></pre>
+中国科学技术大学 http://pypi.mirrors.ustc.edu.cn/simple/</code></pre></div>
 <p>指定镜像源</p>
-<pre class=" language-bash"><code class="language-bash">pip <span class="token function">install</span> requests -i http://pypi.douban.com/simple --trusted-host pypi.douban.com</code></pre>
-<h2 id="python升级37版本"><a href="#python升级37版本" class="headerlink" title="python升级37版本"></a>python升级37版本</h2><pre class=" language-bash"><code class="language-bash">_upgradePy37<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-<span class="token function">cd</span> <span class="token variable">$work</span>
-<span class="token function">wget</span> https://www.python.org/ftp/python/3.7.3/Python-3.7.3.tgz
-<span class="token function">tar</span> zxvf Python-3.7.3.tgz
-<span class="token function">cat</span> <span class="token operator">>></span> Python-3.7.3 <span class="token operator">>></span> EOF
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">pip install requests -i http://pypi.douban.com/simple --trusted-host pypi.douban.com</code></pre></div>
+
+<h2 id="python升级37版本"><a href="#python升级37版本" class="headerlink" title="python升级37版本"></a>python升级37版本</h2><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-function"><span class="hljs-title"><code class="language-hljs bash"><span class="hljs-function"><span class="hljs-title">_upgradePy37</span></span>(){
+<span class="hljs-built_in">cd</span> <span class="hljs-variable">$work</span>
+wget https://www.python.org/ftp/python/3.7.3/Python-3.7.3.tgz
+tar zxvf Python-3.7.3.tgz
+cat >> Python-3.7.3 >> EOF
 _socket socketmodule.c timemodule.c
-SSL<span class="token operator">=</span>/usr/local/ssl
+SSL=/usr/<span class="hljs-built_in">local</span>/ssl
 _ssl _ssl.c \
-       -DUSE_SSL -I<span class="token variable"><span class="token variable">$(</span>SSL<span class="token variable">)</span></span>/include -I<span class="token variable"><span class="token variable">$(</span>SSL<span class="token variable">)</span></span>/include/openssl \
-       -L<span class="token variable"><span class="token variable">$(</span>SSL<span class="token variable">)</span></span>/lib -lssl -lcrypto
+       -DUSE_SSL -I$(SSL)/include -I$(SSL)/include/openssl \
+       -L$(SSL)/lib -lssl -lcrypto
 EOF
 
-<span class="token function">cd</span> Python-3.7.3
+<span class="hljs-built_in">cd</span> Python-3.7.3
 ./configure --with-ssl
-<span class="token function">make</span> -j 8 <span class="token operator">&amp;&amp;</span> <span class="token function">sudo</span> <span class="token function">make</span> <span class="token function">install</span>
+make -j 8 && sudo make install
 
 
-<span class="token function">rm</span> -rf /usr/bin/python3
-<span class="token function">rm</span> -rf /usr/bin/pip3
-<span class="token function">sudo</span> <span class="token function">ln</span> -s /usr/local/bin/python3.7 /usr/bin/python3
-<span class="token function">sudo</span> <span class="token function">ln</span> -s /usr/local/bin/pip3.7 /usr/bin/pip3
-<span class="token punctuation">}</span></code></pre>
-
+rm -rf /usr/bin/python3
+rm -rf /usr/bin/pip3
+sudo ln -s /usr/<span class="hljs-built_in">local</span>/bin/python3.7 /usr/bin/python3
+sudo ln -s /usr/<span class="hljs-built_in">local</span>/bin/pip3.7 /usr/bin/pip3
+}</code></pre></div>
             </div>
             <hr>
             <div>
@@ -367,7 +367,7 @@ EOF
 
   <footer class="text-center mt-5 py-3">
   <div class="footer-content">
-     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+     <a rel="nofollow noopener"><span>Hzjsea</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
   </div>
   
 

@@ -67,7 +67,7 @@
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
-       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
+       href="/">&nbsp;<strong>hzjsea</strong>&nbsp;</a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
             data-target="#navbarSupportedContent"
@@ -184,7 +184,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      234 字
+      236 字
     </span>
   
 
@@ -231,37 +231,39 @@
 <a id="more"></a>
 
 <h1 id="fastapi中的序列化"><a href="#fastapi中的序列化" class="headerlink" title="fastapi中的序列化"></a>fastapi中的序列化</h1><p>在正常情况下，如果框架没有提供任何的的序列化工具的话，那就要使用json自己去写序列化，而且如果数据库中有时间等内容的话，还要自定义json的解析，才能正常解析时间<br>在fastapi中获得他提供了一个jsonable_encoder的功能来解决</p>
-<pre class=" language-python"><code class="language-python"><span class="token keyword">from</span> fastapi <span class="token keyword">import</span>  FastAPI
-<span class="token keyword">from</span> fastapi<span class="token punctuation">.</span>encoders <span class="token keyword">import</span> jsonable_encoder
-<span class="token keyword">from</span> pydantic <span class="token keyword">import</span> BaseModel
+<div class="code-wrapper"><pre class=" language-hljs python"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword"><code class="language-hljs python"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span>  FastAPI
+<span class="hljs-keyword">from</span> fastapi.encoders <span class="hljs-keyword">import</span> jsonable_encoder
+<span class="hljs-keyword">from</span> pydantic <span class="hljs-keyword">import</span> BaseModel
 
 
-<span class="token keyword">from</span> datetime <span class="token keyword">import</span>  datetime
+<span class="hljs-keyword">from</span> datetime <span class="hljs-keyword">import</span>  datetime
 
 
-<span class="token triple-quoted-string string">"""
-    desc: 介绍在fastapi中如何通过jsonable_encoder来序列化json数据
-"""</span>
+<span class="hljs-string">"""</span>
+<span class="hljs-string">    desc: 介绍在fastapi中如何通过jsonable_encoder来序列化json数据</span>
+<span class="hljs-string">"""</span>
 
-<span class="token comment" spellcheck="true">## 创建一个虚拟的数据库，假设是数据库中返回的json对象</span>
-get_db <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
+<span class="hljs-comment">## 创建一个虚拟的数据库，假设是数据库中返回的json对象</span>
+get_db = {}
 
-<span class="token comment" spellcheck="true">## 创建一个数据类型</span>
-<span class="token keyword">class</span> <span class="token class-name">Item</span><span class="token punctuation">(</span>BaseModel<span class="token punctuation">)</span><span class="token punctuation">:</span>
-    title <span class="token punctuation">:</span> str
-    timestamp <span class="token operator">=</span> datetime
-    desc<span class="token punctuation">:</span> str <span class="token operator">=</span> None
+<span class="hljs-comment">## 创建一个数据类型</span>
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Item</span>(<span class="hljs-params">BaseModel</span>):</span>
+    title : <span class="hljs-built_in">str</span>
+    timestamp = datetime
+    desc: <span class="hljs-built_in">str</span> = <span class="hljs-literal">None</span>
 
 
-app <span class="token operator">=</span> FastAPI<span class="token punctuation">(</span><span class="token punctuation">)</span>
+app = FastAPI()
 
-@app<span class="token punctuation">.</span>put<span class="token punctuation">(</span><span class="token string">"/items/{id}"</span><span class="token punctuation">)</span>
-<span class="token keyword">def</span> <span class="token function">update_item</span><span class="token punctuation">(</span>id<span class="token punctuation">:</span> str<span class="token punctuation">,</span>item<span class="token punctuation">:</span> Item<span class="token punctuation">)</span><span class="token punctuation">:</span>
-    <span class="token comment" spellcheck="true"># 将要更新的json传入函数</span>
-    <span class="token comment" spellcheck="true"># 序列化json对象</span>
-    <span class="token comment" spellcheck="true"># 更新json对象</span>
-    json_code <span class="token operator">=</span> jsonable_encoder<span class="token punctuation">(</span>item<span class="token punctuation">)</span>
-    fake_db<span class="token punctuation">[</span>id<span class="token punctuation">]</span> <span class="token operator">=</span> json_code</code></pre>
+<span class="hljs-meta">@app.put("/items/{id}")</span>
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">update_item</span>(<span class="hljs-params"><span class="hljs-built_in">id</span>: <span class="hljs-built_in">str</span>,item: Item</span>):</span>
+    <span class="hljs-comment"># 将要更新的json传入函数</span>
+    <span class="hljs-comment"># 序列化json对象</span>
+    <span class="hljs-comment"># 更新json对象</span>
+    json_code = jsonable_encoder(item)
+    fake_db[<span class="hljs-built_in">id</span>] = json_code</code></pre></div>
+
+
 <p>在这个示例中，它将 Pydantic 模型转换为 dict，将日期时间转换为 str。</p>
 
             </div>
@@ -371,7 +373,7 @@ app <span class="token operator">=</span> FastAPI<span class="token punctuation"
 
   <footer class="text-center mt-5 py-3">
   <div class="footer-content">
-     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+     <a rel="nofollow noopener"><span>Hzjsea</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
   </div>
   
 

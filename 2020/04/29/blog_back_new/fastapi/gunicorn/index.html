@@ -67,7 +67,7 @@
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
-       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
+       href="/">&nbsp;<strong>hzjsea</strong>&nbsp;</a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
             data-target="#navbarSupportedContent"
@@ -184,7 +184,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      313 字
+      327 字
     </span>
   
 
@@ -246,37 +246,38 @@
 
 <h1 id="gunicorn使用"><a href="#gunicorn使用" class="headerlink" title="gunicorn使用"></a>gunicorn使用</h1><h2 id="使用gunicorn构建fastapi项目"><a href="#使用gunicorn构建fastapi项目" class="headerlink" title="使用gunicorn构建fastapi项目"></a>使用gunicorn构建fastapi项目</h2><p>fastapi的启动主要使用了uvicorn,gunicorn主要是用来管控uvicorn的进程，并且可以指定多个进程</p>
 <p>示例</p>
-<pre class=" language-bash"><code class="language-bash">gunicorn -w 4 -k uvicorn.workers.UvicornWorker</code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">gunicorn -w 4 -k uvicorn.workers.UvicornWorker</code></pre></div>
 <p>指定work 多个进程<br>指定class 运行的角色</p>
 <p><font color='red'>注意 fastapi必须使用uvicorn.workers.UvicornWorker这个角色，不然会出现not found ‘send’ 的错误</font></p>
 <h2 id="使用gunicorn-conf配置文件构建项目"><a href="#使用gunicorn-conf配置文件构建项目" class="headerlink" title="使用gunicorn.conf配置文件构建项目"></a>使用gunicorn.conf配置文件构建项目</h2><p>gunicorn不仅支持命令行，还支持使用配置文件构建项目</p>
 <p>gunicorn.conf</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># gunicorn.conf</span>
-<span class="token comment" spellcheck="true"># 并行工作进程数</span>
-workers <span class="token operator">=</span> 4
-<span class="token comment" spellcheck="true"># 指定每个工作者的线程数</span>
-threads <span class="token operator">=</span> 2
-<span class="token comment" spellcheck="true"># 监听内网端口5000</span>
-bind <span class="token operator">=</span> <span class="token string">'0.0.0.0:5000'</span>
-<span class="token comment" spellcheck="true"># 设置守护进程,将进程交给supervisor管理</span>
-daemon <span class="token operator">=</span> <span class="token string">'false'</span>
-<span class="token comment" spellcheck="true"># 工作模式协程</span>
-worker_class <span class="token operator">=</span> <span class="token string">'uvicorn.workers.UvicornWorker'</span>
-<span class="token comment" spellcheck="true"># 设置最大并发量</span>
-worker_connections <span class="token operator">=</span> 2000
-<span class="token comment" spellcheck="true"># 设置进程文件目录</span>
-pidfile <span class="token operator">=</span> <span class="token string">'/var/run/gunicorn.pid'</span>
-<span class="token comment" spellcheck="true"># 设置访问日志和错误信息日志路径</span>
-accesslog <span class="token operator">=</span> <span class="token string">'/var/log/gunicorn_acess.log'</span>
-errorlog <span class="token operator">=</span> <span class="token string">'/var/log/gunicorn_error.log'</span>
-<span class="token comment" spellcheck="true"># 设置日志记录水平</span>
-loglevel <span class="token operator">=</span> <span class="token string">'warning'</span></code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># gunicorn.conf</span>
+<span class="hljs-comment"># 并行工作进程数</span>
+workers = 4
+<span class="hljs-comment"># 指定每个工作者的线程数</span>
+threads = 2
+<span class="hljs-comment"># 监听内网端口5000</span>
+<span class="hljs-built_in">bind</span> = <span class="hljs-string">&#x27;0.0.0.0:5000&#x27;</span>
+<span class="hljs-comment"># 设置守护进程,将进程交给supervisor管理</span>
+daemon = <span class="hljs-string">&#x27;false&#x27;</span>
+<span class="hljs-comment"># 工作模式协程</span>
+worker_class = <span class="hljs-string">&#x27;uvicorn.workers.UvicornWorker&#x27;</span>
+<span class="hljs-comment"># 设置最大并发量</span>
+worker_connections = 2000
+<span class="hljs-comment"># 设置进程文件目录</span>
+pidfile = <span class="hljs-string">&#x27;/var/run/gunicorn.pid&#x27;</span>
+<span class="hljs-comment"># 设置访问日志和错误信息日志路径</span>
+accesslog = <span class="hljs-string">&#x27;/var/log/gunicorn_acess.log&#x27;</span>
+errorlog = <span class="hljs-string">&#x27;/var/log/gunicorn_error.log&#x27;</span>
+<span class="hljs-comment"># 设置日志记录水平</span>
+loglevel = <span class="hljs-string">&#x27;warning&#x27;</span></code></pre></div>
+
 <p>dockerfile编写</p>
-<pre class=" language-bash"><code class="language-bash">FROM python:3.7
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">FROM python:3.7
 
-<span class="token comment" spellcheck="true"># MAINTAINER superman for hzj</span>
+<span class="hljs-comment"># MAINTAINER superman for hzj</span>
 
-LABEL version<span class="token operator">=</span><span class="token string">"0.2v"</span>
+LABEL version=<span class="hljs-string">"0.2v"</span>
 
 WORKDIR /root/code
 
@@ -286,13 +287,13 @@ COPY ./requirements.txt ./
 
 COPY ./guvicorn.conf ./
 
-RUN pip <span class="token function">install</span> -r requirements.txt
+RUN pip install -r requirements.txt
 
-CMD <span class="token punctuation">[</span><span class="token string">"gunicorn"</span>,<span class="token string">"-c"</span>,<span class="token string">"guvicorn.conf"</span>,<span class="token string">"app:main"</span><span class="token punctuation">]</span></code></pre>
+CMD [<span class="hljs-string">"gunicorn"</span>,<span class="hljs-string">"-c"</span>,<span class="hljs-string">"guvicorn.conf"</span>,<span class="hljs-string">"app:main"</span>]</code></pre></div>
+
 <p>运行项目</p>
-<pre class=" language-bash"><code class="language-bash">docker build <span class="token keyword">.</span>
-docker run -it xx /bin/bash</code></pre>
-
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">docker build .
+docker run -it xx /bin/bash</code></pre></div>
             </div>
             <hr>
             <div>
@@ -400,7 +401,7 @@ docker run -it xx /bin/bash</code></pre>
 
   <footer class="text-center mt-5 py-3">
   <div class="footer-content">
-     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+     <a rel="nofollow noopener"><span>Hzjsea</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
   </div>
   
 

@@ -67,7 +67,7 @@
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
-       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
+       href="/">&nbsp;<strong>hzjsea</strong>&nbsp;</a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
             data-target="#navbarSupportedContent"
@@ -243,29 +243,33 @@
 <a id="more"></a>
 
 <h1 id="交换机升级步骤"><a href="#交换机升级步骤" class="headerlink" title="交换机升级步骤"></a>交换机升级步骤</h1><p><a target="_blank" rel="noopener" href="https://blog.51cto.com/weidawei/2320286">https://blog.51cto.com/weidawei/2320286</a></p>
-<h2 id="如何使用ftp"><a href="#如何使用ftp" class="headerlink" title="如何使用ftp"></a>如何使用ftp</h2><pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true">## 建立ftp连接</span>
-<span class="token function">ftp</span> domain.com
-<span class="token function">ftp</span> 192.168.0.1
-<span class="token function">ftp</span> user@ftpdomain.com
+<h2 id="如何使用ftp"><a href="#如何使用ftp" class="headerlink" title="如何使用ftp"></a>如何使用ftp</h2><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment">## 建立ftp连接</span>
+ftp domain.com
+ftp 192.168.0.1
+ftp user@ftpdomain.com
 
-<span class="token comment" spellcheck="true">## 获取方法</span>
-<span class="token operator">></span>ftp put <span class="token function">file</span> <span class="token comment" spellcheck="true"># 上传文件</span>
-<span class="token operator">></span>ftp <span class="token function">ls</span> <span class="token comment" spellcheck="true"># 列出远程机器上的文件目录</span>
-<span class="token operator">></span>ftp get <span class="token function">file</span> <span class="token comment" spellcheck="true"># 获取文件</span>
-</code></pre>
+<span class="hljs-comment">## 获取方法</span>
+>ftp put file <span class="hljs-comment"># 上传文件</span>
+>ftp ls <span class="hljs-comment"># 列出远程机器上的文件目录</span>
+>ftp get file <span class="hljs-comment"># 获取文件</span>
+</code></pre></div>
+
 <p>登陆成功<br><img src="http://img.noback.top/2020-03-04-15-37-02.png" srcset="/img/loading.gif" alt="2020-03-04-15-37-02"></p>
 <h2 id="升级步骤"><a href="#升级步骤" class="headerlink" title="升级步骤"></a>升级步骤</h2><p>存在情况:<br>1.交换机仅内网<br>2.交换机配有外网</p>
 <p><strong>第一种解决方法</strong><br>机器在内网,无法使用外网的机器进行文件传输，解决方法。登录同网段的内网机器，用ftp传文件</p>
 <p>先使用tftp上传文件到服务器(115.231.100.91)，再登录服务器，使用ftp连接远程交换机</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token function">ftp</span>  <span class="token punctuation">(</span>远程服务器IP<span class="token punctuation">)</span>192.168.20.22
-<span class="token comment" spellcheck="true"># 按照提示输入用户名及密码</span>
-<span class="token comment" spellcheck="true"># 登录完成后，传输文件</span>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">ftp  (远程服务器IP)192.168.20.22
+<span class="hljs-comment"># 按照提示输入用户名及密码</span>
+<span class="hljs-comment"># 登录完成后，传输文件</span>
 put 绝对路径+要传输的文件
 
-<span class="token comment" spellcheck="true"># 传输文件到指定目录，先使用ftp登录远程服务器，然后cd到指定目录下，再使用put传输文件</span>
-<span class="token function">ftp</span> xxxip
-<span class="token function">cd</span> test/soft/
-put xxx.ipe</code></pre>
+<span class="hljs-comment"># 传输文件到指定目录，先使用ftp登录远程服务器，然后cd到指定目录下，再使用put传输文件</span>
+ftp xxxip
+<span class="hljs-built_in">cd</span> <span class="hljs-built_in">test</span>/soft/
+put xxx.ipe</code></pre></div>
+
+
+
 <p><strong>第二种情况交换机的解决办法</strong><br>PC本地通过winscp传输ipe文件到交换机上<br>并设定主要镜像为所传的ipe文件</p>
 <ol>
 <li><p>下载ipe升级软件<br>下载地址为:<a target="_blank" rel="noopener" href="http://10.0.8.10/dl/comware/">http://10.0.8.10/dl/comware/</a></p>
@@ -273,20 +277,19 @@ put xxx.ipe</code></pre>
 <li><p>下载winscp<br>下载地址为:<a target="_blank" rel="noopener" href="https://winscp.net/eng/download.php">https://winscp.net/eng/download.php</a></p>
 </li>
 <li><p>登录所需要升级的交换机,配置升级交换机的角色，bash</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 开启ftp服务</span>
-<span class="token function">ftp</span> server <span class="token function">enable</span>
-<span class="token comment" spellcheck="true"># 在本地建立用户</span>
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 开启ftp服务</span>
+ftp server <span class="hljs-built_in">enable</span>
+<span class="hljs-comment"># 在本地建立用户</span>
 system-view 
 local-user abc class manage
 password simple 123456
-<span class="token comment" spellcheck="true"># 设定用户的工作地址为 flash:/</span>
+<span class="hljs-comment"># 设定用户的工作地址为 flash:/</span>
 authorization-attribute user-role network-admin work-directory flash:/
-<span class="token comment" spellcheck="true"># 开通用户权限，与admin保持一致</span>
-service-type <span class="token function">ftp</span>
+<span class="hljs-comment"># 开通用户权限，与admin保持一致</span>
+service-type ftp
 authorization-attribute user-role level-3
 authorization-attribute user-role network-admin
-authorization-attribute user-role network-operator</code></pre>
-</li>
+authorization-attribute user-role network-operator</code></pre></div></li>
 <li><p>使用winscp传输文件<br>形式：ftp<br>hostname : 公网IP<br>username : abc<br>password : 123<br>拖入文件，完成传输</p>
 </li>
 <li><p>设置交换机启动项<br>&lt;h3c&gt;boot-loader file flash:/xxxx.ipe slot 1 main</p>
@@ -403,7 +406,7 @@ authorization-attribute user-role network-operator</code></pre>
 
   <footer class="text-center mt-5 py-3">
   <div class="footer-content">
-     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+     <a rel="nofollow noopener"><span>Hzjsea</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
   </div>
   
 

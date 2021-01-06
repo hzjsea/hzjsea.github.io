@@ -67,7 +67,7 @@
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
-       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
+       href="/">&nbsp;<strong>hzjsea</strong>&nbsp;</a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
             data-target="#navbarSupportedContent"
@@ -184,7 +184,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      1.5k 字
+      1k 字
     </span>
   
 
@@ -194,7 +194,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      20
+      13
        分钟
     </span>
   
@@ -239,15 +239,102 @@
 </ul>
 <h2 id="http库"><a href="#http库" class="headerlink" title="http库"></a>http库</h2><p>http包提供了HTTP客户端和服务端的实现。</p>
 <p>http解析错误</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre class=" language-hljs bash"><span class="hljs-built_in"><code class="language-hljs bash"><span class="hljs-built_in">type</span> ProtocolError struct {<br>    ErrorString string<br>}<br>func (err *ProtocolError) Error() string<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-built_in"><code class="language-hljs bash"><span class="hljs-built_in">type</span> ProtocolError struct {
+    ErrorString string
+}
+func (err *ProtocolError) Error() string</code></pre></div>
 
-<h2 id="content解析"><a href="#content解析" class="headerlink" title="content解析"></a>content解析</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre class=" language-hljs bash">func CanonicalHeaderKey(s string) string  <span class="hljs-comment"># 返回头域 也就是header</span><br>func DetectContentType(data []byte) string <span class="hljs-comment"># 返回 合法的MIME类型 比如application/octet-stream</span><br>func ParseHTTPVersion(vers string) (major, minor int, ok bool) <span class="hljs-comment"># 返回 ParseHTTPVersion解析HTTP版本字符串。如&quot;HTTP/1.0&quot;返回(1, 0, true)</span><br>func ParseTime(text string) (t time.Time, err error) <span class="hljs-comment"># 返回时间头</span><br>func StatusText(code int) string <span class="hljs-comment"><code class="language-hljs bash">func CanonicalHeaderKey(s string) string  <span class="hljs-comment"># 返回头域 也就是header</span><br>func DetectContentType(data []byte) string <span class="hljs-comment"># 返回 合法的MIME类型 比如application/octet-stream</span><br>func ParseHTTPVersion(vers string) (major, minor int, ok bool) <span class="hljs-comment"># 返回 ParseHTTPVersion解析HTTP版本字符串。如&quot;HTTP/1.0&quot;返回(1, 0, true)</span><br>func ParseTime(text string) (t time.Time, err error) <span class="hljs-comment"># 返回时间头</span><br>func StatusText(code int) string <span class="hljs-comment"># 返回状态码</span><br></code></pre></td></tr></table></figure>
+<h2 id="content解析"><a href="#content解析" class="headerlink" title="content解析"></a>content解析</h2><div class="code-wrapper"><pre class=" language-hljs bash">func CanonicalHeaderKey(s string) string  <span class="hljs-comment"><code class="language-hljs bash">func CanonicalHeaderKey(s string) string  <span class="hljs-comment"># 返回头域 也就是header</span>
+func DetectContentType(data []byte) string <span class="hljs-comment"># 返回 合法的MIME类型 比如application/octet-stream</span>
+func ParseHTTPVersion(vers string) (major, minor int, ok bool) <span class="hljs-comment"># 返回 ParseHTTPVersion解析HTTP版本字符串。如"HTTP/1.0"返回(1, 0, true)</span>
+func ParseTime(text string) (t time.Time, err error) <span class="hljs-comment"># 返回时间头</span>
+func StatusText(code int) string <span class="hljs-comment"># 返回状态码</span></code></pre></div>
 
-<h2 id="type-Header"><a href="#type-Header" class="headerlink" title="type Header"></a>type Header</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre class=" language-hljs bash"><span class="hljs-built_in"><code class="language-hljs bash"><span class="hljs-built_in">type</span> Header map[string][]string<br><br>func (h Header) Get(key string) string<br>func (h Header) Set(key, value string)<br>func (h Header) Del(key string)<br>func (h Header) Write(w io.Writer) error<br>func (h Header) WriteSubset(w io.Writer, exclude map[string]bool) error<br></code></pre></td></tr></table></figure>
+<h2 id="type-Header"><a href="#type-Header" class="headerlink" title="type Header"></a>type Header</h2><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-built_in"><code class="language-hljs bash"><span class="hljs-built_in">type</span> Header map[string][]string
+
+func (h Header) Get(key string) string
+func (h Header) Set(key, value string)
+func (h Header) Del(key string)
+func (h Header) Write(w io.Writer) error
+func (h Header) WriteSubset(w io.Writer, exclude map[string]bool) error</code></pre></div>
 <p>Header代表HTTP头域的键值对。<br>Get返回键对应的第一个值，如果键不存在会返回””。如要获取该键对应的值切片，请直接用规范格式的键访问map。<br>Set添加键值对到h，如键已存在则会用只有新值一个元素的切片取代旧值切片。</p>
-<h2 id="type-Request"><a href="#type-Request" class="headerlink" title="type Request"></a>type Request</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre class=" language-hljs bash"><span class="hljs-built_in">type</span> Request struct &#123;<br>	// Method指定HTTP方法（GET、POST、PUT等）。对客户端，<span class="hljs-string">&quot;&quot;</span>代表GET<br>    Method string<br>    URL *url.URL<br>    // 接收到的请求的协议版本。本包生产的Request总是使用HTTP/1.1<br>    Proto      string // <span class="hljs-string">&quot;HTTP/1.0&quot;</span><br>    ProtoMajor int    // 1<br>    ProtoMinor int    // 0<br>    // Header字段用来表示HTTP请求的头域。如果头域（多行键值对格式）为：<br>    //	accept-encoding: gzip, deflate<br>    //	Accept-Language: en-us<br>    //	Connection: keep-alive<br>    // 则：<br>    //	Header = map[string][]string&#123;<br>    //		<span class="hljs-string">&quot;Accept-Encoding&quot;</span>: &#123;<span class="hljs-string">&quot;gzip, deflate&quot;</span>&#125;,<br>    //		<span class="hljs-string">&quot;Accept-Language&quot;</span>: &#123;<span class="hljs-string">&quot;en-us&quot;</span>&#125;,<br>    //		<span class="hljs-string">&quot;Connection&quot;</span>: &#123;<span class="hljs-string"><code class="language-hljs bash"><span class="hljs-built_in">type</span> Request struct &#123;<br>	// Method指定HTTP方法（GET、POST、PUT等）。对客户端，<span class="hljs-string">&quot;&quot;</span>代表GET<br>    Method string<br>    URL *url.URL<br>    // 接收到的请求的协议版本。本包生产的Request总是使用HTTP/1.1<br>    Proto      string // <span class="hljs-string">&quot;HTTP/1.0&quot;</span><br>    ProtoMajor int    // 1<br>    ProtoMinor int    // 0<br>    // Header字段用来表示HTTP请求的头域。如果头域（多行键值对格式）为：<br>    //	accept-encoding: gzip, deflate<br>    //	Accept-Language: en-us<br>    //	Connection: keep-alive<br>    // 则：<br>    //	Header = map[string][]string&#123;<br>    //		<span class="hljs-string">&quot;Accept-Encoding&quot;</span>: &#123;<span class="hljs-string">&quot;gzip, deflate&quot;</span>&#125;,<br>    //		<span class="hljs-string">&quot;Accept-Language&quot;</span>: &#123;<span class="hljs-string">&quot;en-us&quot;</span>&#125;,<br>    //		<span class="hljs-string">&quot;Connection&quot;</span>: &#123;<span class="hljs-string">"keep-alive"</span>},<br>    //	}<br>    // HTTP规定头域的键名（头名）是大小写敏感的，请求的解析器通过规范化头域的键名来实现这点。<br>    // 在客户端的请求，可能会被自动添加或重写Header中的特定的头，参见Request.Write方法。<br>    Header Header<br>    Body io.ReadCloser<br>    ContentLength int64<br>    TransferEncoding []string<br>    Close bool<br>    Host string<br>    Form url.Values<br>    PostForm url.Values<br>    MultipartForm *multipart.Form<br>    Trailer Header<br>    RemoteAddr string<br>    RequestURI string<br>    TLS *tls.ConnectionState<br>}<br>func NewRequest(method, urlStr string, body io.Reader) (*Request, error)<br>func ReadRequest(b *bufio.Reader) (req *Request, err error)<br>func (r *Request) UserAgent() string<br>func (r *Request) Referer() string<br>func (r *Request) SetBasicAuth(username, password string)<br></code></pre></td></tr></table></figure>
+<h2 id="type-Request"><a href="#type-Request" class="headerlink" title="type Request"></a>type Request</h2><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-built_in"><code class="language-hljs bash"><span class="hljs-built_in">type</span> Request struct {
+	// Method指定HTTP方法（GET、POST、PUT等）。对客户端，<span class="hljs-string">""</span>代表GET
+    Method string
+    URL *url.URL
+    // 接收到的请求的协议版本。本包生产的Request总是使用HTTP/1.1
+    Proto      string // <span class="hljs-string">"HTTP/1.0"</span>
+    ProtoMajor int    // 1
+    ProtoMinor int    // 0
+    // Header字段用来表示HTTP请求的头域。如果头域（多行键值对格式）为：
+    //	accept-encoding: gzip, deflate
+    //	Accept-Language: en-us
+    //	Connection: keep-alive
+    // 则：
+    //	Header = map[string][]string{
+    //		<span class="hljs-string">"Accept-Encoding"</span>: {<span class="hljs-string">"gzip, deflate"</span>},
+    //		<span class="hljs-string">"Accept-Language"</span>: {<span class="hljs-string">"en-us"</span>},
+    //		<span class="hljs-string">"Connection"</span>: {<span class="hljs-string">"keep-alive"</span>},
+    //	}
+    // HTTP规定头域的键名（头名）是大小写敏感的，请求的解析器通过规范化头域的键名来实现这点。
+    // 在客户端的请求，可能会被自动添加或重写Header中的特定的头，参见Request.Write方法。
+    Header Header
+    Body io.ReadCloser
+    ContentLength int64
+    TransferEncoding []string
+    Close bool
+    Host string
+    Form url.Values
+    PostForm url.Values
+    MultipartForm *multipart.Form
+    Trailer Header
+    RemoteAddr string
+    RequestURI string
+    TLS *tls.ConnectionState
+}
+func NewRequest(method, urlStr string, body io.Reader) (*Request, error)
+func ReadRequest(b *bufio.Reader) (req *Request, err error)
+func (r *Request) UserAgent() string
+func (r *Request) Referer() string
+func (r *Request) SetBasicAuth(username, password string)</code></pre></div>
 
-<h2 id="type-Response"><a href="#type-Response" class="headerlink" title="type Response"></a>type Response</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre class=" language-hljs bash"><span class="hljs-built_in">type</span> Response struct &#123;<br>    Status     string // 例如<span class="hljs-string">&quot;200 OK&quot;</span><br>    StatusCode int    // 例如200<br>    Proto      string // 例如<span class="hljs-string">&quot;HTTP/1.0&quot;</span><br>    ProtoMajor int    // 例如1<br>    ProtoMinor int    // 例如0<br>    // Header保管头域的键值对。<br>    // 如果回复中有多个头的键相同，Header中保存为该键对应用逗号分隔串联起来的这些头的值<br>    // （参见RFC 2616 Section 4.2）<br>    // 被本结构体中的其他字段复制保管的头（如ContentLength）会从Header中删掉。<br>    //<br>    // Header中的键都是规范化的，参见CanonicalHeaderKey函数<br>    Header Header<br>    // Body代表回复的主体。<br>    // Client类型和Transport类型会保证Body字段总是非nil的，即使回复没有主体或主体长度为0。<br>    // 关闭主体是调用者的责任。<br>    // 如果服务端采用<span class="hljs-string">&quot;chunked&quot;</span>传输编码发送的回复，Body字段会自动进行解码。<br>    Body io.ReadCloser<br>    // ContentLength记录相关内容的长度。<br>    // 其值为-1表示长度未知（采用chunked传输编码）<br>    // 除非对应的Request.Method是<span class="hljs-string">&quot;HEAD&quot;</span>，其值&gt;=0表示可以从Body读取的字节数<br>    ContentLength int64<br>    // TransferEncoding按从最外到最里的顺序列出传输编码，空切片表示<span class="hljs-string"><code class="language-hljs bash"><span class="hljs-built_in">type</span> Response struct &#123;<br>    Status     string // 例如<span class="hljs-string">&quot;200 OK&quot;</span><br>    StatusCode int    // 例如200<br>    Proto      string // 例如<span class="hljs-string">&quot;HTTP/1.0&quot;</span><br>    ProtoMajor int    // 例如1<br>    ProtoMinor int    // 例如0<br>    // Header保管头域的键值对。<br>    // 如果回复中有多个头的键相同，Header中保存为该键对应用逗号分隔串联起来的这些头的值<br>    // （参见RFC 2616 Section 4.2）<br>    // 被本结构体中的其他字段复制保管的头（如ContentLength）会从Header中删掉。<br>    //<br>    // Header中的键都是规范化的，参见CanonicalHeaderKey函数<br>    Header Header<br>    // Body代表回复的主体。<br>    // Client类型和Transport类型会保证Body字段总是非nil的，即使回复没有主体或主体长度为0。<br>    // 关闭主体是调用者的责任。<br>    // 如果服务端采用<span class="hljs-string">&quot;chunked&quot;</span>传输编码发送的回复，Body字段会自动进行解码。<br>    Body io.ReadCloser<br>    // ContentLength记录相关内容的长度。<br>    // 其值为-1表示长度未知（采用chunked传输编码）<br>    // 除非对应的Request.Method是<span class="hljs-string">&quot;HEAD&quot;</span>，其值&gt;=0表示可以从Body读取的字节数<br>    ContentLength int64<br>    // TransferEncoding按从最外到最里的顺序列出传输编码，空切片表示<span class="hljs-string">"identity"</span>编码。<br>    TransferEncoding []string<br>    // Close记录头域是否指定应在读取完主体后关闭连接。（即Connection头）<br>    // 该值是给客户端的建议，Response.Write方法的ReadResponse函数都不会关闭连接。<br>    Close bool<br>    // Trailer字段保存和头域相同格式的trailer键值对，和Header字段相同类型<br>    Trailer Header<br>    // Request是用来获取此回复的请求<br>    // Request的Body字段是nil（因为已经被用掉了）<br>    // 这个字段是被Client类型发出请求并获得回复后填充的<br>    Request *Request<br>    // TLS包含接收到该回复的TLS连接的信息。 对未加密的回复，本字段为nil。<br>    // 返回的指针是被（同一TLS连接接收到的）回复共享的，不应被修改。<br>    TLS *tls.ConnectionState<br>}<br></code></pre></td></tr></table></figure>
+<h2 id="type-Response"><a href="#type-Response" class="headerlink" title="type Response"></a>type Response</h2><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-built_in"><code class="language-hljs bash"><span class="hljs-built_in">type</span> Response struct {
+    Status     string // 例如<span class="hljs-string">"200 OK"</span>
+    StatusCode int    // 例如200
+    Proto      string // 例如<span class="hljs-string">"HTTP/1.0"</span>
+    ProtoMajor int    // 例如1
+    ProtoMinor int    // 例如0
+    // Header保管头域的键值对。
+    // 如果回复中有多个头的键相同，Header中保存为该键对应用逗号分隔串联起来的这些头的值
+    // （参见RFC 2616 Section 4.2）
+    // 被本结构体中的其他字段复制保管的头（如ContentLength）会从Header中删掉。
+    //
+    // Header中的键都是规范化的，参见CanonicalHeaderKey函数
+    Header Header
+    // Body代表回复的主体。
+    // Client类型和Transport类型会保证Body字段总是非nil的，即使回复没有主体或主体长度为0。
+    // 关闭主体是调用者的责任。
+    // 如果服务端采用<span class="hljs-string">"chunked"</span>传输编码发送的回复，Body字段会自动进行解码。
+    Body io.ReadCloser
+    // ContentLength记录相关内容的长度。
+    // 其值为-1表示长度未知（采用chunked传输编码）
+    // 除非对应的Request.Method是<span class="hljs-string">"HEAD"</span>，其值>=0表示可以从Body读取的字节数
+    ContentLength int64
+    // TransferEncoding按从最外到最里的顺序列出传输编码，空切片表示<span class="hljs-string">"identity"</span>编码。
+    TransferEncoding []string
+    // Close记录头域是否指定应在读取完主体后关闭连接。（即Connection头）
+    // 该值是给客户端的建议，Response.Write方法的ReadResponse函数都不会关闭连接。
+    Close bool
+    // Trailer字段保存和头域相同格式的trailer键值对，和Header字段相同类型
+    Trailer Header
+    // Request是用来获取此回复的请求
+    // Request的Body字段是nil（因为已经被用掉了）
+    // 这个字段是被Client类型发出请求并获得回复后填充的
+    Request *Request
+    // TLS包含接收到该回复的TLS连接的信息。 对未加密的回复，本字段为nil。
+    // 返回的指针是被（同一TLS连接接收到的）回复共享的，不应被修改。
+    TLS *tls.ConnectionState
+}</code></pre></div>
             </div>
             <hr>
             <div>
@@ -357,7 +444,7 @@
 
   <footer class="text-center mt-5 py-3">
   <div class="footer-content">
-     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+     <a rel="nofollow noopener"><span>Hzjsea</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
   </div>
   
 

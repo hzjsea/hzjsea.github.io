@@ -67,7 +67,7 @@
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
-       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
+       href="/">&nbsp;<strong>hzjsea</strong>&nbsp;</a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
             data-target="#navbarSupportedContent"
@@ -184,7 +184,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      551 字
+      598 字
     </span>
   
 
@@ -194,7 +194,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      8
+      9
        分钟
     </span>
   
@@ -245,98 +245,98 @@
 <blockquote>
 <p>Ansible本身就是由python写成，所有其对python形式的API的支持应该不错。<br>　　其API分不同的版本，这个版本也就是ansible本身的版本，可以通过ansible –version命令查看或者在python中import ansible然后查看anisble.__version__。<br>　　在2.0及以后的版本，难度突然陡增，与此同时更多的更加底层的东西被开放给一般开发，虽然复杂了，但是也更加灵活了。</p>
 </blockquote>
-<h2 id="规定环境"><a href="#规定环境" class="headerlink" title="规定环境"></a>规定环境</h2><pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span>root@hzj tmp<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># ansible --version</span>
+<h2 id="规定环境"><a href="#规定环境" class="headerlink" title="规定环境"></a>规定环境</h2><div class="code-wrapper"><pre class=" language-hljs bash">[root@hzj tmp]<span class="hljs-comment"><code class="language-hljs bash">[root@hzj tmp]<span class="hljs-comment"># ansible --version</span>
 ansible 2.4.0.0
-  config <span class="token function">file</span> <span class="token operator">=</span> /etc/ansible/ansible.cfg
-  configured module search path <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string">'/root/.ansible/plugins/modules'</span>, <span class="token string">'/usr/share/ansible/plugins/modules'</span><span class="token punctuation">]</span>
-  ansible python module location <span class="token operator">=</span> /usr/local/lib/python3.6/site-packages/ansible
-  executable location <span class="token operator">=</span> /usr/local/bin/ansible
-  python version <span class="token operator">=</span> 3.6.8 <span class="token punctuation">(</span>default, Aug  7 2019, 17:28:10<span class="token punctuation">)</span> <span class="token punctuation">[</span>GCC 4.8.5 20150623 <span class="token punctuation">(</span>Red Hat 4.8.5-39<span class="token punctuation">)</span><span class="token punctuation">]</span></code></pre>
+  config file = /etc/ansible/ansible.cfg
+  configured module search path = [<span class="hljs-string">&#x27;/root/.ansible/plugins/modules&#x27;</span>, <span class="hljs-string">&#x27;/usr/share/ansible/plugins/modules&#x27;</span>]
+  ansible python module location = /usr/<span class="hljs-built_in">local</span>/lib/python3.6/site-packages/ansible
+  executable location = /usr/<span class="hljs-built_in">local</span>/bin/ansible
+  python version = 3.6.8 (default, Aug  7 2019, 17:28:10) [GCC 4.8.5 20150623 (Red Hat 4.8.5-39)]</code></pre></div>
 <p>安装环境</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 安装依赖文件</span>
-yum <span class="token function">install</span> build-essential libssl-dev libffi-dev python-dev
-<span class="token comment" spellcheck="true"># 安装存储库</span>
-<span class="token function">git</span> clone https://github.com/ansible/ansible.git
-<span class="token comment" spellcheck="true"># 准备虚拟环境</span>
-<span class="token function">cd</span> ansible
-virtualenv <span class="token function">env</span>
-<span class="token function">source</span> ./env/bin/active
-pip <span class="token function">install</span> -r requirements.txt
-<span class="token comment" spellcheck="true"># 为每个新的dev shell进程运行环境设置脚本： </span>
-<span class="token keyword">.</span> hacking/env-setup</code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 安装依赖文件</span>
+yum install build-essential libssl-dev libffi-dev python-dev
+<span class="hljs-comment"># 安装存储库</span>
+git <span class="hljs-built_in">clone</span> https://github.com/ansible/ansible.git
+<span class="hljs-comment"># 准备虚拟环境</span>
+<span class="hljs-built_in">cd</span> ansible
+virtualenv env
+<span class="hljs-built_in">source</span> ./env/bin/active
+pip install -r requirements.txt
+<span class="hljs-comment"># 为每个新的dev shell进程运行环境设置脚本： </span>
+. hacking/env-setup</code></pre></div>
+
 <h2 id="ansible-模块的格式要求"><a href="#ansible-模块的格式要求" class="headerlink" title="ansible 模块的格式要求"></a>ansible 模块的格式要求</h2><p><a target="_blank" rel="noopener" href="https://docs.ansible.com/ansible/2.7/dev_guide/developing_modules_documenting.html#developing-modules-documenting">https://docs.ansible.com/ansible/2.7/dev_guide/developing_modules_documenting.html#developing-modules-documenting</a></p>
-<pre class=" language-py"><code class="language-py"># 版权许可
-#!/usr/bin/python
+<div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-comment"><code class="language-hljs py"><span class="hljs-comment"># 版权许可</span>
+<span class="hljs-comment">#!/usr/bin/python</span>
 
-# Copyright: (c) 2018, Terry Jones <terry.jones@example.org>
-# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+<span class="hljs-comment"># Copyright: (c) 2018, Terry Jones <terry.jones@example.org></span>
+<span class="hljs-comment"># GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)</span>
 
-# 模块信息
-ANSIBLE_METADATA = {'metadata_version': '1.1',
-                    'status': ['preview'],
-                    'supported_by': 'community'}
+<span class="hljs-comment"># 模块信息</span>
+ANSIBLE_METADATA = {<span class="hljs-string">&#x27;metadata_version&#x27;</span>: <span class="hljs-string">&#x27;1.1&#x27;</span>,
+                    <span class="hljs-string">&#x27;status&#x27;</span>: [<span class="hljs-string">&#x27;preview&#x27;</span>],
+                    <span class="hljs-string">&#x27;supported_by&#x27;</span>: <span class="hljs-string">&#x27;community&#x27;</span>}
 
-# metadata_version是ANSIBLE_METADATA模式的版本，而不是模块的版本。
-# 升级模块status或supported_by状态只能由Ansible核心团队的成员来完成。
+<span class="hljs-comment"># metadata_version是ANSIBLE_METADATA模式的版本，而不是模块的版本。</span>
+<span class="hljs-comment"># 升级模块status或supported_by状态只能由Ansible核心团队的成员来完成。</span>
 
 
-# 文档描述
-DOCUMENTATION = '''
----
-module: backup
-short_description: get backup_version from /usr/local/{{ project }}/.version
-version_added: "2.4"
-author: lin.jiang
-'''
+<span class="hljs-comment"># 文档描述</span>
+DOCUMENTATION = <span class="hljs-string">&#x27;&#x27;&#x27;</span>
+<span class="hljs-string">---</span>
+<span class="hljs-string">module: backup</span>
+<span class="hljs-string">short_description: get backup_version from /usr/local/{{ project }}/.version</span>
+<span class="hljs-string">version_added: "2.4"</span>
+<span class="hljs-string">author: lin.jiang</span>
+<span class="hljs-string">&#x27;&#x27;&#x27;</span>
 
-# 使用举例
-EXAMPLES = '''
-- name: get last version from .version
-  backup: role={{ project }} version={{ app_version }}-{{ conf_hash }}
-'''
+<span class="hljs-comment"># 使用举例</span>
+EXAMPLES = <span class="hljs-string">&#x27;&#x27;&#x27;</span>
+<span class="hljs-string">- name: get last version from .version</span>
+<span class="hljs-string">  backup: role={{ project }} version={{ app_version }}-{{ conf_hash }}</span>
+<span class="hljs-string">&#x27;&#x27;&#x27;</span>
 
-# 运行流程
-from ansible.module_utils.basic import AnsibleModule
+<span class="hljs-comment"># 运行流程</span>
+<span class="hljs-keyword">from</span> ansible.module_utils.basic <span class="hljs-keyword">import</span> AnsibleModule
 
-def run_module():
-    # 参数列表
-    module_args = dict(
-        name=dict(type='str', required=True),
-        new=dict(type='bool', required=False, default=False)
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">run_module</span>():</span>
+    <span class="hljs-comment"># 参数列表</span>
+    module_args = <span class="hljs-built_in">dict</span>(
+        name=<span class="hljs-built_in">dict</span>(<span class="hljs-built_in">type</span>=<span class="hljs-string">&#x27;str&#x27;</span>, required=<span class="hljs-literal">True</span>),
+        new=<span class="hljs-built_in">dict</span>(<span class="hljs-built_in">type</span>=<span class="hljs-string">&#x27;bool&#x27;</span>, required=<span class="hljs-literal">False</span>, default=<span class="hljs-literal">False</span>)
     )
 
-    # 参数检测 
+    <span class="hljs-comment"># 参数检测 </span>
     module = AnsibleModule(
         argument_spec=module_args,
-        supports_check_mode=True
+        supports_check_mode=<span class="hljs-literal">True</span>
+    )
+    
+    <span class="hljs-comment"># 返回结果</span>
+    result = <span class="hljs-built_in">dict</span>(
+        changed=<span class="hljs-literal">False</span>,
+        original_message=<span class="hljs-string">&#x27;&#x27;</span>,
+        message=<span class="hljs-string">&#x27;&#x27;</span>
     )
 
-    # 返回结果
-    result = dict(
-        changed=False,
-        original_message='',
-        message=''
-    )
+    <span class="hljs-comment"># 如果参数检测通过，则返回结果</span>
+    <span class="hljs-keyword">if</span> module.check_mode:
+        <span class="hljs-keyword">return</span> result
 
-    # 如果参数检测通过，则返回结果
-    if module.check_mode:
-        return result
+    <span class="hljs-comment"># 对输入的参数进行操作</span>
+    <span class="hljs-keyword">if</span> module.params[<span class="hljs-string">&#x27;name&#x27;</span>] == <span class="hljs-string">&#x27;fail me&#x27;</span>:
+        module.fail_json(msg=<span class="hljs-string">&#x27;You requested this to fail&#x27;</span>, **result)
 
-    # 对输入的参数进行操作
-    if module.params['name'] == 'fail me':
-        module.fail_json(msg='You requested this to fail', **result)
-
-    # in the event of a successful module execution, you will want to
-    # simple AnsibleModule.exit_json(), passing the key/value results
+    <span class="hljs-comment"># in the event of a successful module execution, you will want to</span>
+    <span class="hljs-comment"># simple AnsibleModule.exit_json(), passing the key/value results</span>
     module.exit_json(**result)
 
-# 使用
-def main():
+<span class="hljs-comment"># 使用</span>
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main</span>():</span>
     run_module()
 
-if __name__ == '__main__':
-    main()</code></pre>
-
+<span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:
+    main()</code></pre></div>
             </div>
             <hr>
             <div>
@@ -444,7 +444,7 @@ if __name__ == '__main__':
 
   <footer class="text-center mt-5 py-3">
   <div class="footer-content">
-     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+     <a rel="nofollow noopener"><span>Hzjsea</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
   </div>
   
 

@@ -67,7 +67,7 @@
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
-       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
+       href="/">&nbsp;<strong>hzjsea</strong>&nbsp;</a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
             data-target="#navbarSupportedContent"
@@ -184,7 +184,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      266 字
+      279 字
     </span>
   
 
@@ -241,44 +241,43 @@
 
 <h1 id="python使用passlib模块"><a href="#python使用passlib模块" class="headerlink" title="python使用passlib模块"></a>python使用passlib模块</h1><p>文档地址: <a target="_blank" rel="noopener" href="https://passlib.readthedocs.io/en/stable/">https://passlib.readthedocs.io/en/stable/</a></p>
 <p>python中的passlib模块主要是用来加密解密的，它提供了30多种密码哈希算法的跨平台实现，以及用于管理现有密码哈希的框架。从验证/ etc / shadow中的哈希值到为多用户应用程序提供完整强度的密码哈希值，它可用于多种任务</p>
-<pre class=" language-python"><code class="language-python"><span class="token operator">>></span><span class="token operator">></span> <span class="token comment" spellcheck="true"># import the hash algorithm</span>
-<span class="token operator">>></span><span class="token operator">></span> <span class="token keyword">from</span> passlib<span class="token punctuation">.</span>hash <span class="token keyword">import</span> pbkdf2_sha256
+<div class="code-wrapper"><pre class=" language-hljs python"><span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-comment"><code class="language-hljs python"><span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-comment"># import the hash algorithm</span>
+<span class="hljs-meta">>>> </span><span class="hljs-keyword">from</span> passlib.<span class="hljs-built_in">hash</span> <span class="hljs-keyword">import</span> pbkdf2_sha256
 
-<span class="token operator">>></span><span class="token operator">></span> <span class="token comment" spellcheck="true"># generate new salt, and hash a password</span>
-<span class="token operator">>></span><span class="token operator">></span> hash <span class="token operator">=</span> pbkdf2_sha256<span class="token punctuation">.</span>hash<span class="token punctuation">(</span><span class="token string">"toomanysecrets"</span><span class="token punctuation">)</span>
-<span class="token operator">>></span><span class="token operator">></span> hash
-<span class="token string">'$pbkdf2-sha256$29000$N2YMIWQsBWBMae09x1jrPQ$1t8iyB2A.WF/Z5JZv.lfCIhXXN33N23OSgQYThBYRfk'</span>
+<span class="hljs-meta">>>> </span><span class="hljs-comment"># generate new salt, and hash a password</span>
+<span class="hljs-meta">>>> </span><span class="hljs-built_in">hash</span> = pbkdf2_sha256.<span class="hljs-built_in">hash</span>(<span class="hljs-string">"toomanysecrets"</span>)
+<span class="hljs-meta">>>> </span><span class="hljs-built_in">hash</span>
+<span class="hljs-string">&#x27;$pbkdf2-sha256$29000$N2YMIWQsBWBMae09x1jrPQ$1t8iyB2A.WF/Z5JZv.lfCIhXXN33N23OSgQYThBYRfk&#x27;</span>
 
-<span class="token operator">>></span><span class="token operator">></span> <span class="token comment" spellcheck="true"># verifying the password</span>
-<span class="token operator">>></span><span class="token operator">></span> pbkdf2_sha256<span class="token punctuation">.</span>verify<span class="token punctuation">(</span><span class="token string">"toomanysecrets"</span><span class="token punctuation">,</span> hash<span class="token punctuation">)</span>
-<span class="token boolean">True</span>
-<span class="token operator">>></span><span class="token operator">></span> pbkdf2_sha256<span class="token punctuation">.</span>verify<span class="token punctuation">(</span><span class="token string">"joshua"</span><span class="token punctuation">,</span> hash<span class="token punctuation">)</span>
-<span class="token boolean">False</span></code></pre>
+<span class="hljs-meta">>>> </span><span class="hljs-comment"># verifying the password</span>
+<span class="hljs-meta">>>> </span>pbkdf2_sha256.verify(<span class="hljs-string">"toomanysecrets"</span>, <span class="hljs-built_in">hash</span>)
+<span class="hljs-literal">True</span>
+<span class="hljs-meta">>>> </span>pbkdf2_sha256.verify(<span class="hljs-string">"joshua"</span>, <span class="hljs-built_in">hash</span>)
+<span class="hljs-literal">False</span></code></pre></div>
 <p>这里面传入的值密码应该是unicode类型的</p>
 <p>passlib库主要是集成了各种的加密和解密算法</p>
-<h1 id="passlib实现加密解密过程"><a href="#passlib实现加密解密过程" class="headerlink" title="passlib实现加密解密过程"></a>passlib实现加密解密过程</h1><pre class=" language-py"><code class="language-py">from passlib.context import CryptContext
+<h1 id="passlib实现加密解密过程"><a href="#passlib实现加密解密过程" class="headerlink" title="passlib实现加密解密过程"></a>passlib实现加密解密过程</h1><div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-keyword">from</span> passlib.context <span class="hljs-keyword"><code class="language-hljs py"><span class="hljs-keyword">from</span> passlib.context <span class="hljs-keyword">import</span> CryptContext
 
-# 定义算法
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+<span class="hljs-comment"># 定义算法</span>
+pwd_context = CryptContext(schemes=[<span class="hljs-string">"bcrypt"</span>], deprecated=<span class="hljs-string">"auto"</span>)
 
-# 对密码进行hash加密
-def gen_hashpasswd(newpassword):
-    hashpasswd = pwd_context.hash(newpassword)
-    return hashpasswd
+<span class="hljs-comment"># 对密码进行hash加密</span>
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">gen_hashpasswd</span>(<span class="hljs-params">newpassword</span>):</span>
+    hashpasswd = pwd_context.<span class="hljs-built_in">hash</span>(newpassword)
+    <span class="hljs-keyword">return</span> hashpasswd
 
-# 检验哈希
-def check_hash(newpassword,hashpasswd):
-    return pwd_context.verify(newpassword,hashpasswd)
+<span class="hljs-comment"># 检验哈希</span>
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">check_hash</span>(<span class="hljs-params">newpassword,hashpasswd</span>):</span>
+    <span class="hljs-keyword">return</span> pwd_context.verify(newpassword,hashpasswd)
 
-if __name__ == '__main__':
-    newpassword = "scret"
+<span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:
+    newpassword = <span class="hljs-string">"scret"</span>
     hashpasswd = gen_hashpasswd(newpassword)
 
-    flag = check_hash("scret","$2b$12$y.NjTvOEkuJtLtr7.dMXguRjiAcuqNb8bOkJIf80v/knno/vF6mGy")
+    flag = check_hash(<span class="hljs-string">"scret"</span>,<span class="hljs-string">"$2b$12$y.NjTvOEkuJtLtr7.dMXguRjiAcuqNb8bOkJIf80v/knno/vF6mGy"</span>)
     print(flag)
 
-</code></pre>
-
+</code></pre></div>
             </div>
             <hr>
             <div>
@@ -386,7 +385,7 @@ if __name__ == '__main__':
 
   <footer class="text-center mt-5 py-3">
   <div class="footer-content">
-     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+     <a rel="nofollow noopener"><span>Hzjsea</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
   </div>
   
 

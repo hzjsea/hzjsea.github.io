@@ -67,7 +67,7 @@
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
-       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
+       href="/">&nbsp;<strong>hzjsea</strong>&nbsp;</a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
             data-target="#navbarSupportedContent"
@@ -194,7 +194,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      47
+      48
        分钟
     </span>
   
@@ -229,48 +229,48 @@
             <div class="markdown-body">
               <p>learn fastapi ⚡️</p>
 <a id="more"></a>
-<h1 id="使用fastapi框架"><a href="#使用fastapi框架" class="headerlink" title="使用fastapi框架"></a>使用fastapi框架</h1><h2 id="start"><a href="#start" class="headerlink" title="start"></a>start</h2><pre class=" language-py"><code class="language-py"># 引入包
-from fastapi import FastAPI
-from pydantic import BaseModel
+<h1 id="使用fastapi框架"><a href="#使用fastapi框架" class="headerlink" title="使用fastapi框架"></a>使用fastapi框架</h1><h2 id="start"><a href="#start" class="headerlink" title="start"></a>start</h2><div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-comment"><code class="language-hljs py"><span class="hljs-comment"># 引入包</span>
+<span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> FastAPI
+<span class="hljs-keyword">from</span> pydantic <span class="hljs-keyword">import</span> BaseModel
 
 app = FastAPI()
 
 
-class itemmodel(BaseModel):
-    name: str
-    price: float
-    is_offer: bool = None
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">itemmodel</span>(<span class="hljs-params">BaseModel</span>):</span>
+    name: <span class="hljs-built_in">str</span>
+    price: <span class="hljs-built_in">float</span>
+    is_offer: <span class="hljs-built_in">bool</span> = <span class="hljs-literal">None</span>
 
 
 
 
-# 定义根目录 方法为get 返回helloworld
-@app.get("/")
-def get_first():
-    return {
-        "hello": "world"
+<span class="hljs-comment"># 定义根目录 方法为get 返回helloworld</span>
+<span class="hljs-meta">@app.get("/")</span>
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_first</span>():</span>
+    <span class="hljs-keyword">return</span> {
+        <span class="hljs-string">"hello"</span>: <span class="hljs-string">"world"</span>
     }
 
 
-# 定义耳机目录以及输入参数
-# 定义方法，请求参数类型
-@app.get("/items/{item_id}")
-def get_second(item_id: int, itemmodel: itemmodel):
-    return {
-        "item_id": item_id,
-        "item": itemmodel.name
+<span class="hljs-comment"># 定义耳机目录以及输入参数</span>
+<span class="hljs-comment"># 定义方法，请求参数类型</span>
+<span class="hljs-meta">@app.get("/items/{item_id}")</span>
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_second</span>(<span class="hljs-params">item_id: <span class="hljs-built_in">int</span>, itemmodel: itemmodel</span>):</span>
+    <span class="hljs-keyword">return</span> {
+        <span class="hljs-string">"item_id"</span>: item_id,
+        <span class="hljs-string">"item"</span>: itemmodel.name
     }
 
-# 请求put
-@app.put("/items/{item_id}")
-def update_item(item_id: int, itemmodel: itemmodel):
-    return {
-        "item_name": itemmodel.name,
-        "item_id": item_id
+<span class="hljs-comment"># 请求put</span>
+<span class="hljs-meta">@app.put("/items/{item_id}")</span>
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">update_item</span>(<span class="hljs-params">item_id: <span class="hljs-built_in">int</span>, itemmodel: itemmodel</span>):</span>
+    <span class="hljs-keyword">return</span> {
+        <span class="hljs-string">"item_name"</span>: itemmodel.name,
+        <span class="hljs-string">"item_id"</span>: item_id
     }
-</code></pre>
+</code></pre></div>
 <p>运行项目<br>这里我所创建的py文件是server.py,所以启动方式是这样的 –reload的作用是，当代码变更的时候,服务器会重新开启</p>
-<pre class=" language-py"><code class="language-py">uvicorn server:app --reload</code></pre>
+<div class="code-wrapper"><pre class=" language-hljs py"><code class="language-hljs py">uvicorn server:app --reload</code></pre></div>
 <p><img src="http://img.noback.top/2020-03-08-00-46-06.png" srcset="/img/loading.gif" alt="2020-03-08-00-46-06"></p>
 <p><font color='red'>交互式api文档,fastapi具有良好的api文档，自带swagger接口文档</font></p>
 <p>访问地址 <a target="_blank" rel="noopener" href="http://127.0.0.1:8000/docs">http://127.0.0.1:8000/docs</a><br>自定义api文档地址  <a target="_blank" rel="noopener" href="http://127.0.0.1:8000/redoc">http://127.0.0.1:8000/redoc</a><br>你可以在更开放的端口上看到他  <a target="_blank" rel="noopener" href="http://127.0.0.1:8000/openapi.json">http://127.0.0.1:8000/openapi.json</a></p>
@@ -281,235 +281,261 @@ def update_item(item_id: int, itemmodel: itemmodel):
 <li>delete 删除</li>
 <li>post 添加<br>增删改查</li>
 </ul>
-<h3 id="路径参数-Path"><a href="#路径参数-Path" class="headerlink" title="路径参数  Path"></a>路径参数  Path</h3><pre class=" language-py"><code class="language-py">from fastapi import FastAPI
+<h3 id="路径参数-Path"><a href="#路径参数-Path" class="headerlink" title="路径参数  Path"></a>路径参数  Path</h3><div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword"><code class="language-hljs py"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> FastAPI
 app = FastAPI()
-@app.get("/")
-# 使用异步请求
-async def root():
-    return {
-        "message":"hello world"
+<span class="hljs-meta">@app.get("/")</span>
+<span class="hljs-comment"># 使用异步请求</span>
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">root</span>():</span>
+    <span class="hljs-keyword">return</span> {
+        <span class="hljs-string">"message"</span>:<span class="hljs-string">"hello world"</span>
     }
 
-# 路径参数
-@app.get('/items/{item_id}')
-async def get_single_item(item_id):
-    return {
-        "item_id" : item_id 
+<span class="hljs-comment"># 路径参数</span>
+<span class="hljs-meta">@app.get(&#x27;/items/{item_id}&#x27;)</span>
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_single_item</span>(<span class="hljs-params">item_id</span>):</span>
+    <span class="hljs-keyword">return</span> {
+        <span class="hljs-string">"item_id"</span> : item_id 
     }
 
-# 路径参数+ 参数类型限制
-@app.get('/items/{item_str}')
-async def get_str_item(item_str:str):
-    return {
-        "item_str": item_str
+<span class="hljs-comment"># 路径参数+ 参数类型限制</span>
+<span class="hljs-meta">@app.get(&#x27;/items/{item_str}&#x27;)</span>
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_str_item</span>(<span class="hljs-params">item_str:<span class="hljs-built_in">str</span></span>):</span>
+    <span class="hljs-keyword">return</span> {
+        <span class="hljs-string">"item_str"</span>: item_str
     }
 
-# 参数类型限制表示，你在url中输入的内容是string类型的，他会自动帮你转换其他类型的，比如说这里的 string - > int 
-@app.get('/items/{item_number}')
-async def get_number_item(item_number:int):
-    return {
-        "item_number": item_number
+<span class="hljs-comment"># 参数类型限制表示，你在url中输入的内容是string类型的，他会自动帮你转换其他类型的，比如说这里的 string - > int </span>
+<span class="hljs-meta">@app.get(&#x27;/items/{item_number}&#x27;)</span>
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_number_item</span>(<span class="hljs-params">item_number:<span class="hljs-built_in">int</span></span>):</span>
+    <span class="hljs-keyword">return</span> {
+        <span class="hljs-string">"item_number"</span>: item_number
     }
 
 
-# 路径参数的默认值
-@app.get('/items/{item_number}')
-async def get_number_item(item_number: int=1):
-    message = "这是默认的"
-    if item_number == 1:
-        message = "你输出了默认的参数值 1"
-    else:
-        message = "你输出了其他的参数{}".format(item_number)
+<span class="hljs-comment"># 路径参数的默认值</span>
+<span class="hljs-meta">@app.get(&#x27;/items/{item_number}&#x27;)</span>
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_number_item</span>(<span class="hljs-params">item_number: <span class="hljs-built_in">int</span>=<span class="hljs-number">1</span></span>):</span>
+    message = <span class="hljs-string">"这是默认的"</span>
+    <span class="hljs-keyword">if</span> item_number == <span class="hljs-number">1</span>:
+        message = <span class="hljs-string">"你输出了默认的参数值 1"</span>
+    <span class="hljs-keyword">else</span>:
+        message = <span class="hljs-string">"你输出了其他的参数{}"</span>.<span class="hljs-built_in">format</span>(item_number)
 
-    return {
-        "message":message
+    <span class="hljs-keyword">return</span> {
+        <span class="hljs-string">"message"</span>:message
 
     }
 
-</code></pre>
+</code></pre></div>
+
 <h4 id="路径参数的顺序"><a href="#路径参数的顺序" class="headerlink" title="路径参数的顺序"></a>路径参数的顺序</h4><p>fastapi的路径参数如果仅仅只有上面的内容，那么设计是不合理的，比如当你创建如下两个路径</p>
-<pre class=" language-py"><code class="language-py">
-from fastapi import  FastAPI
+<div class="code-wrapper"><pre class=" language-hljs py"><code class="language-hljs py">
+<span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span>  FastAPI
 
 app  = FastAPI()
 
-static_url = "http://127.0.0.1:8000{0}"
+static_url = <span class="hljs-string">"http://127.0.0.1:8000{0}"</span>
 
-@app.get("/")
-async def root():
-    return {
-        "path1":static_url.format("/name/me"),
-        "path":static_url.format("/name/{you can input something}")
+<span class="hljs-meta">@app.get("/")</span>
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">root</span>():</span>
+    <span class="hljs-keyword">return</span> {
+        <span class="hljs-string">"path1"</span>:static_url.<span class="hljs-built_in">format</span>(<span class="hljs-string">"/name/me"</span>),
+        <span class="hljs-string">"path"</span>:static_url.<span class="hljs-built_in">format</span>(<span class="hljs-string">"/name/{you can input something}"</span>)
     }
-@app.get("/name/me")
-async def return_name():
-    return {"name":"this name is me "}
+<span class="hljs-meta">@app.get("/name/me")</span>
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">return_name</span>():</span>
+    <span class="hljs-keyword">return</span> {<span class="hljs-string">"name"</span>:<span class="hljs-string">"this name is me "</span>}
 
-@app.get("/name/{name}")
-async def return_name(name:str):
-    return {"name":"you  input name is {}".format(name)}</code></pre>
+<span class="hljs-meta">@app.get("/name/{name}")</span>
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">return_name</span>(<span class="hljs-params">name:<span class="hljs-built_in">str</span></span>):</span>
+    <span class="hljs-keyword">return</span> {<span class="hljs-string">"name"</span>:<span class="hljs-string">"you  input name is {}"</span>.<span class="hljs-built_in">format</span>(name)}</code></pre></div>
 <p>这里在定制了两个路径参数其中第一个<code>/name/me</code> 返回this name is me  第二个<code>/name&#123;name&#125;</code> 返回 you input name is {name}<br>而fastapi的执行顺序是从上到下的，如果我们把第二个接口放到第一位，当我们输入<code>me</code>的时候，程序无法判断我们使用的是哪个接口</p>
 <p><font color='red'>因此，一般有实例的api需要放在最前面</font></p>
 <h3 id="枚举-预定义值"><a href="#枚举-预定义值" class="headerlink" title="枚举 预定义值"></a>枚举 预定义值</h3><p><font color='red'>类似于选项框类的，需要预定义值得时候，可以使用枚举</font></p>
-<pre class=" language-py"><code class="language-py">from fastapi import FastAPI
-from enum import Enum
+<div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword"><code class="language-hljs py"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> FastAPI
+<span class="hljs-keyword">from</span> enum <span class="hljs-keyword">import</span> Enum
 
 app = FastAPI()
 
-class PeopleModel(str,Enum):
-    name = 'hzj',
-    age = 12,
-    text = 'like PeopleModel'
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">PeopleModel</span>(<span class="hljs-params"><span class="hljs-built_in">str</span>,Enum</span>):</span>
+    name = <span class="hljs-string">&#x27;hzj&#x27;</span>,
+    age = <span class="hljs-number">12</span>,
+    text = <span class="hljs-string">&#x27;like PeopleModel&#x27;</span>
 
-@app.get('/items/{model_name}')
-def get_people(model_name: PeopleModel):
-    if model_name == PeopleModel.name:
-        return {"model_name":model_name,"input_message":'show PeopleModel.name'}
-    if model_name == PeopleModel.age:
-        return {"model_name":model_name,"input_message":'show PeopleModel.age'}
-    if model_name == PeopleModel.like:
-        return {"model_name":model_name,"input_message":'show PeopleModel.like'}</code></pre>
+<span class="hljs-meta">@app.get(&#x27;/items/{model_name}&#x27;)</span>
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_people</span>(<span class="hljs-params">model_name: PeopleModel</span>):</span>
+    <span class="hljs-keyword">if</span> model_name == PeopleModel.name:
+        <span class="hljs-keyword">return</span> {<span class="hljs-string">"model_name"</span>:model_name,<span class="hljs-string">"input_message"</span>:<span class="hljs-string">&#x27;show PeopleModel.name&#x27;</span>}
+    <span class="hljs-keyword">if</span> model_name == PeopleModel.age:
+        <span class="hljs-keyword">return</span> {<span class="hljs-string">"model_name"</span>:model_name,<span class="hljs-string">"input_message"</span>:<span class="hljs-string">&#x27;show PeopleModel.age&#x27;</span>}
+    <span class="hljs-keyword">if</span> model_name == PeopleModel.like:
+        <span class="hljs-keyword">return</span> {<span class="hljs-string">"model_name"</span>:model_name,<span class="hljs-string">"input_message"</span>:<span class="hljs-string">&#x27;show PeopleModel.like&#x27;</span>}</code></pre></div>
 <p>在python3.4之后其实就已经支持枚举类型了，和平常的枚举使用情况一样，没什么差别</p>
 <h3 id="查询参数-Query"><a href="#查询参数-Query" class="headerlink" title="查询参数 Query"></a>查询参数 Query</h3><p>和路径参数不同的是，我们可以在方法中输入请求方法中没有出现过的参数，这些参数会被解释成查询参数</p>
-<pre class=" language-py"><code class="language-py">from fastapi import FastAPI
+<div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword"><code class="language-hljs py"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> FastAPI
 
 app = FastAPI()
 
-fake_items_db = [{"item_name": "Foo"}, {"item_name": "Bar"}, {"item_name": "Baz"}]
+fake_items_db = [{<span class="hljs-string">"item_name"</span>: <span class="hljs-string">"Foo"</span>}, {<span class="hljs-string">"item_name"</span>: <span class="hljs-string">"Bar"</span>}, {<span class="hljs-string">"item_name"</span>: <span class="hljs-string">"Baz"</span>}]
 
-# 这里可以使用查询参数
-# 请求形式 http://127.0.0.1:8000/items/?skip=0&limit=1
-# or http://127.0.0.1:8000/items/
-# 步进的形式，对列表做切割
-@app.get('/items/')
-async def read_item(skip: int = 1,limit: int = 2):
-    return fake_items_db[skip:skip+limit]
+<span class="hljs-comment"># 这里可以使用查询参数</span>
+<span class="hljs-comment"># 请求形式 http://127.0.0.1:8000/items/?skip=0&limit=1</span>
+<span class="hljs-comment"># or http://127.0.0.1:8000/items/</span>
+<span class="hljs-comment"># 步进的形式，对列表做切割</span>
+<span class="hljs-meta">@app.get(&#x27;/items/&#x27;)</span>
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">read_item</span>(<span class="hljs-params">skip: <span class="hljs-built_in">int</span> = <span class="hljs-number">1</span>,limit: <span class="hljs-built_in">int</span> = <span class="hljs-number">2</span></span>):</span>
+    <span class="hljs-keyword">return</span> fake_items_db[skip:skip+limit]
 
-# 这里只有路径参数
-# 请求形式 http://127.0.0.1:8000/items/1/2
-@app.get('/items/{skip}/{limit}')
-async def read_item(skip: int ,limit: int):
-    return fake_items_db[skip:skip+limit]</code></pre>
+<span class="hljs-comment"># 这里只有路径参数</span>
+<span class="hljs-comment"># 请求形式 http://127.0.0.1:8000/items/1/2</span>
+<span class="hljs-meta">@app.get(&#x27;/items/{skip}/{limit}&#x27;)</span>
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">read_item</span>(<span class="hljs-params">skip: <span class="hljs-built_in">int</span> ,limit: <span class="hljs-built_in">int</span></span>):</span>
+    <span class="hljs-keyword">return</span> fake_items_db[skip:skip+limit]</code></pre></div>
+
 <h3 id="查询参数中的可选与必选"><a href="#查询参数中的可选与必选" class="headerlink" title="查询参数中的可选与必选"></a>查询参数中的可选与必选</h3><p>在定义查询参数的时候，我们定义三种查询参数的形式</p>
 <ol>
 <li>可选参数,即默认为None</li>
 <li>必选参数,即传入参数，且初始不为None</li>
-<li>必选参数+默认值<pre class=" language-py"><code class="language-py">#!/usr/bin/env python3
-# encoding: utf-8
-'''
-@author: hzj
-@file: 03_queryParameters.py
-@time: 2020/3/15 12:13 上午
-'''
-</code></pre>
-</li>
-</ol>
-<p>from fastapi import  FastAPI</p>
-<p>app = FastAPI()</p>
-<p>@app.get(“/“)<br>async def root():<br>    return {“speak”:”helloworld”}</p>
-<p>#无查询参数<br>@app.get(“/name/“)<br>async def get_name():<br>    return {“name”:”hzj”}</p>
-<h1 id="查询可选参数-默认为None"><a href="#查询可选参数-默认为None" class="headerlink" title="查询可选参数,默认为None"></a>查询可选参数,默认为None</h1><p>@app.get(“/name/“)<br>async def  get_age(age :int=None ):<br>    message = “his age is {}”<br>    if age is None:<br>        message = “he dont have age”<br>    else:<br>        message = message.format(age)<br>    return {<br>        “message”:”his name is and {}”.format(message)<br>    }</p>
-<p>#查询必选参数<br>@app.get(“/name/“)<br>async def  get_age_one(age :int ):<br>    return {<br>        “message”:”his name is  and his age is {0}”.format(age)<br>    }</p>
-<h1 id="查询必须参数默认"><a href="#查询必须参数默认" class="headerlink" title="查询必须参数默认"></a>查询必须参数默认</h1><p>@app.get(“/name/“)</p>
-<p>async def  get_age_one(age :int=20 ):<br>    return {<br>        “message”:”his name is and his age is {0}”.format(age)<br>    }</p>
-<pre><code>无查询参数时候，只是简单的get路径参数就可以了
-![2020-03-31-10-16-27](http://img.noback.top/2020-03-31-10-16-27.png)
+<li>必选参数+默认值<div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-comment"><code class="language-hljs py"><span class="hljs-comment">#!/usr/bin/env python3</span>
+<span class="hljs-comment"># encoding: utf-8</span>
+<span class="hljs-string">&#x27;&#x27;&#x27;</span>
+<span class="hljs-string">@author: hzj</span>
+<span class="hljs-string">@file: 03_queryParameters.py</span>
+<span class="hljs-string">@time: 2020/3/15 12:13 上午</span>
+<span class="hljs-string">&#x27;&#x27;&#x27;</span>
 
-有查询参数的时候，如果有默认值None或者默认为其他内容，则为可选查询参数 
-![2020-03-31-10-19-48](http://img.noback.top/2020-03-31-10-19-48.png)
+<span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span>  FastAPI
 
-有查询参数，没有默认值，只定义了一个类型，则为必选参数
-![2020-03-31-10-20-32](http://img.noback.top/2020-03-31-10-20-32.png)
-
-
-
-
-### 请求体
-除了get方法 fastapi还可以创建实例，请求体可以对应数据库里面查询出来的内容，以json的形式出现
-```python
-#!/usr/bin/env python3
-# encoding: utf-8
-&#39;&#39;&#39;
-@author: hzj
-@file: 04_request_body.py
-@time: 2020/3/15 12:30 上午
-&#39;&#39;&#39;
-
-from fastapi import FastAPI
-from pydantic import BaseModel
-
-
-class Item(BaseModel):
-    name: str
-    description: str = None
-    price: float
-    tax: float = None
 app = FastAPI()
 
 
-@app.post(&quot;/items/&quot;)
-async def create_item(item: Item):
-    return item</code></pre>
+<span class="hljs-meta">@app.get("/")</span>
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">root</span>():</span>
+    <span class="hljs-keyword">return</span> {<span class="hljs-string">"speak"</span>:<span class="hljs-string">"helloworld"</span>}
+
+<span class="hljs-comment">#无查询参数</span>
+<span class="hljs-meta">@app.get("/name/")</span>
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_name</span>():</span>
+    <span class="hljs-keyword">return</span> {<span class="hljs-string">"name"</span>:<span class="hljs-string">"hzj"</span>}
+
+<span class="hljs-comment"># 查询可选参数,默认为None</span>
+<span class="hljs-meta">@app.get("/name/")</span>
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span>  <span class="hljs-title">get_age</span>(<span class="hljs-params">age :<span class="hljs-built_in">int</span>=<span class="hljs-literal">None</span> </span>):</span>
+    message = <span class="hljs-string">"his age is {}"</span>
+    <span class="hljs-keyword">if</span> age <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>:
+        message = <span class="hljs-string">"he dont have age"</span>
+    <span class="hljs-keyword">else</span>:
+        message = message.<span class="hljs-built_in">format</span>(age)
+    <span class="hljs-keyword">return</span> {
+        <span class="hljs-string">"message"</span>:<span class="hljs-string">"his name is and {}"</span>.<span class="hljs-built_in">format</span>(message)
+    }
+
+<span class="hljs-comment">#查询必选参数</span>
+<span class="hljs-meta">@app.get("/name/")</span>
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span>  <span class="hljs-title">get_age_one</span>(<span class="hljs-params">age :<span class="hljs-built_in">int</span> </span>):</span>
+    <span class="hljs-keyword">return</span> {
+        <span class="hljs-string">"message"</span>:<span class="hljs-string">"his name is  and his age is {0}"</span>.<span class="hljs-built_in">format</span>(age)
+    }
+
+<span class="hljs-comment"># 查询必须参数默认</span>
+<span class="hljs-meta">@app.get("/name/")</span>
+
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span>  <span class="hljs-title">get_age_one</span>(<span class="hljs-params">age :<span class="hljs-built_in">int</span>=<span class="hljs-number">20</span> </span>):</span>
+    <span class="hljs-keyword">return</span> {
+        <span class="hljs-string">"message"</span>:<span class="hljs-string">"his name is and his age is {0}"</span>.<span class="hljs-built_in">format</span>(age)
+    }</code></pre></div>
+无查询参数时候，只是简单的get路径参数就可以了<br><img src="http://img.noback.top/2020-03-31-10-16-27.png" srcset="/img/loading.gif" alt="2020-03-31-10-16-27"></li>
+</ol>
+<p>有查询参数的时候，如果有默认值None或者默认为其他内容，则为可选查询参数<br><img src="http://img.noback.top/2020-03-31-10-19-48.png" srcset="/img/loading.gif" alt="2020-03-31-10-19-48"></p>
+<p>有查询参数，没有默认值，只定义了一个类型，则为必选参数<br><img src="http://img.noback.top/2020-03-31-10-20-32.png" srcset="/img/loading.gif" alt="2020-03-31-10-20-32"></p>
+<h3 id="请求体"><a href="#请求体" class="headerlink" title="请求体"></a>请求体</h3><p>除了get方法 fastapi还可以创建实例，请求体可以对应数据库里面查询出来的内容，以json的形式出现</p>
+<div class="code-wrapper"><pre class=" language-hljs python"><span class="hljs-comment"><code class="language-hljs python"><span class="hljs-comment">#!/usr/bin/env python3</span>
+<span class="hljs-comment"># encoding: utf-8</span>
+<span class="hljs-string">&#x27;&#x27;&#x27;</span>
+<span class="hljs-string">@author: hzj</span>
+<span class="hljs-string">@file: 04_request_body.py</span>
+<span class="hljs-string">@time: 2020/3/15 12:30 上午</span>
+<span class="hljs-string">&#x27;&#x27;&#x27;</span>
+
+<span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> FastAPI
+<span class="hljs-keyword">from</span> pydantic <span class="hljs-keyword">import</span> BaseModel
+
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Item</span>(<span class="hljs-params">BaseModel</span>):</span>
+    name: <span class="hljs-built_in">str</span>
+    description: <span class="hljs-built_in">str</span> = <span class="hljs-literal">None</span>
+    price: <span class="hljs-built_in">float</span>
+    tax: <span class="hljs-built_in">float</span> = <span class="hljs-literal">None</span>
+app = FastAPI()
+
+
+<span class="hljs-meta">@app.post("/items/")</span>
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">create_item</span>(<span class="hljs-params">item: Item</span>):</span>
+    <span class="hljs-keyword">return</span> item</code></pre></div>
+
 <h3 id="查询参数和字符串验证"><a href="#查询参数和字符串验证" class="headerlink" title="查询参数和字符串验证"></a>查询参数和字符串验证</h3><p>Query可以对查询参数做值上面的限定，当你查询某一个参数的时候，如果这个参数没有满足Query中的限制内容就无法查询</p>
 <p>如下有这么一个程序，输入名字查询结果</p>
-<pre class=" language-py"><code class="language-py">from fastapi import FastAPI
+<div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword"><code class="language-hljs py"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> FastAPI
 
 app = FastAPI()
 
 name_server = [
-    {"name":"hzj"},
-    {"name":"xxx"},
-    {"name":"yyy"},
-    {"name":"qqq"},
-    {"name":"fff"},
+    {<span class="hljs-string">"name"</span>:<span class="hljs-string">"hzj"</span>},
+    {<span class="hljs-string">"name"</span>:<span class="hljs-string">"xxx"</span>},
+    {<span class="hljs-string">"name"</span>:<span class="hljs-string">"yyy"</span>},
+    {<span class="hljs-string">"name"</span>:<span class="hljs-string">"qqq"</span>},
+    {<span class="hljs-string">"name"</span>:<span class="hljs-string">"fff"</span>},
 ]
-@app.get('/user/')
-def get_user(name: str):
-    for name_s in name_server:
-        if name in name_s.values():
-            return name_s
-        else:
-            return {"msg":"不存在你要查询的内容"}
+<span class="hljs-meta">@app.get(&#x27;/user/&#x27;)</span>
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_user</span>(<span class="hljs-params">name: <span class="hljs-built_in">str</span></span>):</span>
+    <span class="hljs-keyword">for</span> name_s <span class="hljs-keyword">in</span> name_server:
+        <span class="hljs-keyword">if</span> name <span class="hljs-keyword">in</span> name_s.values():
+            <span class="hljs-keyword">return</span> name_s
+        <span class="hljs-keyword">else</span>:
+            <span class="hljs-keyword">return</span> {<span class="hljs-string">"msg"</span>:<span class="hljs-string">"不存在你要查询的内容"</span>}
 
-# url  http://127.0.0.1:8000/user/?name=hzj
-# res {name: "hzj"}</code></pre>
+<span class="hljs-comment"># url  http://127.0.0.1:8000/user/?name=hzj</span>
+<span class="hljs-comment"># res {name: "hzj"}</span></code></pre></div>
 <p>但是现在我们要把name这个查询参数做字符上的限制</p>
-<pre class=" language-py"><code class="language-py">from fastapi import FastAPI
-from fastapi import Query
+<div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword"><code class="language-hljs py"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> FastAPI
+<span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> Query
 app = FastAPI()
 
 name_server = [
-    {"name":"hzj"},
-    {"name":"xxx"},
-    {"name":"yyy"},
-    {"name":"qqq"},
-    {"name":"fff"},
+    {<span class="hljs-string">"name"</span>:<span class="hljs-string">"hzj"</span>},
+    {<span class="hljs-string">"name"</span>:<span class="hljs-string">"xxx"</span>},
+    {<span class="hljs-string">"name"</span>:<span class="hljs-string">"yyy"</span>},
+    {<span class="hljs-string">"name"</span>:<span class="hljs-string">"qqq"</span>},
+    {<span class="hljs-string">"name"</span>:<span class="hljs-string">"fff"</span>},
 ]
 
-@app.get('/user/')
-def get_user(name: str = Query(None,max_length=3,min_length=1,)):
-    for name_s in name_server:
-        if name in name_s.values():
-            return name_s
-        else:
-            return {"msg":"不存在你要查询的内容"}
+<span class="hljs-meta">@app.get(&#x27;/user/&#x27;)</span>
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_user</span>(<span class="hljs-params">name: <span class="hljs-built_in">str</span> = Query(<span class="hljs-params"><span class="hljs-literal">None</span>,max_length=<span class="hljs-number">3</span>,min_length=<span class="hljs-number">1</span>,</span>)</span>):</span>
+    <span class="hljs-keyword">for</span> name_s <span class="hljs-keyword">in</span> name_server:
+        <span class="hljs-keyword">if</span> name <span class="hljs-keyword">in</span> name_s.values():
+            <span class="hljs-keyword">return</span> name_s
+        <span class="hljs-keyword">else</span>:
+            <span class="hljs-keyword">return</span> {<span class="hljs-string">"msg"</span>:<span class="hljs-string">"不存在你要查询的内容"</span>}
 
-## 其中None为查询参数name 的默认值</code></pre>
+<span class="hljs-comment">## 其中None为查询参数name 的默认值</span></code></pre></div>
+
 <p><font color='red'>比如现在我们用上面的代码中设置请求的查询参数最大长度是1个字符，使用swagger再次查询hzj这个名字是否存在于name_server中的时候，会出现报错</font></p>
 <p><img src="http://img.noback.top/2020-03-31-10-30-41.png" srcset="/img/loading.gif" alt="2020-03-31-10-30-41"></p>
 <p>Query的约束和后面的Path约束的参数一样，他们来自同一个类，参数为</p>
-<pre class=" language-python"><code class="language-python">  alias<span class="token punctuation">:</span> str <span class="token operator">=</span> None<span class="token punctuation">,</span>
-    title<span class="token punctuation">:</span> str <span class="token operator">=</span> None<span class="token punctuation">,</span>
-    description<span class="token punctuation">:</span> str <span class="token operator">=</span> None<span class="token punctuation">,</span>
-    gt<span class="token punctuation">:</span> float <span class="token operator">=</span> None<span class="token punctuation">,</span>
-    ge<span class="token punctuation">:</span> float <span class="token operator">=</span> None<span class="token punctuation">,</span>
-    lt<span class="token punctuation">:</span> float <span class="token operator">=</span> None<span class="token punctuation">,</span>
-    le<span class="token punctuation">:</span> float <span class="token operator">=</span> None<span class="token punctuation">,</span>
-    min_length<span class="token punctuation">:</span> int <span class="token operator">=</span> None<span class="token punctuation">,</span>
-    max_length<span class="token punctuation">:</span> int <span class="token operator">=</span> None<span class="token punctuation">,</span>
-    regex<span class="token punctuation">:</span> str <span class="token operator">=</span> None<span class="token punctuation">,</span>
-    deprecated<span class="token punctuation">:</span> bool <span class="token operator">=</span> None<span class="token punctuation">,</span>
-    <span class="token operator">**</span>extra<span class="token punctuation">:</span> Any<span class="token punctuation">,</span></code></pre>
+<div class="code-wrapper"><pre class=" language-hljs python">alias: <span class="hljs-built_in">str</span> = <span class="hljs-literal"><code class="language-hljs python">alias: <span class="hljs-built_in">str</span> = <span class="hljs-literal">None</span>,
+  title: <span class="hljs-built_in">str</span> = <span class="hljs-literal">None</span>,
+  description: <span class="hljs-built_in">str</span> = <span class="hljs-literal">None</span>,
+  gt: <span class="hljs-built_in">float</span> = <span class="hljs-literal">None</span>,
+  ge: <span class="hljs-built_in">float</span> = <span class="hljs-literal">None</span>,
+  lt: <span class="hljs-built_in">float</span> = <span class="hljs-literal">None</span>,
+  le: <span class="hljs-built_in">float</span> = <span class="hljs-literal">None</span>,
+  min_length: <span class="hljs-built_in">int</span> = <span class="hljs-literal">None</span>,
+  max_length: <span class="hljs-built_in">int</span> = <span class="hljs-literal">None</span>,
+  regex: <span class="hljs-built_in">str</span> = <span class="hljs-literal">None</span>,
+  deprecated: <span class="hljs-built_in">bool</span> = <span class="hljs-literal">None</span>,
+  **extra: Any,</code></pre></div>
+
+
 <h3 id="None与…以及default"><a href="#None与…以及default" class="headerlink" title="None与…以及default"></a>None与…以及default</h3><p>虽然个人觉得这个…的设定有点奇葩，但是后来仔细看了一下文档，发现是有用处的<br>之前我们讲过在查询参数中的三种传入形式</p>
 <ul>
 <li>在查询的时候，默认查询参数为None或者其他内容，只要有默认值   可选查询参数</li>
@@ -519,70 +545,73 @@ def get_user(name: str = Query(None,max_length=3,min_length=1,)):
 <p>这是之前总结的</p>
 <p><font color='red'>现在要为这个查询参数在格式上或者说插入值上做一些限定，用的是Query这个关键字，但同样的在插入的形式上也要做限定，这个时候就要用到…这个关键字了</font></p>
 <ul>
-<li>在查询的时候，默认查询参数为None或者其他内容，只要有默认值，  可选查询参数<pre class=" language-py"><code class="language-py">@app.get('/user/')
-def get_user(name: str = Query(default="hzj",max_length=1,min_length=1,)):</code></pre>
-</li>
-<li>在查询的时候，默认查询参数为某一类型 无默认值  必选查询参数<pre class=" language-py"><code class="language-py">@app.get('/user/')
-def get_user(name: str = Query(...,max_length=1,min_length=1,)):</code></pre>
+<li>在查询的时候，默认查询参数为None或者其他内容，只要有默认值，  可选查询参数<div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-meta"><code class="language-hljs py"><span class="hljs-meta">@app.get(&#x27;/user/&#x27;)</span>
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_user</span>(<span class="hljs-params">name: <span class="hljs-built_in">str</span> = Query(<span class="hljs-params">default=<span class="hljs-string">"hzj"</span>,max_length=<span class="hljs-number">1</span>,min_length=<span class="hljs-number">1</span>,</span>)</span>):</span></code></pre></div></li>
+<li>在查询的时候，默认查询参数为某一类型 无默认值  必选查询参数<div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-meta"><code class="language-hljs py"><span class="hljs-meta">@app.get(&#x27;/user/&#x27;)</span>
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_user</span>(<span class="hljs-params">name: <span class="hljs-built_in">str</span> = Query(<span class="hljs-params">...,max_length=<span class="hljs-number">1</span>,min_length=<span class="hljs-number">1</span>,</span>)</span>):</span></code></pre></div>
+
 </li>
 </ul>
 <p><font color='red'>这些关键字在Path路径查询参数中同样适用</font></p>
 <h3 id="路径参数和数值验证"><a href="#路径参数和数值验证" class="headerlink" title="路径参数和数值验证"></a>路径参数和数值验证</h3><p>在路径参数中，同样也可以像Query一样做参数上的约束</p>
-<pre class=" language-py"><code class="language-py">from fastapi import FastAPI, Path, Query
+<div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword"><code class="language-hljs py"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> FastAPI, Path, Query
 app = FastAPI()
-@app.get("/items/{item_id}")
-async def read_items(
-    item_id: int = Path(..., title="The ID of the item to get"),
-    q: str = Query(None, alias="item-query"),
-):
-    results = {"item_id": item_id}
-    if q:
-        results.update({"q": q})
-    return results</code></pre>
+<span class="hljs-meta">@app.get("/items/{item_id}")</span>
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">read_items</span>(<span class="hljs-params"></span></span>
+<span class="hljs-function"><span class="hljs-params">    item_id: <span class="hljs-built_in">int</span> = Path(<span class="hljs-params">..., title=<span class="hljs-string">"The ID of the item to get"</span></span>),</span></span>
+<span class="hljs-function"><span class="hljs-params">    q: <span class="hljs-built_in">str</span> = Query(<span class="hljs-params"><span class="hljs-literal">None</span>, alias=<span class="hljs-string">"item-query"</span></span>),</span></span>
+<span class="hljs-function"><span class="hljs-params"></span>):</span>
+    results = {<span class="hljs-string">"item_id"</span>: item_id}
+    <span class="hljs-keyword">if</span> q:
+        results.update({<span class="hljs-string">"q"</span>: q})
+    <span class="hljs-keyword">return</span> results</code></pre></div>
 <p>Path用于限制路径参数 …表示该参数是必填的</p>
 <p>如果你想要让q也称为必填的参数，你可以这样写</p>
-<pre class=" language-python"><code class="language-python"><span class="token keyword">from</span> fastapi <span class="token keyword">import</span> FastAPI<span class="token punctuation">,</span> Path<span class="token punctuation">,</span> Query
-app <span class="token operator">=</span> FastAPI<span class="token punctuation">(</span><span class="token punctuation">)</span>
-@app<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">"/items/{item_id}"</span><span class="token punctuation">)</span>
-<span class="token keyword">async</span> <span class="token keyword">def</span> <span class="token function">read_items</span><span class="token punctuation">(</span>
-    item_id<span class="token punctuation">:</span> int <span class="token operator">=</span> Path<span class="token punctuation">(</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">,</span> title<span class="token operator">=</span><span class="token string">"The ID of the item to get"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
-    q<span class="token punctuation">:</span> str <span class="token operator">=</span> Query<span class="token punctuation">(</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">,</span> alias<span class="token operator">=</span><span class="token string">"item-query"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
-<span class="token punctuation">)</span><span class="token punctuation">:</span>
-    results <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token string">"item_id"</span><span class="token punctuation">:</span> item_id<span class="token punctuation">}</span>
-    results<span class="token punctuation">.</span>update<span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token string">"q"</span><span class="token punctuation">:</span> q<span class="token punctuation">}</span><span class="token punctuation">)</span>
-    <span class="token keyword">return</span> results</code></pre>
+<div class="code-wrapper"><pre class=" language-hljs python"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword"><code class="language-hljs python"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> FastAPI, Path, Query
+app = FastAPI()
+<span class="hljs-meta">@app.get("/items/{item_id}")</span>
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">read_items</span>(<span class="hljs-params"></span></span>
+<span class="hljs-function"><span class="hljs-params">    item_id: <span class="hljs-built_in">int</span> = Path(<span class="hljs-params">..., title=<span class="hljs-string">"The ID of the item to get"</span></span>),</span></span>
+<span class="hljs-function"><span class="hljs-params">    q: <span class="hljs-built_in">str</span> = Query(<span class="hljs-params">..., alias=<span class="hljs-string">"item-query"</span></span>),</span></span>
+<span class="hljs-function"><span class="hljs-params"></span>):</span>
+    results = {<span class="hljs-string">"item_id"</span>: item_id}
+    results.update({<span class="hljs-string">"q"</span>: q})
+    <span class="hljs-keyword">return</span> results</code></pre></div>
 <p>这和我们之前写的必须查询参数是一样的</p>
-<pre class=" language-python"><code class="language-python">    q<span class="token punctuation">:</span> str <span class="token operator">=</span> Query<span class="token punctuation">(</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">,</span> alias<span class="token operator">=</span><span class="token string">"item-query"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
-    <span class="token comment" spellcheck="true"># or</span>
-    q<span class="token punctuation">:</span> str </code></pre>
+<div class="code-wrapper"><pre class=" language-hljs python">q: <span class="hljs-built_in">str</span> = Query(..., alias=<span class="hljs-string"><code class="language-hljs python">q: <span class="hljs-built_in">str</span> = Query(..., alias=<span class="hljs-string">"item-query"</span>),
+<span class="hljs-comment"># or</span>
+q: <span class="hljs-built_in">str</span></code></pre></div>
 <p>但是这里我们用到了Query可以做更多的东西</p>
 <p>当然你也可以这样写</p>
-<pre class=" language-python"><code class="language-python"><span class="token keyword">from</span> fastapi <span class="token keyword">import</span> FastAPI<span class="token punctuation">,</span> Path<span class="token punctuation">,</span> Query
-app <span class="token operator">=</span> FastAPI<span class="token punctuation">(</span><span class="token punctuation">)</span>
-@app<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">"/items/{item_id}"</span><span class="token punctuation">)</span>
-<span class="token keyword">async</span> <span class="token keyword">def</span> <span class="token function">read_items</span><span class="token punctuation">(</span>
-    q<span class="token punctuation">:</span> str<span class="token punctuation">,</span>item_id<span class="token punctuation">:</span> int <span class="token operator">=</span> Path<span class="token punctuation">(</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">,</span> title<span class="token operator">=</span><span class="token string">"The ID of the item to get"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
-<span class="token punctuation">)</span><span class="token punctuation">:</span>
-    results <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token string">"item_id"</span><span class="token punctuation">:</span> item_id<span class="token punctuation">}</span>
-    results<span class="token punctuation">.</span>update<span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token string">"q"</span><span class="token punctuation">:</span> q<span class="token punctuation">}</span><span class="token punctuation">)</span>
-    <span class="token keyword">return</span> results</code></pre>
+<div class="code-wrapper"><pre class=" language-hljs python"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword"><code class="language-hljs python"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> FastAPI, Path, Query
+app = FastAPI()
+<span class="hljs-meta">@app.get("/items/{item_id}")</span>
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">read_items</span>(<span class="hljs-params"></span></span>
+<span class="hljs-function"><span class="hljs-params">    q: <span class="hljs-built_in">str</span>,item_id: <span class="hljs-built_in">int</span> = Path(<span class="hljs-params">..., title=<span class="hljs-string">"The ID of the item to get"</span></span>),</span></span>
+<span class="hljs-function"><span class="hljs-params"></span>):</span>
+    results = {<span class="hljs-string">"item_id"</span>: item_id}
+    results.update({<span class="hljs-string">"q"</span>: q})
+    <span class="hljs-keyword">return</span> results</code></pre></div>
+
 <p><font color='red'>数值验证</font></p>
-<pre class=" language-py"><code class="language-py">from fastapi import FastAPI, Path, Query
+<div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword"><code class="language-hljs py"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> FastAPI, Path, Query
 
 app = FastAPI()
 
 
-@app.get("/items/{item_id}")
-async def read_items(
-    *,
-    item_id: int = Path(..., title="The ID of the item to get", ge=0, le=1000),
-    q: str,
-    size: float = Query(..., gt=0, lt=10.5)
-):
-    results = {"item_id": item_id}
-    if q:
-        results.update({"q": q})
-    return results</code></pre>
+<span class="hljs-meta">@app.get("/items/{item_id}")</span>
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">read_items</span>(<span class="hljs-params"></span></span>
+<span class="hljs-function"><span class="hljs-params">    *,</span></span>
+<span class="hljs-function"><span class="hljs-params">    item_id: <span class="hljs-built_in">int</span> = Path(<span class="hljs-params">..., title=<span class="hljs-string">"The ID of the item to get"</span>, ge=<span class="hljs-number">0</span>, le=<span class="hljs-number">1000</span></span>),</span></span>
+<span class="hljs-function"><span class="hljs-params">    q: <span class="hljs-built_in">str</span>,</span></span>
+<span class="hljs-function"><span class="hljs-params">    size: <span class="hljs-built_in">float</span> = Query(<span class="hljs-params">..., gt=<span class="hljs-number">0</span>, lt=<span class="hljs-number">10.5</span></span>)</span></span>
+<span class="hljs-function"><span class="hljs-params"></span>):</span>
+    results = {<span class="hljs-string">"item_id"</span>: item_id}
+    <span class="hljs-keyword">if</span> q:
+        results.update({<span class="hljs-string">"q"</span>: q})
+    <span class="hljs-keyword">return</span> results</code></pre></div>
+
+
 <h3 id=""><a href="#" class="headerlink" title="*"></a>*</h3><p>这边这个<code>*</code>做了什么动作</p>
 <p><font color='red'>文档里面说这个*没有做任何的动作。只是声明了后面所有传入的参数都为键值对的形式传入</font></p>
 <blockquote>
@@ -590,206 +619,208 @@ async def read_items(
 </blockquote>
 <p>之前在vscode中试着把<code>*</code>去掉，但是没什么反应，后面尝试Pycharm实例一下，发现如果去掉<code>*</code>,就会报一个无法识别的错误<br><img src="http://img.noback.top/2020-03-31-13-05-30.png" srcset="/img/loading.gif" alt="2020-03-31-13-05-30"></p>
 <h3 id="模型类"><a href="#模型类" class="headerlink" title="模型类"></a>模型类</h3><p>类比django中的django-model 在fastapi中我们还缺少model类，于是我们借用了Pydatic中的模型类，来完成模型的实现</p>
-<pre class=" language-py"><code class="language-py">from fastapi import FastAPI, Path
-from pydantic import BaseModel
+<div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword"><code class="language-hljs py"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> FastAPI, Path
+<span class="hljs-keyword">from</span> pydantic <span class="hljs-keyword">import</span> BaseModel
 
 app = FastAPI()
 
 
-class Item(BaseModel):
-    name: str
-    description: str = None
-    price: float
-    tax: float = None
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Item</span>(<span class="hljs-params">BaseModel</span>):</span>
+    name: <span class="hljs-built_in">str</span>
+    description: <span class="hljs-built_in">str</span> = <span class="hljs-literal">None</span>
+    price: <span class="hljs-built_in">float</span>
+    tax: <span class="hljs-built_in">float</span> = <span class="hljs-literal">None</span>
 
 
-@app.put("/items/{item_id}")
-async def update_item(
-    *,
-    item_id: int = Path(..., title="The ID of the item to get", ge=0, le=1000),
-    q: str = None,
-    item: Item = None,
-):
-    results = {"item_id": item_id}
-    if q:
-        results.update({"q": q})
-    if item:
-        results.update({"item": item})
-    return results</code></pre>
+<span class="hljs-meta">@app.put("/items/{item_id}")</span>
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">update_item</span>(<span class="hljs-params"></span></span>
+<span class="hljs-function"><span class="hljs-params">    *,</span></span>
+<span class="hljs-function"><span class="hljs-params">    item_id: <span class="hljs-built_in">int</span> = Path(<span class="hljs-params">..., title=<span class="hljs-string">"The ID of the item to get"</span>, ge=<span class="hljs-number">0</span>, le=<span class="hljs-number">1000</span></span>),</span></span>
+<span class="hljs-function"><span class="hljs-params">    q: <span class="hljs-built_in">str</span> = <span class="hljs-literal">None</span>,</span></span>
+<span class="hljs-function"><span class="hljs-params">    item: Item = <span class="hljs-literal">None</span>,</span></span>
+<span class="hljs-function"><span class="hljs-params"></span>):</span>
+    results = {<span class="hljs-string">"item_id"</span>: item_id}
+    <span class="hljs-keyword">if</span> q:
+        results.update({<span class="hljs-string">"q"</span>: q})
+    <span class="hljs-keyword">if</span> item:
+        results.update({<span class="hljs-string">"item"</span>: item})
+    <span class="hljs-keyword">return</span> results</code></pre></div>
 <p>return values<br><img src="http://img.noback.top/2020-03-08-15-13-05.png" srcset="/img/loading.gif" alt="2020-03-08-15-13-05"></p>
-<pre class=" language-py"><code class="language-py">from fastapi import FastAPI
-from pydantic import BaseModel
+<div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword"><code class="language-hljs py"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> FastAPI
+<span class="hljs-keyword">from</span> pydantic <span class="hljs-keyword">import</span> BaseModel
 
 app = FastAPI()
 
-# 创建模型类
-class Student(BaseModel):
-    name: str = 'hzj' # 默认值,你开心
-    age: int = None
-    like: str = "to do list"
+<span class="hljs-comment"># 创建模型类</span>
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Student</span>(<span class="hljs-params">BaseModel</span>):</span>
+    name: <span class="hljs-built_in">str</span> = <span class="hljs-string">&#x27;hzj&#x27;</span> <span class="hljs-comment"># 默认值,你开心</span>
+    age: <span class="hljs-built_in">int</span> = <span class="hljs-literal">None</span>
+    like: <span class="hljs-built_in">str</span> = <span class="hljs-string">"to do list"</span>
 
 
-class User(BaseModel):
-    username: str
-    full_name: str = None
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">User</span>(<span class="hljs-params">BaseModel</span>):</span>
+    username: <span class="hljs-built_in">str</span>
+    full_name: <span class="hljs-built_in">str</span> = <span class="hljs-literal">None</span>
 
-@app.get('/')
-async def root():
-    return {"hello":"hello world"}
+<span class="hljs-meta">@app.get(&#x27;/&#x27;)</span>
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">root</span>():</span>
+    <span class="hljs-keyword">return</span> {<span class="hljs-string">"hello"</span>:<span class="hljs-string">"hello world"</span>}
 
-# 更新用户
-# 传入参数为{user-id}
-@app.put('/user/{user_id}')
-async def update_user_items(
-    user_id: int,
-    S_item: Student,
-    user: User,
-):
-    res = {"user_id":user_id}
-    if S_item or user:
-        res.update({"S_item":S_item,"user":user})
-    elif user:
-        res.update({"user":user})
-    elif S_item:
-        res.update({"S_item":S_item})
-    else:
-        return {"status":404}
-    return res</code></pre>
+<span class="hljs-comment"># 更新用户</span>
+<span class="hljs-comment"># 传入参数为{user-id}</span>
+<span class="hljs-meta">@app.put(&#x27;/user/{user_id}&#x27;)</span>
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">update_user_items</span>(<span class="hljs-params"></span></span>
+<span class="hljs-function"><span class="hljs-params">    user_id: <span class="hljs-built_in">int</span>,</span></span>
+<span class="hljs-function"><span class="hljs-params">    S_item: Student,</span></span>
+<span class="hljs-function"><span class="hljs-params">    user: User,</span></span>
+<span class="hljs-function"><span class="hljs-params"></span>):</span>
+    res = {<span class="hljs-string">"user_id"</span>:user_id}
+    <span class="hljs-keyword">if</span> S_item <span class="hljs-keyword">or</span> user:
+        res.update({<span class="hljs-string">"S_item"</span>:S_item,<span class="hljs-string">"user"</span>:user})
+    <span class="hljs-keyword">elif</span> user:
+        res.update({<span class="hljs-string">"user"</span>:user})
+    <span class="hljs-keyword">elif</span> S_item:
+        res.update({<span class="hljs-string">"S_item"</span>:S_item})
+    <span class="hljs-keyword">else</span>:
+        <span class="hljs-keyword">return</span> {<span class="hljs-string">"status"</span>:<span class="hljs-number">404</span>}
+    <span class="hljs-keyword">return</span> res</code></pre></div>
+
 <h3 id="使用Body"><a href="#使用Body" class="headerlink" title="使用Body"></a>使用Body</h3><p>Body的用法和Query Path的用法一样</p>
 <p><font color='red'>这个关键字使用的方式是，将查询参数直接映射到request body中，而不是变成一个查询条件用于查询</font></p>
-<pre class=" language-python"><code class="language-python">
-<span class="token keyword">from</span> fastapi <span class="token keyword">import</span> Body<span class="token punctuation">,</span> FastAPI<span class="token punctuation">,</span>Path
-<span class="token keyword">from</span> pydantic <span class="token keyword">import</span> BaseModel
+<div class="code-wrapper"><pre class=" language-hljs python"><code class="language-hljs python">
+<span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> Body, FastAPI,Path
+<span class="hljs-keyword">from</span> pydantic <span class="hljs-keyword">import</span> BaseModel
 
-app <span class="token operator">=</span> FastAPI<span class="token punctuation">(</span><span class="token punctuation">)</span>
-
-
-<span class="token keyword">class</span> <span class="token class-name">Item</span><span class="token punctuation">(</span>BaseModel<span class="token punctuation">)</span><span class="token punctuation">:</span>
-    name<span class="token punctuation">:</span> str
-    description<span class="token punctuation">:</span> str <span class="token operator">=</span> None
-    price<span class="token punctuation">:</span> float
-    tax<span class="token punctuation">:</span> float <span class="token operator">=</span> None
+app = FastAPI()
 
 
-<span class="token keyword">class</span> <span class="token class-name">User</span><span class="token punctuation">(</span>BaseModel<span class="token punctuation">)</span><span class="token punctuation">:</span>
-    username<span class="token punctuation">:</span> str
-    full_name<span class="token punctuation">:</span> str <span class="token operator">=</span> None
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Item</span>(<span class="hljs-params">BaseModel</span>):</span>
+    name: <span class="hljs-built_in">str</span>
+    description: <span class="hljs-built_in">str</span> = <span class="hljs-literal">None</span>
+    price: <span class="hljs-built_in">float</span>
+    tax: <span class="hljs-built_in">float</span> = <span class="hljs-literal">None</span>
 
 
-@app<span class="token punctuation">.</span>put<span class="token punctuation">(</span><span class="token string">"/items/{item_id}"</span><span class="token punctuation">)</span>
-<span class="token keyword">async</span> <span class="token keyword">def</span> <span class="token function">update_item</span><span class="token punctuation">(</span>
-    <span class="token operator">*</span><span class="token punctuation">,</span> item_id<span class="token punctuation">:</span> int <span class="token operator">=</span> Path<span class="token punctuation">(</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">,</span>description<span class="token operator">=</span><span class="token string">"test filed"</span><span class="token punctuation">,</span><span class="token punctuation">)</span><span class="token punctuation">,</span> item<span class="token punctuation">:</span> Item<span class="token punctuation">,</span> user<span class="token punctuation">:</span> User<span class="token punctuation">,</span> importance<span class="token punctuation">:</span> int <span class="token operator">=</span> Body<span class="token punctuation">(</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">,</span>description<span class="token operator">=</span><span class="token string">"test_body"</span><span class="token punctuation">)</span>
-<span class="token punctuation">)</span><span class="token punctuation">:</span>
-    importance <span class="token operator">=</span> <span class="token number">1000000</span>
-    results <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token string">"item_id"</span><span class="token punctuation">:</span> item_id<span class="token punctuation">,</span> <span class="token string">"item"</span><span class="token punctuation">:</span> item<span class="token punctuation">,</span> <span class="token string">"user"</span><span class="token punctuation">:</span> user<span class="token punctuation">,</span> <span class="token string">"importance"</span><span class="token punctuation">:</span> importance<span class="token punctuation">}</span>
-    <span class="token keyword">return</span> results</code></pre>
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">User</span>(<span class="hljs-params">BaseModel</span>):</span>
+    username: <span class="hljs-built_in">str</span>
+    full_name: <span class="hljs-built_in">str</span> = <span class="hljs-literal">None</span>
+
+
+<span class="hljs-meta">@app.put("/items/{item_id}")</span>
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">update_item</span>(<span class="hljs-params"></span></span>
+<span class="hljs-function"><span class="hljs-params">    *, item_id: <span class="hljs-built_in">int</span> = Path(<span class="hljs-params">...,description=<span class="hljs-string">"test filed"</span>,</span>), item: Item, user: User, importance: <span class="hljs-built_in">int</span> = Body(<span class="hljs-params">...,description=<span class="hljs-string">"test_body"</span></span>)</span></span>
+<span class="hljs-function"><span class="hljs-params"></span>):</span>
+    importance = <span class="hljs-number">1000000</span>
+    results = {<span class="hljs-string">"item_id"</span>: item_id, <span class="hljs-string">"item"</span>: item, <span class="hljs-string">"user"</span>: user, <span class="hljs-string">"importance"</span>: importance}
+    <span class="hljs-keyword">return</span> results</code></pre></div>
 <p><img src="http://img.noback.top/2020-03-31-11-31-38.png" srcset="/img/loading.gif" alt="2020-03-31-11-31-38"><br>没有出现在查询条件中，而是直接出现在了request body中</p>
 <p>把Body更换成Query 对查询参数做限制</p>
-<pre class=" language-py"><code class="language-py">from fastapi import Body, FastAPI,Path,Query
-from pydantic import BaseModel
+<div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword"><code class="language-hljs py"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> Body, FastAPI,Path,Query
+<span class="hljs-keyword">from</span> pydantic <span class="hljs-keyword">import</span> BaseModel
 
 app = FastAPI()
 
 
-class Item(BaseModel):
-    name: str
-    description: str = None
-    price: float
-    tax: float = None
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Item</span>(<span class="hljs-params">BaseModel</span>):</span>
+    name: <span class="hljs-built_in">str</span>
+    description: <span class="hljs-built_in">str</span> = <span class="hljs-literal">None</span>
+    price: <span class="hljs-built_in">float</span>
+    tax: <span class="hljs-built_in">float</span> = <span class="hljs-literal">None</span>
 
 
-class User(BaseModel):
-    username: str
-    full_name: str = None
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">User</span>(<span class="hljs-params">BaseModel</span>):</span>
+    username: <span class="hljs-built_in">str</span>
+    full_name: <span class="hljs-built_in">str</span> = <span class="hljs-literal">None</span>
 
 
-@app.put("/items/{item_id}")
-async def update_item(
-    *, item_id: int = Path(...,description="test filed",), item: Item, user: User, importance: int = Query(...,description="test_body")
-):
-    importance = 100000000000000
-    results = {"item_id": item_id, "item": item, "user": user, "importance": importance}
-    return results</code></pre>
+<span class="hljs-meta">@app.put("/items/{item_id}")</span>
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">update_item</span>(<span class="hljs-params"></span></span>
+<span class="hljs-function"><span class="hljs-params">    *, item_id: <span class="hljs-built_in">int</span> = Path(<span class="hljs-params">...,description=<span class="hljs-string">"test filed"</span>,</span>), item: Item, user: User, importance: <span class="hljs-built_in">int</span> = Query(<span class="hljs-params">...,description=<span class="hljs-string">"test_body"</span></span>)</span></span>
+<span class="hljs-function"><span class="hljs-params"></span>):</span>
+    importance = <span class="hljs-number">100000000000000</span>
+    results = {<span class="hljs-string">"item_id"</span>: item_id, <span class="hljs-string">"item"</span>: item, <span class="hljs-string">"user"</span>: user, <span class="hljs-string">"importance"</span>: importance}
+    <span class="hljs-keyword">return</span> results</code></pre></div>
 <p><img src="http://img.noback.top/2020-03-31-11-33-41.png" srcset="/img/loading.gif" alt="2020-03-31-11-33-41"></p>
 <p><font color='red'>另外Body还有一些扩展的功能</font><br>比如写一个例子</p>
-<pre class=" language-py"><code class="language-py">from fastapi import Body, FastAPI
-from pydantic import BaseModel
+<div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword"><code class="language-hljs py"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> Body, FastAPI
+<span class="hljs-keyword">from</span> pydantic <span class="hljs-keyword">import</span> BaseModel
 
 app = FastAPI()
 
 
-class Item(BaseModel):
-    name: str
-    description: str = None
-    price: float
-    tax: float = None
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Item</span>(<span class="hljs-params">BaseModel</span>):</span>
+    name: <span class="hljs-built_in">str</span>
+    description: <span class="hljs-built_in">str</span> = <span class="hljs-literal">None</span>
+    price: <span class="hljs-built_in">float</span>
+    tax: <span class="hljs-built_in">float</span> = <span class="hljs-literal">None</span>
 
 
-@app.put("/items/{item_id}")
-async def update_item(
-    *,
-    item_id: int,
-    item: Item = Body(
-        ...,
-        example={
-            "name": "Foo",
-            "description": "A very nice Item",
-            "price": 35.4,
-            "tax": 3.2,
-        },
-    )
-):
-    results = {"item_id": item_id, "item": item}
-    return results</code></pre>
+<span class="hljs-meta">@app.put("/items/{item_id}")</span>
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">update_item</span>(<span class="hljs-params"></span></span>
+<span class="hljs-function"><span class="hljs-params">    *,</span></span>
+<span class="hljs-function"><span class="hljs-params">    item_id: <span class="hljs-built_in">int</span>,</span></span>
+<span class="hljs-function"><span class="hljs-params">    item: Item = Body(<span class="hljs-params"></span></span></span>
+<span class="hljs-function"><span class="hljs-params"><span class="hljs-params">        ...,</span></span></span>
+<span class="hljs-function"><span class="hljs-params"><span class="hljs-params">        example={</span></span></span>
+<span class="hljs-function"><span class="hljs-params"><span class="hljs-params">            <span class="hljs-string">"name"</span>: <span class="hljs-string">"Foo"</span>,</span></span></span>
+<span class="hljs-function"><span class="hljs-params"><span class="hljs-params">            <span class="hljs-string">"description"</span>: <span class="hljs-string">"A very nice Item"</span>,</span></span></span>
+<span class="hljs-function"><span class="hljs-params"><span class="hljs-params">            <span class="hljs-string">"price"</span>: <span class="hljs-number">35.4</span>,</span></span></span>
+<span class="hljs-function"><span class="hljs-params"><span class="hljs-params">            <span class="hljs-string">"tax"</span>: <span class="hljs-number">3.2</span>,</span></span></span>
+<span class="hljs-function"><span class="hljs-params"><span class="hljs-params">        },</span></span></span>
+<span class="hljs-function"><span class="hljs-params"><span class="hljs-params">    </span>)</span></span>
+<span class="hljs-function"><span class="hljs-params"></span>):</span>
+    results = {<span class="hljs-string">"item_id"</span>: item_id, <span class="hljs-string">"item"</span>: item}
+    <span class="hljs-keyword">return</span> results</code></pre></div>
+
 <h4 id="规定模型类中的字段"><a href="#规定模型类中的字段" class="headerlink" title="规定模型类中的字段"></a>规定模型类中的字段</h4><p>pass</p>
 <h3 id="使用-Field"><a href="#使用-Field" class="headerlink" title="使用 Field"></a>使用 Field</h3><p>Field可以在定义模型类的时候，对模型类的中内容做限制<br>使用方法和Query以及Path一样，但是这个是在pydantic</p>
 <p>之前定义模型类 ，如下</p>
-<pre class=" language-py"><code class="language-py">#!/usr/bin/env python3
-# encoding: utf-8
-'''
-@author: hzj
-@file: test4.py
-@time: 2020/3/31 5:39 下午
-'''
+<div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-comment"><code class="language-hljs py"><span class="hljs-comment">#!/usr/bin/env python3</span>
+<span class="hljs-comment"># encoding: utf-8</span>
+<span class="hljs-string">&#x27;&#x27;&#x27;</span>
+<span class="hljs-string">@author: hzj</span>
+<span class="hljs-string">@file: test4.py</span>
+<span class="hljs-string">@time: 2020/3/31 5:39 下午</span>
+<span class="hljs-string">&#x27;&#x27;&#x27;</span>
 
 
-from fastapi import  FastAPI
-from pydantic import BaseModel,Field
+<span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span>  FastAPI
+<span class="hljs-keyword">from</span> pydantic <span class="hljs-keyword">import</span> BaseModel,Field
 
 app = FastAPI()
 
-class Item(BaseModel):
-    name: str
-    description: str = None
-    price: float = None
-    tax: float = None
-    test_string: str = Field(None,title="The description of the item",max_length=1)
-    # test_example: str = Field(...,example="xxx")
-    test_example: str = Field(None,example="xxx")
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Item</span>(<span class="hljs-params">BaseModel</span>):</span>
+    name: <span class="hljs-built_in">str</span>
+    description: <span class="hljs-built_in">str</span> = <span class="hljs-literal">None</span>
+    price: <span class="hljs-built_in">float</span> = <span class="hljs-literal">None</span>
+    tax: <span class="hljs-built_in">float</span> = <span class="hljs-literal">None</span>
+    test_string: <span class="hljs-built_in">str</span> = Field(<span class="hljs-literal">None</span>,title=<span class="hljs-string">"The description of the item"</span>,max_length=<span class="hljs-number">1</span>)
+    <span class="hljs-comment"># test_example: str = Field(...,example="xxx")</span>
+    test_example: <span class="hljs-built_in">str</span> = Field(<span class="hljs-literal">None</span>,example=<span class="hljs-string">"xxx"</span>)
 
 
-@app.get("/")
-async  def root():
-    return {"hello":"world"}
+<span class="hljs-meta">@app.get("/")</span>
+<span class="hljs-keyword">async</span>  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">root</span>():</span>
+    <span class="hljs-keyword">return</span> {<span class="hljs-string">"hello"</span>:<span class="hljs-string">"world"</span>}
 
-@app.post("/items")
-async def post_items(item: Item):
-    return item</code></pre>
+<span class="hljs-meta">@app.post("/items")</span>
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">post_items</span>(<span class="hljs-params">item: Item</span>):</span>
+    <span class="hljs-keyword">return</span> item</code></pre></div>
+
 <p>对字段上做限制，比如只允许test_string最长字符串为1<br>报错内容<br><img src="http://img.noback.top/2020-04-01-13-00-01.png" srcset="/img/loading.gif" alt="2020-04-01-13-00-01"></p>
 <blockquote>
 <p>example可以对这个字段指定一个例子，但不是默认值</p>
 </blockquote>
 <h2 id="暂定"><a href="#暂定" class="headerlink" title="暂定"></a>暂定</h2><h2 id="静态资源"><a href="#静态资源" class="headerlink" title="静态资源"></a>静态资源</h2><p>安装aiofiles库文件</p>
-<pre class=" language-py"><code class="language-py">pip install aiofiles
+<div class="code-wrapper"><pre class=" language-hljs py"><code class="language-hljs py">pip install aiofiles
 
-# 挂在静态文件到程序中
-from fastapi import FastAPI
-from fastapi.staticfiles import StaticFiles
+<span class="hljs-comment"># 挂在静态文件到程序中</span>
+<span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> FastAPI
+<span class="hljs-keyword">from</span> fastapi.staticfiles <span class="hljs-keyword">import</span> StaticFiles
 
 app = FastAPI()
 
-app.mount("/static", StaticFiles(directory="static"), name="static")</code></pre>
-
+app.mount(<span class="hljs-string">"/static"</span>, StaticFiles(directory=<span class="hljs-string">"static"</span>), name=<span class="hljs-string">"static"</span>)</code></pre></div>
             </div>
             <hr>
             <div>
@@ -897,7 +928,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")</code></pre
 
   <footer class="text-center mt-5 py-3">
   <div class="footer-content">
-     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+     <a rel="nofollow noopener"><span>Hzjsea</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
   </div>
   
 

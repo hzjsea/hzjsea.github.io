@@ -67,7 +67,7 @@
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
-       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
+       href="/">&nbsp;<strong>hzjsea</strong>&nbsp;</a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
             data-target="#navbarSupportedContent"
@@ -194,7 +194,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      26
+      27
        分钟
     </span>
   
@@ -255,116 +255,122 @@
 <h2 id="项目一-使用gitlab作为代码托管-实践shell"><a href="#项目一-使用gitlab作为代码托管-实践shell" class="headerlink" title="项目一 使用gitlab作为代码托管-实践shell"></a>项目一 使用gitlab作为代码托管-实践shell</h2><p>gitlab-help文档<br><a target="_blank" rel="noopener" href="http://10.0.5.233:8888/help">http://10.0.5.233:8888/help</a></p>
 <h3 id="搭建gitlab-server"><a href="#搭建gitlab-server" class="headerlink" title="搭建gitlab-server"></a>搭建gitlab-server</h3><p>安装git-lab</p>
 <p>清华镜像源地址<a target="_blank" rel="noopener" href="https://mirrors.tuna.tsinghua.edu.cn/gitlab-ce/yum/el7/">https://mirrors.tuna.tsinghua.edu.cn/gitlab-ce/yum/el7/</a></p>
-<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># cat /etc/redhat-release </span>
-CentOS Linux release 7.2.1511 <span class="token punctuation">(</span>Core<span class="token punctuation">)</span> 
-<span class="token comment" spellcheck="true"># git --version</span>
-<span class="token function">git</span> version 1.8.3.1
-<span class="token comment" spellcheck="true"># wget https://mirrors.tuna.tsinghua.edu.cn/gitlab-ce/yum/el7/gitlab-ce-12.5.9-ce.0.el7.x86_64.rpm </span>
-<span class="token comment" spellcheck="true"># ls</span>
-gitlab-ce-12.0.2-ce.0.el7.x86_64.rpm</code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># cat /etc/redhat-release </span>
+CentOS Linux release 7.2.1511 (Core) 
+<span class="hljs-comment"># git --version</span>
+git version 1.8.3.1
+<span class="hljs-comment"># wget https://mirrors.tuna.tsinghua.edu.cn/gitlab-ce/yum/el7/gitlab-ce-12.5.9-ce.0.el7.x86_64.rpm </span>
+<span class="hljs-comment"># ls</span>
+gitlab-ce-12.0.2-ce.0.el7.x86_64.rpm</code></pre></div>
+
 <p>安装依赖</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token function">sudo</span> yum <span class="token function">install</span> -y <span class="token function">git</span> vim gcc glibc-static telnet
-<span class="token function">sudo</span> yum <span class="token function">install</span> -y curl policycoreutils-python openssh-server
-<span class="token function">sudo</span> systemctl <span class="token function">enable</span> sshd
-<span class="token function">sudo</span> systemctl start sshd
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">sudo yum install -y git vim gcc glibc-static telnet
+sudo yum install -y curl policycoreutils-python openssh-server
+sudo systemctl <span class="hljs-built_in">enable</span> sshd
+sudo systemctl start sshd
 
-<span class="token function">sudo</span> yum <span class="token function">install</span> postfix
-<span class="token function">sudo</span> systemctl <span class="token function">enable</span> postfix
-<span class="token function">sudo</span> systemctl start postfix</code></pre>
+sudo yum install postfix
+sudo systemctl <span class="hljs-built_in">enable</span> postfix
+sudo systemctl start postfix</code></pre></div>
 <p>安装gitlab</p>
-<pre class=" language-bash"><code class="language-bash">rpm -i gitlab-ce-12.0.2-ce.0.el7.x86_64.rpm </code></pre>
-<h3 id="上传项目到gitlab地址"><a href="#上传项目到gitlab地址" class="headerlink" title="上传项目到gitlab地址"></a>上传项目到gitlab地址</h3><pre class=" language-bash"><code class="language-bash">➜  untitled git:<span class="token punctuation">(</span>doc5<span class="token punctuation">)</span> <span class="token function">git</span> push -u origin master
-Username <span class="token keyword">for</span> <span class="token string">'http://gitlab.example.com:8888'</span><span class="token keyword">:</span> root
-Password <span class="token keyword">for</span> <span class="token string">'http://root@gitlab.example.com:8888'</span><span class="token keyword">:</span>
-Enumerating objects: 8414, done.
-Counting objects: 100% <span class="token punctuation">(</span>8414/8414<span class="token punctuation">)</span>, done.
-Delta compression using up to 8 threads
-Compressing objects: 100% <span class="token punctuation">(</span>5158/5158<span class="token punctuation">)</span>, done.
-Writing objects: 100% <span class="token punctuation">(</span>8414/8414<span class="token punctuation">)</span>, 11.67 MiB <span class="token operator">|</span> 732.00 KiB/s, done.
-Total 8414 <span class="token punctuation">(</span>delta 2103<span class="token punctuation">)</span>, reused 8401 <span class="token punctuation">(</span>delta 2099<span class="token punctuation">)</span>
-remote: Resolving deltas: 100% <span class="token punctuation">(</span>2103/2103<span class="token punctuation">)</span>, done.
-To http://gitlab.example.com:8888/root/tc.git
- * <span class="token punctuation">[</span>new branch<span class="token punctuation">]</span>      master -<span class="token operator">></span> master
-Branch <span class="token string">'master'</span> <span class="token keyword">set</span> up to track remote branch <span class="token string">'master'</span> from <span class="token string">'origin'</span><span class="token keyword">.</span> </code></pre>
-<h3 id="gitlab-ci搭建"><a href="#gitlab-ci搭建" class="headerlink" title="gitlab-ci搭建"></a>gitlab-ci搭建</h3><p>安装docker</p>
-<pre class=" language-bash"><code class="language-bash">curl -sSL https://get.docker.com/ <span class="token operator">|</span> sh </code></pre>
-<p>安装gitlab-ci-runner</p>
-<pre class=" language-bash"><code class="language-bash">curl -L https://packages.gitlab.com/install/repositories/runner/gitlab-ci-multi-runner/script.rpm.sh <span class="token operator">|</span> <span class="token function">sudo</span> <span class="token function">bash</span>
-<span class="token function">sudo</span> yum <span class="token function">install</span> gitlab-ci-multi-runner -y</code></pre>
-<p>查看运行状态</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span>root@manager55 ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># sudo gitlab-ci-multi-runner status</span>
-gitlab-runner: Service is running<span class="token operator">!</span> </code></pre>
-<p>为了能让gitlab-runner能正确的执行docker命令，需要把gitlab-runner用户添加到docker group里, 然后重启docker和gitlab ci runner</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span>root@manager55 ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># sudo usermod -aG docker gitlab-runner</span>
-<span class="token punctuation">[</span>root@manager55 ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># sudo systemctl restart docker</span>
-<span class="token punctuation">[</span>root@manager55 ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># sudo gitlab-ci-multi-runner restart </span></code></pre>
-<p>注册CI-CD</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span>root@manager55 ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># sudo gitlab-ci-multi-runner register</span>
-Running <span class="token keyword">in</span> system-mode.
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">rpm -i gitlab-ce-12.0.2-ce.0.el7.x86_64.rpm</code></pre></div>
 
-Please enter the gitlab-ci coordinator URL <span class="token punctuation">(</span>e.g. https://gitlab.com/<span class="token punctuation">)</span>:
+
+<h3 id="上传项目到gitlab地址"><a href="#上传项目到gitlab地址" class="headerlink" title="上传项目到gitlab地址"></a>上传项目到gitlab地址</h3><div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">➜  untitled git:(doc5) git push -u origin master
+Username <span class="hljs-keyword">for</span> <span class="hljs-string">&#x27;http://gitlab.example.com:8888&#x27;</span>: root
+Password <span class="hljs-keyword">for</span> <span class="hljs-string">&#x27;http://root@gitlab.example.com:8888&#x27;</span>:
+Enumerating objects: 8414, <span class="hljs-keyword">done</span>.
+Counting objects: 100% (8414/8414), <span class="hljs-keyword">done</span>.
+Delta compression using up to 8 threads
+Compressing objects: 100% (5158/5158), <span class="hljs-keyword">done</span>.
+Writing objects: 100% (8414/8414), 11.67 MiB | 732.00 KiB/s, <span class="hljs-keyword">done</span>.
+Total 8414 (delta 2103), reused 8401 (delta 2099)
+remote: Resolving deltas: 100% (2103/2103), <span class="hljs-keyword">done</span>.
+To http://gitlab.example.com:8888/root/tc.git
+ * [new branch]      master -> master
+Branch <span class="hljs-string">&#x27;master&#x27;</span> <span class="hljs-built_in">set</span> up to track remote branch <span class="hljs-string">&#x27;master&#x27;</span> from <span class="hljs-string">&#x27;origin&#x27;</span>.</code></pre></div>
+
+<h3 id="gitlab-ci搭建"><a href="#gitlab-ci搭建" class="headerlink" title="gitlab-ci搭建"></a>gitlab-ci搭建</h3><p>安装docker</p>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">curl -sSL https://get.docker.com/ | sh</code></pre></div>
+<p>安装gitlab-ci-runner</p>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">curl -L https://packages.gitlab.com/install/repositories/runner/gitlab-ci-multi-runner/script.rpm.sh | sudo bash
+sudo yum install gitlab-ci-multi-runner -y</code></pre></div>
+<p>查看运行状态</p>
+<div class="code-wrapper"><pre class=" language-hljs bash">[root@manager55 ~]<span class="hljs-comment"><code class="language-hljs bash">[root@manager55 ~]<span class="hljs-comment"># sudo gitlab-ci-multi-runner status</span>
+gitlab-runner: Service is running!</code></pre></div>
+<p>为了能让gitlab-runner能正确的执行docker命令，需要把gitlab-runner用户添加到docker group里, 然后重启docker和gitlab ci runner</p>
+<div class="code-wrapper"><pre class=" language-hljs bash">[root@manager55 ~]<span class="hljs-comment"><code class="language-hljs bash">[root@manager55 ~]<span class="hljs-comment"># sudo usermod -aG docker gitlab-runner</span>
+[root@manager55 ~]<span class="hljs-comment"># sudo systemctl restart docker</span>
+[root@manager55 ~]<span class="hljs-comment"># sudo gitlab-ci-multi-runner restart </span></code></pre></div>
+<p>注册CI-CD</p>
+<div class="code-wrapper"><pre class=" language-hljs bash">[root@manager55 ~]<span class="hljs-comment"><code class="language-hljs bash">[root@manager55 ~]<span class="hljs-comment"># sudo gitlab-ci-multi-runner register</span>
+Running <span class="hljs-keyword">in</span> system-mode.
+
+Please enter the gitlab-ci coordinator URL (e.g. https://gitlab.com/):
 http://gitlab.example.com:8888
-Please enter the gitlab-ci token <span class="token keyword">for</span> this runner:
+Please enter the gitlab-ci token <span class="hljs-keyword">for</span> this runner:
 ppq_iFivNbgFgnusLE26
-Please enter the gitlab-ci description <span class="token keyword">for</span> this runner:
-<span class="token punctuation">[</span>manager55<span class="token punctuation">]</span>:
-Please enter the gitlab-ci tags <span class="token keyword">for</span> this runner <span class="token punctuation">(</span>comma separated<span class="token punctuation">)</span>:
+Please enter the gitlab-ci description <span class="hljs-keyword">for</span> this runner:
+[manager55]:
+Please enter the gitlab-ci tags <span class="hljs-keyword">for</span> this runner (comma separated):
 tc
-Whether to run untagged builds <span class="token punctuation">[</span>true/false<span class="token punctuation">]</span>:
-<span class="token punctuation">[</span>false<span class="token punctuation">]</span>:
-Whether to lock Runner to current project <span class="token punctuation">[</span>true/false<span class="token punctuation">]</span>:
-<span class="token punctuation">[</span>false<span class="token punctuation">]</span>:
-Registering runner<span class="token punctuation">..</span>. succeeded                     runner<span class="token operator">=</span>ppq_iFiv
+Whether to run untagged builds [<span class="hljs-literal">true</span>/<span class="hljs-literal">false</span>]:
+[<span class="hljs-literal">false</span>]:
+Whether to lock Runner to current project [<span class="hljs-literal">true</span>/<span class="hljs-literal">false</span>]:
+[<span class="hljs-literal">false</span>]:
+Registering runner... succeeded                     runner=ppq_iFiv
 Please enter the executor: shell, ssh, virtualbox, docker-ssh+machine, docker-ssh, parallels, kubernetes, docker, docker+machine:
 shell
-Runner registered successfully. Feel <span class="token function">free</span> to start it, but <span class="token keyword">if</span> it's running already the config should be automatically reloaded<span class="token operator">!</span></code></pre>
+Runner registered successfully. Feel free to start it, but <span class="hljs-keyword">if</span> it<span class="hljs-string">&#x27;s running already the config should be automatically reloaded!</span></code></pre></div>
 <p><font color='red'>如何获取token</font></p>
 <p><img src="http://img.noback.top/2020-02-14-13-52-10.png" srcset="/img/loading.gif" alt="2020-02-14-13-52-10"></p>
 <p>编写gitlab.yml 任务流程<br><img src="http://img.noback.top/2020-02-14-15-46-20.png" srcset="/img/loading.gif" alt="2020-02-14-15-46-20"></p>
-<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 定义 stages</span>
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 定义 stages</span>
 stages:
     - build
-    - <span class="token function">test</span>
+    - <span class="hljs-built_in">test</span>
 
-<span class="token comment" spellcheck="true"># 定义 job</span>
+<span class="hljs-comment"># 定义 job</span>
 job1:
-    stage: <span class="token function">test</span>
+    stage: <span class="hljs-built_in">test</span>
     tags:
         - tc
     script:
-        - <span class="token keyword">echo</span> <span class="token string">"I am jb1"</span>
-        - <span class="token keyword">echo</span> <span class="token string">"I am in test stage"</span>
+        - <span class="hljs-built_in">echo</span> <span class="hljs-string">"I am jb1"</span>
+        - <span class="hljs-built_in">echo</span> <span class="hljs-string">"I am in test stage"</span>
 
-<span class="token comment" spellcheck="true"># 定义 job</span>
+<span class="hljs-comment"># 定义 job</span>
 job2:
     stage: build
     tags:
         - tc
     script:
-        - <span class="token keyword">echo</span> <span class="token string">"I am jb2"</span>
-        - <span class="token keyword">echo</span> <span class="token string">"I am in build stage"</span></code></pre>
+        - <span class="hljs-built_in">echo</span> <span class="hljs-string">"I am jb2"</span>
+        - <span class="hljs-built_in">echo</span> <span class="hljs-string">"I am in build stage"</span></code></pre></div>
+
 <p>提交gitlab.yml之后再去卡看CI/CD里面的pipeline，会发想任务正在进行<br><img src="http://img.noback.top/2020-02-14-15-48-02.png" srcset="/img/loading.gif" alt="2020-02-14-15-48-02"><br>通过所有的jobs,包括检验等等，并在CI服务器上执行script<br><img src="http://img.noback.top/2020-02-14-15-48-58.png" srcset="/img/loading.gif" alt="2020-02-14-15-48-58"><br><img src="http://img.noback.top/2020-02-14-15-49-15.png" srcset="/img/loading.gif" alt="2020-02-14-15-49-15"></p>
 <h2 id="gitlab操作"><a href="#gitlab操作" class="headerlink" title="gitlab操作"></a>gitlab操作</h2><p>修改端口,gitlab默认端口为8080端口，可以将它修改成其他的端口</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token function">sed</span>  -r <span class="token string">'/^external_url/s/com/com:8888/g'</span> /etc/gitlab/gitlab.rb </code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash">sed  -r <span class="hljs-string"><code class="language-hljs bash">sed  -r <span class="hljs-string">&#x27;/^external_url/s/com/com:8888/g&#x27;</span> /etc/gitlab/gitlab.rb</code></pre></div>
 <p>修改完配置文件之后要重启配置</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token function">sudo</span> gitlab-ctl reconfigure </code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">sudo gitlab-ctl reconfigure</code></pre></div>
 <p>查看一下启用状态</p>
-<pre class=" language-bash"><code class="language-bash">root:~<span class="token comment" spellcheck="true"># gitlab-ctl status</span>
-run: alertmanager: <span class="token punctuation">(</span>pid 32102<span class="token punctuation">)</span> 297s<span class="token punctuation">;</span> run: log: <span class="token punctuation">(</span>pid 30552<span class="token punctuation">)</span> 532s
-run: gitaly: <span class="token punctuation">(</span>pid 32128<span class="token punctuation">)</span> 296s<span class="token punctuation">;</span> run: log: <span class="token punctuation">(</span>pid 29584<span class="token punctuation">)</span> 630s
-run: gitlab-exporter: <span class="token punctuation">(</span>pid 32151<span class="token punctuation">)</span> 296s<span class="token punctuation">;</span> run: log: <span class="token punctuation">(</span>pid 30382<span class="token punctuation">)</span> 550s
-run: gitlab-workhorse: <span class="token punctuation">(</span>pid 32166<span class="token punctuation">)</span> 296s<span class="token punctuation">;</span> run: log: <span class="token punctuation">(</span>pid 30066<span class="token punctuation">)</span> 574s
-run: grafana: <span class="token punctuation">(</span>pid 854<span class="token punctuation">)</span> 240s<span class="token punctuation">;</span> run: log: <span class="token punctuation">(</span>pid 30748<span class="token punctuation">)</span> 505s
-run: logrotate: <span class="token punctuation">(</span>pid 32218<span class="token punctuation">)</span> 295s<span class="token punctuation">;</span> run: log: <span class="token punctuation">(</span>pid 30285<span class="token punctuation">)</span> 562s
-run: nginx: <span class="token punctuation">(</span>pid 839<span class="token punctuation">)</span> 241s<span class="token punctuation">;</span> run: log: <span class="token punctuation">(</span>pid 30184<span class="token punctuation">)</span> 568s
-run: node-exporter: <span class="token punctuation">(</span>pid 32300<span class="token punctuation">)</span> 294s<span class="token punctuation">;</span> run: log: <span class="token punctuation">(</span>pid 30327<span class="token punctuation">)</span> 556s
-run: postgres-exporter: <span class="token punctuation">(</span>pid 32306<span class="token punctuation">)</span> 294s<span class="token punctuation">;</span> run: log: <span class="token punctuation">(</span>pid 30633<span class="token punctuation">)</span> 526s
-run: postgresql: <span class="token punctuation">(</span>pid 32316<span class="token punctuation">)</span> 293s<span class="token punctuation">;</span> run: log: <span class="token punctuation">(</span>pid 29748<span class="token punctuation">)</span> 624s
-run: prometheus: <span class="token punctuation">(</span>pid 32327<span class="token punctuation">)</span> 293s<span class="token punctuation">;</span> run: log: <span class="token punctuation">(</span>pid 30489<span class="token punctuation">)</span> 538s
-run: redis: <span class="token punctuation">(</span>pid 32347<span class="token punctuation">)</span> 292s<span class="token punctuation">;</span> run: log: <span class="token punctuation">(</span>pid 29494<span class="token punctuation">)</span> 636s
-run: redis-exporter: <span class="token punctuation">(</span>pid 32450<span class="token punctuation">)</span> 292s<span class="token punctuation">;</span> run: log: <span class="token punctuation">(</span>pid 30432<span class="token punctuation">)</span> 544s
-run: sidekiq: <span class="token punctuation">(</span>pid 743<span class="token punctuation">)</span> 251s<span class="token punctuation">;</span> run: log: <span class="token punctuation">(</span>pid 30005<span class="token punctuation">)</span> 580s
-run: unicorn: <span class="token punctuation">(</span>pid 1106<span class="token punctuation">)</span> 214s<span class="token punctuation">;</span> run: log: <span class="token punctuation">(</span>pid 29965<span class="token punctuation">)</span> 586s </code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash">root:~<span class="hljs-comment"><code class="language-hljs bash">root:~<span class="hljs-comment"># gitlab-ctl status</span>
+run: alertmanager: (pid 32102) 297s; run: <span class="hljs-built_in">log</span>: (pid 30552) 532s
+run: gitaly: (pid 32128) 296s; run: <span class="hljs-built_in">log</span>: (pid 29584) 630s
+run: gitlab-exporter: (pid 32151) 296s; run: <span class="hljs-built_in">log</span>: (pid 30382) 550s
+run: gitlab-workhorse: (pid 32166) 296s; run: <span class="hljs-built_in">log</span>: (pid 30066) 574s
+run: grafana: (pid 854) 240s; run: <span class="hljs-built_in">log</span>: (pid 30748) 505s
+run: logrotate: (pid 32218) 295s; run: <span class="hljs-built_in">log</span>: (pid 30285) 562s
+run: nginx: (pid 839) 241s; run: <span class="hljs-built_in">log</span>: (pid 30184) 568s
+run: node-exporter: (pid 32300) 294s; run: <span class="hljs-built_in">log</span>: (pid 30327) 556s
+run: postgres-exporter: (pid 32306) 294s; run: <span class="hljs-built_in">log</span>: (pid 30633) 526s
+run: postgresql: (pid 32316) 293s; run: <span class="hljs-built_in">log</span>: (pid 29748) 624s
+run: prometheus: (pid 32327) 293s; run: <span class="hljs-built_in">log</span>: (pid 30489) 538s
+run: redis: (pid 32347) 292s; run: <span class="hljs-built_in">log</span>: (pid 29494) 636s
+run: redis-exporter: (pid 32450) 292s; run: <span class="hljs-built_in">log</span>: (pid 30432) 544s
+run: sidekiq: (pid 743) 251s; run: <span class="hljs-built_in">log</span>: (pid 30005) 580s
+run: unicorn: (pid 1106) 214s; run: <span class="hljs-built_in">log</span>: (pid 29965) 586s</code></pre></div>
+
 <!-- git remote remove https://gitee.com/Alpaca-H/tc.git -->
 
 
@@ -372,16 +378,36 @@ run: unicorn: <span class="token punctuation">(</span>pid 1106<span class="token
 <h2 id="项目二-使用gitlab作为代码托管-实践docker"><a href="#项目二-使用gitlab作为代码托管-实践docker" class="headerlink" title="项目二 使用gitlab作为代码托管-实践docker"></a>项目二 使用gitlab作为代码托管-实践docker</h2><p>Password</p>
 <h2 id="项目三-gitlab-ci-drf项目-搭建CI流程线"><a href="#项目三-gitlab-ci-drf项目-搭建CI流程线" class="headerlink" title="项目三 gitlab-ci + drf项目 搭建CI流程线"></a>项目三 gitlab-ci + drf项目 搭建CI流程线</h2><ol>
 <li>在搭建好的gitlab上，上传项目</li>
-<li>注册gitlab-ci-running<pre class=" language-bash"><code class="language-bash">root:~/tc<span class="token comment" spellcheck="true"># gitlab-ci-multi-runner register</span>
-Running <span class="token keyword">in</span> system-mode.
-</code></pre>
-</li>
-</ol>
-<p>Please enter the gitlab-ci coordinator URL (e.g. <a target="_blank" rel="noopener" href="https://gitlab.com/">https://gitlab.com/</a>):<br><a target="_blank" rel="noopener" href="http://gitlab.example.com:8888/">http://gitlab.example.com:8888</a><br>Please enter the gitlab-ci token for this runner:<br>ppq_iFivNbgFgnusLE26<br>Please enter the gitlab-ci description for this runner:<br>[work233]:<br>Please enter the gitlab-ci tags for this runner (comma separated):<br>tcc<br>Whether to run untagged builds [true/false]:<br>[false]:<br>Whether to lock Runner to current project [true/false]:<br>[false]:<br>Registering runner… succeeded                     runner=ppq_iFiv<br>Please enter the executor: virtualbox, kubernetes, docker, docker-ssh, parallels, shell, ssh, docker+machine, docker-ssh+machine:<br>ssh<br>Please enter the SSH server address (e.g. my.server.com):<br>10.0.5.233<br>Please enter the SSH server port (e.g. 22):<br>22<br>Please enter the SSH user (e.g. root):<br>root<br>Please enter the SSH password (e.g. docker.io):<br>upyun123<br>Please enter path to SSH identity file (e.g. /home/user/.ssh/id_rsa):</p>
-<p>Runner registered successfully. Feel free to start it, but if it’s running already the config should be automatically reloaded! </p>
-<pre><code>编写gitlab-ci.yml
-```bash
-# 定义 stages
+<li>注册gitlab-ci-running<div class="code-wrapper"><pre class=" language-hljs bash">root:~/tc<span class="hljs-comment"><code class="language-hljs bash">root:~/tc<span class="hljs-comment"># gitlab-ci-multi-runner register</span>
+Running <span class="hljs-keyword">in</span> system-mode.
+
+Please enter the gitlab-ci coordinator URL (e.g. https://gitlab.com/):
+http://gitlab.example.com:8888
+Please enter the gitlab-ci token <span class="hljs-keyword">for</span> this runner:
+ppq_iFivNbgFgnusLE26
+Please enter the gitlab-ci description <span class="hljs-keyword">for</span> this runner:
+[work233]:
+Please enter the gitlab-ci tags <span class="hljs-keyword">for</span> this runner (comma separated):
+tcc
+Whether to run untagged builds [<span class="hljs-literal">true</span>/<span class="hljs-literal">false</span>]:
+[<span class="hljs-literal">false</span>]:
+Whether to lock Runner to current project [<span class="hljs-literal">true</span>/<span class="hljs-literal">false</span>]:
+[<span class="hljs-literal">false</span>]:
+Registering runner... succeeded                     runner=ppq_iFiv
+Please enter the executor: virtualbox, kubernetes, docker, docker-ssh, parallels, shell, ssh, docker+machine, docker-ssh+machine:
+ssh
+Please enter the SSH server address (e.g. my.server.com):
+10.0.5.233
+Please enter the SSH server port (e.g. 22):
+22
+Please enter the SSH user (e.g. root):
+root
+Please enter the SSH password (e.g. docker.io):
+upyun123
+Please enter path to SSH identity file (e.g. /home/user/.ssh/id_rsa):
+
+Runner registered successfully. Feel free to start it, but <span class="hljs-keyword">if</span> it<span class="hljs-string">&#x27;s running already the config should be automatically reloaded! </span></code></pre></div>
+编写gitlab-ci.yml<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 定义 stages</span>
 stages:
     - reploy
 job1:
@@ -389,41 +415,45 @@ job1:
     tags:
         - tcc
     script:
-        - echo &quot;start reploy project about drf&quot;
-        # - sudo rm -rf /root/tc/
-        # - git clone http://gitlab.example.com:8888/root/tc.git
-        - cd /root/tc
-        - cd /root/tc
+        - <span class="hljs-built_in">echo</span> <span class="hljs-string">"start reploy project about drf"</span>
+        <span class="hljs-comment"># - sudo rm -rf /root/tc/</span>
+        <span class="hljs-comment"># - git clone http://gitlab.example.com:8888/root/tc.git</span>
+        - <span class="hljs-built_in">cd</span> /root/tc
+        - <span class="hljs-built_in">cd</span> /root/tc
         - sudo git fetch --all
         - sudo git reset --hard origin/master 
         - sudo git pull
-        - sudo sed -i -r &#39;/^ALLOWED/s#\[\]#\[&quot;\*&quot;\]#&#39; /root/tc/untitled/settings.py
-        - source /root/tc/venv/bin/activate
-        - echo &quot;successed&quot;
-        # - cd /root/tc/
-        - python3 manage.py runserver 0.0.0.0:8887
-</code></pre>
-<h2 id="错误"><a href="#错误" class="headerlink" title="错误"></a>错误</h2><ol>
-<li><p>错误1，在创建CI的时候，没有在hosts中指定ip与域名的对应关系</p>
-<pre class=" language-bash"><code class="language-bash">ERROR: Registering runner<span class="token punctuation">..</span>. failed                 runner<span class="token operator">=</span>ppq_iFiv status<span class="token operator">=</span>couldn't execute POST against https://gitlab.com:8888/api/v4/runners: Post https://gitlab.com:8888/api/v4/runners: dial tcp 35.231.145.151:8888: i/o <span class="token function">timeout</span>
-PANIC: Failed to register this runner. Perhaps you are having network problems </code></pre>
-<p>解决:</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token keyword">echo</span> 10.0.5.233  gitlab.example.com <span class="token operator">>></span> /etc/hosts</code></pre>
-</li>
-<li><p>权限的问题 gitlab-runner<br>当你创建完成gitlab-runner之后，系统会创建多个用户来提供服务</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token punctuation">..</span>.
-git:x:995:991::/var/opt/gitlab:/bin/sh
-gitlab-redis:x:993:990::/var/opt/gitlab/redis:/bin/false
-gitlab-psql:x:992:989::/var/opt/gitlab/postgresql:/bin/sh
-gitlab-prometheus:x:991:988::/var/opt/gitlab/prometheus:/bin/sh
-gitlab-runner:x:990:987:GitLab Runner:/home/gitlab-runner:/bin/bash </code></pre>
-<p>运行gitlab-ci 时候，使用的是gitlab-runner用户的权限，有时候一些文件只有root才有权限执行，这里如果不切用户的话，可以给gitlab-runner用户附加root的权限</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token function">vi</span> /etc/sudoers 
-</code></pre>
+        - sudo sed -i -r <span class="hljs-string">&#x27;/^ALLOWED/s#\[\]#\["\*"\]#&#x27;</span> /root/tc/untitled/settings.py
+        - <span class="hljs-built_in">source</span> /root/tc/venv/bin/activate
+        - <span class="hljs-built_in">echo</span> <span class="hljs-string">"successed"</span>
+        <span class="hljs-comment"># - cd /root/tc/</span>
+        - python3 manage.py runserver 0.0.0.0:8887</code></pre></div>
+
 </li>
 </ol>
-<h2 id="Allow-root-to-run-any-commands-anywhere"><a href="#Allow-root-to-run-any-commands-anywhere" class="headerlink" title="Allow root to run any commands anywhere"></a>Allow root to run any commands anywhere</h2><p>root    ALL=(ALL)       ALL<br>gitlab-runner ALL=(ALL) ALL</p>
-<p>```<br><font color='red'>或者可以不使用shell的模式，在创建gitlab-running的时候使用ssh的模式</font></p>
+<h2 id="错误"><a href="#错误" class="headerlink" title="错误"></a>错误</h2><ol>
+<li><p>错误1，在创建CI的时候，没有在hosts中指定ip与域名的对应关系</p>
+<div class="code-wrapper"><pre class=" language-hljs bash">ERROR: Registering runner... failed                 runner=ppq_iFiv status=couldn<span class="hljs-string"><code class="language-hljs bash">ERROR: Registering runner... failed                 runner=ppq_iFiv status=couldn<span class="hljs-string">&#x27;t execute POST against https://gitlab.com:8888/api/v4/runners: Post https://gitlab.com:8888/api/v4/runners: dial tcp 35.231.145.151:8888: i/o timeout</span>
+<span class="hljs-string">PANIC: Failed to register this runner. Perhaps you are having network problems </span></code></pre></div>
+<p>解决:</p>
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-built_in"><code class="language-hljs bash"><span class="hljs-built_in">echo</span> 10.0.5.233  gitlab.example.com >> /etc/hosts</code></pre></div>
+</li>
+<li><p>权限的问题 gitlab-runner<br>当你创建完成gitlab-runner之后，系统会创建多个用户来提供服务</p>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">...
+git:x:995:991::/var/opt/gitlab:/bin/sh
+gitlab-redis:x:993:990::/var/opt/gitlab/redis:/bin/<span class="hljs-literal">false</span>
+gitlab-psql:x:992:989::/var/opt/gitlab/postgresql:/bin/sh
+gitlab-prometheus:x:991:988::/var/opt/gitlab/prometheus:/bin/sh
+gitlab-runner:x:990:987:GitLab Runner:/home/gitlab-runner:/bin/bash</code></pre></div>
+<p>运行gitlab-ci 时候，使用的是gitlab-runner用户的权限，有时候一些文件只有root才有权限执行，这里如果不切用户的话，可以给gitlab-runner用户附加root的权限</p>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">vi /etc/sudoers 
+
+<span class="hljs-comment">## Allow root to run any commands anywhere</span>
+root    ALL=(ALL)       ALL
+gitlab-runner ALL=(ALL) ALL</code></pre></div>
+<p><font color='red'>或者可以不使用shell的模式，在创建gitlab-running的时候使用ssh的模式</font></p>
+</li>
+</ol>
 <ol start="3">
 <li>git服务器上传内容之后，Gitlab的Pipelines一直在pending?<br>可能存在的几个问题，一个是网络的问题，项目包被pull到gitlab-runner上的时间过程<br>如果存在struct标签的话，应该是gitlab-runner被暂停了<br>解决办法:<br>重启gitlab-runner就可以了</li>
 </ol>
@@ -539,7 +569,7 @@ gitlab-runner:x:990:987:GitLab Runner:/home/gitlab-runner:/bin/bash </code></pre
 
   <footer class="text-center mt-5 py-3">
   <div class="footer-content">
-     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+     <a rel="nofollow noopener"><span>Hzjsea</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
   </div>
   
 

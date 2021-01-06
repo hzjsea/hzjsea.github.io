@@ -67,7 +67,7 @@
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
-       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
+       href="/">&nbsp;<strong>hzjsea</strong>&nbsp;</a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
             data-target="#navbarSupportedContent"
@@ -184,7 +184,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      1.5k 字
+      1.6k 字
     </span>
   
 
@@ -246,7 +246,8 @@
 <h2 id="http协议"><a href="#http协议" class="headerlink" title="http协议"></a>http协议</h2><p>无状态协议,HTTP是一种不保存状态,即无状态(stateless)协议.HTTP协议自身不对请求和响应之间的通信状态进行保存</p>
 <p>使用HTTP协议，每当有新的请求发送时，就会有对应的新响应产生。协议本事并不保留之前的请求或响应报文的信息。这是为了处理大量事务，确保协议的课伸缩性，而特意把HTTP协议设计成如此简单的。但是也存在弊端，当业务处理变得棘手的情况多了,比如用户登录一家网站，即使他跳转到别的页面后，也需要保持登录状态，然而cookie就诞生了。有了cookie再用http协议通信，就可以管理状态了。</p>
 <h3 id="http请求报文"><a href="#http请求报文" class="headerlink" title="http请求报文"></a>http请求报文</h3><p><img src="http://img.noback.top/2021-01-05-16-31-00.png" srcset="/img/loading.gif" alt="2021-01-05-16-31-00"><br>下面是客户端发送给HTTP服务端的请求报文中的内容</p>
-<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre class=" language-hljs http"><span class="hljs-keyword">GET</span> <span class="hljs-string">/</span> HTTP/1.1<br><span class="hljs-attribute"><code class="language-hljs http"><span class="hljs-keyword">GET</span> <span class="hljs-string">/</span> HTTP/1.1<br><span class="hljs-attribute">HOST</span>: HACKR.JP<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre class=" language-hljs http"><span class="hljs-keyword">GET</span> <span class="hljs-string"><code class="language-hljs http"><span class="hljs-keyword">GET</span> <span class="hljs-string">/</span> HTTP/1.1
+<span class="hljs-attribute">HOST</span>: HACKR.JP</code></pre></div>
 <p>内容分别为 </p>
 <ul>
 <li>GET 请求访问服务器的类型</li>
@@ -257,7 +258,14 @@
 <blockquote>
 <p>响应内容</p>
 </blockquote>
-<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre class=" language-hljs angelscript">HTTP /<span class="hljs-number">1.1</span> <span class="hljs-number">200</span> OK<br><br>Date：Tue，<span class="hljs-number">10</span> JUL <span class="hljs-number">2016</span> <span class="hljs-number">10</span>:<span class="hljs-number">50</span>:<span class="hljs-number">20</span> GMT   <br>Content-length：<span class="hljs-number"><code class="language-hljs angelscript">HTTP /<span class="hljs-number">1.1</span> <span class="hljs-number">200</span> OK<br><br>Date：Tue，<span class="hljs-number">10</span> JUL <span class="hljs-number">2016</span> <span class="hljs-number">10</span>:<span class="hljs-number">50</span>:<span class="hljs-number">20</span> GMT   <br>Content-length：<span class="hljs-number">398</span><br>Content-Type：text/html<br><br><html><br>...<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre class=" language-hljs angelscript">HTTP /<span class="hljs-number">1.1</span> <span class="hljs-number"><code class="language-hljs angelscript">HTTP /<span class="hljs-number">1.1</span> <span class="hljs-number">200</span> OK
+
+Date：Tue，<span class="hljs-number">10</span> JUL <span class="hljs-number">2016</span> <span class="hljs-number">10</span>:<span class="hljs-number">50</span>:<span class="hljs-number">20</span> GMT   
+Content-length：<span class="hljs-number">398</span>
+Content-Type：text/html
+
+<html>
+...</code></pre></div>
 <ul>
 <li>HTTP /1.1 协议版本 200 OK 响应状态码以及原因短语</li>
 <li>响应首部字段 Date  创建响应的时间</li>
@@ -284,9 +292,13 @@
 </blockquote>
 <p><img src="http://img.noback.top/2021-01-05-16-45-25.png" srcset="/img/loading.gif" alt="2021-01-05-16-45-25"></p>
 <h3 id="持久化"><a href="#持久化" class="headerlink" title="持久化"></a>持久化</h3><p>之前有讲过http本身是一种不持久的协议,每次建立http都需要进行TCP/IP通信,就要做三次握手以及四次断开的行为,一旦量高了,流量就会飙升,于是有了持久连接的方法, 特点是任意一段没有明确提出断开的请求,则保持TCP连接状态<br>持久化之前<br><img src="http://img.noback.top/2021-01-05-16-48-07.png" srcset="/img/loading.gif" alt="2021-01-05-16-48-07"><br>持久化以后<br><img src="http://img.noback.top/2021-01-05-16-49-38.png" srcset="/img/loading.gif" alt="2021-01-05-16-49-38"><br>在<code>http/1.1</code>中,所有的连接默认都是持久连接,持久连接的方法就是在首部字段中添加</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre class=" language-hljs bash"><code class="language-hljs bash">Keep-Alive：300<br>Connection：keep-alive<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">Keep-Alive：300
+Connection：keep-alive</code></pre></div>
 <p>比如</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre class=" language-hljs bash"><code class="language-hljs bash">GET / HTTP/1.1<br>HOST: HACKR.JP<br>Keep-Alive：300<br>Connection：keep-alive<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">GET / HTTP/1.1
+HOST: HACKR.JP
+Keep-Alive：300
+Connection：keep-alive</code></pre></div>
 
 <h3 id="管线化"><a href="#管线化" class="headerlink" title="管线化"></a>管线化</h3><p>持久化连接使得多数请求以管线化方式发送,也就是不会堵塞请求.<br><img src="http://img.noback.top/2021-01-05-16-55-11.png" srcset="/img/loading.gif" alt="2021-01-05-16-55-11"></p>
 <h3 id="cookie-有状态"><a href="#cookie-有状态" class="headerlink" title="cookie 有状态"></a>cookie 有状态</h3><p>为了解决http是一种无状态请求的问题,产生了cookie,使用cookie来对http的状态进行管理<br>cookie会根据服务端发送的像一个报文内的一个叫做<code>Set-Cookie</code>的首部字段信息,通知客户端保存Cookie,当下次客户端再次发送请求的时候,客户端会自动在请求报文中加入Cookie值后发送到服务端<br>服务端发现客户端发送过来的Cookie后,会去检查究竟是哪一个客户端发来的连接请求,然后对比服务器上的记录, 最后得到之前的状态信息</p>
@@ -297,11 +309,20 @@
 <p>请求报文的变化</p>
 </blockquote>
 <p>没有cookie信息时候的状态</p>
-<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre class=" language-hljs awk">GET <span class="hljs-regexp">/reader/</span> HTTP/<span class="hljs-number"><code class="language-hljs awk">GET <span class="hljs-regexp">/reader/</span> HTTP/<span class="hljs-number">1.1</span><br>Host: hackr.jp<br>*首部字段内没有Cookie的相关信息<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre class=" language-hljs awk">GET <span class="hljs-regexp">/reader/</span> HTTP/<span class="hljs-number"><code class="language-hljs awk">GET <span class="hljs-regexp">/reader/</span> HTTP/<span class="hljs-number">1.1</span>
+Host: hackr.jp
+*首部字段内没有Cookie的相关信息</code></pre></div>
 <p>服务端返回的响应报文中的cookie信息</p>
-<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre class=" language-hljs angelscript">HTTP/<span class="hljs-number">1.1</span> <span class="hljs-number">200</span> OK<br>Date: Thu, <span class="hljs-number">12</span> Jul <span class="hljs-number">2012</span> <span class="hljs-number">07</span>:<span class="hljs-number">12</span>:<span class="hljs-number">20</span> GMT<br>Server: Apache<br>＜Set-Cookie: sid=<span class="hljs-number">1342077140226724</span>; path=/; expires=Wed,<br><span class="hljs-number">10</span>-Oct<span class="hljs-number">-12</span> <span class="hljs-number">07</span>:<span class="hljs-number">12</span>:<span class="hljs-number">20</span> GMT＞<br>Content-Type: text/plain; charset=UTF<span class="hljs-number"><code class="language-hljs angelscript">HTTP/<span class="hljs-number">1.1</span> <span class="hljs-number">200</span> OK<br>Date: Thu, <span class="hljs-number">12</span> Jul <span class="hljs-number">2012</span> <span class="hljs-number">07</span>:<span class="hljs-number">12</span>:<span class="hljs-number">20</span> GMT<br>Server: Apache<br>＜Set-Cookie: sid=<span class="hljs-number">1342077140226724</span>; path=/; expires=Wed,<br><span class="hljs-number">10</span>-Oct<span class="hljs-number">-12</span> <span class="hljs-number">07</span>:<span class="hljs-number">12</span>:<span class="hljs-number">20</span> GMT＞<br>Content-Type: text/plain; charset=UTF<span class="hljs-number">-8</span><br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre class=" language-hljs angelscript">HTTP/<span class="hljs-number">1.1</span> <span class="hljs-number"><code class="language-hljs angelscript">HTTP/<span class="hljs-number">1.1</span> <span class="hljs-number">200</span> OK
+Date: Thu, <span class="hljs-number">12</span> Jul <span class="hljs-number">2012</span> <span class="hljs-number">07</span>:<span class="hljs-number">12</span>:<span class="hljs-number">20</span> GMT
+Server: Apache
+＜Set-Cookie: sid=<span class="hljs-number">1342077140226724</span>; path=/; expires=Wed,
+<span class="hljs-number">10</span>-Oct<span class="hljs-number">-12</span> <span class="hljs-number">07</span>:<span class="hljs-number">12</span>:<span class="hljs-number">20</span> GMT＞
+Content-Type: text/plain; charset=UTF<span class="hljs-number">-8</span></code></pre></div>
 <p>客户端再次请求时,自带的cookie信息</p>
-<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre class=" language-hljs http"><span class="hljs-keyword">GET</span> <span class="hljs-string">/image/</span> HTTP/1.1<br><span class="hljs-attribute">Host</span>: hackr.jp<br><span class="hljs-attribute"><code class="language-hljs http"><span class="hljs-keyword">GET</span> <span class="hljs-string">/image/</span> HTTP/1.1<br><span class="hljs-attribute">Host</span>: hackr.jp<br><span class="hljs-attribute">Cookie</span>: sid=1342077140226724<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre class=" language-hljs http"><span class="hljs-keyword">GET</span> <span class="hljs-string"><code class="language-hljs http"><span class="hljs-keyword">GET</span> <span class="hljs-string">/image/</span> HTTP/1.1
+<span class="hljs-attribute">Host</span>: hackr.jp
+<span class="hljs-attribute">Cookie</span>: sid=1342077140226724</code></pre></div>
 
 
 
@@ -310,11 +331,43 @@
 <h2 id="HTTP报文首部"><a href="#HTTP报文首部" class="headerlink" title="HTTP报文首部"></a>HTTP报文首部</h2><blockquote>
 <p>请求报文<br><img src="http://img.noback.top/2021-01-05-17-27-20.png" srcset="/img/loading.gif" alt="2021-01-05-17-27-20"></p>
 </blockquote>
-<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre class=" language-hljs apache"><span class="hljs-attribute">GET</span> / HTTP/<span class="hljs-number">1</span>.<span class="hljs-number">1</span><br><span class="hljs-attribute">Host</span>: hackr.jp<br><span class="hljs-attribute">User</span>-Agent: Mozilla/<span class="hljs-number">5</span>.<span class="hljs-number">0</span> (Windows NT <span class="hljs-number">6</span>.<span class="hljs-number">1</span>; WOW<span class="hljs-number">64</span>; rv:<span class="hljs-number">13</span>.<span class="hljs-number">0</span>) Gecko/<span class="hljs-number">20100101</span> Firefox/<span class="hljs-number">13</span>.<span class="hljs-number">0</span><br><span class="hljs-attribute">Accept</span>: text/html,application/xhtml+xml,application/xml;q=<span class="hljs-number">0</span>.<span class="hljs-number">9</span>,*/*; q=<span class="hljs-number">0</span>.<span class="hljs-number">8</span><br><span class="hljs-attribute">Accept</span>-Language: ja,en-us;q=<span class="hljs-number">0</span>.<span class="hljs-number">7</span>,en;q=<span class="hljs-number">0</span>.<span class="hljs-number">3</span><br><span class="hljs-attribute">Accept</span>-Encoding: gzip, deflate<br><span class="hljs-attribute">DNT</span>: <span class="hljs-number">1</span><br><span class="hljs-attribute">Connection</span>: keep-alive<br><span class="hljs-attribute">If</span>-Modified-Since: Fri, <span class="hljs-number">31</span> Aug <span class="hljs-number">2007</span> <span class="hljs-number">02</span>:<span class="hljs-number">02</span>:<span class="hljs-number">20</span> GMT<br><span class="hljs-attribute">If</span>-None-Match: <span class="hljs-string">&quot;45bae1-16a-46d776ac&quot;</span><br><span class="hljs-attribute">Cache</span>-Control: max-age=<span class="hljs-number"><code class="language-hljs apache"><span class="hljs-attribute">GET</span> / HTTP/<span class="hljs-number">1</span>.<span class="hljs-number">1</span><br><span class="hljs-attribute">Host</span>: hackr.jp<br><span class="hljs-attribute">User</span>-Agent: Mozilla/<span class="hljs-number">5</span>.<span class="hljs-number">0</span> (Windows NT <span class="hljs-number">6</span>.<span class="hljs-number">1</span>; WOW<span class="hljs-number">64</span>; rv:<span class="hljs-number">13</span>.<span class="hljs-number">0</span>) Gecko/<span class="hljs-number">20100101</span> Firefox/<span class="hljs-number">13</span>.<span class="hljs-number">0</span><br><span class="hljs-attribute">Accept</span>: text/html,application/xhtml+xml,application/xml;q=<span class="hljs-number">0</span>.<span class="hljs-number">9</span>,*/*; q=<span class="hljs-number">0</span>.<span class="hljs-number">8</span><br><span class="hljs-attribute">Accept</span>-Language: ja,en-us;q=<span class="hljs-number">0</span>.<span class="hljs-number">7</span>,en;q=<span class="hljs-number">0</span>.<span class="hljs-number">3</span><br><span class="hljs-attribute">Accept</span>-Encoding: gzip, deflate<br><span class="hljs-attribute">DNT</span>: <span class="hljs-number">1</span><br><span class="hljs-attribute">Connection</span>: keep-alive<br><span class="hljs-attribute">If</span>-Modified-Since: Fri, <span class="hljs-number">31</span> Aug <span class="hljs-number">2007</span> <span class="hljs-number">02</span>:<span class="hljs-number">02</span>:<span class="hljs-number">20</span> GMT<br><span class="hljs-attribute">If</span>-None-Match: <span class="hljs-string">&quot;45bae1-16a-46d776ac&quot;</span><br><span class="hljs-attribute">Cache</span>-Control: max-age=<span class="hljs-number">0</span><br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre class=" language-hljs http"><span class="hljs-keyword">GET</span> <span class="hljs-string"><code class="language-hljs http"><span class="hljs-keyword">GET</span> <span class="hljs-string">/</span> HTTP/1.1
+
+<span class="hljs-attribute">Host</span>: hackr.jp
+<span class="hljs-attribute">User-Agent</span>: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:13.0) Gecko/20100101 Firefox/13.0
+<span class="hljs-attribute">Accept</span>: text/html,application/xhtml+xml,application/xml;q=0.9,*/*; q=0.8
+<span class="hljs-attribute">Accept-Language</span>: ja,en-us;q=0.7,en;q=0.3
+<span class="hljs-attribute">Accept-Encoding</span>: gzip, deflate
+<span class="hljs-attribute">DNT</span>: 1
+<span class="hljs-attribute">Connection</span>: keep-alive
+<span class="hljs-attribute">If-Modified-Since</span>: Fri, 31 Aug 2007 02:02:20 GMT
+<span class="hljs-attribute">If-None-Match</span>: "45bae1-16a-46d776ac"
+<span class="hljs-attribute">Cache-Control</span>: max-age=0</code></pre></div>
 
 <blockquote>
-<p>响应报文</p>
+<p>响应报文<br><img src="http://img.noback.top/2021-01-06-11-02-24.png" srcset="/img/loading.gif" alt="2021-01-06-11-02-24"></p>
 </blockquote>
+<div class="code-wrapper"><pre class=" language-hljs apache"><span class="hljs-attribute">HTTP</span>/<span class="hljs-number">1</span>.<span class="hljs-number">1</span> <span class="hljs-number"><code class="language-hljs apache"><span class="hljs-attribute">HTTP</span>/<span class="hljs-number">1</span>.<span class="hljs-number">1</span> <span class="hljs-number">304</span> Not Modified
+
+<span class="hljs-attribute">Date</span>: Thu, <span class="hljs-number">07</span> Jun <span class="hljs-number">2012</span> <span class="hljs-number">07</span>:<span class="hljs-number">21</span>:<span class="hljs-number">36</span> GMT
+<span class="hljs-attribute">Server</span>: Apache
+<span class="hljs-attribute">Connection</span>: close
+<span class="hljs-attribute">Etag</span>: <span class="hljs-string">"45bae1-16a-46d776ac"</span></code></pre></div>
+
+<blockquote>
+<p>首部字段的格式</p>
+</blockquote>
+<p>首部字段的格式如下</p>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">首部字段名: 字段值
+Content-Type: text/html
+Keep-Alive: timeout=15, max=100</code></pre></div>
+<p>当 HTTP 报文首部中出现了两个或两个以上具有相同首部字段名时<br>会怎么样？这种情况在规范内尚未明确，根据浏览器内部处理逻辑<br>的不同，结果可能并不一致。有些浏览器会优先处理第一次出现的<br>首部字段，而有些则会优先处理最后出现的首部字段。</p>
+<h3 id="首部字段分类"><a href="#首部字段分类" class="headerlink" title="首部字段分类"></a>首部字段分类</h3><ul>
+<li>通用首部字段<br><img src="http://img.noback.top/2021-01-06-11-35-06.png" srcset="/img/loading.gif" alt="2021-01-06-11-35-06"></li>
+<li>请求首部字段<br><img src="http://img.noback.top/2021-01-06-11-35-16.png" srcset="/img/loading.gif" alt="2021-01-06-11-35-16"></li>
+<li>响应首部字段<br><img src="http://img.noback.top/2021-01-06-11-37-49.png" srcset="/img/loading.gif" alt="2021-01-06-11-37-49"></li>
+<li>实体首部字段<br><img src="http://img.noback.top/2021-01-06-11-38-00.png" srcset="/img/loading.gif" alt="2021-01-06-11-38-00"></li>
+</ul>
 
             </div>
             <hr>
@@ -423,7 +476,7 @@
 
   <footer class="text-center mt-5 py-3">
   <div class="footer-content">
-     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+     <a rel="nofollow noopener"><span>Hzjsea</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
   </div>
   
 

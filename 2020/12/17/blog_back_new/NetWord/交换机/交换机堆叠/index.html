@@ -67,7 +67,7 @@
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
-       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
+       href="/">&nbsp;<strong>hzjsea</strong>&nbsp;</a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
             data-target="#navbarSupportedContent"
@@ -184,7 +184,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      1.5k 字
+      1.1k 字
     </span>
   
 
@@ -194,7 +194,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      20
+      15
        分钟
     </span>
   
@@ -234,22 +234,97 @@
 <blockquote>
 <p>重置配置</p>
 </blockquote>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre class=" language-hljs bash"><code class="language-hljs bash">reset saved-configuration<br>reboot<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">reset saved-configuration
+reboot</code></pre></div>
 <blockquote>
 <p>配置堆叠</p>
 </blockquote>
 <p>Switch 1</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre class=" language-hljs bash">system-view<br>irf mac-address persistent timer<br>irf auto-update <span class="hljs-built_in">enable</span><br>undo irf link-delay<br><span class="hljs-comment"># 设备编号默认为1,编号为1的作为主机，设置级别为32 最高为32</span><br>irf member 1 priority 32<br><br><span class="hljs-comment"># 关闭堆叠口</span><br>interface range ten 1/0/49 to ten 1/0/50<br>shutdown<br><br><span class="hljs-comment"># 创建irf组，将关闭后的堆叠口加入到irf组</span><br>irf-port 1/1<br>port group interface ten 1/0/49<br>port group interface ten 1/0/50<br><br><span class="hljs-comment"># 开启堆叠口</span><br>interface range ten 1/0/49 to ten 1/0/50<br>undo shutdown<br><br><span class="hljs-comment"># 激活irf配置</span><br>irf-port-configuration active<br><br><span class="hljs-comment"><code class="language-hljs bash">system-view<br>irf mac-address persistent timer<br>irf auto-update <span class="hljs-built_in">enable</span><br>undo irf link-delay<br><span class="hljs-comment"># 设备编号默认为1,编号为1的作为主机，设置级别为32 最高为32</span><br>irf member 1 priority 32<br><br><span class="hljs-comment"># 关闭堆叠口</span><br>interface range ten 1/0/49 to ten 1/0/50<br>shutdown<br><br><span class="hljs-comment"># 创建irf组，将关闭后的堆叠口加入到irf组</span><br>irf-port 1/1<br>port group interface ten 1/0/49<br>port group interface ten 1/0/50<br><br><span class="hljs-comment"># 开启堆叠口</span><br>interface range ten 1/0/49 to ten 1/0/50<br>undo shutdown<br><br><span class="hljs-comment"># 激活irf配置</span><br>irf-port-configuration active<br><br><span class="hljs-comment"># 保存配置</span><br>save force<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">system-view
+irf mac-address persistent timer
+irf auto-update <span class="hljs-built_in">enable</span>
+undo irf link-delay
+<span class="hljs-comment"># 设备编号默认为1,编号为1的作为主机，设置级别为32 最高为32</span>
+irf member 1 priority 32
+
+<span class="hljs-comment"># 关闭堆叠口</span>
+interface range ten 1/0/49 to ten 1/0/50
+shutdown
+
+<span class="hljs-comment"># 创建irf组，将关闭后的堆叠口加入到irf组</span>
+irf-port 1/1
+port group interface ten 1/0/49
+port group interface ten 1/0/50
+
+<span class="hljs-comment"># 开启堆叠口</span>
+interface range ten 1/0/49 to ten 1/0/50
+undo shutdown
+
+<span class="hljs-comment"># 激活irf配置</span>
+irf-port-configuration active
+
+<span class="hljs-comment"># 保存配置</span>
+save force</code></pre></div>
 
 <p>Switch 2<br>进入第二台交换机进行配置，具体流程为修改成员id(需要重启) 创建irf组 将堆叠口加入到irf组中</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre class=" language-hljs bash">irf mac-address persistent timer<br>irf auto-update <span class="hljs-built_in">enable</span><br>undo irf link-delay<br><br><span class="hljs-comment"># 修改irf成员id，并且注意priority级别要低于主机的级别,32为最高 1 位最小</span><br><span class="hljs-comment"># 修改成员id 改变了硬件设备的设置, 需要重启交换机</span><br><span class="hljs-comment"># 这里一些新版本的交换机无法在后面直接使用priority 1 </span><br><span class="hljs-comment"># 解决方法是重启然后再设置priority</span><br><span class="hljs-comment"># irf member 1 renumber 2</span><br><span class="hljs-comment"># irf priority 1</span><br>irf member 1 renumber 2 priority 1 <br> <span class="hljs-comment"># 保存重启，修改成员id需要重启</span><br>save force<br>quit<br>reboot<br><br><span class="hljs-comment"># 关闭堆叠口</span><br>interface range ten 2/0/49 to ten 2/0/50<br>shutdown<br><br><span class="hljs-comment"># 创建堆叠组，将堆叠口加入到堆叠组中</span><br>irf-port 2/2<br>port group interface ten 2/0/49<br>port group interface ten 2/0/50<br><br><span class="hljs-comment"># 开启堆叠口</span><br>interface range ten 2/0/49 to ten 2/0/50<br>undo shutdown<br><br><span class="hljs-comment"># 激活irf组</span><br>irf-port-configuration active<br><br><span class="hljs-comment"><code class="language-hljs bash">irf mac-address persistent timer<br>irf auto-update <span class="hljs-built_in">enable</span><br>undo irf link-delay<br><br><span class="hljs-comment"># 修改irf成员id，并且注意priority级别要低于主机的级别,32为最高 1 位最小</span><br><span class="hljs-comment"># 修改成员id 改变了硬件设备的设置, 需要重启交换机</span><br><span class="hljs-comment"># 这里一些新版本的交换机无法在后面直接使用priority 1 </span><br><span class="hljs-comment"># 解决方法是重启然后再设置priority</span><br><span class="hljs-comment"># irf member 1 renumber 2</span><br><span class="hljs-comment"># irf priority 1</span><br>irf member 1 renumber 2 priority 1 <br> <span class="hljs-comment"># 保存重启，修改成员id需要重启</span><br>save force<br>quit<br>reboot<br><br><span class="hljs-comment"># 关闭堆叠口</span><br>interface range ten 2/0/49 to ten 2/0/50<br>shutdown<br><br><span class="hljs-comment"># 创建堆叠组，将堆叠口加入到堆叠组中</span><br>irf-port 2/2<br>port group interface ten 2/0/49<br>port group interface ten 2/0/50<br><br><span class="hljs-comment"># 开启堆叠口</span><br>interface range ten 2/0/49 to ten 2/0/50<br>undo shutdown<br><br><span class="hljs-comment"># 激活irf组</span><br>irf-port-configuration active<br><br><span class="hljs-comment"># 保存配置 </span><br>save force<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">irf mac-address persistent timer
+irf auto-update <span class="hljs-built_in">enable</span>
+undo irf link-delay
+
+<span class="hljs-comment"># 修改irf成员id，并且注意priority级别要低于主机的级别,32为最高 1 位最小</span>
+<span class="hljs-comment"># 修改成员id 改变了硬件设备的设置, 需要重启交换机</span>
+<span class="hljs-comment"># 这里一些新版本的交换机无法在后面直接使用priority 1 </span>
+<span class="hljs-comment"># 解决方法是重启然后再设置priority</span>
+<span class="hljs-comment"># irf member 1 renumber 2</span>
+<span class="hljs-comment"># irf priority 1</span>
+irf member 1 renumber 2 priority 1 
+ <span class="hljs-comment"># 保存重启，修改成员id需要重启</span>
+save force
+quit
+reboot
+
+<span class="hljs-comment"># 关闭堆叠口</span>
+interface range ten 2/0/49 to ten 2/0/50
+shutdown
+
+<span class="hljs-comment"># 创建堆叠组，将堆叠口加入到堆叠组中</span>
+irf-port 2/2
+port group interface ten 2/0/49
+port group interface ten 2/0/50
+
+<span class="hljs-comment"># 开启堆叠口</span>
+interface range ten 2/0/49 to ten 2/0/50
+undo shutdown
+
+<span class="hljs-comment"># 激活irf组</span>
+irf-port-configuration active
+
+<span class="hljs-comment"># 保存配置 </span>
+save force</code></pre></div>
 
 <p><font color='red'>当第二台交换机激活irf组之后，交换机并不会自动重启，这时候将堆叠线按照要求插上，交换机重启，重启之后查看是否配置成功</font></p>
 <h2 id="堆叠结果"><a href="#堆叠结果" class="headerlink" title="堆叠结果"></a>堆叠结果</h2><p>使用display cu查看当前的配置情况，会发现在两台Switch中都存在了对方以及自己的irf堆叠组</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre class=" language-hljs bash">irf-port 1/1<br> port group interface Ten-GigabitEthernet1/0/49<br> port group interface Ten-GigabitEthernet1/0/50<br><span class="hljs-comment">#</span><br>irf-port 2/2<br> port group interface Ten-GigabitEthernet2/0/49<br> port group interface Ten-GigabitEthernet2/0/50<br><span class="hljs-comment"><code class="language-hljs bash">irf-port 1/1<br> port group interface Ten-GigabitEthernet1/0/49<br> port group interface Ten-GigabitEthernet1/0/50<br><span class="hljs-comment">#</span><br>irf-port 2/2<br> port group interface Ten-GigabitEthernet2/0/49<br> port group interface Ten-GigabitEthernet2/0/50<br><span class="hljs-comment">#   </span><br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">irf-port 1/1
+ port group interface Ten-GigabitEthernet1/0/49
+ port group interface Ten-GigabitEthernet1/0/50
+<span class="hljs-comment">#</span>
+irf-port 2/2
+ port group interface Ten-GigabitEthernet2/0/49
+ port group interface Ten-GigabitEthernet2/0/50
+<span class="hljs-comment">#   </span></code></pre></div>
 
 <p>使用display irf查看当前irf堆叠的情况，会发现再member ID中已经存在了两台机器，并且两台机器的irf配置应该都如图统一。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre class=" language-hljs bash">MemberID    Role    Priority  CPU-Mac         Description<br>  *1        Master  10        00e0-fc0f-8c02  ---<br>  +2        Standby 1         00e0-fc0f-8c03  ---<br>--------------------------------------------------<br> * indicates the device is the master.<br> + indicates the device through <span class="hljs-built_in">which</span> the user logs <span class="hljs-keyword"><code class="language-hljs bash">MemberID    Role    Priority  CPU-Mac         Description<br>  *1        Master  10        00e0-fc0f-8c02  ---<br>  +2        Standby 1         00e0-fc0f-8c03  ---<br>--------------------------------------------------<br> * indicates the device is the master.<br> + indicates the device through <span class="hljs-built_in">which</span> the user logs <span class="hljs-keyword">in</span>.<br><br> The bridge MAC of the IRF is: 70ba-ef73-4a5d<br> Auto upgrade                : yes<br> Mac persistent              : 6 min<br> Domain ID                   : 0<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">MemberID    Role    Priority  CPU-Mac         Description
+  *1        Master  10        00e0-fc0f-8c02  ---
+  +2        Standby 1         00e0-fc0f-8c03  ---
+--------------------------------------------------
+ * indicates the device is the master.
+ + indicates the device through <span class="hljs-built_in">which</span> the user logs <span class="hljs-keyword">in</span>.
+
+ The bridge MAC of the IRF is: 70ba-ef73-4a5d
+ Auto upgrade                : yes
+ Mac persistent              : 6 min
+ Domain ID                   : 0</code></pre></div>
 
 <p>使用display interface brief会发现在其中任何一台交换机都可以看到所有的交换机的端口</p>
 <p><strong>另外你会发现主机和从机的交换机名字变成一样的了</strong></p>
@@ -372,7 +447,7 @@
 
   <footer class="text-center mt-5 py-3">
   <div class="footer-content">
-     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+     <a rel="nofollow noopener"><span>Hzjsea</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
   </div>
   
 

@@ -67,7 +67,7 @@
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
-       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
+       href="/">&nbsp;<strong>hzjsea</strong>&nbsp;</a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
             data-target="#navbarSupportedContent"
@@ -257,18 +257,19 @@
 
 
 <h1 id="运输层"><a href="#运输层" class="headerlink" title="运输层"></a>运输层</h1><p>运输层所在的位置 运行在不同主机上的应用进程提供直接的通信服务</p>
-<pre class=" language-mermaid"><code class="language-mermaid">graph TD
+<pre class=" language- mermaid"><code class="language- mermaid">graph TD
     应用层 --> 运输层 --> 网络层 --> 数据链路层 --> 物理层
 
     运输层 --> 运输层协议
     运输层协议 --> TCP协议
     运输层协议 --> UDP协议</code></pre>
+
 <h2 id="运输层服务"><a href="#运输层服务" class="headerlink" title="运输层服务"></a>运输层服务</h2><p>运输层协议为运行在不同主机上的应用进程之间提供了<code>逻辑通信</code>,通过逻辑通信，运行在不同进程的主机好像直接相连一样<br>但实际上这些主机相距很远，可能是由多个路由设备以及多种类型的链路连接在一起。应用进程使用运输层提供的逻辑通信功能彼此发送报文，不需要考虑承载这些报文的物理设备</p>
 <h2 id="运输层协议以及工作流程"><a href="#运输层协议以及工作流程" class="headerlink" title="运输层协议以及工作流程"></a>运输层协议以及工作流程</h2><p>运输层协议是在端系统中而不是路由器中</p>
-<pre class=" language-bash"><code class="language-bash">- 发送端
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">- 发送端
 1. 运输层将发送应用程序进程接收到的报文转换成运输层分组 该运输层分组被称作 报文段
 2. 紧接着，运输层将这些报文段传递给网络层， 网络层将其封装成网络层分组被称作 数据包  并向目的地转发
-3. 向目的地转发的过程中则要经历 数据链路层-<span class="token operator">></span> 物理层 -<span class="token operator">></span> 对端物理层 -<span class="token operator">></span> 对端数据链路层 -<span class="token operator">></span> 网络层</code></pre>
+3. 向目的地转发的过程中则要经历 数据链路层-> 物理层 -> 对端物理层 -> 对端数据链路层 -> 网络层</code></pre></div>
 <p>运输层中的协议主要有<code>TCP协议</code>以及<code>UDP协议 </code><br>另外运输层会受到网络层的影响，但即是是这样运输层也能使用加密来保证应用程序报文不被入侵者读取</p>
 <p>::: tip<br>自顶向下这本书里面说 P124<br>有很多文献里面将TCP的运输层分组叫做报文段，将UDP的运输层分组叫做数据报<br>但是&lt;&lt;自顶向下&gt;&gt;书里面统称运输层上的分组为报文段，而将网络层上的分组称之为数据报<br>:::</p>
 <p>::: tip<br>介绍一下网络层中的<code>网际协议</code>  即IP<br>IP为主机之间提供了逻辑通信 IP的服务模型是尽力而为交付服务<br>也就是说IP会尽自己最大的努力，在通信的主机之间交付报文段 但他不确保报文段的交付，不拨正报文段的按序交付，不保证报文段数据的完整性<br>因此 IP也是一种不可靠服务</p>
@@ -296,8 +297,9 @@
 </ul>
 <p>TCP套接字是由一个四元组组成的，包含 源IP地址 源端口号 目的IP地址 目的端口号</p>
 <h2 id="多路复用以及多路分解"><a href="#多路复用以及多路分解" class="headerlink" title="多路复用以及多路分解"></a>多路复用以及多路分解</h2><p>在目的主机，运输层从下面的网络层接收数据报拆分成报文段。紧接着运输层将这些报文段通过交付给<code>套接字</code>将数据交给适当的应用程序</p>
-<pre class=" language-mermaid"><code class="language-mermaid">graph LR
+<pre class=" language- mermaid"><code class="language- mermaid">graph LR
    应用层1 --> 主机 --> 套接字1 --> 运输层1 --> 网络层1 -.-> 网络层 --> 运输层 --> 套接字 --> 适当的应用程序</code></pre>
+
 <p>::: tip<br>接收端  每个运输层中都包含几个字段，在接收端，运输层接收报文段，并且标识出接收的套接字，进而将报文段定向到该套接字。将运输层报文段中的数据交付到正确的套接字工作就叫做多路分解<br>发送端  源主机从不同的套接字中收集数据块，并为某个数据块封装上首部信息后 生成报文段，然后报文段通过网络层 这些工作叫做多路复用<br>:::</p>
 <h3 id="套接字"><a href="#套接字" class="headerlink" title="套接字"></a>套接字</h3><p>多路复用的实现主要依靠套接字和运输层来实现，其中套接字需要满足两个条件</p>
 <ul>
@@ -448,7 +450,7 @@
 
   <footer class="text-center mt-5 py-3">
   <div class="footer-content">
-     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+     <a rel="nofollow noopener"><span>Hzjsea</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
   </div>
   
 

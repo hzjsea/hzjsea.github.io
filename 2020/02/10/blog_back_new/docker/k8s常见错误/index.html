@@ -67,7 +67,7 @@
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
-       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
+       href="/">&nbsp;<strong>hzjsea</strong>&nbsp;</a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
             data-target="#navbarSupportedContent"
@@ -184,7 +184,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      715 字
+      812 字
     </span>
   
 
@@ -194,7 +194,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      11
+      13
        分钟
     </span>
   
@@ -248,41 +248,43 @@
 
 
 <h1 id="k8s常见错误"><a href="#k8s常见错误" class="headerlink" title="k8s常见错误"></a>k8s常见错误</h1><p>由于k8s的使用过程中，会出现很多的问题，预计篇幅会很大，在这里做一个记录</p>
-<h2 id="k8s错误"><a href="#k8s错误" class="headerlink" title="k8s错误"></a>k8s错误</h2><h2 id="初始化环境过程中node子节点出现已加入master集群的情况"><a href="#初始化环境过程中node子节点出现已加入master集群的情况" class="headerlink" title="初始化环境过程中node子节点出现已加入master集群的情况"></a>初始化环境过程中node子节点出现已加入master集群的情况</h2><pre class=" language-bash"><code class="language-bash">W0210 13:47:24.391420    9455 join.go:346<span class="token punctuation">]</span> <span class="token punctuation">[</span>preflight<span class="token punctuation">]</span> WARNING: JoinControlPane.controlPlane settings will be ignored when control-plane flag i
-s not set.
-<span class="token punctuation">[</span>preflight<span class="token punctuation">]</span> Running pre-flight checks
-        <span class="token punctuation">[</span>WARNING IsDockerSystemdCheck<span class="token punctuation">]</span>: detected <span class="token string">"cgroupfs"</span> as the Docker cgroup driver. The recommended driver is <span class="token string">"systemd"</span><span class="token keyword">.</span> Please follow the
+<h2 id="k8s错误"><a href="#k8s错误" class="headerlink" title="k8s错误"></a>k8s错误</h2><h2 id="初始化环境过程中node子节点出现已加入master集群的情况"><a href="#初始化环境过程中node子节点出现已加入master集群的情况" class="headerlink" title="初始化环境过程中node子节点出现已加入master集群的情况"></a>初始化环境过程中node子节点出现已加入master集群的情况</h2><div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">W0210 13:47:24.391420    9455 join.go:346] [preflight] WARNING: JoinControlPane.controlPlane settings will be ignored when control-plane flag i
+s not <span class="hljs-built_in">set</span>.
+[preflight] Running pre-flight checks
+        [WARNING IsDockerSystemdCheck]: detected <span class="hljs-string">"cgroupfs"</span> as the Docker cgroup driver. The recommended driver is <span class="hljs-string">"systemd"</span>. Please follow the
  guide at https://kubernetes.io/docs/setup/cri/
-        <span class="token punctuation">[</span>WARNING Hostname<span class="token punctuation">]</span>: <span class="token function">hostname</span> <span class="token string">"work233"</span> could not be reached
-        <span class="token punctuation">[</span>WARNING Hostname<span class="token punctuation">]</span>: <span class="token function">hostname</span> <span class="token string">"work233"</span><span class="token keyword">:</span> lookup work233 on 114.114.114.114:53: no such host
-error execution phase preflight: <span class="token punctuation">[</span>preflight<span class="token punctuation">]</span> Some fatal errors occurred:
-        <span class="token punctuation">[</span>ERROR DirAvailable--etc-kubernetes-manifests<span class="token punctuation">]</span>: /etc/kubernetes/manifests is not empty
-        <span class="token punctuation">[</span>ERROR FileAvailable--etc-kubernetes-kubelet.conf<span class="token punctuation">]</span>: /etc/kubernetes/kubelet.conf already exists
-<span class="token punctuation">[</span>preflight<span class="token punctuation">]</span> If you know what you are doing, you can <span class="token function">make</span> a check non-fatal with <span class="token variable"><span class="token variable">`</span>--ignore-preflight-errors<span class="token operator">=</span><span class="token punctuation">..</span>.<span class="token variable">`</span></span>
-To see the stack trace of this error execute with --v<span class="token operator">=</span>5 or higher </code></pre>
-<p><font color='red'>解决方法</font><br>重置k8s</p>
-<pre class=" language-bash"><code class="language-bash">kubeadm reset</code></pre>
-<p>另外 WARNING不大影响，可以选择不修改，ERROR的错误会直接导致无法初始化环境</p>
-<h2 id="k8s-pods拉取镜像时，出现证书错误的问题"><a href="#k8s-pods拉取镜像时，出现证书错误的问题" class="headerlink" title="k8s pods拉取镜像时，出现证书错误的问题"></a>k8s pods拉取镜像时，出现证书错误的问题</h2><pre class=" language-bash"><code class="language-bash">FailedSynError syncing pod, skipping: failed to <span class="token string">"StartContainer"</span> <span class="token keyword">for</span> <span class="token string">"POD"</span> with ErrImagePull: <span class="token string">"image pull failed for registry.access.redhat.com/rhel7/pod-infrastructure:latest, this may be because there are no credentials on this request.  details: (open /etc/docker/certs.d/registry.access.redhat.com/redhat-ca.crt: no such file or directory)"</span> 13m 11s 56 <span class="token punctuation">{</span>kubelet 127.0.0.1<span class="token punctuation">}</span> Warning FailedSync Error syncing pod, skipping: failed to <span class="token string">"StartContainer"</span> <span class="token keyword">for</span> <span class="token string">"POD"</span> with ImagePullBackOff: <span class="token string">"Back-off pulling image \"registry.access.redhat.com/rhel7/pod-infrastructure:latest\""</span>
+        [WARNING Hostname]: hostname <span class="hljs-string">"work233"</span> could not be reached
+        [WARNING Hostname]: hostname <span class="hljs-string">"work233"</span>: lookup work233 on 114.114.114.114:53: no such host
+error execution phase preflight: [preflight] Some fatal errors occurred:
+        [ERROR DirAvailable--etc-kubernetes-manifests]: /etc/kubernetes/manifests is not empty
+        [ERROR FileAvailable--etc-kubernetes-kubelet.conf]: /etc/kubernetes/kubelet.conf already exists
+[preflight] If you know what you are doing, you can make a check non-fatal with `--ignore-preflight-errors=...`
+To see the stack trace of this error execute with --v=5 or higher</code></pre></div>
 
-Error syncing pod, skipping: failed to <span class="token string">"StartContainer"</span> <span class="token keyword">for</span> <span class="token string">"POD"</span> with ErrImagePull: <span class="token string">"image pull failed for registry.access.redhat.com/rhel7/pod-infrastructure:latest, this may be because there are no credentials on this request.  details: (open /etc/docker/certs.d/registry.access.redhat.com/redhat-ca.crt: no such file or directory)"</span></code></pre>
+<p><font color='red'>解决方法</font><br>重置k8s</p>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">kubeadm reset</code></pre></div>
+<p>另外 WARNING不大影响，可以选择不修改，ERROR的错误会直接导致无法初始化环境</p>
+<h2 id="k8s-pods拉取镜像时，出现证书错误的问题"><a href="#k8s-pods拉取镜像时，出现证书错误的问题" class="headerlink" title="k8s pods拉取镜像时，出现证书错误的问题"></a>k8s pods拉取镜像时，出现证书错误的问题</h2><div class="code-wrapper"><pre class=" language-hljs bash">FailedSynError syncing pod, skipping: failed to <span class="hljs-string">&quot;StartContainer&quot;</span> <span class="hljs-keyword">for</span> <span class="hljs-string">&quot;POD&quot;</span> with ErrImagePull: <span class="hljs-string">&quot;image pull failed for registry.access.redhat.com/rhel7/pod-infrastructure:latest, this may be because there are no credentials on this request.  details: (open /etc/docker/certs.d/registry.access.redhat.com/redhat-ca.crt: no such file or directory)&quot;</span> 13m 11s 56 &#123;kubelet 127.0.0.1&#125; Warning FailedSync Error syncing pod, skipping: failed to <span class="hljs-string">&quot;StartContainer&quot;</span> <span class="hljs-keyword">for</span> <span class="hljs-string">&quot;POD&quot;</span> with ImagePullBackOff: <span class="hljs-string"><code class="language-hljs bash">FailedSynError syncing pod, skipping: failed to <span class="hljs-string">&quot;StartContainer&quot;</span> <span class="hljs-keyword">for</span> <span class="hljs-string">&quot;POD&quot;</span> with ErrImagePull: <span class="hljs-string">&quot;image pull failed for registry.access.redhat.com/rhel7/pod-infrastructure:latest, this may be because there are no credentials on this request.  details: (open /etc/docker/certs.d/registry.access.redhat.com/redhat-ca.crt: no such file or directory)&quot;</span> 13m 11s 56 &#123;kubelet 127.0.0.1&#125; Warning FailedSync Error syncing pod, skipping: failed to <span class="hljs-string">&quot;StartContainer&quot;</span> <span class="hljs-keyword">for</span> <span class="hljs-string">&quot;POD&quot;</span> with ImagePullBackOff: <span class="hljs-string">"Back-off pulling image \"registry.access.redhat.com/rhel7/pod-infrastructure:latest\""</span>
+
+Error syncing pod, skipping: failed to <span class="hljs-string">"StartContainer"</span> <span class="hljs-keyword">for</span> <span class="hljs-string">"POD"</span> with ErrImagePull: <span class="hljs-string">"image pull failed for registry.access.redhat.com/rhel7/pod-infrastructure:latest, this may be because there are no credentials on this request.  details: (open /etc/docker/certs.d/registry.access.redhat.com/redhat-ca.crt: no such file or directory)"</span></code></pre></div>
+
 <p>大致意思就是：未能通过ErrImagePull为“POD”启动“StartContainer”：“对于registry.access.redhat.com/rhel7/pod-infrastructure:latest，图像拉出失败，这可能是因为此请求上没有证书 </p>
 <p>检查发现：/etc/docker/certs.d/registry.access.redhat.com/redhat-ca.crt这个目录中是一个软连接</p>
 <p><img src="https://ask.qcloudimg.com/http-save/yehe-1031585/3jzqu3w9wh.png?imageView2/2/w/1620" srcset="/img/loading.gif"></p>
 <p>但是在系统中没有这个文件的存在<br><img src="https://ask.qcloudimg.com/http-save/yehe-1031585/uq2eoxcxk7.png?imageView2/2/w/1620" srcset="/img/loading.gif"></p>
 <p>安装证书</p>
-<pre class=" language-bash"><code class="language-bash">yum remove *rhsm* -y 
-yum <span class="token function">install</span> *rhsm* -y </code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">yum remove *rhsm* -y 
+yum install *rhsm* -y</code></pre></div>
 <p>使用包安装</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token function">wget</span> http://mirror.centos.org/centos/7/os/x86_64/Packages/python-rhsm-certificates-1.19.10-1.el7_4.x86_64.rpm
-rpm2cpio python-rhsm-certificates-1.19.10-1.el7_4.x86_64.rpm <span class="token operator">|</span> cpio -iv --to-stdout ./etc/rhsm/ca/redhat-uep.pem <span class="token operator">|</span> <span class="token function">tee</span> /etc/rhsm/ca/redhat-uep.pemwget http://mirror.centos.org/centos/7/os/x86_64/Packages/python-rhsm-certificates-1.19.10-1.el7_4.x86_64.rpm
-rpm2cpio python-rhsm-certificates-1.19.10-1.el7_4.x86_64.rpm <span class="token operator">|</span> cpio -iv --to-stdout ./etc/rhsm/ca/redhat-uep.pem <span class="token operator">|</span> <span class="token function">tee</span> /etc/rhsm/ca/redhat-uep.pem</code></pre>
-<h2 id="docker错误"><a href="#docker错误" class="headerlink" title="docker错误"></a>docker错误</h2><h3 id="docker安装过程中发生错误"><a href="#docker安装过程中发生错误" class="headerlink" title="docker安装过程中发生错误"></a>docker安装过程中发生错误</h3><pre class=" language-bash"><code class="language-bash"><span class="token function">sudo</span> yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-File <span class="token string">"/bin/yum-config-manager"</span>, line 133
-except yum.Errors.RepoError, e:</code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">wget http://mirror.centos.org/centos/7/os/x86_64/Packages/python-rhsm-certificates-1.19.10-1.el7_4.x86_64.rpm
+rpm2cpio python-rhsm-certificates-1.19.10-1.el7_4.x86_64.rpm | cpio -iv --to-stdout ./etc/rhsm/ca/redhat-uep.pem | tee /etc/rhsm/ca/redhat-uep.pemwget http://mirror.centos.org/centos/7/os/x86_64/Packages/python-rhsm-certificates-1.19.10-1.el7_4.x86_64.rpm
+rpm2cpio python-rhsm-certificates-1.19.10-1.el7_4.x86_64.rpm | cpio -iv --to-stdout ./etc/rhsm/ca/redhat-uep.pem | tee /etc/rhsm/ca/redhat-uep.pem</code></pre></div>
+<h2 id="docker错误"><a href="#docker错误" class="headerlink" title="docker错误"></a>docker错误</h2><h3 id="docker安装过程中发生错误"><a href="#docker安装过程中发生错误" class="headerlink" title="docker安装过程中发生错误"></a>docker安装过程中发生错误</h3><div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+File <span class="hljs-string">"/bin/yum-config-manager"</span>, line 133
+except yum.Errors.RepoError, e:</code></pre></div>
 <p><font color='red'>解决办法,python环境问题</font></p>
-<pre class=" language-bash"><code class="language-bash"><span class="token function">sudo</span> vim /bin/yum-config-manager
-<span class="token comment" spellcheck="true">#!/usr/bin/python -tt   改成 #!/usr/bin/python2 -tt </span></code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">sudo vim /bin/yum-config-manager
+<span class="hljs-meta">#!/usr/bin/python -tt   改成 #!/usr/bin/python2 -tt </span></code></pre></div>
 
             </div>
             <hr>
@@ -391,7 +393,7 @@ except yum.Errors.RepoError, e:</code></pre>
 
   <footer class="text-center mt-5 py-3">
   <div class="footer-content">
-     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+     <a rel="nofollow noopener"><span>Hzjsea</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
   </div>
   
 

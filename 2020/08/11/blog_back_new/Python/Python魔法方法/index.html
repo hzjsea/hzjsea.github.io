@@ -67,7 +67,7 @@
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
-       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
+       href="/">&nbsp;<strong>hzjsea</strong>&nbsp;</a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
             data-target="#navbarSupportedContent"
@@ -184,7 +184,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      856 字
+      883 字
     </span>
   
 
@@ -232,101 +232,107 @@
 
 <h1 id="Python魔法方法"><a href="#Python魔法方法" class="headerlink" title="Python魔法方法"></a>Python魔法方法</h1><h2 id="super函数"><a href="#super函数" class="headerlink" title="super函数"></a>super函数</h2><p>super() 函数是用于调用父类(超类)的一个方法<br>Python 3 可以使用直接使用 <code>super().xxx</code> 代替 <code>super(Class, self).xxx</code></p>
 <h2 id="init-初始化构造函数"><a href="#init-初始化构造函数" class="headerlink" title="__init__初始化构造函数"></a>__init__初始化构造函数</h2><p>在类创建的过程中，会先去执行<code>__init__</code>这个方法，用来初始化整个类中的内容</p>
-<pre class=" language-python"><code class="language-python"><span class="token keyword">class</span> <span class="token class-name">Person</span><span class="token punctuation">(</span>object<span class="token punctuation">)</span><span class="token punctuation">:</span>
+<div class="code-wrapper"><pre class=" language-hljs python"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Person</span>(<span class="hljs-params"><span class="hljs-built_in"><code class="language-hljs python"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Person</span>(<span class="hljs-params"><span class="hljs-built_in">object</span></span>):</span>
 
-    <span class="token keyword">def</span> <span class="token function">__init__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> name<span class="token punctuation">,</span> age<span class="token punctuation">)</span><span class="token punctuation">:</span>
-        self<span class="token punctuation">.</span>name <span class="token operator">=</span> name
-        self<span class="token punctuation">.</span>age <span class="token operator">=</span> age
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span>(<span class="hljs-params">self, name, age</span>):</span>
+        self.name = name
+        self.age = age
 
-p1 <span class="token operator">=</span> Person<span class="token punctuation">(</span><span class="token string">'张三'</span><span class="token punctuation">,</span> <span class="token number">25</span><span class="token punctuation">)</span>
-p2 <span class="token operator">=</span> Person<span class="token punctuation">(</span><span class="token string">'李四'</span><span class="token punctuation">,</span> <span class="token number">30</span><span class="token punctuation">)</span></code></pre>
+p1 = Person(<span class="hljs-string">&#x27;张三&#x27;</span>, <span class="hljs-number">25</span>)
+p2 = Person(<span class="hljs-string">&#x27;李四&#x27;</span>, <span class="hljs-number">30</span>)</code></pre></div>
+
 <h2 id="new-真正的构造函数"><a href="#new-真正的构造函数" class="headerlink" title="__new__真正的构造函数"></a>__new__真正的构造函数</h2><p>其实在调用<code>__init__</code>之前，程序会先去调用<code>__new__</code>方法，这个方法我们一般很少定义，不过我们在一些开源框架中偶尔会遇到定义这个方法的类。实际上，这才是“真正的构造方法”，它会在对象实例化时第一个被调用，然后再调用<code>__init__</code><br><code>__new__</code>所做的一些事情</p>
 <ul>
 <li><code>__new__</code>的第一个参数是<code>cls</code>，而__init__的第一个参数是<code>self</code></li>
 <li><code>__new__</code>返回值是一个实例，而<code>__init__</code>没有任何返回值，只做初始化操作</li>
 <li><code>__new__</code>由于是返回一个实例对象，所以它可以给所有实例进行统一的初始化操作<br>由于<code>__new__</code>优先于<code>__init__</code>调用，且返回一个实例，所以我们可以利用这种特性，每次返回同一个实例来实现一个单例类</li>
 </ul>
-<pre class=" language-python"><code class="language-python"><span class="token keyword">class</span> <span class="token class-name">Singleton</span><span class="token punctuation">(</span>object<span class="token punctuation">)</span><span class="token punctuation">:</span>
-    <span class="token triple-quoted-string string">"""单例"""</span>
-    _instance <span class="token operator">=</span> None  <span class="token comment" spellcheck="true"># 用来记录类的实例是否被创建</span>
-    <span class="token keyword">def</span> <span class="token function">__new__</span><span class="token punctuation">(</span>cls<span class="token punctuation">,</span> <span class="token operator">*</span>args<span class="token punctuation">,</span> <span class="token operator">**</span>kwargs<span class="token punctuation">)</span><span class="token punctuation">:</span>  <span class="token comment" spellcheck="true"># 接收一个类的实例返回给__init__进行初始化</span>
-        <span class="token keyword">if</span> <span class="token operator">not</span> cls<span class="token punctuation">.</span>_instance<span class="token punctuation">:</span>
-            cls<span class="token punctuation">.</span>_instance <span class="token operator">=</span> super<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>__new__<span class="token punctuation">(</span>cls<span class="token punctuation">,</span> <span class="token operator">*</span>args<span class="token punctuation">,</span> <span class="token operator">**</span>kwargs<span class="token punctuation">)</span>
-        <span class="token keyword">return</span> cls<span class="token punctuation">.</span>_instance
+<div class="code-wrapper"><pre class=" language-hljs python"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Singleton</span>(<span class="hljs-params"><span class="hljs-built_in"><code class="language-hljs python"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Singleton</span>(<span class="hljs-params"><span class="hljs-built_in">object</span></span>):</span>
+    <span class="hljs-string">"""单例"""</span>
+    _instance = <span class="hljs-literal">None</span>  <span class="hljs-comment"># 用来记录类的实例是否被创建</span>
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__new__</span>(<span class="hljs-params">cls, *args, **kwargs</span>):</span>  <span class="hljs-comment"># 接收一个类的实例返回给__init__进行初始化</span>
+        <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> cls._instance:
+            cls._instance = <span class="hljs-built_in">super</span>().__new__(cls, *args, **kwargs)
+        <span class="hljs-keyword">return</span> cls._instance
 
-<span class="token keyword">class</span> <span class="token class-name">MySingleton</span><span class="token punctuation">(</span>Singleton<span class="token punctuation">)</span><span class="token punctuation">:</span>
-    <span class="token keyword">pass</span>
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MySingleton</span>(<span class="hljs-params">Singleton</span>):</span>
+    <span class="hljs-keyword">pass</span>
 
-a <span class="token operator">=</span> MySingleton<span class="token punctuation">(</span><span class="token punctuation">)</span>
-b <span class="token operator">=</span> MySingleton<span class="token punctuation">(</span><span class="token punctuation">)</span>
+a = MySingleton()
+b = MySingleton()
 
-<span class="token keyword">assert</span> a <span class="token keyword">is</span> b    <span class="token comment" spellcheck="true"># True</span></code></pre>
+<span class="hljs-keyword">assert</span> a <span class="hljs-keyword">is</span> b	<span class="hljs-comment"># True</span></code></pre></div>
+
 <p>另外一种使用场景是当你需要继承内置类时，例如int、str、tuple，只能通过__new__来达到初始化数据的效果</p>
-<pre class=" language-python"><code class="language-python"><span class="token keyword">class</span> <span class="token class-name">Sign</span><span class="token punctuation">(</span>float<span class="token punctuation">)</span><span class="token punctuation">:</span>
-    <span class="token keyword">def</span> <span class="token function">__new__</span><span class="token punctuation">(</span>cls<span class="token punctuation">,</span>kg<span class="token punctuation">)</span><span class="token punctuation">:</span>
-        <span class="token keyword">return</span> float<span class="token punctuation">.</span>__new__<span class="token punctuation">(</span>cls<span class="token punctuation">,</span>kg<span class="token operator">*</span><span class="token number">2</span><span class="token punctuation">)</span>
+<div class="code-wrapper"><pre class=" language-hljs python"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Sign</span>(<span class="hljs-params"><span class="hljs-built_in"><code class="language-hljs python"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Sign</span>(<span class="hljs-params"><span class="hljs-built_in">float</span></span>):</span>
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__new__</span>(<span class="hljs-params">cls,kg</span>):</span>
+        <span class="hljs-keyword">return</span> <span class="hljs-built_in">float</span>.__new__(cls,kg*<span class="hljs-number">2</span>)
 
 
-<span class="token keyword">if</span> __name__ <span class="token operator">==</span> <span class="token string">'__main__'</span><span class="token punctuation">:</span>
-    s <span class="token operator">=</span> Sign<span class="token punctuation">(</span><span class="token number">29.0</span><span class="token punctuation">)</span>
-    <span class="token keyword">print</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span>  <span class="token comment" spellcheck="true"># res = 58.0</span></code></pre>
+<span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:
+    s = Sign(<span class="hljs-number">29.0</span>)
+    print(s)  <span class="hljs-comment"># res = 58.0</span></code></pre></div>
+
 <h2 id="del-析构函数"><a href="#del-析构函数" class="headerlink" title="__del__析构函数"></a>__del__析构函数</h2><p>这个函数主要是在对象被垃圾回收时被调用，但是并不会在<code>del x</code>的时候被调用，<br>由于Python是通过引用计数来进行垃圾回收的，也就是说，如果这个实例还是有被引用到，即使执行del销毁这个对象，但其引用计数还是大于0，所以不会触发执行<code>__del__</code></p>
-<pre class=" language-python"><code class="language-python"><span class="token keyword">class</span> <span class="token class-name">Person</span><span class="token punctuation">(</span>object<span class="token punctuation">)</span><span class="token punctuation">:</span>
-    <span class="token keyword">def</span> <span class="token function">__del__</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
-        <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"omg ,is delete"</span><span class="token punctuation">)</span>
+<div class="code-wrapper"><pre class=" language-hljs python"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Person</span>(<span class="hljs-params"><span class="hljs-built_in"><code class="language-hljs python"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Person</span>(<span class="hljs-params"><span class="hljs-built_in">object</span></span>):</span>
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__del__</span>(<span class="hljs-params">self</span>):</span>
+        print(<span class="hljs-string">"omg ,is delete"</span>)
 
-<span class="token keyword">if</span> __name__ <span class="token operator">==</span> <span class="token string">'__main__'</span><span class="token punctuation">:</span>
-    p <span class="token operator">=</span> Person<span class="token punctuation">(</span><span class="token punctuation">)</span>
-<span class="token comment" spellcheck="true"># 被删除的时候会出现 omg is delete</span></code></pre>
+<span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:
+    p = Person()
+<span class="hljs-comment"># 被删除的时候会出现 omg is delete</span></code></pre></div>
+
+
 <h2 id="str-repr-函数"><a href="#str-repr-函数" class="headerlink" title="str / __repr__函数"></a><strong>str</strong> / __repr__函数</h2><ul>
 <li><code>__str__</code>强调可读性，而<code>__repr__</code>强调准确性/标准性</li>
 <li><code>__str__</code>的目标人群是用户，而<code>__repr__</code>的目标人群是机器，它的结果是可以被执行的</li>
 <li>%s调用<code>__str__</code>方法，而%r调用<code>__repr__</code>方法</li>
 </ul>
-<pre class=" language-python"><code class="language-python"><span class="token keyword">class</span> <span class="token class-name">Person</span><span class="token punctuation">(</span>object<span class="token punctuation">)</span><span class="token punctuation">:</span>    
-    <span class="token keyword">def</span> <span class="token function">__str__</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
-        <span class="token keyword">return</span> <span class="token string">"helloworld"</span>
-    <span class="token keyword">def</span> <span class="token function">__repr__</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
-        <span class="token keyword">return</span> <span class="token string">"helloworld1"</span>
-<span class="token keyword">if</span> __name__ <span class="token operator">==</span> <span class="token string">'__main__'</span><span class="token punctuation">:</span>
-    p <span class="token operator">=</span> Person<span class="token punctuation">(</span><span class="token punctuation">)</span>
-    <span class="token keyword">print</span><span class="token punctuation">(</span>str<span class="token punctuation">(</span>p<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true"># helloworld</span>
-    <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"{}"</span><span class="token punctuation">.</span>format<span class="token punctuation">(</span>p<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">#  helloworld</span>
-    <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"%s"</span><span class="token operator">%</span>p<span class="token punctuation">)</span> <span class="token comment" spellcheck="true"># helloworld</span>
-    <span class="token keyword">print</span><span class="token punctuation">(</span>repr<span class="token punctuation">(</span>p<span class="token punctuation">)</span><span class="token punctuation">)</span>  <span class="token comment" spellcheck="true"># helloworld1</span></code></pre>
+<div class="code-wrapper"><pre class=" language-hljs python"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Person</span>(<span class="hljs-params"><span class="hljs-built_in"><code class="language-hljs python"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Person</span>(<span class="hljs-params"><span class="hljs-built_in">object</span></span>):</span>    
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__str__</span>(<span class="hljs-params">self</span>):</span>
+        <span class="hljs-keyword">return</span> <span class="hljs-string">"helloworld"</span>
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__repr__</span>(<span class="hljs-params">self</span>):</span>
+        <span class="hljs-keyword">return</span> <span class="hljs-string">"helloworld1"</span>
+<span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:
+    p = Person()
+    print(<span class="hljs-built_in">str</span>(p)) <span class="hljs-comment"># helloworld</span>
+    print(<span class="hljs-string">"{}"</span>.<span class="hljs-built_in">format</span>(p)) <span class="hljs-comment">#  helloworld</span>
+    print(<span class="hljs-string">"%s"</span>%p) <span class="hljs-comment"># helloworld</span>
+    print(<span class="hljs-built_in">repr</span>(p))  <span class="hljs-comment"># helloworld1</span></code></pre></div>
+
 <ul>
 <li>如果只定义了_str__，那么repr(person)输出&lt;__main__.Person object at 0x1093642d0&gt;</li>
 <li>如果只定义了__repr__，那么str(person)与repr(person)结果是相同的</li>
 </ul>
-<h2 id="unicode"><a href="#unicode" class="headerlink" title="unicode"></a><strong>unicode</strong></h2><pre class=" language-python"><code class="language-python"><span class="token keyword">class</span> <span class="token class-name">Person</span><span class="token punctuation">(</span>object<span class="token punctuation">)</span><span class="token punctuation">:</span>
+<h2 id="unicode"><a href="#unicode" class="headerlink" title="unicode"></a><strong>unicode</strong></h2><div class="code-wrapper"><pre class=" language-hljs python"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Person</span>(<span class="hljs-params"><span class="hljs-built_in"><code class="language-hljs python"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Person</span>(<span class="hljs-params"><span class="hljs-built_in">object</span></span>):</span>
 
-    <span class="token keyword">def</span> <span class="token function">__unicode__</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
-        <span class="token comment" spellcheck="true"># 这里不是u'hello'</span>
-        <span class="token keyword">return</span> <span class="token string">'hello'</span>
-
-person <span class="token operator">=</span> Person<span class="token punctuation">(</span><span class="token punctuation">)</span>
-<span class="token keyword">print</span> unicode<span class="token punctuation">(</span>person<span class="token punctuation">)</span>    <span class="token comment" spellcheck="true"># helllo</span>
-<span class="token keyword">print</span> type<span class="token punctuation">(</span>unicode<span class="token punctuation">(</span>person<span class="token punctuation">)</span><span class="token punctuation">)</span>    <span class="token comment" spellcheck="true"># &lt;type 'unicode'></span></code></pre>
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__unicode__</span>(<span class="hljs-params">self</span>):</span>
+        <span class="hljs-comment"># 这里不是u&#x27;hello&#x27;</span>
+        <span class="hljs-keyword">return</span> <span class="hljs-string">&#x27;hello&#x27;</span>
+    
+person = Person()
+<span class="hljs-built_in">print</span> unicode(person)	<span class="hljs-comment"># helllo</span>
+<span class="hljs-built_in">print</span> <span class="hljs-built_in">type</span>(unicode(person))	<span class="hljs-comment"># <type &#x27;unicode&#x27;></span></code></pre></div>
 <p>不怎么常用</p>
-<h2 id="hash-eq"><a href="#hash-eq" class="headerlink" title="hash / eq"></a><strong>hash</strong> / <strong>eq</strong></h2><pre class=" language-python"><code class="language-python"><span class="token keyword">class</span> <span class="token class-name">Person</span><span class="token punctuation">(</span>object<span class="token punctuation">)</span><span class="token punctuation">:</span>
-    <span class="token keyword">def</span> <span class="token function">__init__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> uid<span class="token punctuation">)</span><span class="token punctuation">:</span>
-        self<span class="token punctuation">.</span>uid <span class="token operator">=</span> uid
+<h2 id="hash-eq"><a href="#hash-eq" class="headerlink" title="hash / eq"></a><strong>hash</strong> / <strong>eq</strong></h2><div class="code-wrapper"><pre class=" language-hljs python"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Person</span>(<span class="hljs-params"><span class="hljs-built_in"><code class="language-hljs python"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Person</span>(<span class="hljs-params"><span class="hljs-built_in">object</span></span>):</span>
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span>(<span class="hljs-params">self, uid</span>):</span>
+        self.uid = uid
+        
+	<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__repr__</span>(<span class="hljs-params">self</span>):</span>
+        <span class="hljs-keyword">return</span> <span class="hljs-string">&#x27;Person(%s)&#x27;</span> % self.uid
+        
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__hash__</span>(<span class="hljs-params">self</span>):</span>
+        <span class="hljs-keyword">return</span> self.uid
+    
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__eq__</span>(<span class="hljs-params">self, other</span>):</span>
+        <span class="hljs-keyword">return</span> self.uid == other.uid
+    
+p1 = Person(<span class="hljs-number">1</span>)
+p2 = Person(<span class="hljs-number">1</span>)
+p1 == p2	<span class="hljs-comment"># True</span>
 
-    <span class="token keyword">def</span> <span class="token function">__repr__</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
-        <span class="token keyword">return</span> <span class="token string">'Person(%s)'</span> <span class="token operator">%</span> self<span class="token punctuation">.</span>uid
-
-    <span class="token keyword">def</span> <span class="token function">__hash__</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
-        <span class="token keyword">return</span> self<span class="token punctuation">.</span>uid
-
-    <span class="token keyword">def</span> <span class="token function">__eq__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> other<span class="token punctuation">)</span><span class="token punctuation">:</span>
-        <span class="token keyword">return</span> self<span class="token punctuation">.</span>uid <span class="token operator">==</span> other<span class="token punctuation">.</span>uid
-
-p1 <span class="token operator">=</span> Person<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
-p2 <span class="token operator">=</span> Person<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
-p1 <span class="token operator">==</span> p2    <span class="token comment" spellcheck="true"># True</span>
-
-p3 <span class="token operator">=</span> Person<span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span>
-<span class="token keyword">print</span> <span class="token punctuation">(</span>set<span class="token punctuation">(</span><span class="token punctuation">[</span>p1<span class="token punctuation">,</span> p2<span class="token punctuation">,</span> p3<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">)</span>    <span class="token comment" spellcheck="true"># 根据唯一标识去重输出 set([Person(1), Person(2)])</span></code></pre>
+p3 = Person(<span class="hljs-number">2</span>)
+<span class="hljs-built_in">print</span> (<span class="hljs-built_in">set</span>([p1, p2, p3]))	<span class="hljs-comment"># 根据唯一标识去重输出 set([Person(1), Person(2)])</span></code></pre></div>
 <p>也就是在调用<code>&quot;a==b&quot;</code>的时候会去调用<code>__eq__</code>函数,然后那他们各自的属性进行比较</p>
 
             </div>
@@ -436,7 +442,7 @@ p3 <span class="token operator">=</span> Person<span class="token punctuation">(
 
   <footer class="text-center mt-5 py-3">
   <div class="footer-content">
-     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+     <a rel="nofollow noopener"><span>Hzjsea</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
   </div>
   
 

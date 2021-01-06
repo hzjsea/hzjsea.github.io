@@ -67,7 +67,7 @@
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
-       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
+       href="/">&nbsp;<strong>hzjsea</strong>&nbsp;</a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
             data-target="#navbarSupportedContent"
@@ -184,7 +184,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      910 字
+      1k 字
     </span>
   
 
@@ -194,7 +194,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      14
+      16
        分钟
     </span>
   
@@ -258,134 +258,150 @@
 
 <h1 id="mysql指令"><a href="#mysql指令" class="headerlink" title="mysql指令"></a>mysql指令</h1><p><font color='red'>在mysql5.7中用户表password已经变成了authentication_string</font> </p>
 <p>修改密码指令改成</p>
-<pre class=" language-bash"><code class="language-bash">update mysql.user <span class="token keyword">set</span> authentication_string<span class="token operator">=</span>password<span class="token punctuation">(</span><span class="token string">'*******'</span><span class="token punctuation">)</span> where user<span class="token operator">=</span><span class="token string">'*******'</span><span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">#修改密码成功</span></code></pre>
-<h2 id="mysql创建用户与刷新权限-5-6"><a href="#mysql创建用户与刷新权限-5-6" class="headerlink" title="mysql创建用户与刷新权限(5.6)"></a>mysql创建用户与刷新权限(5.6)</h2><pre class=" language-sql"><code class="language-sql"><span class="token comment" spellcheck="true">-- 插入数据表</span>
-<span class="token keyword">insert</span> <span class="token keyword">into</span> mysql<span class="token punctuation">.</span><span class="token keyword">user</span><span class="token punctuation">(</span>host<span class="token punctuation">,</span><span class="token keyword">user</span><span class="token punctuation">,</span>password<span class="token punctuation">)</span> <span class="token keyword">values</span><span class="token punctuation">(</span><span class="token string">"localhost"</span><span class="token punctuation">,</span><span class="token string">"hzj"</span><span class="token punctuation">,</span>password<span class="token punctuation">(</span><span class="token string">"upyun123"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token comment" spellcheck="true">-- 刷新权限表</span>
-flush <span class="token keyword">privileges</span><span class="token punctuation">;</span></code></pre>
-<h2 id="mysql5-6更新用户密码"><a href="#mysql5-6更新用户密码" class="headerlink" title="mysql5.6更新用户密码"></a>mysql5.6更新用户密码</h2><pre class=" language-sql"><code class="language-sql"><span class="token comment" spellcheck="true">-- 记住要加password</span>
-<span class="token keyword">update</span> <span class="token keyword">user</span> <span class="token keyword">set</span> password<span class="token operator">=</span>password<span class="token punctuation">(</span><span class="token string">"upyun123"</span><span class="token punctuation">)</span> <span class="token keyword">where</span> <span class="token keyword">user</span><span class="token operator">=</span><span class="token string">"hzj"</span> <span class="token operator">and</span> host<span class="token operator">=</span><span class="token string">"localhost"</span><span class="token punctuation">;</span></code></pre>
-<h2 id="显示当前登录数据库的用户"><a href="#显示当前登录数据库的用户" class="headerlink" title="显示当前登录数据库的用户"></a>显示当前登录数据库的用户</h2><pre class=" language-bash"><code class="language-bash">mysql root@10.0.6.55:mysql<span class="token operator">></span> <span class="token keyword">select</span> user<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<div class="code-wrapper"><pre class=" language-hljs bash">update mysql.user <span class="hljs-built_in">set</span> authentication_string=password(<span class="hljs-string">&#x27;*******&#x27;</span>) <span class="hljs-built_in">where</span> user=<span class="hljs-string">&#x27;*******&#x27;</span>;  <span class="hljs-comment"><code class="language-hljs bash">update mysql.user <span class="hljs-built_in">set</span> authentication_string=password(<span class="hljs-string">&#x27;*******&#x27;</span>) <span class="hljs-built_in">where</span> user=<span class="hljs-string">&#x27;*******&#x27;</span>;  <span class="hljs-comment">#修改密码成功</span></code></pre></div>
+
+<h2 id="mysql创建用户与刷新权限-5-6"><a href="#mysql创建用户与刷新权限-5-6" class="headerlink" title="mysql创建用户与刷新权限(5.6)"></a>mysql创建用户与刷新权限(5.6)</h2><div class="code-wrapper"><pre class=" language-hljs sql"><span class="hljs-comment"><code class="language-hljs sql"><span class="hljs-comment">-- 插入数据表</span>
+<span class="hljs-keyword">insert</span> <span class="hljs-keyword">into</span> mysql.user(host,<span class="hljs-keyword">user</span>,<span class="hljs-keyword">password</span>) <span class="hljs-keyword">values</span>(<span class="hljs-string">"localhost"</span>,<span class="hljs-string">"hzj"</span>,<span class="hljs-keyword">password</span>(<span class="hljs-string">"upyun123"</span>));
+<span class="hljs-comment">-- 刷新权限表</span>
+<span class="hljs-keyword">flush</span> <span class="hljs-keyword">privileges</span>;</code></pre></div>
+
+<h2 id="mysql5-6更新用户密码"><a href="#mysql5-6更新用户密码" class="headerlink" title="mysql5.6更新用户密码"></a>mysql5.6更新用户密码</h2><div class="code-wrapper"><pre class=" language-hljs sql"><span class="hljs-comment"><code class="language-hljs sql"><span class="hljs-comment">-- 记住要加password</span>
+<span class="hljs-keyword">update</span> <span class="hljs-keyword">user</span> <span class="hljs-keyword">set</span> <span class="hljs-keyword">password</span>=<span class="hljs-keyword">password</span>(<span class="hljs-string">"upyun123"</span>) <span class="hljs-keyword">where</span> <span class="hljs-keyword">user</span>=<span class="hljs-string">"hzj"</span> <span class="hljs-keyword">and</span> host=<span class="hljs-string">"localhost"</span>;</code></pre></div>
+
+<h2 id="显示当前登录数据库的用户"><a href="#显示当前登录数据库的用户" class="headerlink" title="显示当前登录数据库的用户"></a>显示当前登录数据库的用户</h2><div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">mysql root@10.0.6.55:mysql> select user();
 +-----------------+
-<span class="token operator">|</span> user<span class="token punctuation">(</span><span class="token punctuation">)</span>          <span class="token operator">|</span>
+| user()          |
 +-----------------+
-<span class="token operator">|</span> root@10.0.28.50 <span class="token operator">|</span>
+| root@10.0.28.50 |
 +-----------------+
-1 row <span class="token keyword">in</span> <span class="token keyword">set</span>
+1 row <span class="hljs-keyword">in</span> <span class="hljs-built_in">set</span>
 Time: 0.027s
 
 
-<span class="token comment" spellcheck="true"># 两种形式</span>
+<span class="hljs-comment"># 两种形式</span>
 
-mysql root@10.0.6.55:mysql<span class="token operator">></span> <span class="token keyword">select</span> current_user<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+mysql root@10.0.6.55:mysql> select current_user();
 +----------------+
-<span class="token operator">|</span> current_user<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">|</span>
+| current_user() |
 +----------------+
-<span class="token operator">|</span> root@%         <span class="token operator">|</span>
+| root@%         |
 +----------------+
-1 row <span class="token keyword">in</span> <span class="token keyword">set</span>
-Time: 0.024s</code></pre>
-<h2 id="mysql权限管理-5-6"><a href="#mysql权限管理-5-6" class="headerlink" title="mysql权限管理 (5.6)"></a>mysql权限管理 (5.6)</h2><h3 id="查看当前用户的权限"><a href="#查看当前用户的权限" class="headerlink" title="查看当前用户的权限"></a>查看当前用户的权限</h3><pre class=" language-bash"><code class="language-bash">mysql root@10.0.6.55:mysql<span class="token operator">></span> show grants
+1 row <span class="hljs-keyword">in</span> <span class="hljs-built_in">set</span>
+Time: 0.024s</code></pre></div>
+
+<h2 id="mysql权限管理-5-6"><a href="#mysql权限管理-5-6" class="headerlink" title="mysql权限管理 (5.6)"></a>mysql权限管理 (5.6)</h2><h3 id="查看当前用户的权限"><a href="#查看当前用户的权限" class="headerlink" title="查看当前用户的权限"></a>查看当前用户的权限</h3><div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">mysql root@10.0.6.55:mysql> show grants
 +--------------------------------------------------------------------------------------------------------------+
-<span class="token operator">|</span> Grants <span class="token keyword">for</span> root@%                                                                                            <span class="token operator">|</span>
+| Grants <span class="hljs-keyword">for</span> root@%                                                                                            |
 +--------------------------------------------------------------------------------------------------------------+
-<span class="token operator">|</span> GRANT ALL PRIVILEGES ON *.* TO <span class="token string">'root'</span>@<span class="token string">'%'</span> IDENTIFIED BY PASSWORD <span class="token string">'*6BB4837EB74329105EE4568DDA7DC67ED2CA2AD9'</span> <span class="token operator">|</span>
+| GRANT ALL PRIVILEGES ON *.* TO <span class="hljs-string">&#x27;root&#x27;</span>@<span class="hljs-string">&#x27;%&#x27;</span> IDENTIFIED BY PASSWORD <span class="hljs-string">&#x27;*6BB4837EB74329105EE4568DDA7DC67ED2CA2AD9&#x27;</span> |
 +--------------------------------------------------------------------------------------------------------------+
-1 row <span class="token keyword">in</span> <span class="token keyword">set</span>
-Time: 0.028s</code></pre>
+1 row <span class="hljs-keyword">in</span> <span class="hljs-built_in">set</span>
+Time: 0.028s</code></pre></div>
+
 <h3 id="查看指定用于权限"><a href="#查看指定用于权限" class="headerlink" title="查看指定用于权限"></a>查看指定用于权限</h3><p>这里分为登录的形式 一个是localhost,一个是%</p>
-<pre class=" language-bash"><code class="language-bash">mysql root@10.0.6.55:mysql<span class="token operator">></span> show grants <span class="token keyword">for</span> <span class="token string">'hzj'</span>@<span class="token string">'%'</span>
+<div class="code-wrapper"><pre class=" language-hljs bash">mysql root@10.0.6.55:mysql&gt; show grants <span class="hljs-keyword">for</span> <span class="hljs-string">&#x27;hzj&#x27;</span>@<span class="hljs-string"><code class="language-hljs bash">mysql root@10.0.6.55:mysql&gt; show grants <span class="hljs-keyword">for</span> <span class="hljs-string">&#x27;hzj&#x27;</span>@<span class="hljs-string">&#x27;%&#x27;</span>
 +-------------------------------------------------------------------------------------------------------------+
-<span class="token operator">|</span> Grants <span class="token keyword">for</span> hzj@%                                                                                            <span class="token operator">|</span>
+| Grants <span class="hljs-keyword">for</span> hzj@%                                                                                            |
 +-------------------------------------------------------------------------------------------------------------+
-<span class="token operator">|</span> GRANT ALL PRIVILEGES ON *.* TO <span class="token string">'hzj'</span>@<span class="token string">'%'</span> IDENTIFIED BY PASSWORD <span class="token string">'*05B00DF4BF36116F758117E401D26485E57DB407'</span> <span class="token operator">|</span>
+| GRANT ALL PRIVILEGES ON *.* TO <span class="hljs-string">&#x27;hzj&#x27;</span>@<span class="hljs-string">&#x27;%&#x27;</span> IDENTIFIED BY PASSWORD <span class="hljs-string">&#x27;*05B00DF4BF36116F758117E401D26485E57DB407&#x27;</span> |
 +-------------------------------------------------------------------------------------------------------------+
-1 row <span class="token keyword">in</span> <span class="token keyword">set</span>
+1 row <span class="hljs-keyword">in</span> <span class="hljs-built_in">set</span>
 Time: 0.029s
-mysql root@10.0.6.55:mysql<span class="token operator">></span> show grants <span class="token keyword">for</span> <span class="token string">'zz'</span>@<span class="token string">'localhost'</span>
+mysql root@10.0.6.55:mysql> show grants <span class="hljs-keyword">for</span> <span class="hljs-string">&#x27;zz&#x27;</span>@<span class="hljs-string">&#x27;localhost&#x27;</span>
 +-----------------------------------------------------------------------------------------------------------+
-<span class="token operator">|</span> Grants <span class="token keyword">for</span> zz@localhost                                                                                   <span class="token operator">|</span>
+| Grants <span class="hljs-keyword">for</span> zz@localhost                                                                                   |
 +-----------------------------------------------------------------------------------------------------------+
-<span class="token operator">|</span> GRANT USAGE ON *.* TO <span class="token string">'zz'</span>@<span class="token string">'localhost'</span> IDENTIFIED BY PASSWORD <span class="token string">'*05B00DF4BF36116F758117E401D26485E57DB407'</span> <span class="token operator">|</span>
+| GRANT USAGE ON *.* TO <span class="hljs-string">&#x27;zz&#x27;</span>@<span class="hljs-string">&#x27;localhost&#x27;</span> IDENTIFIED BY PASSWORD <span class="hljs-string">&#x27;*05B00DF4BF36116F758117E401D26485E57DB407&#x27;</span> |
 +-----------------------------------------------------------------------------------------------------------+
-1 row <span class="token keyword">in</span> <span class="token keyword">set</span>
+1 row <span class="hljs-keyword">in</span> <span class="hljs-built_in">set</span>
 Time: 0.019s
-mysql root@10.0.6.55:mysql<span class="token operator">></span> show grants <span class="token keyword">for</span> <span class="token string">'hzj'</span>@<span class="token string">'localhost'</span>
+mysql root@10.0.6.55:mysql> show grants <span class="hljs-keyword">for</span> <span class="hljs-string">&#x27;hzj&#x27;</span>@<span class="hljs-string">&#x27;localhost&#x27;</span>
 +---------------------------------------------------------------------------------------------------------------------+
-<span class="token operator">|</span> Grants <span class="token keyword">for</span> hzj@localhost                                                                                            <span class="token operator">|</span>
+| Grants <span class="hljs-keyword">for</span> hzj@localhost                                                                                            |
 +---------------------------------------------------------------------------------------------------------------------+
-<span class="token operator">|</span> GRANT ALL PRIVILEGES ON *.* TO <span class="token string">'hzj'</span>@<span class="token string">'localhost'</span> IDENTIFIED BY PASSWORD <span class="token string">'*05B00DF4BF36116F758117E401D26485E57DB407'</span> <span class="token operator">|</span>
+| GRANT ALL PRIVILEGES ON *.* TO <span class="hljs-string">&#x27;hzj&#x27;</span>@<span class="hljs-string">&#x27;localhost&#x27;</span> IDENTIFIED BY PASSWORD <span class="hljs-string">&#x27;*05B00DF4BF36116F758117E401D26485E57DB407&#x27;</span> |
 +---------------------------------------------------------------------------------------------------------------------+
-1 row <span class="token keyword">in</span> <span class="token keyword">set</span>
-Time: 0.021s</code></pre>
-<h3 id="用户创建授权"><a href="#用户创建授权" class="headerlink" title="用户创建授权"></a>用户创建授权</h3><pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 为本地的hzj用户开放权限</span>
-mysql<span class="token operator">></span> grant all on *.* to <span class="token string">'hzj'</span>@<span class="token string">'localhost'</span><span class="token punctuation">;</span>
-<span class="token comment" spellcheck="true"># 为远程主机的hzj用户开放权限</span>
-mysql<span class="token operator">></span> grant all on *.* to <span class="token string">'hzj'</span>@<span class="token string">'%'</span><span class="token punctuation">;</span>
-<span class="token comment" spellcheck="true"># 为指定IP主机登录的hzj用户开放权限</span>
-mysql<span class="token operator">></span> grant all on *.* to <span class="token string">'hzj'</span>@<span class="token string">'192.168.20.1'</span><span class="token punctuation">;</span></code></pre>
-<h2 id="mysql-表操作"><a href="#mysql-表操作" class="headerlink" title="mysql 表操作"></a>mysql 表操作</h2><pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 查看表结构</span>
-mysql root@10.0.6.55:mysql<span class="token operator">></span> desc user<span class="token punctuation">;</span>
-+------------------------+-----------------------------------+------+-----+-----------------------+-------+
-<span class="token operator">|</span> Field                  <span class="token operator">|</span> Type                              <span class="token operator">|</span> Null <span class="token operator">|</span> Key <span class="token operator">|</span> Default               <span class="token operator">|</span> Extra <span class="token operator">|</span>
-+------------------------+-----------------------------------+------+-----+-----------------------+-------+
-<span class="token operator">|</span> Host                   <span class="token operator">|</span> char<span class="token punctuation">(</span>60<span class="token punctuation">)</span>                          <span class="token operator">|</span> NO   <span class="token operator">|</span> PRI <span class="token operator">|</span>                       <span class="token operator">|</span>       <span class="token operator">|</span>
-<span class="token operator">|</span> User                   <span class="token operator">|</span> char<span class="token punctuation">(</span>16<span class="token punctuation">)</span>                          <span class="token operator">|</span> NO   <span class="token operator">|</span> PRI <span class="token operator">|</span>                       <span class="token operator">|</span>       <span class="token operator">|</span>
-<span class="token operator">|</span> Password               <span class="token operator">|</span> char<span class="token punctuation">(</span>41<span class="token punctuation">)</span>                          <span class="token operator">|</span> NO   <span class="token operator">|</span>     <span class="token operator">|</span>                       <span class="token operator">|</span>       <span class="token operator">|</span>
-<span class="token operator">|</span> Select_priv            <span class="token operator">|</span> enum<span class="token punctuation">(</span><span class="token string">'N'</span>,<span class="token string">'Y'</span><span class="token punctuation">)</span>                     <span class="token operator">|</span> NO   <span class="token operator">|</span>     <span class="token operator">|</span> N                     <span class="token operator">|</span>       <span class="token operator">|</span>
-<span class="token operator">|</span> Insert_priv            <span class="token operator">|</span> enum<span class="token punctuation">(</span><span class="token string">'N'</span>,<span class="token string">'Y'</span><span class="token punctuation">)</span>                     <span class="token operator">|</span> NO   <span class="token operator">|</span>     <span class="token operator">|</span> N                     <span class="token operator">|</span>       <span class="token operator">|</span></code></pre>
-<h3 id="查看表生成的DDL"><a href="#查看表生成的DDL" class="headerlink" title="查看表生成的DDL"></a>查看表生成的DDL</h3><pre class=" language-bash"><code class="language-bash">mysql root@10.0.6.55:mysql<span class="token operator">></span> show create table user
-+-------+---------------------------------------------------------------------------------------------+
-<span class="token operator">|</span> Table <span class="token operator">|</span> Create Table                                                                                <span class="token operator">|</span>
-+-------+---------------------------------------------------------------------------------------------+
-<span class="token operator">|</span> user  <span class="token operator">|</span> CREATE TABLE <span class="token variable"><span class="token variable">`</span>user<span class="token variable">`</span></span> <span class="token punctuation">(</span>                                                                       <span class="token operator">|</span>
-<span class="token operator">|</span>       <span class="token operator">|</span>   <span class="token variable"><span class="token variable">`</span>Host<span class="token variable">`</span></span> char<span class="token punctuation">(</span>60<span class="token punctuation">)</span> COLLATE utf8_bin NOT NULL DEFAULT <span class="token string">''</span>,                                     <span class="token operator">|</span>
-<span class="token operator">|</span>       <span class="token operator">|</span>   <span class="token variable"><span class="token variable">`</span>User<span class="token variable">`</span></span> char<span class="token punctuation">(</span>16<span class="token punctuation">)</span> COLLATE utf8_bin NOT NULL DEFAULT <span class="token string">''</span>,                                     <span class="token operator">|</span>
-<span class="token operator">|</span>       <span class="token operator">|</span>   <span class="token variable"><span class="token variable">`</span>Password<span class="token variable">`</span></span> char<span class="token punctuation">(</span>41<span class="token punctuation">)</span> CHARACTER SET latin1 COLLATE latin1_bin NOT NULL DEFAULT <span class="token string">''</span>,</code></pre>
-<h3 id="修改数据库字符集-5-6"><a href="#修改数据库字符集-5-6" class="headerlink" title="修改数据库字符集(5.6)"></a>修改数据库字符集(5.6)</h3><p>默认情况下数据库的字符集是<code>latin1</code>,我们需要修改成utf8mb4;</p>
-<pre class=" language-sql"><code class="language-sql"><span class="token keyword">ALTER</span> <span class="token keyword">DATABASE</span> <span class="token punctuation">`</span>switch_instance<span class="token punctuation">`</span>
-<span class="token keyword">DEFAULT</span> <span class="token keyword">CHARACTER SET</span> utf8mb4
-<span class="token keyword">DEFAULT</span> <span class="token keyword">COLLATE</span> utf8mb4_general_ci<span class="token punctuation">;</span></code></pre>
-<p>创建的时候，直接初始化数据库为utf8mb4</p>
-<pre class=" language-sql"><code class="language-sql"><span class="token keyword">CREATE</span> <span class="token keyword">DATABASE</span> select_test <span class="token keyword">character set</span> utf8mb4<span class="token punctuation">;</span></code></pre>
-<h2 id="使用shell操作数据库"><a href="#使用shell操作数据库" class="headerlink" title="使用shell操作数据库"></a>使用shell操作数据库</h2><pre class=" language-bash"><code class="language-bash"><span class="token shebang important">#!/bin/bash</span>
-<span class="token comment" spellcheck="true"># 连接数据库</span>
-mysql_instance<span class="token operator">=</span><span class="token string">"mysql -uroot -p123456 -A -N --default-character-set=utf8mb4"</span>
-<span class="token comment" spellcheck="true"># 操作数据库</span>
-sql_get_data<span class="token operator">=</span><span class="token string">"select * from mysql.user"</span>
-<span class="token comment" spellcheck="true"># 执行命令返回结果</span>
-result<span class="token operator">=</span><span class="token string">"$(<span class="token variable">$mysql_instance</span> -e "</span><span class="token variable">$sql_get_data</span><span class="token string">")"</span>
+1 row <span class="hljs-keyword">in</span> <span class="hljs-built_in">set</span>
+Time: 0.021s</code></pre></div>
 
-<span class="token comment" spellcheck="true"># 按照格式输出</span>
-<span class="token keyword">echo</span> -e <span class="token string">"<span class="token variable">$result</span>"</span></code></pre>
+<h3 id="用户创建授权"><a href="#用户创建授权" class="headerlink" title="用户创建授权"></a>用户创建授权</h3><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 为本地的hzj用户开放权限</span>
+mysql> grant all on *.* to <span class="hljs-string">&#x27;hzj&#x27;</span>@<span class="hljs-string">&#x27;localhost&#x27;</span>;
+<span class="hljs-comment"># 为远程主机的hzj用户开放权限</span>
+mysql> grant all on *.* to <span class="hljs-string">&#x27;hzj&#x27;</span>@<span class="hljs-string">&#x27;%&#x27;</span>;
+<span class="hljs-comment"># 为指定IP主机登录的hzj用户开放权限</span>
+mysql> grant all on *.* to <span class="hljs-string">&#x27;hzj&#x27;</span>@<span class="hljs-string">&#x27;192.168.20.1&#x27;</span>;</code></pre></div>
+
+
+<h2 id="mysql-表操作"><a href="#mysql-表操作" class="headerlink" title="mysql 表操作"></a>mysql 表操作</h2><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 查看表结构</span>
+mysql root@10.0.6.55:mysql> desc user;
++------------------------+-----------------------------------+------+-----+-----------------------+-------+
+| Field                  | Type                              | Null | Key | Default               | Extra |
++------------------------+-----------------------------------+------+-----+-----------------------+-------+
+| Host                   | char(60)                          | NO   | PRI |                       |       |
+| User                   | char(16)                          | NO   | PRI |                       |       |
+| Password               | char(41)                          | NO   |     |                       |       |
+| Select_priv            | enum(<span class="hljs-string">&#x27;N&#x27;</span>,<span class="hljs-string">&#x27;Y&#x27;</span>)                     | NO   |     | N                     |       |
+| Insert_priv            | enum(<span class="hljs-string">&#x27;N&#x27;</span>,<span class="hljs-string">&#x27;Y&#x27;</span>)                     | NO   |     | N                     |       |</code></pre></div>
+
+
+<h3 id="查看表生成的DDL"><a href="#查看表生成的DDL" class="headerlink" title="查看表生成的DDL"></a>查看表生成的DDL</h3><div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">mysql root@10.0.6.55:mysql> show create table user
++-------+---------------------------------------------------------------------------------------------+
+| Table | Create Table                                                                                |
++-------+---------------------------------------------------------------------------------------------+
+| user  | CREATE TABLE `user` (                                                                       |
+|       |   `Host` char(60) COLLATE utf8_bin NOT NULL DEFAULT <span class="hljs-string">&#x27;&#x27;</span>,                                     |
+|       |   `User` char(16) COLLATE utf8_bin NOT NULL DEFAULT <span class="hljs-string">&#x27;&#x27;</span>,                                     |
+|       |   `Password` char(41) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL DEFAULT <span class="hljs-string">&#x27;&#x27;</span>,</code></pre></div>
+
+
+<h3 id="修改数据库字符集-5-6"><a href="#修改数据库字符集-5-6" class="headerlink" title="修改数据库字符集(5.6)"></a>修改数据库字符集(5.6)</h3><p>默认情况下数据库的字符集是<code>latin1</code>,我们需要修改成utf8mb4;</p>
+<div class="code-wrapper"><pre class=" language-hljs sql"><span class="hljs-keyword">ALTER</span> <span class="hljs-keyword">DATABASE</span> <span class="hljs-string"><code class="language-hljs sql"><span class="hljs-keyword">ALTER</span> <span class="hljs-keyword">DATABASE</span> <span class="hljs-string">`switch_instance`</span>
+<span class="hljs-keyword">DEFAULT</span> <span class="hljs-built_in">CHARACTER</span> <span class="hljs-keyword">SET</span> utf8mb4
+<span class="hljs-keyword">DEFAULT</span> <span class="hljs-keyword">COLLATE</span> utf8mb4_general_ci;</code></pre></div>
+<p>创建的时候，直接初始化数据库为utf8mb4</p>
+<div class="code-wrapper"><pre class=" language-hljs sql"><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">DATABASE</span> select_test <span class="hljs-built_in">character</span> <span class="hljs-keyword"><code class="language-hljs sql"><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">DATABASE</span> select_test <span class="hljs-built_in">character</span> <span class="hljs-keyword">set</span> utf8mb4;</code></pre></div>
+
+
+
+<h2 id="使用shell操作数据库"><a href="#使用shell操作数据库" class="headerlink" title="使用shell操作数据库"></a>使用shell操作数据库</h2><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-meta"><code class="language-hljs bash"><span class="hljs-meta">#!/bin/bash</span>
+<span class="hljs-comment"># 连接数据库</span>
+mysql_instance=<span class="hljs-string">"mysql -uroot -p123456 -A -N --default-character-set=utf8mb4"</span>
+<span class="hljs-comment"># 操作数据库</span>
+sql_get_data=<span class="hljs-string">"select * from mysql.user"</span>
+<span class="hljs-comment"># 执行命令返回结果</span>
+result=<span class="hljs-string">"<span class="hljs-subst">$($mysql_instance -e <span class="hljs-string">"<span class="hljs-variable">$sql_get_data</span>"</span>)</span>"</span>
+
+<span class="hljs-comment"># 按照格式输出</span>
+<span class="hljs-built_in">echo</span> -e <span class="hljs-string">"<span class="hljs-variable">$result</span>"</span></code></pre></div>
+
 <p>看看别人的写法</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token shebang important">#!/bin/bash</span>
-HOSTNAME<span class="token operator">=</span><span class="token string">"192.168.111.84"</span> <span class="token comment" spellcheck="true">#数据库信息</span>
-PORT<span class="token operator">=</span><span class="token string">"3306"</span>
-USERNAME<span class="token operator">=</span><span class="token string">"root"</span>
-PASSWORD<span class="token operator">=</span><span class="token string">""</span>
-DBNAME<span class="token operator">=</span><span class="token string">"test_db_test"</span> <span class="token comment" spellcheck="true">#数据库名称</span>
-TABLENAME<span class="token operator">=</span><span class="token string">"test_table_test"</span> <span class="token comment" spellcheck="true">#数据库中表的名称</span>
-<span class="token comment" spellcheck="true">#创建数据库</span>
-create_db_sql<span class="token operator">=</span><span class="token string">"create database <span class="token variable">${DBNAME}</span> IF NOT EXISTS <span class="token variable">${DBNAME}</span>"</span>
-mysql -h<span class="token variable">${HOSTNAME}</span> -P<span class="token variable">${PORT}</span> -u<span class="token variable">${USERNAME}</span> -p<span class="token variable">${PASSWORD}</span> -e <span class="token string">"<span class="token variable">${create_db_sql}</span>"</span>
-<span class="token comment" spellcheck="true">#创建表</span>
-create_table_sql<span class="token operator">=</span><span class="token string">"create table <span class="token variable">${TABLE}</span> IF NOT EXISTS <span class="token variable">${TABLENAME}</span> ( name varchar(20), id int(11) default 0 )"</span>
-mysql -h<span class="token variable">${HOSTNAME}</span> -P<span class="token variable">${PORT}</span> -u<span class="token variable">${USERNAME}</span> -p<span class="token variable">${PASSWORD}</span> <span class="token variable">${DBNAME}</span> -e <span class="token string">"<span class="token variable">${create_table_sql}</span>"</span>
-<span class="token comment" spellcheck="true">#插入数据</span>
-insert_sql<span class="token operator">=</span><span class="token string">"insert into <span class="token variable">${TABLENAME}</span> values('billchen',2)"</span>
-mysql -h<span class="token variable">${HOSTNAME}</span> -P<span class="token variable">${PORT}</span> -u<span class="token variable">${USERNAME}</span> -p<span class="token variable">${PASSWORD}</span> <span class="token variable">${DBNAME}</span> -e <span class="token string">"<span class="token variable">${insert_sql}</span>"</span>
-<span class="token comment" spellcheck="true">#查询</span>
-select_sql<span class="token operator">=</span><span class="token string">"select * from <span class="token variable">${TABLENAME}</span>"</span>
-mysql -h<span class="token variable">${HOSTNAME}</span> -P<span class="token variable">${PORT}</span> -u<span class="token variable">${USERNAME}</span> -p<span class="token variable">${PASSWORD}</span> <span class="token variable">${DBNAME}</span> -e <span class="token string">"<span class="token variable">${select_sql}</span>"</span>
-<span class="token comment" spellcheck="true">#更新数据</span>
-update_sql<span class="token operator">=</span><span class="token string">"update <span class="token variable">${TABLENAME}</span> set id=3"</span>
-mysql -h<span class="token variable">${HOSTNAME}</span> -P<span class="token variable">${PORT}</span> -u<span class="token variable">${USERNAME}</span> -p<span class="token variable">${PASSWORD}</span> <span class="token variable">${DBNAME}</span> -e <span class="token string">"<span class="token variable">${update_sql}</span>"</span>
-mysql -h<span class="token variable">${HOSTNAME}</span> -P<span class="token variable">${PORT}</span> -u<span class="token variable">${USERNAME}</span> -p<span class="token variable">${PASSWORD}</span> <span class="token variable">${DBNAME}</span> -e <span class="token string">"<span class="token variable">${select_sql}</span>"</span>
-<span class="token comment" spellcheck="true">#删除数据</span>
-delete_sql<span class="token operator">=</span><span class="token string">"delete from <span class="token variable">${TABLENAME}</span>"</span>
-mysql -h<span class="token variable">${HOSTNAME}</span> -P<span class="token variable">${PORT}</span> -u<span class="token variable">${USERNAME}</span> -p<span class="token variable">${PASSWORD}</span> <span class="token variable">${DBNAME}</span> -e <span class="token string">"<span class="token variable">${delete_sql}</span>"</span>
-mysql -h<span class="token variable">${HOSTNAME}</span> -P<span class="token variable">${PORT}</span> -u<span class="token variable">${USERNAME}</span> -p<span class="token variable">${PASSWORD}</span> <span class="token variable">${DBNAME}</span> -e <span class="token string">"<span class="token variable">${select_sql}</span>"</span></code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-meta"><code class="language-hljs bash"><span class="hljs-meta">#!/bin/bash</span>
+HOSTNAME=<span class="hljs-string">"192.168.111.84"</span> <span class="hljs-comment">#数据库信息</span>
+PORT=<span class="hljs-string">"3306"</span>
+USERNAME=<span class="hljs-string">"root"</span>
+PASSWORD=<span class="hljs-string">""</span>
+DBNAME=<span class="hljs-string">"test_db_test"</span> <span class="hljs-comment">#数据库名称</span>
+TABLENAME=<span class="hljs-string">"test_table_test"</span> <span class="hljs-comment">#数据库中表的名称</span>
+<span class="hljs-comment">#创建数据库</span>
+create_db_sql=<span class="hljs-string">"create database <span class="hljs-variable">${DBNAME}</span> IF NOT EXISTS <span class="hljs-variable">${DBNAME}</span>"</span>
+mysql -h<span class="hljs-variable">${HOSTNAME}</span> -P<span class="hljs-variable">${PORT}</span> -u<span class="hljs-variable">${USERNAME}</span> -p<span class="hljs-variable">${PASSWORD}</span> -e <span class="hljs-string">"<span class="hljs-variable">${create_db_sql}</span>"</span>
+<span class="hljs-comment">#创建表</span>
+create_table_sql=<span class="hljs-string">"create table <span class="hljs-variable">${TABLE}</span> IF NOT EXISTS <span class="hljs-variable">${TABLENAME}</span> ( name varchar(20), id int(11) default 0 )"</span>
+mysql -h<span class="hljs-variable">${HOSTNAME}</span> -P<span class="hljs-variable">${PORT}</span> -u<span class="hljs-variable">${USERNAME}</span> -p<span class="hljs-variable">${PASSWORD}</span> <span class="hljs-variable">${DBNAME}</span> -e <span class="hljs-string">"<span class="hljs-variable">${create_table_sql}</span>"</span>
+<span class="hljs-comment">#插入数据</span>
+insert_sql=<span class="hljs-string">"insert into <span class="hljs-variable">${TABLENAME}</span> values(&#x27;billchen&#x27;,2)"</span>
+mysql -h<span class="hljs-variable">${HOSTNAME}</span> -P<span class="hljs-variable">${PORT}</span> -u<span class="hljs-variable">${USERNAME}</span> -p<span class="hljs-variable">${PASSWORD}</span> <span class="hljs-variable">${DBNAME}</span> -e <span class="hljs-string">"<span class="hljs-variable">${insert_sql}</span>"</span>
+<span class="hljs-comment">#查询</span>
+select_sql=<span class="hljs-string">"select * from <span class="hljs-variable">${TABLENAME}</span>"</span>
+mysql -h<span class="hljs-variable">${HOSTNAME}</span> -P<span class="hljs-variable">${PORT}</span> -u<span class="hljs-variable">${USERNAME}</span> -p<span class="hljs-variable">${PASSWORD}</span> <span class="hljs-variable">${DBNAME}</span> -e <span class="hljs-string">"<span class="hljs-variable">${select_sql}</span>"</span>
+<span class="hljs-comment">#更新数据</span>
+update_sql=<span class="hljs-string">"update <span class="hljs-variable">${TABLENAME}</span> set id=3"</span>
+mysql -h<span class="hljs-variable">${HOSTNAME}</span> -P<span class="hljs-variable">${PORT}</span> -u<span class="hljs-variable">${USERNAME}</span> -p<span class="hljs-variable">${PASSWORD}</span> <span class="hljs-variable">${DBNAME}</span> -e <span class="hljs-string">"<span class="hljs-variable">${update_sql}</span>"</span>
+mysql -h<span class="hljs-variable">${HOSTNAME}</span> -P<span class="hljs-variable">${PORT}</span> -u<span class="hljs-variable">${USERNAME}</span> -p<span class="hljs-variable">${PASSWORD}</span> <span class="hljs-variable">${DBNAME}</span> -e <span class="hljs-string">"<span class="hljs-variable">${select_sql}</span>"</span>
+<span class="hljs-comment">#删除数据</span>
+delete_sql=<span class="hljs-string">"delete from <span class="hljs-variable">${TABLENAME}</span>"</span>
+mysql -h<span class="hljs-variable">${HOSTNAME}</span> -P<span class="hljs-variable">${PORT}</span> -u<span class="hljs-variable">${USERNAME}</span> -p<span class="hljs-variable">${PASSWORD}</span> <span class="hljs-variable">${DBNAME}</span> -e <span class="hljs-string">"<span class="hljs-variable">${delete_sql}</span>"</span>
+mysql -h<span class="hljs-variable">${HOSTNAME}</span> -P<span class="hljs-variable">${PORT}</span> -u<span class="hljs-variable">${USERNAME}</span> -p<span class="hljs-variable">${PASSWORD}</span> <span class="hljs-variable">${DBNAME}</span> -e <span class="hljs-string">"<span class="hljs-variable">${select_sql}</span>"</span></code></pre></div>
 <h2 id="看看其他人的博客"><a href="#看看其他人的博客" class="headerlink" title="看看其他人的博客"></a>看看其他人的博客</h2><p><a target="_blank" rel="noopener" href="https://juejin.im/post/5da6e7ec518825527a4ce8d4#heading-19">https://juejin.im/post/5da6e7ec518825527a4ce8d4#heading-19</a></p>
 
             </div>
@@ -495,7 +511,7 @@ mysql -h<span class="token variable">${HOSTNAME}</span> -P<span class="token var
 
   <footer class="text-center mt-5 py-3">
   <div class="footer-content">
-     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+     <a rel="nofollow noopener"><span>Hzjsea</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
   </div>
   
 

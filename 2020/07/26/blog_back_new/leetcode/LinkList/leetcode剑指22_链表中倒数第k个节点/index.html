@@ -67,7 +67,7 @@
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
-       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
+       href="/">&nbsp;<strong>hzjsea</strong>&nbsp;</a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
             data-target="#navbarSupportedContent"
@@ -184,7 +184,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      305 字
+      267 字
     </span>
   
 
@@ -194,7 +194,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      4
+      3
        分钟
     </span>
   
@@ -243,62 +243,65 @@
 <a id="more"></a>
 
 
-<h1 id="删除排序链表中的重复元素"><a href="#删除排序链表中的重复元素" class="headerlink" title="删除排序链表中的重复元素"></a>删除排序链表中的重复元素</h1><h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><pre class=" language-c"><code class="language-c"><span class="token comment" spellcheck="true">// 解题要求</span>
-<span class="token comment" spellcheck="true">// 链表中倒数第k个节点</span>
-<span class="token comment" spellcheck="true">// 给定一个链表: 1->2->3->4->5, 和 k = 2.</span>
-<span class="token comment" spellcheck="true">// 返回链表 4->5.</span>
+<h1 id="删除排序链表中的重复元素"><a href="#删除排序链表中的重复元素" class="headerlink" title="删除排序链表中的重复元素"></a>删除排序链表中的重复元素</h1><h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><div class="code-wrapper"><pre class=" language-hljs c"><span class="hljs-comment"><code class="language-hljs c"><span class="hljs-comment">// 解题要求</span>
+<span class="hljs-comment">// 链表中倒数第k个节点</span>
+<span class="hljs-comment">// 给定一个链表: 1->2->3->4->5, 和 k = 2.</span>
+<span class="hljs-comment">// 返回链表 4->5.</span>
 
 
-<span class="token comment" spellcheck="true">// 解题思路</span>
-<span class="token comment" spellcheck="true">// 使用快慢指针，得出K的差距</span>
-<span class="token comment" spellcheck="true">// 当快指针的值=NULL的时候，慢指针所在节点就是倒数K的结点</span>
-<span class="token comment" spellcheck="true">// 需要返回的是慢指针所在节点的地址</span></code></pre>
-<h2 id="C语言实现"><a href="#C语言实现" class="headerlink" title="C语言实现"></a>C语言实现</h2><pre class=" language-c"><code class="language-c"><span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;stdio.h></span></span>
-<span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;stdlib.h></span></span>
-<span class="token keyword">struct</span> ListNode<span class="token operator">*</span> <span class="token function">getKthFromEnd</span><span class="token punctuation">(</span><span class="token keyword">struct</span> ListNode<span class="token operator">*</span> head<span class="token punctuation">,</span> <span class="token keyword">int</span> k<span class="token punctuation">)</span><span class="token punctuation">{</span>
-    <span class="token keyword">if</span><span class="token punctuation">(</span><span class="token operator">!</span>head <span class="token operator">||</span> k<span class="token operator">&lt;=</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-        <span class="token keyword">return</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
+<span class="hljs-comment">// 解题思路</span>
+<span class="hljs-comment">// 使用快慢指针，得出K的差距</span>
+<span class="hljs-comment">// 当快指针的值=NULL的时候，慢指针所在节点就是倒数K的结点</span>
+<span class="hljs-comment">// 需要返回的是慢指针所在节点的地址</span></code></pre></div>
 
-    <span class="token comment" spellcheck="true">// 创建两个节点</span>
-    <span class="token keyword">struct</span> ListNode <span class="token operator">*</span>pre <span class="token operator">=</span> head<span class="token punctuation">;</span>
-    <span class="token keyword">struct</span> ListNode <span class="token operator">*</span>last <span class="token operator">=</span> head<span class="token punctuation">;</span>
+<h2 id="C语言实现"><a href="#C语言实现" class="headerlink" title="C语言实现"></a>C语言实现</h2><div class="code-wrapper"><pre class=" language-hljs c"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string"><code class="language-hljs c"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string"><stdio.h></span></span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string"><stdlib.h></span></span>
+<span class="hljs-function">struct ListNode* <span class="hljs-title">getKthFromEnd</span><span class="hljs-params">(struct ListNode* head, <span class="hljs-keyword">int</span> k)</span></span>{
+    <span class="hljs-keyword">if</span>(!head || k<=<span class="hljs-number">0</span>){
+        <span class="hljs-keyword">return</span> <span class="hljs-literal">NULL</span>;
+    }
 
-    <span class="token comment" spellcheck="true">// 创建快慢指针的差距</span>
-    <span class="token keyword">while</span><span class="token punctuation">(</span>k<span class="token punctuation">)</span><span class="token punctuation">{</span>
-        last <span class="token operator">=</span> last<span class="token operator">-></span>next<span class="token punctuation">;</span>
-        <span class="token comment" spellcheck="true">// 判断是否只有一个节点</span>
-        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>last <span class="token operator">&amp;&amp;</span> k <span class="token operator">!=</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-            <span class="token keyword">return</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
-        <span class="token punctuation">}</span>
-        k<span class="token operator">--</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-    <span class="token comment" spellcheck="true">// 让快慢指针不断向后跳，直到快指针=NUll</span>
-    <span class="token keyword">while</span><span class="token punctuation">(</span>last<span class="token operator">!=</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-        pre <span class="token operator">=</span> pre<span class="token operator">-></span>next<span class="token punctuation">;</span>
-        last <span class="token operator">=</span> last<span class="token operator">-></span>next<span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-    <span class="token keyword">return</span> pre<span class="token punctuation">;</span>
-<span class="token punctuation">}</span></code></pre>
-<h2 id="python-语言实现"><a href="#python-语言实现" class="headerlink" title="python 语言实现"></a>python 语言实现</h2><pre class=" language-python"><code class="language-python"><span class="token keyword">class</span> <span class="token class-name">ListNode</span><span class="token punctuation">:</span>
-    <span class="token keyword">def</span> <span class="token function">__init__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> x<span class="token punctuation">)</span><span class="token punctuation">:</span>
-        self<span class="token punctuation">.</span>val <span class="token operator">=</span> x
-        self<span class="token punctuation">.</span>next <span class="token operator">=</span> None
+    <span class="hljs-comment">// 创建两个节点</span>
+    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">ListNode</span> *<span class="hljs-title">pre</span> =</span> head;
+    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">ListNode</span> *<span class="hljs-title">last</span> =</span> head;
 
-<span class="token keyword">class</span> <span class="token class-name">Solution</span><span class="token punctuation">:</span>
-    <span class="token keyword">def</span> <span class="token function">getKthFromEnd</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> head<span class="token punctuation">:</span> ListNode<span class="token punctuation">,</span> k<span class="token punctuation">:</span> int<span class="token punctuation">)</span><span class="token punctuation">:</span>
-        <span class="token comment" spellcheck="true"># 使用快慢指针举例来解决问题</span>
-        fast <span class="token operator">=</span> head
-        slow <span class="token operator">=</span> head
-        <span class="token keyword">while</span> k<span class="token punctuation">:</span>
-            fast <span class="token operator">=</span> fast<span class="token punctuation">.</span>next
-            k <span class="token operator">-=</span><span class="token number">1</span>
+    <span class="hljs-comment">// 创建快慢指针的差距</span>
+    <span class="hljs-keyword">while</span>(k){
+        last = last->next;
+        <span class="hljs-comment">// 判断是否只有一个节点</span>
+        <span class="hljs-keyword">if</span> (!last && k !=<span class="hljs-number">1</span>){
+            <span class="hljs-keyword">return</span> <span class="hljs-literal">NULL</span>;
+        }
+        k--;
+    }
+    <span class="hljs-comment">// 让快慢指针不断向后跳，直到快指针=NUll</span>
+    <span class="hljs-keyword">while</span>(last!=<span class="hljs-number">0</span>){
+        pre = pre->next;
+        last = last->next;
+    }
+    <span class="hljs-keyword">return</span> pre;
+}</code></pre></div>
 
-        <span class="token comment" spellcheck="true"># 此时fast与slow相距k距离，两点向后平移</span>
-        <span class="token keyword">while</span> fast<span class="token punctuation">:</span>
-            fast <span class="token operator">=</span> fast<span class="token punctuation">.</span>next
-            slow <span class="token operator">=</span> slow<span class="token punctuation">.</span>next
-        <span class="token keyword">return</span> slow</code></pre>
+<h2 id="python-语言实现"><a href="#python-语言实现" class="headerlink" title="python 语言实现"></a>python 语言实现</h2><div class="code-wrapper"><pre class=" language-hljs python"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title"><code class="language-hljs python"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ListNode</span>:</span>
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span>(<span class="hljs-params">self, x</span>):</span>
+        self.val = x
+        self.<span class="hljs-built_in">next</span> = <span class="hljs-literal">None</span>
+        
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Solution</span>:</span>
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getKthFromEnd</span>(<span class="hljs-params">self, head: ListNode, k: <span class="hljs-built_in">int</span></span>):</span>
+        <span class="hljs-comment"># 使用快慢指针举例来解决问题</span>
+        fast = head
+        slow = head
+        <span class="hljs-keyword">while</span> k:
+            fast = fast.<span class="hljs-built_in">next</span>
+            k -=<span class="hljs-number">1</span>
+
+        <span class="hljs-comment"># 此时fast与slow相距k距离，两点向后平移</span>
+        <span class="hljs-keyword">while</span> fast:
+            fast = fast.<span class="hljs-built_in">next</span>
+            slow = slow.<span class="hljs-built_in">next</span>
+        <span class="hljs-keyword">return</span> slow</code></pre></div>
+
 
             </div>
             <hr>
@@ -407,7 +410,7 @@
 
   <footer class="text-center mt-5 py-3">
   <div class="footer-content">
-     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+     <a rel="nofollow noopener"><span>Hzjsea</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
   </div>
   
 

@@ -67,7 +67,7 @@
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
-       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
+       href="/">&nbsp;<strong>hzjsea</strong>&nbsp;</a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
             data-target="#navbarSupportedContent"
@@ -184,7 +184,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      256 字
+      262 字
     </span>
   
 
@@ -231,86 +231,91 @@
 <a id="more"></a>
 
 <h1 id="fastapi响应体"><a href="#fastapi响应体" class="headerlink" title="fastapi响应体"></a>fastapi响应体</h1><p>fastapi可以指定一个响应体用来作为返回参数，呈现给用户</p>
-<pre class=" language-py"><code class="language-py">from fastapi import FastAPI
-from typing import  List
-from pydantic import BaseModel
+<div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword"><code class="language-hljs py"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> FastAPI
+<span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span>  List
+<span class="hljs-keyword">from</span> pydantic <span class="hljs-keyword">import</span> BaseModel
 
 
 app = FastAPI()
 
-class Item(BaseModel):
-    name: str
-    description: str = None
-    price: float
-    tax: float = None
-    tags: List[str] = []
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Item</span>(<span class="hljs-params">BaseModel</span>):</span>
+    name: <span class="hljs-built_in">str</span>
+    description: <span class="hljs-built_in">str</span> = <span class="hljs-literal">None</span>
+    price: <span class="hljs-built_in">float</span>
+    tax: <span class="hljs-built_in">float</span> = <span class="hljs-literal">None</span>
+    tags: List[<span class="hljs-built_in">str</span>] = []
 
-@app.post("/",response_model=Item)
-async def root(item:Item):
-    return item
+<span class="hljs-meta">@app.post("/",response_model=Item)</span>
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">root</span>(<span class="hljs-params">item:Item</span>):</span>
+    <span class="hljs-keyword">return</span> item
 
-</code></pre>
+</code></pre></div>
+
+
 <p>定制不同的请求体和响应体<br><img src="http://img.noback.top/2020-04-01-13-19-10.png" srcset="/img/loading.gif" alt="2020-04-01-13-19-10"></p>
-<pre class=" language-py"><code class="language-py">from fastapi import FastAPI
-from pydantic import BaseModel
+<div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword"><code class="language-hljs py"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> FastAPI
+<span class="hljs-keyword">from</span> pydantic <span class="hljs-keyword">import</span> BaseModel
 
 app = FastAPI()
 
 
-class UserIn(BaseModel):
-    username: str
-    password: str
-    email: str
-    full_name: str = None
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">UserIn</span>(<span class="hljs-params">BaseModel</span>):</span>
+    username: <span class="hljs-built_in">str</span>
+    password: <span class="hljs-built_in">str</span>
+    email: <span class="hljs-built_in">str</span>
+    full_name: <span class="hljs-built_in">str</span> = <span class="hljs-literal">None</span>
 
 
-class UserOut(BaseModel):
-    username: str
-    email: str
-    full_name: str = None
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">UserOut</span>(<span class="hljs-params">BaseModel</span>):</span>
+    username: <span class="hljs-built_in">str</span>
+    email: <span class="hljs-built_in">str</span>
+    full_name: <span class="hljs-built_in">str</span> = <span class="hljs-literal">None</span>
 
 
-@app.post("/user/", response_model=UserOut)
-async def create_user(*, user: UserIn):
-    return user</code></pre>
+<span class="hljs-meta">@app.post("/user/", response_model=UserOut)</span>
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">create_user</span>(<span class="hljs-params">*, user: UserIn</span>):</span>
+    <span class="hljs-keyword">return</span> user</code></pre></div>
+
+
 <p>过滤请求体中没有值得字段<br><img src="http://img.noback.top/2020-04-01-13-34-42.png" srcset="/img/loading.gif" alt="2020-04-01-13-34-42"></p>
 <p><img src="http://img.noback.top/2020-04-01-13-35-40.png" srcset="/img/loading.gif" alt="2020-04-01-13-35-40"></p>
-<pre class=" language-py"><code class="language-py">from fastapi import FastAPI
-from pydantic import BaseModel
+<div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword"><code class="language-hljs py"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> FastAPI
+<span class="hljs-keyword">from</span> pydantic <span class="hljs-keyword">import</span> BaseModel
 
 app = FastAPI()
 
 
-class UserIn(BaseModel):
-    username: str
-    password: str
-    email: str
-    full_name: str = None
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">UserIn</span>(<span class="hljs-params">BaseModel</span>):</span>
+    username: <span class="hljs-built_in">str</span>
+    password: <span class="hljs-built_in">str</span>
+    email: <span class="hljs-built_in">str</span>
+    full_name: <span class="hljs-built_in">str</span> = <span class="hljs-literal">None</span>
 
 
-class UserOut(BaseModel):
-    username: str
-    email: str
-    full_name: str = None
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">UserOut</span>(<span class="hljs-params">BaseModel</span>):</span>
+    username: <span class="hljs-built_in">str</span>
+    email: <span class="hljs-built_in">str</span>
+    full_name: <span class="hljs-built_in">str</span> = <span class="hljs-literal">None</span>
 
 
 fake_db = {
-    "hzj":{"username":"hzj","email":"1088xxx.com"},
-    "qq": {"username": "hzdsj", "email": "1088xxxds.com"},
-    "zz": {"username": "hzjdsds", "email": "1088xxx.dscom"},
-    "j": {"username": "dsdhzj", "email": "1088xxxsds.com"},
+    <span class="hljs-string">"hzj"</span>:{<span class="hljs-string">"username"</span>:<span class="hljs-string">"hzj"</span>,<span class="hljs-string">"email"</span>:<span class="hljs-string">"1088xxx.com"</span>},
+    <span class="hljs-string">"qq"</span>: {<span class="hljs-string">"username"</span>: <span class="hljs-string">"hzdsj"</span>, <span class="hljs-string">"email"</span>: <span class="hljs-string">"1088xxxds.com"</span>},
+    <span class="hljs-string">"zz"</span>: {<span class="hljs-string">"username"</span>: <span class="hljs-string">"hzjdsds"</span>, <span class="hljs-string">"email"</span>: <span class="hljs-string">"1088xxx.dscom"</span>},
+    <span class="hljs-string">"j"</span>: {<span class="hljs-string">"username"</span>: <span class="hljs-string">"dsdhzj"</span>, <span class="hljs-string">"email"</span>: <span class="hljs-string">"1088xxxsds.com"</span>},
 }
 
-@app.post("/user",response_model=UserOut)
-async def create_user(*,user: UserIn):
-    # 这里虽然返回的是user 但是他会根据UserOut返回response
-    return user
+<span class="hljs-meta">@app.post("/user",response_model=UserOut)</span>
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">create_user</span>(<span class="hljs-params">*,user: UserIn</span>):</span>
+    <span class="hljs-comment"># 这里虽然返回的是user 但是他会根据UserOut返回response</span>
+    <span class="hljs-keyword">return</span> user
 
 
-@app.get("/user/{user_id}", response_model=UserOut,response_model_exclude_unset=True)
-async def get_user(user_id :str=None ):
-    if user_id in fake_db:
-        return fake_db[user_id]</code></pre>
+<span class="hljs-meta">@app.get("/user/{user_id}", response_model=UserOut,response_model_exclude_unset=True)</span>
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_user</span>(<span class="hljs-params">user_id :<span class="hljs-built_in">str</span>=<span class="hljs-literal">None</span> </span>):</span>
+    <span class="hljs-keyword">if</span> user_id <span class="hljs-keyword">in</span> fake_db:
+        <span class="hljs-keyword">return</span> fake_db[user_id]</code></pre></div>
+
 <p>还有其他的一些过滤方法<br><img src="http://img.noback.top/2020-04-01-13-36-31.png" srcset="/img/loading.gif" alt="2020-04-01-13-36-31"></p>
 
             </div>
@@ -420,7 +425,7 @@ async def get_user(user_id :str=None ):
 
   <footer class="text-center mt-5 py-3">
   <div class="footer-content">
-     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+     <a rel="nofollow noopener"><span>Hzjsea</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
   </div>
   
 

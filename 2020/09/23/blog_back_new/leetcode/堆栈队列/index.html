@@ -67,7 +67,7 @@
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
-       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
+       href="/">&nbsp;<strong>hzjsea</strong>&nbsp;</a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
             data-target="#navbarSupportedContent"
@@ -184,7 +184,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      2.6k 字
+      2.3k 字
     </span>
   
 
@@ -194,7 +194,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      35
+      30
        分钟
     </span>
   
@@ -248,370 +248,399 @@
 <li>优先级队列，队列里面的任务按照优先级排序，优先级高的先被取出来</li>
 </ul>
 <h3 id="Python队列实现与使用"><a href="#Python队列实现与使用" class="headerlink" title="Python队列实现与使用"></a>Python队列实现与使用</h3><p>::: tip<br>单线程队列实现，无阻塞<br>:::</p>
-<pre class=" language-py"><code class="language-py">#!/usr/bin/env python3
-# encoding: utf-8
-'''
-@author: hzj
-@file: queueTest2.py
-@time: 2020/9/25 3:31 下午
-'''
+<div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-comment"><code class="language-hljs py"><span class="hljs-comment">#!/usr/bin/env python3</span>
+<span class="hljs-comment"># encoding: utf-8</span>
+<span class="hljs-string">&#x27;&#x27;&#x27;</span>
+<span class="hljs-string">@author: hzj</span>
+<span class="hljs-string">@file: queueTest2.py</span>
+<span class="hljs-string">@time: 2020/9/25 3:31 下午</span>
+<span class="hljs-string">&#x27;&#x27;&#x27;</span>
 
-class Queue(object):
-    def __str__(self):
-        return str(self.queue)
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Queue</span>(<span class="hljs-params"><span class="hljs-built_in">object</span></span>):</span>
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__str__</span>(<span class="hljs-params">self</span>):</span>
+        <span class="hljs-keyword">return</span> <span class="hljs-built_in">str</span>(self.queue)
 
-    def __init__(self,size):
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span>(<span class="hljs-params">self,size</span>):</span>
         self.size = size
         self.queue = []
 
-    # 获取队列的当前长度
-    def getSize(self) -> int:
-        return len(self.queue)
+    <span class="hljs-comment"># 获取队列的当前长度</span>
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getSize</span>(<span class="hljs-params">self</span>) -> int:</span>
+        <span class="hljs-keyword">return</span> <span class="hljs-built_in">len</span>(self.queue)
 
-    # 入队
-    def enqueue(self,item) -> int:
-        if self.isfull():
-            return -1
+    <span class="hljs-comment"># 入队</span>
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">enqueue</span>(<span class="hljs-params">self,item</span>) -> int:</span>
+        <span class="hljs-keyword">if</span> self.isfull():
+            <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>
         self.queue.append(item)
 
-    # 判断队列是否已满
-    def isfull(self) -> bool:
-        if self.size == self.getSize():
-            return True
-        return False
+    <span class="hljs-comment"># 判断队列是否已满</span>
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">isfull</span>(<span class="hljs-params">self</span>) -> bool:</span>
+        <span class="hljs-keyword">if</span> self.size == self.getSize():
+            <span class="hljs-keyword">return</span> <span class="hljs-literal">True</span>
+        <span class="hljs-keyword">return</span> <span class="hljs-literal">False</span>
 
-    # 判断队列是否为空
-    def isEmpty(self) -> bool:
-        if len(self.queue) == 0:
-            return True
-        return False
+    <span class="hljs-comment"># 判断队列是否为空</span>
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">isEmpty</span>(<span class="hljs-params">self</span>) -> bool:</span>
+        <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(self.queue) == <span class="hljs-number">0</span>:
+            <span class="hljs-keyword">return</span> <span class="hljs-literal">True</span>
+        <span class="hljs-keyword">return</span> <span class="hljs-literal">False</span>
 
-    # 出队
-    def dequeue(self) -> int:
-        if self.isEmpty():
-            return -1
-        element = self.queue[0]
+    <span class="hljs-comment"># 出队</span>
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">dequeue</span>(<span class="hljs-params">self</span>) -> int:</span>
+        <span class="hljs-keyword">if</span> self.isEmpty():
+            <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>
+        element = self.queue[<span class="hljs-number">0</span>]
         self.queue.remove(element)
-        return element
+        <span class="hljs-keyword">return</span> element
 
 
-if __name__ == '__main__':
+<span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:
 
-    # 创建队列
-    queueTestxx = Queue(20)
+    <span class="hljs-comment"># 创建队列</span>
+    queueTestxx = Queue(<span class="hljs-number">20</span>)
 
-    # 批量入队
-    for i in range(1,20):
+    <span class="hljs-comment"># 批量入队</span>
+    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>,<span class="hljs-number">20</span>):
         queueTestxx.enqueue(i)
 
-    # 批量出队
-    for i in range(1,20):
+    <span class="hljs-comment"># 批量出队</span>
+    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>,<span class="hljs-number">20</span>):
         print(queueTestxx.dequeue())
 
-    # 判断是否为空
+    <span class="hljs-comment"># 判断是否为空</span>
     print(queueTestxx.isEmpty())
 
-    # 判断是否满了
+    <span class="hljs-comment"># 判断是否满了</span>
     print(queueTestxx.isfull())
 
-    # 单线程队列，并不能起到阻塞的作用
-</code></pre>
+    <span class="hljs-comment"># 单线程队列，并不能起到阻塞的作用</span>
+</code></pre></div>
+
+
 <p>::: tip<br>使用自带的queue库实现<br>:::</p>
-<pre class=" language-py"><code class="language-py">"""
-python队列实现
-"""
+<div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-string"><code class="language-hljs py"><span class="hljs-string">"""</span>
+<span class="hljs-string">python队列实现</span>
+<span class="hljs-string">"""</span>
 
-import queue
+<span class="hljs-keyword">import</span> queue
 
-# 创建队列，如果不设置长度，默认为无限长
+<span class="hljs-comment"># 创建队列，如果不设置长度，默认为无限长</span>
 q = queue.Queue()
 
-# 返回队列中当前的元素
+<span class="hljs-comment"># 返回队列中当前的元素</span>
 print(q.maxsize)
 
-# 入队
-for i in range(1,10):
+<span class="hljs-comment"># 入队</span>
+<span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>,<span class="hljs-number">10</span>):
     q.put(i)
 
-# 出队
-for i in range(1,10):
+<span class="hljs-comment"># 出队</span>
+<span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>,<span class="hljs-number">10</span>):
     q.get()
 
-# 当队列中只有4个元素的时候，如果出队去了5个数字，则这个时候队列会产生阻塞，只有当下一个第五个元素进入的是否才会输出
-for i in range(1,5):
+<span class="hljs-comment"># 当队列中只有4个元素的时候，如果出队去了5个数字，则这个时候队列会产生阻塞，只有当下一个第五个元素进入的是否才会输出</span>
+<span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>,<span class="hljs-number">5</span>):
     q.put(i)
 
-for i in range(1,6):
-    q.get()</code></pre>
-<h3 id="Python中的队列"><a href="#Python中的队列" class="headerlink" title="Python中的队列"></a>Python中的队列</h3><pre class=" language-py"><code class="language-py">class queue.Queue(maxsize=0)
-class queue.LifoQueue(maxsize=0)
-class queue.PriorityQueue(maxsize=0)</code></pre>
+<span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>,<span class="hljs-number">6</span>):
+    q.get()</code></pre></div>
+
+
+
+
+<h3 id="Python中的队列"><a href="#Python中的队列" class="headerlink" title="Python中的队列"></a>Python中的队列</h3><div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">queue</span>.<span class="hljs-title">Queue</span>(<span class="hljs-params">maxsize=<span class="hljs-number"><code class="language-hljs py"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">queue</span>.<span class="hljs-title">Queue</span>(<span class="hljs-params">maxsize=<span class="hljs-number">0</span></span>)</span>
+<span class="hljs-class"><span class="hljs-title">class</span> <span class="hljs-title">queue</span>.<span class="hljs-title">LifoQueue</span>(<span class="hljs-params">maxsize=<span class="hljs-number">0</span></span>)</span>
+<span class="hljs-class"><span class="hljs-title">class</span> <span class="hljs-title">queue</span>.<span class="hljs-title">PriorityQueue</span>(<span class="hljs-params">maxsize=<span class="hljs-number">0</span></span>)</span></code></pre></div>
 <p>当没有设置maxsize的时候，队列长度为无限大,如果设置了，则表示设置可以放入当前队列中的任务数的上线</p>
 <ul>
-<li>添加任务<pre class=" language-py"><code class="language-py">>>> import queue
->>> q = queue.Queue(maxsize=1)
->>> q.put(100)</code></pre>
-函数方法如下<code>Queue.put(item, block=True, timeout=None)</code><pre class=" language-py"><code class="language-py">import queue
-</code></pre>
-</li>
-</ul>
-<h1 id="创建队列，如果不设置长度，默认为无限长"><a href="#创建队列，如果不设置长度，默认为无限长" class="headerlink" title="创建队列，如果不设置长度，默认为无限长"></a>创建队列，如果不设置长度，默认为无限长</h1><p>q = queue.Queue(maxsize=1)<br>q.put(2)<br>q.put(1,True,2) # 报错 queue.FULL</p>
-<pre><code>默认情况下，在队列满时，该函数会一直阻塞，直到队列中有空余的位置可以添加任务为止。如果 timeout 是正数，则最多阻塞 timeout 秒，如果这段时间内还没有空余的位置出来，则会引发 Full 异常
+<li>添加任务<div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword"><code class="language-hljs py"><span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">import</span> queue
+<span class="hljs-meta">>>> </span>q = queue.Queue(maxsize=<span class="hljs-number">1</span>)
+<span class="hljs-meta">>>> </span>q.put(<span class="hljs-number">100</span>)</code></pre></div>
+函数方法如下<code>Queue.put(item, block=True, timeout=None)</code><div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-keyword"><code class="language-hljs py"><span class="hljs-keyword">import</span> queue
 
-block 是非阻塞模式，也就是当`block=false`的时候，timeout失效。
-```py
-&gt;&gt;&gt; import queue
-&gt;&gt;&gt; q = queue.Queue(maxsize=1)
-&gt;&gt;&gt; q.put(100)
-&gt;&gt;&gt; q.put(100,False,2)  # 不需要等待2s  直接报错
+<span class="hljs-comment"># 创建队列，如果不设置长度，默认为无限长</span>
+q = queue.Queue(maxsize=<span class="hljs-number">1</span>)
+q.put(<span class="hljs-number">2</span>)
+q.put(<span class="hljs-number">1</span>,<span class="hljs-literal">True</span>,<span class="hljs-number">2</span>) <span class="hljs-comment"># 报错 queue.FULL</span></code></pre></div>
+默认情况下，在队列满时，该函数会一直阻塞，直到队列中有空余的位置可以添加任务为止。如果 timeout 是正数，则最多阻塞 timeout 秒，如果这段时间内还没有空余的位置出来，则会引发 Full 异常</li>
+</ul>
+<p>block 是非阻塞模式，也就是当<code>block=false</code>的时候，timeout失效。</p>
+<div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword"><code class="language-hljs py"><span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">import</span> queue
+<span class="hljs-meta">>>> </span>q = queue.Queue(maxsize=<span class="hljs-number">1</span>)
+<span class="hljs-meta">>>> </span>q.put(<span class="hljs-number">100</span>)
+<span class="hljs-meta">>>> </span>q.put(<span class="hljs-number">100</span>,<span class="hljs-literal">False</span>,<span class="hljs-number">2</span>)  <span class="hljs-comment"># 不需要等待2s  直接报错</span>
 Traceback (most recent call last):
-  File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;
-  File &quot;E:\Python37-32\lib\queue.py&quot;, line 136, in put
-    raise Full
-queue.Full</code></pre>
+  File <span class="hljs-string">"<stdin>"</span>, line <span class="hljs-number">1</span>, <span class="hljs-keyword">in</span> <module>
+  File <span class="hljs-string">"E:\Python37-32\lib\queue.py"</span>, line <span class="hljs-number">136</span>, <span class="hljs-keyword">in</span> put
+    <span class="hljs-keyword">raise</span> Full
+queue.Full</code></pre></div>
+
 <p><code>Queue.put_nowait(item)</code> 相当于 <code>Queue.put(item,False)</code></p>
 <ul>
-<li>获取任务<br><code>get()</code> 函数也有两个可选参数，完整签名如下 <code>Queue.get(block=True, timeout=None)</code><br>默认情况下，当队列空时调用该函数会一直阻塞，直到队列中有任务可获取为止。如果 timeout 是正数，则最多阻塞 timeout 秒，如果这段时间内还没有任务可获取，则会引发 Empty 异常<pre class=" language-py"><code class="language-py">>>> import queue
->>> q = queue.Queue()
->>> q.put(100)
->>> q.get()
-100
->>> q.get(True,2)
+<li>获取任务<br><code>get()</code> 函数也有两个可选参数，完整签名如下 <code>Queue.get(block=True, timeout=None)</code><br>默认情况下，当队列空时调用该函数会一直阻塞，直到队列中有任务可获取为止。如果 timeout 是正数，则最多阻塞 timeout 秒，如果这段时间内还没有任务可获取，则会引发 Empty 异常<div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword"><code class="language-hljs py"><span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">import</span> queue
+<span class="hljs-meta">>>> </span>q = queue.Queue()
+<span class="hljs-meta">>>> </span>q.put(<span class="hljs-number">100</span>)
+<span class="hljs-meta">>>> </span>q.get()
+<span class="hljs-number">100</span>
+<span class="hljs-meta">>>> </span>q.get(<span class="hljs-literal">True</span>,<span class="hljs-number">2</span>)
 Traceback (most recent call last):
-File "<stdin>", line 1, in <module>
-File "E:\Python37-32\lib\queue.py", line 178, in get
-  raise Empty
-_queue.Empty # 2 秒钟内没有任务可获取则引发 Empty 异常
->>> q.get() # 该方法会一直阻塞</code></pre>
-当 block 为 false 时，timeout 参数将失效。同时如果队列中没有任务可获取则会立刻引发 Empty 异常，否则会直接获取一个任务并返回，不会阻塞。<pre class=" language-py"><code class="language-py">>>> import queue
->>> q = queue.Queue()
->>> q.put(100)
->>> q.get() 
-100
->>> q.get(False,2)  # 直接报错
+  File <span class="hljs-string">"<stdin>"</span>, line <span class="hljs-number">1</span>, <span class="hljs-keyword">in</span> <module>
+  File <span class="hljs-string">"E:\Python37-32\lib\queue.py"</span>, line <span class="hljs-number">178</span>, <span class="hljs-keyword">in</span> get
+    <span class="hljs-keyword">raise</span> Empty
+_queue.Empty <span class="hljs-comment"># 2 秒钟内没有任务可获取则引发 Empty 异常</span>
+<span class="hljs-meta">>>> </span>q.get() <span class="hljs-comment"># 该方法会一直阻塞</span></code></pre></div>
+当 block 为 false 时，timeout 参数将失效。同时如果队列中没有任务可获取则会立刻引发 Empty 异常，否则会直接获取一个任务并返回，不会阻塞。<div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword"><code class="language-hljs py"><span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">import</span> queue
+<span class="hljs-meta">>>> </span>q = queue.Queue()
+<span class="hljs-meta">>>> </span>q.put(<span class="hljs-number">100</span>)
+<span class="hljs-meta">>>> </span>q.get() 
+<span class="hljs-number">100</span>
+<span class="hljs-meta">>>> </span>q.get(<span class="hljs-literal">False</span>,<span class="hljs-number">2</span>)  <span class="hljs-comment"># 直接报错</span>
 Traceback (most recent call last):
-File "<stdin>", line 1, in <module>
-File "E:\Python37-32\lib\queue.py", line 167, in get
-  raise Empty
+  File <span class="hljs-string">"<stdin>"</span>, line <span class="hljs-number">1</span>, <span class="hljs-keyword">in</span> <module>
+  File <span class="hljs-string">"E:\Python37-32\lib\queue.py"</span>, line <span class="hljs-number">167</span>, <span class="hljs-keyword">in</span> get
+    <span class="hljs-keyword">raise</span> Empty
 _queue.Empty 
-# 指定为非阻塞模式，队列为空则立即引发 Empty 异常</code></pre>
+<span class="hljs-comment"># 指定为非阻塞模式，队列为空则立即引发 Empty 异常</span></code></pre></div>
+
 </li>
 </ul>
 <p><code>Queue.get_nowait()</code> 来获取任务，相当于 <code>Queue.get(False)</code></p>
 <ul>
 <li><p>获取队列大小</p>
-<pre class=" language-py"><code class="language-py">import queue
+<div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-keyword"><code class="language-hljs py"><span class="hljs-keyword">import</span> queue
 q = queue.Queue()
-q.put(100)
-print(q.qsize())</code></pre>
+q.put(<span class="hljs-number">100</span>)
+print(q.qsize())</code></pre></div>
 </li>
 <li><p>判断队列是否满或者是否空</p>
-<pre class=" language-py"><code class="language-py">import queue
-</code></pre>
-</li>
-</ul>
-<h1 id="创建队列，如果不设置长度，默认为无限长-1"><a href="#创建队列，如果不设置长度，默认为无限长-1" class="headerlink" title="创建队列，如果不设置长度，默认为无限长"></a>创建队列，如果不设置长度，默认为无限长</h1><p>q = queue.Queue(maxsize=1)</p>
-<h1 id="判断队列是否为空"><a href="#判断队列是否为空" class="headerlink" title="判断队列是否为空"></a>判断队列是否为空</h1><p>flag = q.empty()<br>print(flag)</p>
-<h1 id="判断队列是否满"><a href="#判断队列是否满" class="headerlink" title="判断队列是否满"></a>判断队列是否满</h1><p>full_flag = q.full()<br>print(full_flag)</p>
-<pre><code>
-- FIFO队列
-```py
-import queue
+<div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-keyword"><code class="language-hljs py"><span class="hljs-keyword">import</span> queue
 
-# FIFO队列 先进先出
-q = queue.Queue(maxsize=20)
-for index in range(1,11):
+<span class="hljs-comment"># 创建队列，如果不设置长度，默认为无限长</span>
+q = queue.Queue(maxsize=<span class="hljs-number">1</span>)
+
+<span class="hljs-comment"># 判断队列是否为空</span>
+flag = q.empty()
+print(flag)
+
+<span class="hljs-comment"># 判断队列是否满</span>
+full_flag = q.full()
+print(full_flag)
+</code></pre></div>
+</li>
+<li><p>FIFO队列</p>
+<div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-keyword"><code class="language-hljs py"><span class="hljs-keyword">import</span> queue
+
+<span class="hljs-comment"># FIFO队列 先进先出</span>
+q = queue.Queue(maxsize=<span class="hljs-number">20</span>)
+<span class="hljs-keyword">for</span> index <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>,<span class="hljs-number">11</span>):
     q.put(index)
 
-while not q.empty():
+<span class="hljs-keyword">while</span> <span class="hljs-keyword">not</span> q.empty():
     print(q.get())
-# res
-# 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, </code></pre>
+<span class="hljs-comment"># res</span>
+<span class="hljs-comment"># 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, </span></code></pre></div>
+</li>
+<li><p>LIFO队列</p>
+<div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-keyword"><code class="language-hljs py"><span class="hljs-keyword">import</span> queue
+q = queue.LifoQueue() <span class="hljs-comment"># 创建一个 LIFO 队列</span>
+<span class="hljs-keyword">for</span> index <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">10</span>):
+    q.put(index)
+<span class="hljs-keyword">while</span> <span class="hljs-keyword">not</span> q.empty():
+    print(q.get(), end=<span class="hljs-string">", "</span>)
+
+<span class="hljs-comment"># res</span>
+<span class="hljs-comment"># 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, </span></code></pre></div>
+</li>
+<li><p>优先级队列<br>优先级队列中的任务顺序跟放入时的顺序是无关的，而是按照任务的大小来排序，最小值先被取出。那任务比较大小的规则是怎么样的呢.</p>
 <ul>
-<li>LIFO队列<pre class=" language-py"><code class="language-py">import queue
-q = queue.LifoQueue() # 创建一个 LIFO 队列
-for index in range(10):
-  q.put(index)
-while not q.empty():
-  print(q.get(), end=", ")
-</code></pre>
+<li>如果是内置类型，比如数值或者字符串，则按照自然顺序来比较排序。</li>
+<li>如果是列表或者元祖，则先比较第一个元素，然后比较第二个，以此类推，直到比较出结果<div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-keyword"><code class="language-hljs py"><span class="hljs-keyword">import</span> queue
+q = queue.PriorityQueue()
+<span class="hljs-keyword">for</span> index <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">10</span>,<span class="hljs-number">0</span>,<span class="hljs-number">-1</span>):
+    q.put(index)
+<span class="hljs-keyword">while</span> <span class="hljs-keyword">not</span> q.empty():
+    print(q.get(), end=<span class="hljs-string">", "</span>)
+<span class="hljs-comment">## 输出结果如下</span>
+<span class="hljs-comment"># 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, </span></code></pre></div>
+
 </li>
 </ul>
-<h1 id="res"><a href="#res" class="headerlink" title="res"></a>res</h1><h1 id="9-8-7-6-5-4-3-2-1-0"><a href="#9-8-7-6-5-4-3-2-1-0" class="headerlink" title="9, 8, 7, 6, 5, 4, 3, 2, 1, 0,"></a>9, 8, 7, 6, 5, 4, 3, 2, 1, 0,</h1><pre><code>
-- 优先级队列
-优先级队列中的任务顺序跟放入时的顺序是无关的，而是按照任务的大小来排序，最小值先被取出。那任务比较大小的规则是怎么样的呢.
-    - 如果是内置类型，比如数值或者字符串，则按照自然顺序来比较排序。
-    - 如果是列表或者元祖，则先比较第一个元素，然后比较第二个，以此类推，直到比较出结果
-```py
-import queue
+</li>
+</ul>
+<div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-keyword"><code class="language-hljs py"><span class="hljs-keyword">import</span> queue
 q = queue.PriorityQueue()
-for index in range(10,0,-1):
-    q.put(index)
-while not q.empty():
-    print(q.get(), end=&quot;, &quot;)
-## 输出结果如下
-# 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, </code></pre>
-<pre class=" language-py"><code class="language-py">import queue
-q = queue.PriorityQueue()
-q.put(["d","b"])
-q.put(["c","b"])
-while not q.empty():
-    print(q.get(), end=", ")
-## 输出结果如下
-# ['c', 'b'], ['d', 'b'], </code></pre>
+q.put([<span class="hljs-string">"d"</span>,<span class="hljs-string">"b"</span>])
+q.put([<span class="hljs-string">"c"</span>,<span class="hljs-string">"b"</span>])
+<span class="hljs-keyword">while</span> <span class="hljs-keyword">not</span> q.empty():
+    print(q.get(), end=<span class="hljs-string">", "</span>)
+<span class="hljs-comment">## 输出结果如下</span>
+<span class="hljs-comment"># [&#x27;c&#x27;, &#x27;b&#x27;], [&#x27;d&#x27;, &#x27;b&#x27;], </span></code></pre></div>
+
 <p>优先级队列里面的内容数据类型不能相同</p>
 <ul>
-<li>优先级队列 自定义类型<pre class=" language-py"><code class="language-py">import queue
+<li>优先级队列 自定义类型<div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-keyword"><code class="language-hljs py"><span class="hljs-keyword">import</span> queue
 q = queue.PriorityQueue()
-</code></pre>
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Animal</span>:</span>
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span>(<span class="hljs-params">self, age, name</span>):</span>
+        self.age = age
+        self.name = name
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__lt__</span>(<span class="hljs-params">self, other</span>):</span> 
+        <span class="hljs-keyword">return</span> self.age < other.age <span class="hljs-comment"># 同类进行比较的时候，会比较age</span>
+
+q.put(Animal(<span class="hljs-number">3</span>,<span class="hljs-string">"cat"</span>))
+q.put(Animal(<span class="hljs-number">2</span>,<span class="hljs-string">"dog"</span>))
+
+<span class="hljs-keyword">while</span> <span class="hljs-keyword">not</span> q.empty():
+    animal = q.get()
+    print(animal.name, animal.age, end=<span class="hljs-string">", "</span>)
+<span class="hljs-comment">## 输出结果如下</span>
+dog <span class="hljs-number">2</span>, cat <span class="hljs-number">3</span>,</code></pre></div>
+
 </li>
 </ul>
-<p>class Animal:<br>    def <strong>init</strong>(self, age, name):<br>        self.age = age<br>        self.name = name<br>    def <strong>lt</strong>(self, other):<br>        return self.age &lt; other.age # 同类进行比较的时候，会比较age</p>
-<p>q.put(Animal(3,”cat”))<br>q.put(Animal(2,”dog”))</p>
-<p>while not q.empty():<br>    animal = q.get()<br>    print(animal.name, animal.age, end=”, “)</p>
-<h2 id="输出结果如下"><a href="#输出结果如下" class="headerlink" title="输出结果如下"></a>输出结果如下</h2><p>dog 2, cat 3, </p>
-<pre><code>
-### Golang中的队列实现
-Golang里面，队列主要由切片来实现
-```go
-package main
+<h3 id="Golang中的队列实现"><a href="#Golang中的队列实现" class="headerlink" title="Golang中的队列实现"></a>Golang中的队列实现</h3><p>Golang里面，队列主要由切片来实现</p>
+<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">package</span> main
 
-import &quot;fmt&quot;
+<span class="hljs-keyword">import</span> <span class="hljs-string">"fmt"</span>
 
-// 实现FIFO队列
-// 创建类
+<span class="hljs-comment">// 实现FIFO队列</span>
+<span class="hljs-comment">// 创建类</span>
 
-type Element interface &#123;&#125;
+<span class="hljs-keyword">type</span> Element <span class="hljs-keyword">interface</span> {}
 
-// 创建队列实现
-type FIFOQueue interface &#123;
-    push(e Element) // 添加元素
-    pop() Element // 删除元素
-    clear() bool // 清空元素
-    Size() int // 返回队列内元素数量
-    IsEmpty() bool // 判断队列是否为空
-&#125;
+<span class="hljs-comment">// 创建队列实现</span>
+<span class="hljs-keyword">type</span> FIFOQueue <span class="hljs-keyword">interface</span> {
+	push(e Element) <span class="hljs-comment">// 添加元素</span>
+	pop() Element <span class="hljs-comment">// 删除元素</span>
+	clear() <span class="hljs-keyword">bool</span> <span class="hljs-comment">// 清空元素</span>
+	Size() <span class="hljs-keyword">int</span> <span class="hljs-comment">// 返回队列内元素数量</span>
+	IsEmpty() <span class="hljs-keyword">bool</span> <span class="hljs-comment">// 判断队列是否为空</span>
+}
 
-type sliceEntry struct &#123;
-    slice []Element
-&#125;
+<span class="hljs-keyword">type</span> sliceEntry <span class="hljs-keyword">struct</span> {
+	slice []Element
+}
 
 
-// 创建队列
-func NewQueue() *sliceEntry&#123;
-    return &amp;sliceEntry&#123;&#125;
-&#125;
+<span class="hljs-comment">// 创建队列</span>
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">NewQueue</span><span class="hljs-params">()</span> *<span class="hljs-title">sliceEntry</span></span>{
+	<span class="hljs-keyword">return</span> &sliceEntry{}
+}
 
-// 添加元素
-func (this *sliceEntry) push(e Element) &#123;
-    this.slice = append(this.slice,e)
-&#125;
+<span class="hljs-comment">// 添加元素</span>
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(this *sliceEntry)</span> <span class="hljs-title">push</span><span class="hljs-params">(e Element)</span></span> {
+	this.slice = <span class="hljs-built_in">append</span>(this.slice,e)
+}
 
-// 删除元素
-func(this *sliceEntry) pop() Element&#123;
-    if this.IsEmpty()&#123;
-        fmt.Println(&quot;这是一个空队列&quot;)
-        return nil
-    &#125;
-    firstElement := this.slice[0]
-    this.slice = this.slice[1:]
-    return firstElement
-&#125;
+<span class="hljs-comment">// 删除元素</span>
+<span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(this *sliceEntry)</span> <span class="hljs-title">pop</span><span class="hljs-params">()</span> <span class="hljs-title">Element</span></span>{
+	<span class="hljs-keyword">if</span> this.IsEmpty(){
+		fmt.Println(<span class="hljs-string">"这是一个空队列"</span>)
+		<span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span>
+	}
+	firstElement := this.slice[<span class="hljs-number">0</span>]
+	this.slice = this.slice[<span class="hljs-number">1</span>:]
+	<span class="hljs-keyword">return</span> firstElement
+}
 
-// 判断队列是否为空
-func (this *sliceEntry) IsEmpty() bool &#123;
-    if len(this.slice)==0&#123;
-        return true
-    &#125;
-    return false
-&#125;
+<span class="hljs-comment">// 判断队列是否为空</span>
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(this *sliceEntry)</span> <span class="hljs-title">IsEmpty</span><span class="hljs-params">()</span> <span class="hljs-title">bool</span></span> {
+	<span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(this.slice)==<span class="hljs-number">0</span>{
+		<span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>
+	}
+	<span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>
+}
 
-// 清除队列
-func (this *sliceEntry) Clear() bool&#123;
-    if this.IsEmpty()&#123;
-        fmt.Println(&quot;queue is empty&quot;)
-        return false
-    &#125;
-    for i:=0;i&lt;this.Size();i++&#123;
-        this.slice[i] = nil
-    &#125;
-    this.slice = nil
-    return true
-&#125;
+<span class="hljs-comment">// 清除队列</span>
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(this *sliceEntry)</span> <span class="hljs-title">Clear</span><span class="hljs-params">()</span> <span class="hljs-title">bool</span></span>{
+	<span class="hljs-keyword">if</span> this.IsEmpty(){
+		fmt.Println(<span class="hljs-string">"queue is empty"</span>)
+		<span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>
+	}
+	<span class="hljs-keyword">for</span> i:=<span class="hljs-number">0</span>;i<this.Size();i++{
+		this.slice[i] = <span class="hljs-literal">nil</span>
+	}
+	this.slice = <span class="hljs-literal">nil</span>
+	<span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>
+}
 
-// 输出队列大小
-func (this *sliceEntry) Size() int  &#123;
-    return len(this.slice)
-&#125;
-</code></pre>
+<span class="hljs-comment">// 输出队列大小</span>
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(this *sliceEntry)</span> <span class="hljs-title">Size</span><span class="hljs-params">()</span> <span class="hljs-title">int</span></span>  {
+	<span class="hljs-keyword">return</span> <span class="hljs-built_in">len</span>(this.slice)
+}
+</code></pre></div>
+
+
 <p>golang FILO队列实现</p>
-<pre class=" language-go"><code class="language-go"><span class="token keyword">package</span> main
+<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">package</span> main
 
-<span class="token keyword">import</span> <span class="token string">"fmt"</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">"fmt"</span>
 
-<span class="token comment" spellcheck="true">// 实现FILO队列</span>
+<span class="hljs-comment">// 实现FILO队列</span>
 
-<span class="token comment" spellcheck="true">// 创建队列中的数据类型</span>
-<span class="token keyword">type</span> element <span class="token keyword">interface</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
+<span class="hljs-comment">// 创建队列中的数据类型</span>
+<span class="hljs-keyword">type</span> element <span class="hljs-keyword">interface</span> {}
 
-<span class="token comment" spellcheck="true">// 创建队列实现</span>
-<span class="token keyword">type</span> FILOqueue <span class="token keyword">interface</span> <span class="token punctuation">{</span>
-    <span class="token function">push</span> <span class="token punctuation">(</span>e element<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// 添加元素</span>
-    <span class="token function">pop</span> <span class="token punctuation">(</span><span class="token punctuation">)</span>  element <span class="token comment" spellcheck="true">// 删除元素</span>
-    <span class="token function">clear</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// 清除元素</span>
-    <span class="token function">Size</span><span class="token punctuation">(</span><span class="token punctuation">)</span>  <span class="token builtin">int</span> <span class="token comment" spellcheck="true">// 计算队列中元素的数量</span>
-    <span class="token function">IsEmpty</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token builtin">bool</span> <span class="token comment" spellcheck="true">//是否为空</span>
-<span class="token punctuation">}</span>
+<span class="hljs-comment">// 创建队列实现</span>
+<span class="hljs-keyword">type</span> FILOqueue <span class="hljs-keyword">interface</span> {
+	push (e element) <span class="hljs-comment">// 添加元素</span>
+	pop ()  element <span class="hljs-comment">// 删除元素</span>
+	clear() <span class="hljs-comment">// 清除元素</span>
+	Size()  <span class="hljs-keyword">int</span> <span class="hljs-comment">// 计算队列中元素的数量</span>
+	IsEmpty() <span class="hljs-keyword">bool</span> <span class="hljs-comment">//是否为空</span>
+}
 
-<span class="token comment" spellcheck="true">// 队列实现</span>
-<span class="token keyword">type</span> FILqueue <span class="token keyword">struct</span> <span class="token punctuation">{</span>
-    slice <span class="token punctuation">[</span><span class="token punctuation">]</span>element
-<span class="token punctuation">}</span>
+<span class="hljs-comment">// 队列实现</span>
+<span class="hljs-keyword">type</span> FILqueue <span class="hljs-keyword">struct</span> {
+	slice []element
+}
 
-<span class="token keyword">func</span> <span class="token function">NewQueue2</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">*</span>FILqueue<span class="token punctuation">{</span>
-    <span class="token keyword">return</span> <span class="token operator">&amp;</span>FILqueue<span class="token punctuation">{</span><span class="token punctuation">}</span>
-<span class="token punctuation">}</span>
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">NewQueue2</span><span class="hljs-params">()</span> *<span class="hljs-title">FILqueue</span></span>{
+	<span class="hljs-keyword">return</span> &FILqueue{}
+}
 
-<span class="token keyword">func</span> <span class="token punctuation">(</span>this <span class="token operator">*</span>FILqueue<span class="token punctuation">)</span> <span class="token function">push</span><span class="token punctuation">(</span>e element<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    this<span class="token punctuation">.</span>slice <span class="token operator">=</span> <span class="token function">append</span><span class="token punctuation">(</span>this<span class="token punctuation">.</span>slice<span class="token punctuation">,</span>e<span class="token punctuation">)</span>
-<span class="token punctuation">}</span>
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(this *FILqueue)</span> <span class="hljs-title">push</span><span class="hljs-params">(e element)</span></span> {
+	this.slice = <span class="hljs-built_in">append</span>(this.slice,e)
+}
 
 
-<span class="token keyword">func</span> <span class="token punctuation">(</span>this <span class="token operator">*</span>FILqueue<span class="token punctuation">)</span> <span class="token function">pop</span><span class="token punctuation">(</span><span class="token punctuation">)</span> element<span class="token punctuation">{</span>
-    <span class="token keyword">if</span> this<span class="token punctuation">.</span><span class="token function">IsEmpty</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-        <span class="token keyword">return</span> <span class="token boolean">nil</span>
-    <span class="token punctuation">}</span>
-    <span class="token comment" spellcheck="true">// 因为这个是先进后出， 所以pop删除的应该是数组中的最后一位</span>
-    lastindex <span class="token operator">:=</span> this<span class="token punctuation">.</span>slice<span class="token punctuation">[</span><span class="token function">len</span><span class="token punctuation">(</span>this<span class="token punctuation">.</span>slice<span class="token punctuation">)</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">:</span><span class="token punctuation">]</span>
-    this<span class="token punctuation">.</span>slice <span class="token operator">=</span> this<span class="token punctuation">.</span>slice<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token function">len</span><span class="token punctuation">(</span>this<span class="token punctuation">.</span>slice<span class="token punctuation">)</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span>
-    <span class="token keyword">return</span> lastindex
-<span class="token punctuation">}</span>
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(this *FILqueue)</span> <span class="hljs-title">pop</span><span class="hljs-params">()</span> <span class="hljs-title">element</span></span>{
+	<span class="hljs-keyword">if</span> this.IsEmpty(){
+		<span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span>
+	}
+	<span class="hljs-comment">// 因为这个是先进后出， 所以pop删除的应该是数组中的最后一位</span>
+	lastindex := this.slice[<span class="hljs-built_in">len</span>(this.slice)<span class="hljs-number">-1</span>:]
+	this.slice = this.slice[:<span class="hljs-built_in">len</span>(this.slice)<span class="hljs-number">-1</span>]
+	<span class="hljs-keyword">return</span> lastindex
+}
 
-<span class="token keyword">func</span> <span class="token punctuation">(</span>this <span class="token operator">*</span>FILqueue<span class="token punctuation">)</span> <span class="token function">IsEmpty</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token builtin">bool</span><span class="token punctuation">{</span>
-    <span class="token keyword">if</span> <span class="token function">len</span><span class="token punctuation">(</span>this<span class="token punctuation">.</span>slice<span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">{</span>
-        <span class="token keyword">return</span> <span class="token boolean">true</span>
-    <span class="token punctuation">}</span>
-    <span class="token keyword">return</span> <span class="token boolean">false</span>
-<span class="token punctuation">}</span>
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(this *FILqueue)</span> <span class="hljs-title">IsEmpty</span><span class="hljs-params">()</span> <span class="hljs-title">bool</span></span>{
+	<span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(this.slice) == <span class="hljs-number">0</span>{
+		<span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>
+	}
+	<span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>
+}
 
-<span class="token keyword">func</span> <span class="token punctuation">(</span>this <span class="token operator">*</span>FILqueue<span class="token punctuation">)</span> <span class="token function">Size</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token builtin">int</span> <span class="token punctuation">{</span>
-    <span class="token keyword">return</span> <span class="token function">len</span><span class="token punctuation">(</span>this<span class="token punctuation">.</span>slice<span class="token punctuation">)</span>
-<span class="token punctuation">}</span>
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(this *FILqueue)</span> <span class="hljs-title">Size</span><span class="hljs-params">()</span> <span class="hljs-title">int</span></span> {
+	<span class="hljs-keyword">return</span> <span class="hljs-built_in">len</span>(this.slice)
+}
 
-<span class="token keyword">func</span> <span class="token punctuation">(</span>this <span class="token operator">*</span>FILqueue<span class="token punctuation">)</span> <span class="token function">clear</span><span class="token punctuation">(</span><span class="token punctuation">)</span>    <span class="token punctuation">{</span>
-    this<span class="token punctuation">.</span>slice <span class="token operator">=</span> <span class="token boolean">nil</span>
-<span class="token punctuation">}</span>
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(this *FILqueue)</span> <span class="hljs-title">clear</span><span class="hljs-params">()</span></span>	{
+	this.slice = <span class="hljs-literal">nil</span>
+}
 
-<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    filqueue <span class="token operator">:=</span> <span class="token function">NewQueue2</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-    <span class="token keyword">for</span> i <span class="token operator">:=</span><span class="token number">0</span> <span class="token punctuation">;</span>i<span class="token operator">&lt;</span><span class="token number">20</span><span class="token punctuation">;</span>i<span class="token operator">++</span><span class="token punctuation">{</span>
-        filqueue<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>i<span class="token punctuation">)</span>
-    <span class="token punctuation">}</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>filqueue<span class="token punctuation">)</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>filqueue<span class="token punctuation">.</span><span class="token function">Size</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>filqueue<span class="token punctuation">.</span><span class="token function">pop</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>filqueue<span class="token punctuation">.</span><span class="token function">pop</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-<span class="token punctuation">}</span></code></pre>
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+	filqueue := NewQueue2()
+	<span class="hljs-keyword">for</span> i :=<span class="hljs-number">0</span> ;i<<span class="hljs-number">20</span>;i++{
+		filqueue.push(i)
+	}
+	fmt.Println(filqueue)
+	fmt.Println(filqueue.Size())
+	fmt.Println(filqueue.pop())
+	fmt.Println(filqueue.pop())
+}</code></pre></div>
 <h2 id="有关于队列堆栈的算法"><a href="#有关于队列堆栈的算法" class="headerlink" title="有关于队列堆栈的算法"></a>有关于队列堆栈的算法</h2><h3 id="有效的括号"><a href="#有效的括号" class="headerlink" title="有效的括号"></a>有效的括号</h3><p><a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/valid-parentheses/solution/">https://leetcode-cn.com/problems/valid-parentheses/solution/</a></p>
 
             </div>
@@ -721,7 +750,7 @@ func (this *sliceEntry) Size() int  &#123;
 
   <footer class="text-center mt-5 py-3">
   <div class="footer-content">
-     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+     <a rel="nofollow noopener"><span>Hzjsea</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
   </div>
   
 

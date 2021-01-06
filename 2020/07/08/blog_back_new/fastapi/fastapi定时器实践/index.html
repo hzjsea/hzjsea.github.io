@@ -67,7 +67,7 @@
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
-       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
+       href="/">&nbsp;<strong>hzjsea</strong>&nbsp;</a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
             data-target="#navbarSupportedContent"
@@ -184,7 +184,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      231 字
+      243 字
     </span>
   
 
@@ -230,63 +230,62 @@
               <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 <a id="more"></a>
 
-<h1 id="fastapi定时器实践"><a href="#fastapi定时器实践" class="headerlink" title="fastapi定时器实践"></a>fastapi定时器实践</h1><h2 id="apscheduler-fastapi事件完成"><a href="#apscheduler-fastapi事件完成" class="headerlink" title="apscheduler+fastapi事件完成"></a>apscheduler+fastapi事件完成</h2><pre class=" language-py"><code class="language-py"># main.py
-from fastapi import FastAPI
-from apscheduler.schedulers.background import BackgroundScheduler
-from apscheduler.executors.pool import ThreadPoolExecutor
-import os
+<h1 id="fastapi定时器实践"><a href="#fastapi定时器实践" class="headerlink" title="fastapi定时器实践"></a>fastapi定时器实践</h1><h2 id="apscheduler-fastapi事件完成"><a href="#apscheduler-fastapi事件完成" class="headerlink" title="apscheduler+fastapi事件完成"></a>apscheduler+fastapi事件完成</h2><div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-comment"><code class="language-hljs py"><span class="hljs-comment"># main.py</span>
+<span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> FastAPI
+<span class="hljs-keyword">from</span> apscheduler.schedulers.background <span class="hljs-keyword">import</span> BackgroundScheduler
+<span class="hljs-keyword">from</span> apscheduler.executors.pool <span class="hljs-keyword">import</span> ThreadPoolExecutor
+<span class="hljs-keyword">import</span> os
 
 app = FastAPI()
 
-# 根目录
-@app.get("/")
-async def hello_world():
-    return "hello world"
+<span class="hljs-comment"># 根目录</span>
+<span class="hljs-meta">@app.get("/")</span>
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">hello_world</span>():</span>
+    <span class="hljs-keyword">return</span> <span class="hljs-string">"hello world"</span>
 
-def func():
-    res = os.popen("cat hello").read()
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">func</span>():</span>
+    res = os.popen(<span class="hljs-string">"cat hello"</span>).read()
     print(res)
 
-# 创建执行器
+<span class="hljs-comment"># 创建执行器</span>
 executors = {
-    'default': ThreadPoolExecutor(20),
+    <span class="hljs-string">&#x27;default&#x27;</span>: ThreadPoolExecutor(<span class="hljs-number">20</span>),
 }
-# 创建定时任务的调度器对象
-scheduler = BackgroundScheduler(executors=executors,max_instances=100)
-scheduler.add_job(func,'interval',seconds=10,id="helloworld")
+<span class="hljs-comment"># 创建定时任务的调度器对象</span>
+scheduler = BackgroundScheduler(executors=executors,max_instances=<span class="hljs-number">100</span>)
+scheduler.add_job(func,<span class="hljs-string">&#x27;interval&#x27;</span>,seconds=<span class="hljs-number">10</span>,<span class="hljs-built_in">id</span>=<span class="hljs-string">"helloworld"</span>)
 
-# 返回一个计数器
-@app.post("/update/count")
-async def return_counter(nums):
-    os.popen("echo {} > hello".format(nums))
-    return nums
+<span class="hljs-comment"># 返回一个计数器</span>
+<span class="hljs-meta">@app.post("/update/count")</span>
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">return_counter</span>(<span class="hljs-params">nums</span>):</span>
+    os.popen(<span class="hljs-string">"echo {} > hello"</span>.<span class="hljs-built_in">format</span>(nums))
+    <span class="hljs-keyword">return</span> nums
 
-# 应用开始后，打开计时任务
-@app.on_event("startup")
-async def start_task():
-    # 创建定时任务的调度器对象
+<span class="hljs-comment"># 应用开始后，打开计时任务</span>
+<span class="hljs-meta">@app.on_event("startup")</span>
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">start_task</span>():</span>
+    <span class="hljs-comment"># 创建定时任务的调度器对象</span>
     scheduler.start()
 
-# 应用结束后，关闭计时任务
-@app.on_event("shutdown")
-async def stop_task():
+<span class="hljs-comment"># 应用结束后，关闭计时任务</span>
+<span class="hljs-meta">@app.on_event("shutdown")</span>
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">stop_task</span>():</span>
     scheduler.stop()
 
 
-# 在应用关闭的时候，会执行
-@app.on_event("shutdown")
-async def shutdown_event():
-    items['shutdown'] = {"status":"shutdown"}
-    print(items['shutdown'])
+<span class="hljs-comment"># 在应用关闭的时候，会执行</span>
+<span class="hljs-meta">@app.on_event("shutdown")</span>
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">shutdown_event</span>():</span>
+    items[<span class="hljs-string">&#x27;shutdown&#x27;</span>] = {<span class="hljs-string">"status"</span>:<span class="hljs-string">"shutdown"</span>}
+    print(items[<span class="hljs-string">&#x27;shutdown&#x27;</span>])
 
-# 修改定时器的时间
-@router.post("/post/scheduler")
-def change_schedule_time(*,time:str):
-    """修改定时器的时间
-    """
-    scheduler.reschedule_job('helloworld', func_get_link_total(), trigger='interval', seconds=int(time))
-    return rp.message_success(msg="状态更新成功",data="None")</code></pre>
-
+<span class="hljs-comment"># 修改定时器的时间</span>
+<span class="hljs-meta">@router.post("/post/scheduler")</span>
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">change_schedule_time</span>(<span class="hljs-params">*,time:<span class="hljs-built_in">str</span></span>):</span>
+    <span class="hljs-string">"""修改定时器的时间</span>
+<span class="hljs-string">    """</span>
+    scheduler.reschedule_job(<span class="hljs-string">&#x27;helloworld&#x27;</span>, func_get_link_total(), trigger=<span class="hljs-string">&#x27;interval&#x27;</span>, seconds=<span class="hljs-built_in">int</span>(time))
+    <span class="hljs-keyword">return</span> rp.message_success(msg=<span class="hljs-string">"状态更新成功"</span>,data=<span class="hljs-string">"None"</span>)</code></pre></div>
             </div>
             <hr>
             <div>
@@ -316,9 +315,9 @@ def change_schedule_time(*,time:str):
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2020/07/08/blog_back_new/Rust/rustv2/">
+                      <a href="/2020/07/08/blog_back_new/Rust/rust%E5%9F%BA%E7%A1%80/">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">rustv2</span>
+                        <span class="hidden-mobile">rust</span>
                         <span class="visible-mobile">Vorheriger</span>
                       </a>
                     
@@ -394,7 +393,7 @@ def change_schedule_time(*,time:str):
 
   <footer class="text-center mt-5 py-3">
   <div class="footer-content">
-     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+     <a rel="nofollow noopener"><span>Hzjsea</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
   </div>
   
 

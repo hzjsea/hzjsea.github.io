@@ -67,7 +67,7 @@
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
-       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
+       href="/">&nbsp;<strong>hzjsea</strong>&nbsp;</a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
             data-target="#navbarSupportedContent"
@@ -184,7 +184,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      933 字
+      903 字
     </span>
   
 
@@ -230,56 +230,57 @@
               <a id="more"></a>
 
 <h1 id="linux命令iprouter"><a href="#linux命令iprouter" class="headerlink" title="linux命令iprouter"></a>linux命令iprouter</h1><p>之前使用的网络命令可能是ifconfig,在后面随着linux版本的迭代,iproute是一个新的网络工具包,简称<code>ip命令</code></p>
-<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 查看iproute包是否已经安装,正常情况下在centos7下面会自带安装的</span>
-rpm -qa<span class="token operator">|</span><span class="token function">grep</span> iproute
+<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 查看iproute包是否已经安装,正常情况下在centos7下面会自带安装的</span>
+rpm -qa|grep iproute
 iproute-3.10.0-54.el7_2.1.x86_64 
 
-<span class="token comment" spellcheck="true"># 查看iproute生成的文件</span>
+<span class="hljs-comment"># 查看iproute生成的文件</span>
 rpm -ql iproute
 
-<span class="token comment" spellcheck="true"># 查看iproute配置文件</span>
+<span class="hljs-comment"># 查看iproute配置文件</span>
 rpm -qc iproute
 
-<span class="token comment" spellcheck="true"># 查看iproute包生成的二进制文件</span>
-rpm -ql iproute <span class="token operator">|</span> <span class="token function">grep</span> <span class="token string">"bin"</span></code></pre>
-<h2 id="功能模块"><a href="#功能模块" class="headerlink" title="功能模块"></a>功能模块</h2><pre class=" language-bash"><code class="language-bash">ip <span class="token function">link</span>
+<span class="hljs-comment"># 查看iproute包生成的二进制文件</span>
+rpm -ql iproute | grep <span class="hljs-string">"bin"</span></code></pre></div>
+
+<h2 id="功能模块"><a href="#功能模块" class="headerlink" title="功能模块"></a>功能模块</h2><div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">ip link
         网络设备配置命令，如可以启用/禁用某个网络设备，改变mtu及mac地址等
-<span class="token punctuation">[</span>root@ops-2 ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># ip link</span>
-1: lo: <span class="token operator">&lt;</span>LOOPBACK,UP,LOWER_UP<span class="token operator">></span> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT
+[root@ops-2 ~]<span class="hljs-comment"># ip link</span>
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-2: eth0: <span class="token operator">&lt;</span>BROADCAST,MULTICAST,UP,LOWER_UP<span class="token operator">></span> mtu 9000 qdisc pfifo_fast state UP mode DEFAULT qlen 1000
+2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9000 qdisc pfifo_fast state UP mode DEFAULT qlen 1000
     link/ether fa:16:3e:8d:cc:28 brd ff:ff:ff:ff:ff:ff
-3: docker0: <span class="token operator">&lt;</span>NO-CARRIER,BROADCAST,MULTICAST,UP<span class="token operator">></span> mtu 1500 qdisc noqueue state DOWN mode DEFAULT
+3: docker0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue state DOWN mode DEFAULT
     link/ether 02:42:7a:21:f8:fa brd ff:ff:ff:ff:ff:ff
 
 
 ip addr
-        用于管理某个网络设备与协议<span class="token punctuation">(</span>ip或ipv6<span class="token punctuation">)</span>有关的地址。
-        与ip link类似，不过增加了协议有关的管理<span class="token punctuation">(</span>ip地址管理<span class="token punctuation">)</span>
-<span class="token punctuation">[</span>root@ops-2 ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># ip addr</span>
-1: lo: <span class="token operator">&lt;</span>LOOPBACK,UP,LOWER_UP<span class="token operator">></span> mtu 65536 qdisc noqueue state UNKNOWN
+        用于管理某个网络设备与协议(ip或ipv6)有关的地址。
+        与ip link类似，不过增加了协议有关的管理(ip地址管理)
+[root@ops-2 ~]<span class="hljs-comment"># ip addr</span>
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
     inet 127.0.0.1/8 scope host lo
        valid_lft forever preferred_lft forever
     inet6 ::1/128 scope host
        valid_lft forever preferred_lft forever
-2: eth0: <span class="token operator">&lt;</span>BROADCAST,MULTICAST,UP,LOWER_UP<span class="token operator">></span> mtu 9000 qdisc pfifo_fast state UP qlen 1000
+2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9000 qdisc pfifo_fast state UP qlen 1000
     link/ether fa:16:3e:8d:cc:28 brd ff:ff:ff:ff:ff:ff
     inet 10.0.6.39/20 brd 10.0.6.127 scope global dynamic eth0
        valid_lft 114sec preferred_lft 114sec
-    inet6 fe80::f816:3eff:fe8d:cc28/64 scope <span class="token function">link</span> tentative dadfailed
+    inet6 fe80::f816:3eff:fe8d:cc28/64 scope link tentative dadfailed
        valid_lft forever preferred_lft forever
-3: docker0: <span class="token operator">&lt;</span>NO-CARRIER,BROADCAST,MULTICAST,UP<span class="token operator">></span> mtu 1500 qdisc noqueue state DOWN
+3: docker0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue state DOWN
     link/ether 02:42:7a:21:f8:fa brd ff:ff:ff:ff:ff:ff
     inet 172.17.0.1/16 brd 172.17.255.255 scope global docker0
        valid_lft forever preferred_lft forever
-    inet6 fe80::42:7aff:fe21:f8fa/64 scope <span class="token function">link</span>
+    inet6 fe80::42:7aff:fe21:f8fa/64 scope link
        valid_lft forever preferred_lft forever
 
 ip addrlabel 
         ipv6的地址标签，主要用于RFC3484中描述的ipv6地址的选择。
-        RFC3484主要介绍了2个算法，用于ipv6地址<span class="token punctuation">(</span>源地址和目标地址<span class="token punctuation">)</span>的选择策略
-<span class="token punctuation">[</span>root@ops-2 ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># ip addrlabel</span>
+        RFC3484主要介绍了2个算法，用于ipv6地址(源地址和目标地址)的选择策略
+[root@ops-2 ~]<span class="hljs-comment"># ip addrlabel</span>
 prefix ::1/128 label 0
 prefix ::/96 label 3
 prefix ::ffff:0.0.0.0/96 label 4
@@ -293,21 +294,21 @@ prefix ::/0 label 1
 
 ip route    
         管理路由，如添加，删除
-<span class="token punctuation">[</span>root@ops-2 ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># ip route</span>
+[root@ops-2 ~]<span class="hljs-comment"># ip route</span>
 default via 10.0.0.130 dev eth0
-10.0.0.0/20 dev eth0  proto kernel  scope <span class="token function">link</span>  src 10.0.6.39
-172.17.0.0/16 dev docker0  proto kernel  scope <span class="token function">link</span>  src 172.17.0.1
+10.0.0.0/20 dev eth0  proto kernel  scope link  src 10.0.6.39
+172.17.0.0/16 dev docker0  proto kernel  scope link  src 172.17.0.1
 
 ip rule    
         管理路由策略数据库。这里边有一个算法，用来控制路由的选择策略
-<span class="token punctuation">[</span>root@ops-2 ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># ip rule</span>
-0:      from all lookup local
+[root@ops-2 ~]<span class="hljs-comment"># ip rule</span>
+0:      from all lookup <span class="hljs-built_in">local</span>
 32766:  from all lookup main
 32767:  from all lookup default
 
 ip neigh    
         用于neighbor/ARP表的管理，如显示，插入，删除等
-<span class="token punctuation">[</span>root@ops-2 ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># ip neigh</span>
+[root@ops-2 ~]<span class="hljs-comment"># ip neigh</span>
 172.17.0.4 dev docker0 lladdr 02:42:ac:11:00:04 STALE
 10.0.1.142 dev eth0 lladdr 94:8b:03:01:01:1d STALE
 10.0.6.12 dev eth0 lladdr 00:1b:21:8d:4d:81 STALE
@@ -323,10 +324,10 @@ ip neigh
 
 ip tunel
         隧道配置
-        隧道的作用是将数据<span class="token punctuation">(</span>可以是不同协议<span class="token punctuation">)</span>封装成ip包然后再互联网传输
+        隧道的作用是将数据(可以是不同协议)封装成ip包然后再互联网传输
 
 ip monitor
-        状态监控。如可以持续监控ip地址和路由的状态</code></pre>
+        状态监控。如可以持续监控ip地址和路由的状态</code></pre></div>
 
             </div>
             <hr>
@@ -437,7 +438,7 @@ ip monitor
 
   <footer class="text-center mt-5 py-3">
   <div class="footer-content">
-     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+     <a rel="nofollow noopener"><span>Hzjsea</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
   </div>
   
 

@@ -67,7 +67,7 @@
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
-       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
+       href="/">&nbsp;<strong>hzjsea</strong>&nbsp;</a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
             data-target="#navbarSupportedContent"
@@ -184,7 +184,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      580 字
+      242 字
     </span>
   
 
@@ -194,7 +194,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      8
+      3
        分钟
     </span>
   
@@ -229,77 +229,82 @@
             <div class="markdown-body">
               <a id="more"></a>
 <h1 id="golang库netHttp库"><a href="#golang库netHttp库" class="headerlink" title="golang库netHttp库"></a>golang库netHttp库</h1><p>简单的HTTP服务器代码</p>
-<pre class=" language-go"><code class="language-go"><span class="token keyword">package</span> main
+<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">package</span> main
 
-<span class="token keyword">import</span> <span class="token punctuation">(</span>
-    <span class="token string">"net/http"</span>
-<span class="token punctuation">)</span>
+<span class="hljs-keyword">import</span> (
+	<span class="hljs-string">"net/http"</span>
+)
 
-<span class="token keyword">type</span> TestHandler <span class="token keyword">struct</span> <span class="token punctuation">{</span>
-    str <span class="token builtin">string</span>
-<span class="token punctuation">}</span>
+<span class="hljs-keyword">type</span> TestHandler <span class="hljs-keyword">struct</span> {
+	str <span class="hljs-keyword">string</span>
+}
 
-<span class="token keyword">func</span> <span class="token punctuation">(</span>th <span class="token operator">*</span>TestHandler<span class="token punctuation">)</span> <span class="token function">ServeHTTP</span><span class="token punctuation">(</span>writer http<span class="token punctuation">.</span>ResponseWriter<span class="token punctuation">,</span> request <span class="token operator">*</span>http<span class="token punctuation">.</span>Request<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    w<span class="token punctuation">.</span><span class="token function">Write</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token function">byte</span><span class="token punctuation">(</span><span class="token function">string</span><span class="token punctuation">(</span>th<span class="token punctuation">.</span>str<span class="token operator">+</span><span class="token string">",welcome"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-<span class="token punctuation">}</span>
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(th *TestHandler)</span> <span class="hljs-title">ServeHTTP</span><span class="hljs-params">(writer http.ResponseWriter, request *http.Request)</span></span> {
+    w.Write([]<span class="hljs-keyword">byte</span>(<span class="hljs-keyword">string</span>(th.str+<span class="hljs-string">",welcome"</span>)))
+}
 
 
-<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-    http<span class="token punctuation">.</span><span class="token function">Handle</span><span class="token punctuation">(</span><span class="token string">"/"</span><span class="token punctuation">,</span><span class="token operator">&amp;</span>TestHandler<span class="token punctuation">{</span>str<span class="token punctuation">:</span><span class="token string">"hzj"</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
-    http<span class="token punctuation">.</span><span class="token function">HandleFunc</span><span class="token punctuation">(</span><span class="token string">"/test"</span><span class="token punctuation">,</span><span class="token keyword">func</span><span class="token punctuation">(</span>w http<span class="token punctuation">.</span>ResponseWriter<span class="token punctuation">,</span>r <span class="token operator">*</span>http<span class="token punctuation">.</span>Request<span class="token punctuation">)</span><span class="token punctuation">{</span>
-        w<span class="token punctuation">.</span><span class="token function">Write</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token function">byte</span><span class="token punctuation">(</span><span class="token string">"Hi,Tester"</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-    <span class="token punctuation">}</span><span class="token punctuation">)</span>
-    http<span class="token punctuation">.</span><span class="token function">ListenAndServe</span><span class="token punctuation">(</span><span class="token string">":8000"</span><span class="token punctuation">,</span><span class="token boolean">nil</span><span class="token punctuation">)</span>
-<span class="token punctuation">}</span></code></pre>
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span>{
+	http.Handle(<span class="hljs-string">"/"</span>,&TestHandler{str:<span class="hljs-string">"hzj"</span>})
+	http.HandleFunc(<span class="hljs-string">"/test"</span>,<span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(w http.ResponseWriter,r *http.Request)</span></span>{
+		w.Write([]<span class="hljs-keyword">byte</span>(<span class="hljs-string">"Hi,Tester"</span>))
+	})
+	http.ListenAndServe(<span class="hljs-string">":8000"</span>,<span class="hljs-literal">nil</span>)
+}</code></pre></div>
 <p>::: tip<br>首选我们先来看看Handle的源码<br>:::</p>
-<pre class=" language-go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">Handle</span><span class="token punctuation">(</span>pattern <span class="token builtin">string</span><span class="token punctuation">,</span> handler Handler<span class="token punctuation">)</span> <span class="token punctuation">{</span> DefaultServeMux<span class="token punctuation">.</span><span class="token function">Handle</span><span class="token punctuation">(</span>pattern<span class="token punctuation">,</span> handler<span class="token punctuation">)</span> <span class="token punctuation">}</span></code></pre>
+<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">Handle</span><span class="hljs-params">(pattern <span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">Handle</span><span class="hljs-params">(pattern <span class="hljs-keyword">string</span>, handler Handler)</span></span> { DefaultServeMux.Handle(pattern, handler) }</code></pre></div>
 <p>接口一个pattern参数  以及一个实现了Handle接口的的参数</p>
-<pre class=" language-go"><code class="language-go"><span class="token keyword">type</span> Handler <span class="token keyword">interface</span> <span class="token punctuation">{</span>
-    <span class="token function">ServeHTTP</span><span class="token punctuation">(</span>ResponseWriter<span class="token punctuation">,</span> <span class="token operator">*</span>Request<span class="token punctuation">)</span>
-<span class="token punctuation">}</span></code></pre>
+<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword">type</span> Handler <span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">type</span> Handler <span class="hljs-keyword">interface</span> {
+	ServeHTTP(ResponseWriter, *Request)
+}</code></pre></div>
 <p>也就是说Handle中的传入参数handler必须要实现接口Handle中的所有方法</p>
 <p>::: tip<br>这里ServeHTTP需要实现一个ResponseWriter的接口<br>:::</p>
-<pre class=" language-go"><code class="language-go"><span class="token keyword">type</span> ResponseWriter <span class="token keyword">interface</span> <span class="token punctuation">{</span>
-    <span class="token function">Header</span><span class="token punctuation">(</span><span class="token punctuation">)</span> Header  <span class="token comment" spellcheck="true">// type Header map[string][]string 字典</span>
-    <span class="token function">Write</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token builtin">int</span><span class="token punctuation">,</span> <span class="token builtin">error</span><span class="token punctuation">)</span>  <span class="token comment" spellcheck="true">// 写入内容</span>
-    <span class="token function">WriteHeader</span><span class="token punctuation">(</span>statusCode <span class="token builtin">int</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// 返回状态码</span>
-<span class="token punctuation">}</span></code></pre>
-<pre class=" language-go"><code class="language-go"><span class="token keyword">type</span> Request <span class="token keyword">struct</span> <span class="token punctuation">{</span>
-    Method <span class="token builtin">string</span>
-    URL <span class="token operator">*</span>url<span class="token punctuation">.</span>URL
-    Proto      <span class="token builtin">string</span> <span class="token comment" spellcheck="true">// "HTTP/1.0"</span>
-    ProtoMajor <span class="token builtin">int</span>    <span class="token comment" spellcheck="true">// 1</span>
-    ProtoMinor <span class="token builtin">int</span>    <span class="token comment" spellcheck="true">// 0</span>
-    Header Header
-    Body io<span class="token punctuation">.</span>ReadCloser
-    GetBody <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">(</span>io<span class="token punctuation">.</span>ReadCloser<span class="token punctuation">,</span> <span class="token builtin">error</span><span class="token punctuation">)</span>
-    ContentLength <span class="token builtin">int64</span>
-    TransferEncoding <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">string</span>
-    Close <span class="token builtin">bool</span>
-    Host <span class="token builtin">string</span>
-    Form url<span class="token punctuation">.</span>Values
-    PostForm url<span class="token punctuation">.</span>Values
-    MultipartForm <span class="token operator">*</span>multipart<span class="token punctuation">.</span>Form
-    Trailer Header
-    RemoteAddr <span class="token builtin">string</span>
-    RequestURI <span class="token builtin">string</span>
-    TLS <span class="token operator">*</span>tls<span class="token punctuation">.</span>ConnectionState
-    Cancel <span class="token operator">&lt;-</span><span class="token keyword">chan</span> <span class="token keyword">struct</span><span class="token punctuation">{</span><span class="token punctuation">}</span>
-    Response <span class="token operator">*</span>Response
-    ctx context<span class="token punctuation">.</span>Context
-<span class="token punctuation">}</span></code></pre>
+<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword">type</span> ResponseWriter <span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">type</span> ResponseWriter <span class="hljs-keyword">interface</span> {
+	Header() Header  <span class="hljs-comment">// type Header map[string][]string 字典</span>
+	Write([]<span class="hljs-keyword">byte</span>) (<span class="hljs-keyword">int</span>, error)  <span class="hljs-comment">// 写入内容</span>
+	WriteHeader(statusCode <span class="hljs-keyword">int</span>) <span class="hljs-comment">// 返回状态码</span>
+}</code></pre></div>
+
+<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword">type</span> Request <span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">type</span> Request <span class="hljs-keyword">struct</span> {
+	Method <span class="hljs-keyword">string</span>
+	URL *url.URL
+	Proto      <span class="hljs-keyword">string</span> <span class="hljs-comment">// "HTTP/1.0"</span>
+	ProtoMajor <span class="hljs-keyword">int</span>    <span class="hljs-comment">// 1</span>
+	ProtoMinor <span class="hljs-keyword">int</span>    <span class="hljs-comment">// 0</span>
+	Header Header
+	Body io.ReadCloser
+	GetBody <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span> <span class="hljs-params">(io.ReadCloser, error)</span></span>
+	ContentLength <span class="hljs-keyword">int64</span>
+	TransferEncoding []<span class="hljs-keyword">string</span>
+	Close <span class="hljs-keyword">bool</span>
+	Host <span class="hljs-keyword">string</span>
+	Form url.Values
+	PostForm url.Values
+	MultipartForm *multipart.Form
+	Trailer Header
+	RemoteAddr <span class="hljs-keyword">string</span>
+	RequestURI <span class="hljs-keyword">string</span>
+	TLS *tls.ConnectionState
+	Cancel <-<span class="hljs-keyword">chan</span> <span class="hljs-keyword">struct</span>{}
+	Response *Response
+	ctx context.Context
+}</code></pre></div>
+
+
+
 <p>::: tip<br>再来看看HandleFunc的源码<br>:::</p>
-<pre class=" language-go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">HandleFunc</span><span class="token punctuation">(</span>pattern <span class="token builtin">string</span><span class="token punctuation">,</span> handler <span class="token keyword">func</span><span class="token punctuation">(</span>ResponseWriter<span class="token punctuation">,</span> <span class="token operator">*</span>Request<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    DefaultServeMux<span class="token punctuation">.</span><span class="token function">HandleFunc</span><span class="token punctuation">(</span>pattern<span class="token punctuation">,</span> handler<span class="token punctuation">)</span>
-<span class="token punctuation">}</span></code></pre>
+<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">HandleFunc</span><span class="hljs-params">(pattern <span class="hljs-keyword">string</span>, handler <span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">HandleFunc</span><span class="hljs-params">(pattern <span class="hljs-keyword">string</span>, handler <span class="hljs-keyword">func</span>(ResponseWriter, *Request)</span>)</span> {
+	DefaultServeMux.HandleFunc(pattern, handler)
+}</code></pre></div>
 <p>要求传入一个pattern的参数以及一个实现了函数<code>func(ResponseWriter, *Request)</code> 的句柄handle</p>
 <p>http使用handler定义请求的路径以及请求的处理。每个handler都必须实现ServeHTTP方法，该方法将请求分发到不同的handler进行处理，每个handler处理一条请求路径。有两种注册handler的方式：<code>http.Handle</code>和<code>http.HandleFunc</code>，两种实现本质上是一致的，前者需要明确写出ServeHTTP方法的实现，后者由内置方法实现(见下文)</p>
 <p>handle相关放下如下</p>
-<pre class=" language-go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">NewServeMux</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">*</span>ServeMux
-<span class="token keyword">func</span> <span class="token punctuation">(</span>mux <span class="token operator">*</span>ServeMux<span class="token punctuation">)</span> <span class="token function">Handle</span><span class="token punctuation">(</span>pattern <span class="token builtin">string</span><span class="token punctuation">,</span> handler Handler<span class="token punctuation">)</span>                               <span class="token comment" spellcheck="true">//注册handler</span>
-<span class="token keyword">func</span> <span class="token punctuation">(</span>mux <span class="token operator">*</span>ServeMux<span class="token punctuation">)</span> <span class="token function">HandleFunc</span><span class="token punctuation">(</span>pattern <span class="token builtin">string</span><span class="token punctuation">,</span> handler <span class="token keyword">func</span><span class="token punctuation">(</span>ResponseWriter<span class="token punctuation">,</span> <span class="token operator">*</span>Request<span class="token punctuation">)</span><span class="token punctuation">)</span>    <span class="token comment" spellcheck="true">//注册handler</span>
-<span class="token keyword">func</span> <span class="token punctuation">(</span>mux <span class="token operator">*</span>ServeMux<span class="token punctuation">)</span> <span class="token function">Handler</span><span class="token punctuation">(</span>r <span class="token operator">*</span>Request<span class="token punctuation">)</span> <span class="token punctuation">(</span>h Handler<span class="token punctuation">,</span> pattern <span class="token builtin">string</span><span class="token punctuation">)</span>                       <span class="token comment" spellcheck="true">//在mux.m中根据pattern查找handler</span>
-<span class="token keyword">func</span> <span class="token punctuation">(</span>mux <span class="token operator">*</span>ServeMux<span class="token punctuation">)</span> <span class="token function">ServeHTTP</span><span class="token punctuation">(</span>w ResponseWriter<span class="token punctuation">,</span> r <span class="token operator">*</span>Request<span class="token punctuation">)</span>                               <span class="token comment" spellcheck="true">//handler的具体实现</span></code></pre>
+<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">NewServeMux</span><span class="hljs-params">()</span> *<span class="hljs-title"><code class="language-hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">NewServeMux</span><span class="hljs-params">()</span> *<span class="hljs-title">ServeMux</span></span>
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(mux *ServeMux)</span> <span class="hljs-title">Handle</span><span class="hljs-params">(pattern <span class="hljs-keyword">string</span>, handler Handler)</span>                               //注册<span class="hljs-title">handler</span></span>
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(mux *ServeMux)</span> <span class="hljs-title">HandleFunc</span><span class="hljs-params">(pattern <span class="hljs-keyword">string</span>, handler <span class="hljs-keyword">func</span>(ResponseWriter, *Request)</span>)    //注册<span class="hljs-title">handler</span></span>
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(mux *ServeMux)</span> <span class="hljs-title">Handler</span><span class="hljs-params">(r *Request)</span> <span class="hljs-params">(h Handler, pattern <span class="hljs-keyword">string</span>)</span>                       //在<span class="hljs-title">mux</span>.<span class="hljs-title">m</span>中根据<span class="hljs-title">pattern</span>查找<span class="hljs-title">handler</span></span>
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(mux *ServeMux)</span> <span class="hljs-title">ServeHTTP</span><span class="hljs-params">(w ResponseWriter, r *Request)</span>                               //<span class="hljs-title">handler</span>的具体实现</span></code></pre></div>
+
 <p>运行程序<br><code>go run qq.go</code> 在地址栏输入<code>127.0.0.1</code>和<code>127.0.0.1/test/</code>查看结果</p>
 <p>当http.ListenAndServe的第二个参数为nil，则使用http.Handle和http.HandleFunc方法注册的handler，默认保存在http.DefaultServeMux.m中(注册方法为ServeMux.Handle/ServeMux.HandleFunc)。当http server接收到一个request时，会在serverHandler.ServeHTTP中调用DefaultServeMux.ServeHTTP来处理接收到的request，分为两步：</p>
 <ul>
@@ -415,7 +420,7 @@
 
   <footer class="text-center mt-5 py-3">
   <div class="footer-content">
-     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+     <a rel="nofollow noopener"><span>Hzjsea</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
   </div>
   
 

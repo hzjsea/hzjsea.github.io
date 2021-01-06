@@ -67,7 +67,7 @@
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
-       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
+       href="/">&nbsp;<strong>hzjsea</strong>&nbsp;</a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
             data-target="#navbarSupportedContent"
@@ -184,7 +184,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      194 字
+      218 字
     </span>
   
 
@@ -194,7 +194,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      2
+      3
        分钟
     </span>
   
@@ -235,39 +235,42 @@
 <h1 id="openPyXL模块"><a href="#openPyXL模块" class="headerlink" title="openPyXL模块"></a>openPyXL模块</h1><p>openPyXL模块是一个用来处理xls文件 ，也就是处理excel表格的python库</p>
 <p>文档地址: <a target="_blank" rel="noopener" href="https://openpyxl.readthedocs.io/en/default/tutorial.html">https://openpyxl.readthedocs.io/en/default/tutorial.html</a></p>
 <p>安装库</p>
-<pre class=" language-bash"><code class="language-bash">pip <span class="token function">install</span> openpyxl</code></pre>
-<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 创建一个对象</span>
-from openpyxl <span class="token function">import</span> Workbook
-wb <span class="token operator">=</span> Workbook<span class="token punctuation">(</span><span class="token punctuation">)</span>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">pip install openpyxl</code></pre></div>
 
-<span class="token comment" spellcheck="true"># 激活一个session</span>
-ws <span class="token operator">=</span> wb.active
-<span class="token comment" spellcheck="true">#or</span>
-ws1 <span class="token operator">=</span> wb.crete_sheet<span class="token punctuation">(</span><span class="token string">"Mysheet"</span><span class="token punctuation">)</span>
 
-<span class="token comment" spellcheck="true"># 设置title</span>
-ws.title <span class="token operator">=</span> <span class="token string">"New Title"</span>
+<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 创建一个对象</span>
+from openpyxl import Workbook
+wb = Workbook()
 
-<span class="token comment" spellcheck="true"># 获取excel中所有的sheet names</span>
-wb.get_sheet_names<span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre>
+<span class="hljs-comment"># 激活一个session</span>
+ws = wb.active
+<span class="hljs-comment">#or</span>
+ws1 = wb.crete_sheet(<span class="hljs-string">"Mysheet"</span>)
+
+<span class="hljs-comment"># 设置title</span>
+ws.title = <span class="hljs-string">"New Title"</span>
+
+<span class="hljs-comment"># 获取excel中所有的sheet names</span>
+wb.get_sheet_names()</code></pre></div>
 <p>操作完毕之后，表并没有保存，还需要调用save 来保存excel </p>
-<pre class=" language-bash"><code class="language-bash">wb <span class="token operator">=</span> Workbook<span class="token punctuation">(</span><span class="token punctuation">)</span>
-wb.save<span class="token punctuation">(</span><span class="token string">"xxx"</span><span class="token punctuation">)</span></code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">wb = Workbook()
+wb.save(<span class="hljs-string">"xxx"</span>)</code></pre></div>
 <p>加载已经存在的文件</p>
-<pre class=" language-bash"><code class="language-bash">wb <span class="token operator">=</span> Workbook<span class="token punctuation">(</span><span class="token punctuation">)</span>
-wb <span class="token operator">=</span> load_workbook<span class="token punctuation">(</span><span class="token string">'old_excel.xlsx'</span><span class="token punctuation">)</span></code></pre>
-<h2 id="实战"><a href="#实战" class="headerlink" title="实战"></a>实战</h2><p>一般情况下就这么用</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 1. 创建对象</span>
-<span class="token comment" spellcheck="true"># 2. 激活并添加表头</span>
-<span class="token comment" spellcheck="true"># 3. 传入data写入数据</span>
-def write_localtion_excel<span class="token punctuation">(</span>path,data<span class="token punctuation">)</span>:
-    wb <span class="token operator">=</span> Workbook<span class="token punctuation">(</span><span class="token punctuation">)</span>
-    ws <span class="token operator">=</span> wb.active
-    ws.append<span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token string">'id'</span>,<span class="token string">'phone'</span>,<span class="token string">'date'</span>,<span class="token string">'time'</span>,<span class="token string">'data'</span>,<span class="token string">'name'</span>,<span class="token string">'position_name'</span>,<span class="token string">'detail'</span>,<span class="token string">'city'</span>,<span class="token string">'lng'</span>,<span class="token string">'lat'</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
-    <span class="token keyword">for</span> row <span class="token keyword">in</span> data:
-        ws.append<span class="token punctuation">(</span>row<span class="token punctuation">)</span>
-    wb.save<span class="token punctuation">(</span>path<span class="token punctuation">)</span></code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">wb = Workbook()
+wb = load_workbook(<span class="hljs-string">&#x27;old_excel.xlsx&#x27;</span>)</code></pre></div>
 
+
+<h2 id="实战"><a href="#实战" class="headerlink" title="实战"></a>实战</h2><p>一般情况下就这么用</p>
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 1. 创建对象</span>
+<span class="hljs-comment"># 2. 激活并添加表头</span>
+<span class="hljs-comment"># 3. 传入data写入数据</span>
+def write_localtion_excel(path,data):
+    wb = Workbook()
+    ws = wb.active
+    ws.append([<span class="hljs-string">&#x27;id&#x27;</span>,<span class="hljs-string">&#x27;phone&#x27;</span>,<span class="hljs-string">&#x27;date&#x27;</span>,<span class="hljs-string">&#x27;time&#x27;</span>,<span class="hljs-string">&#x27;data&#x27;</span>,<span class="hljs-string">&#x27;name&#x27;</span>,<span class="hljs-string">&#x27;position_name&#x27;</span>,<span class="hljs-string">&#x27;detail&#x27;</span>,<span class="hljs-string">&#x27;city&#x27;</span>,<span class="hljs-string">&#x27;lng&#x27;</span>,<span class="hljs-string">&#x27;lat&#x27;</span>])
+    <span class="hljs-keyword">for</span> row <span class="hljs-keyword">in</span> data:
+        ws.append(row)
+    wb.save(path)</code></pre></div>
             </div>
             <hr>
             <div>
@@ -375,7 +378,7 @@ def write_localtion_excel<span class="token punctuation">(</span>path,data<span 
 
   <footer class="text-center mt-5 py-3">
   <div class="footer-content">
-     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+     <a rel="nofollow noopener"><span>Hzjsea</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
   </div>
   
 

@@ -67,7 +67,7 @@
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
-       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
+       href="/">&nbsp;<strong>hzjsea</strong>&nbsp;</a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
             data-target="#navbarSupportedContent"
@@ -233,32 +233,39 @@
 
 <h1 id="pyredis"><a href="#pyredis" class="headerlink" title="pyredis"></a>pyredis</h1><p>pyredis的使用和redis的使用类似，无非是生成了一个redis的对象，用对来来使用命令</p>
 <p><font color='red'>单次连接使用redis</font></p>
-<pre class=" language-bash"><code class="language-bash">
-<span class="token comment" spellcheck="true"># ----> 单次连接redis</span>
-<span class="token comment" spellcheck="true"># 连接redis需要IP地址，运行端口，数据库，密码。如果本地redis没有密码可以直接使用默认值</span>
-conn <span class="token operator">=</span> StrictRedis<span class="token punctuation">(</span>host<span class="token operator">=</span><span class="token string">"localhost"</span>, port<span class="token operator">=</span>6379, db<span class="token operator">=</span>0, password<span class="token operator">=</span>None<span class="token punctuation">)</span>
-<span class="token comment" spellcheck="true"># &lt;class 'redis.client.Redis'>  调用Redis子类对象生成连接实例</span>
-from redis.client <span class="token function">import</span> Redis
-print<span class="token punctuation">(</span>type<span class="token punctuation">(</span>conn<span class="token punctuation">))</span>
-<span class="token comment" spellcheck="true"># 连接成功之后调用实例对象的set方法设置值</span>
-conn.set<span class="token punctuation">(</span><span class="token string">"name"</span>, <span class="token string">"Yang"</span><span class="token punctuation">)</span>
-<span class="token comment" spellcheck="true"># 调用get方法获取值</span>
-print<span class="token punctuation">(</span>conn.get<span class="token punctuation">(</span><span class="token string">"name"</span><span class="token punctuation">))</span></code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">
+<span class="hljs-comment"># ----> 单次连接redis</span>
+<span class="hljs-comment"># 连接redis需要IP地址，运行端口，数据库，密码。如果本地redis没有密码可以直接使用默认值</span>
+conn = StrictRedis(host=<span class="hljs-string">"localhost"</span>, port=6379, db=0, password=None)
+<span class="hljs-comment"># <class &#x27;redis.client.Redis&#x27;>  调用Redis子类对象生成连接实例</span>
+from redis.client import Redis
+<span class="hljs-built_in">print</span>(<span class="hljs-built_in">type</span>(conn))
+<span class="hljs-comment"># 连接成功之后调用实例对象的set方法设置值</span>
+conn.set(<span class="hljs-string">"name"</span>, <span class="hljs-string">"Yang"</span>)
+<span class="hljs-comment"># 调用get方法获取值</span>
+<span class="hljs-built_in">print</span>(conn.get(<span class="hljs-string">"name"</span>))</code></pre></div>
+
+
 <p><font color='red'>开启redis池,维护redis池</font></p>
-<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># ------> 维护一个redis池</span>
-<span class="token comment" spellcheck="true"># 连接池设置参数，max_connections最大连接数。其他不变</span>
-pool <span class="token operator">=</span> ConnectionPool<span class="token punctuation">(</span>host<span class="token operator">=</span><span class="token string">"10.0.43.102"</span>, port<span class="token operator">=</span>6379, db<span class="token operator">=</span>0, password<span class="token operator">=</span>None, max_connections<span class="token operator">=</span>5,decode_responses<span class="token operator">=</span>True,encoding<span class="token operator">=</span><span class="token string">'utf-8'</span><span class="token punctuation">)</span>
-<span class="token comment" spellcheck="true"># 生成的连接池实例传递给StrictRedis连接redis数据库</span>
-redis <span class="token operator">=</span>  StrictRedis<span class="token punctuation">(</span>connection_pool<span class="token operator">=</span>pool<span class="token punctuation">)</span>
-<span class="token comment" spellcheck="true"># &lt;class 'redis.client.Redis'>  一样的连接类型</span>
-<span class="token comment" spellcheck="true"># print(type(redis))</span></code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># ------> 维护一个redis池</span>
+<span class="hljs-comment"># 连接池设置参数，max_connections最大连接数。其他不变</span>
+pool = ConnectionPool(host=<span class="hljs-string">"10.0.43.102"</span>, port=6379, db=0, password=None, max_connections=5,decode_responses=True,encoding=<span class="hljs-string">&#x27;utf-8&#x27;</span>)
+<span class="hljs-comment"># 生成的连接池实例传递给StrictRedis连接redis数据库</span>
+redis =  StrictRedis(connection_pool=pool)
+<span class="hljs-comment"># <class &#x27;redis.client.Redis&#x27;>  一样的连接类型</span>
+<span class="hljs-comment"># print(type(redis))</span></code></pre></div>
+
+
+
 <h2 id="redis使用上的问题"><a href="#redis使用上的问题" class="headerlink" title="redis使用上的问题"></a>redis使用上的问题</h2><h3 id="redis输出内容为字节，不显示中文"><a href="#redis输出内容为字节，不显示中文" class="headerlink" title="redis输出内容为字节，不显示中文"></a>redis输出内容为字节，不显示中文</h3><p>这里需要对redis的连接代码做一些改变</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 单次连接</span>
-r <span class="token operator">=</span> redis.StrictRedis<span class="token punctuation">(</span>host<span class="token operator">=</span><span class="token string">'127.0.0.1'</span>, port<span class="token operator">=</span>6379, password<span class="token operator">=</span><span class="token string">'123456'</span>,db<span class="token operator">=</span>1, decode_responses<span class="token operator">=</span>True,encoding<span class="token operator">=</span><span class="token string">'utf-8'</span><span class="token punctuation">)</span>
-<span class="token comment" spellcheck="true"># redis池</span>
-pool <span class="token operator">=</span> ConnectionPool<span class="token punctuation">(</span>host<span class="token operator">=</span><span class="token string">"10.0.43.102"</span>, port<span class="token operator">=</span>6379, db<span class="token operator">=</span>0, password<span class="token operator">=</span>None, max_connections<span class="token operator">=</span>5,decode_responses<span class="token operator">=</span>True,encoding<span class="token operator">=</span><span class="token string">'utf-8'</span><span class="token punctuation">)</span>
-<span class="token comment" spellcheck="true"># 生成的连接池实例传递给StrictRedis连接redis数据库</span>
-redis <span class="token operator">=</span>  StrictRedis<span class="token punctuation">(</span>connection_pool<span class="token operator">=</span>pool<span class="token punctuation">)</span></code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 单次连接</span>
+r = redis.StrictRedis(host=<span class="hljs-string">&#x27;127.0.0.1&#x27;</span>, port=6379, password=<span class="hljs-string">&#x27;123456&#x27;</span>,db=1, decode_responses=True,encoding=<span class="hljs-string">&#x27;utf-8&#x27;</span>)
+<span class="hljs-comment"># redis池</span>
+pool = ConnectionPool(host=<span class="hljs-string">"10.0.43.102"</span>, port=6379, db=0, password=None, max_connections=5,decode_responses=True,encoding=<span class="hljs-string">&#x27;utf-8&#x27;</span>)
+<span class="hljs-comment"># 生成的连接池实例传递给StrictRedis连接redis数据库</span>
+redis =  StrictRedis(connection_pool=pool)</code></pre></div>
+
+
 
             </div>
             <hr>
@@ -371,7 +378,7 @@ redis <span class="token operator">=</span>  StrictRedis<span class="token punct
 
   <footer class="text-center mt-5 py-3">
   <div class="footer-content">
-     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+     <a rel="nofollow noopener"><span>Hzjsea</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
   </div>
   
 

@@ -67,7 +67,7 @@
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
-       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
+       href="/">&nbsp;<strong>hzjsea</strong>&nbsp;</a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
             data-target="#navbarSupportedContent"
@@ -184,7 +184,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      651 字
+      279 字
     </span>
   
 
@@ -194,7 +194,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      10
+      4
        分钟
     </span>
   
@@ -231,138 +231,147 @@
 <a id="more"></a>
 
 
-<h1 id="String的官方库"><a href="#String的官方库" class="headerlink" title="String的官方库"></a>String的官方库</h1><h2 id="字符串的容量和长度"><a href="#字符串的容量和长度" class="headerlink" title="字符串的容量和长度"></a>字符串的容量和长度</h2><pre class=" language-rust"><code class="language-rust"><span class="token keyword">fn</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token comment" spellcheck="true">// 创建容量为10的空字符串</span>
-    <span class="token keyword">let</span> <span class="token keyword">mut</span> s <span class="token operator">=</span> String<span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token function">with_capacity</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<h1 id="String的官方库"><a href="#String的官方库" class="headerlink" title="String的官方库"></a>String的官方库</h1><h2 id="字符串的容量和长度"><a href="#字符串的容量和长度" class="headerlink" title="字符串的容量和长度"></a>字符串的容量和长度</h2><div class="code-wrapper"><pre class=" language-hljs rust"><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title"><code class="language-hljs rust"><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>() {
+    <span class="hljs-comment">// 创建容量为10的空字符串</span>
+    <span class="hljs-keyword">let</span> <span class="hljs-keyword">mut</span> s = <span class="hljs-built_in">String</span>::with_capacity(<span class="hljs-number">10</span>);
 
-    <span class="token comment" spellcheck="true">// assert_eq!(s.len(),10); //这里报错，容量不等于长度</span>
+    <span class="hljs-comment">// assert_eq!(s.len(),10); //这里报错，容量不等于长度</span>
 
 
-    <span class="token keyword">let</span> cap <span class="token operator">=</span> s<span class="token punctuation">.</span><span class="token function">capacity</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// 获取s的容量 容量>=s.len</span>
-    <span class="token keyword">for</span> _ <span class="token keyword">in</span> <span class="token number">0</span><span class="token punctuation">..</span><span class="token number">10</span><span class="token punctuation">{</span>
-        s<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token string">'a'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
+    <span class="hljs-keyword">let</span> cap = s.capacity(); <span class="hljs-comment">// 获取s的容量 容量>=s.len</span>
+    <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-number">0</span>..<span class="hljs-number">10</span>{
+        s.push(<span class="hljs-string">&#x27;a&#x27;</span>);
+    }
 
-    <span class="token function">assert_eq!</span><span class="token punctuation">(</span>s<span class="token punctuation">.</span><span class="token function">capacity</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>cap<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="hljs-built_in">assert_eq!</span>(s.capacity(),cap);
 
-    <span class="token comment" spellcheck="true">// s.push('a'); // 这里会报错</span>
+    <span class="hljs-comment">// s.push(&#x27;a&#x27;); // 这里会报错</span>
 
-    <span class="token comment" spellcheck="true">// 创建容量为20的空字符串</span>
-    <span class="token keyword">let</span> <span class="token keyword">mut</span> ss<span class="token punctuation">:</span>String <span class="token operator">=</span> String<span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token function">with_capacity</span><span class="token punctuation">(</span><span class="token number">20</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token comment" spellcheck="true">// 向其中填入10个字符</span>
-    <span class="token keyword">for</span> _ <span class="token keyword">in</span> <span class="token number">0</span><span class="token punctuation">..</span><span class="token number">10</span><span class="token punctuation">{</span>
-        ss<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token string">'a'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-    <span class="token comment" spellcheck="true">// 这个时候ss的容量为20 ，长度为10</span>
-    <span class="token keyword">let</span> length <span class="token operator">=</span> ss<span class="token punctuation">.</span><span class="token function">len</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">let</span> cap <span class="token operator">=</span> ss<span class="token punctuation">.</span><span class="token function">capacity</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token function">assert!</span><span class="token punctuation">(</span>length<span class="token operator">&lt;</span>cap<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="hljs-comment">// 创建容量为20的空字符串</span>
+    <span class="hljs-keyword">let</span> <span class="hljs-keyword">mut</span> ss:<span class="hljs-built_in">String</span> = <span class="hljs-built_in">String</span>::with_capacity(<span class="hljs-number">20</span>);
+    <span class="hljs-comment">// 向其中填入10个字符</span>
+    <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-number">0</span>..<span class="hljs-number">10</span>{
+        ss.push(<span class="hljs-string">&#x27;a&#x27;</span>);
+    }
+    <span class="hljs-comment">// 这个时候ss的容量为20 ，长度为10</span>
+    <span class="hljs-keyword">let</span> length = ss.len();
+    <span class="hljs-keyword">let</span> cap = ss.capacity();
+    <span class="hljs-built_in">assert!</span>(length<cap);
 
-<span class="token punctuation">}</span></code></pre>
+}</code></pre></div>
+
 <h2 id="返回字符串的几个基本属性"><a href="#返回字符串的几个基本属性" class="headerlink" title="返回字符串的几个基本属性"></a>返回字符串的几个基本属性</h2><p>Returns the raw pointer to the underlying data, the length of the string (in bytes), and the allocated capacity of the data (in bytes).</p>
-<pre class=" language-rust"><code class="language-rust"><span class="token keyword">pub</span> <span class="token keyword">fn</span> <span class="token function">into_raw_parts</span><span class="token punctuation">(</span><span class="token keyword">self</span><span class="token punctuation">)</span> <span class="token punctuation">-></span> <span class="token punctuation">(</span><span class="token operator">*</span><span class="token keyword">mut</span> u8<span class="token punctuation">,</span> usize<span class="token punctuation">,</span> usize<span class="token punctuation">)</span></code></pre>
+<div class="code-wrapper"><pre class=" language-hljs rust"><span class="hljs-keyword">pub</span> <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">into_raw_parts</span></span>(<span class="hljs-keyword">self</span>) -&gt; (*<span class="hljs-keyword">mut</span> <span class="hljs-built_in">u8</span>, <span class="hljs-built_in">usize</span>, <span class="hljs-built_in"><code class="language-hljs rust"><span class="hljs-keyword">pub</span> <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">into_raw_parts</span></span>(<span class="hljs-keyword">self</span>) -&gt; (*<span class="hljs-keyword">mut</span> <span class="hljs-built_in">u8</span>, <span class="hljs-built_in">usize</span>, <span class="hljs-built_in">usize</span>)</code></pre></div>
 <p>返回字符串的基本属性 ，分别是存储地址(指针), 字符串长度，字符串容量</p>
-<pre class=" language-rust"><code class="language-rust"><span class="token attribute attr-name">#![feature(vec_into_raw_parts)]</span>
-<span class="token keyword">let</span> s <span class="token operator">=</span> String<span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token function">from</span><span class="token punctuation">(</span><span class="token string">"hello"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<div class="code-wrapper"><pre class=" language-hljs rust"><span class="hljs-meta"><code class="language-hljs rust"><span class="hljs-meta">#![feature(vec_into_raw_parts)]</span>
+<span class="hljs-keyword">let</span> s = <span class="hljs-built_in">String</span>::from(<span class="hljs-string">"hello"</span>);
 
-<span class="token keyword">let</span> <span class="token punctuation">(</span>ptr<span class="token punctuation">,</span> len<span class="token punctuation">,</span> cap<span class="token punctuation">)</span> <span class="token operator">=</span> s<span class="token punctuation">.</span><span class="token function">into_raw_parts</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="hljs-keyword">let</span> (ptr, len, cap) = s.into_raw_parts();
 
-<span class="token keyword">let</span> rebuilt <span class="token operator">=</span> <span class="token keyword">unsafe</span> <span class="token punctuation">{</span> String<span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token function">from_raw_parts</span><span class="token punctuation">(</span>ptr<span class="token punctuation">,</span> len<span class="token punctuation">,</span> cap<span class="token punctuation">)</span> <span class="token punctuation">}</span><span class="token punctuation">;</span>
-<span class="token function">assert_eq!</span><span class="token punctuation">(</span>rebuilt<span class="token punctuation">,</span> <span class="token string">"hello"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-</code></pre>
-<h2 id="定义多个基本属性创建字符串"><a href="#定义多个基本属性创建字符串" class="headerlink" title="定义多个基本属性创建字符串"></a>定义多个基本属性创建字符串</h2><pre class=" language-rust"><code class="language-rust"><span class="token keyword">use</span> std<span class="token punctuation">:</span><span class="token punctuation">:</span>mem<span class="token punctuation">;</span>
+<span class="hljs-keyword">let</span> rebuilt = <span class="hljs-keyword">unsafe</span> { <span class="hljs-built_in">String</span>::from_raw_parts(ptr, len, cap) };
+<span class="hljs-built_in">assert_eq!</span>(rebuilt, <span class="hljs-string">"hello"</span>);
+</code></pre></div>
 
-<span class="token keyword">fn</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token keyword">unsafe</span> <span class="token punctuation">{</span>
-        <span class="token keyword">let</span> s <span class="token operator">=</span> String<span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token function">from</span><span class="token punctuation">(</span><span class="token string">"hello"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<h2 id="定义多个基本属性创建字符串"><a href="#定义多个基本属性创建字符串" class="headerlink" title="定义多个基本属性创建字符串"></a>定义多个基本属性创建字符串</h2><div class="code-wrapper"><pre class=" language-hljs rust"><span class="hljs-keyword"><code class="language-hljs rust"><span class="hljs-keyword">use</span> std::mem;
 
-        <span class="token keyword">let</span> <span class="token keyword">mut</span> s <span class="token operator">=</span> mem<span class="token punctuation">:</span><span class="token punctuation">:</span>ManuallyDrop<span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token function">new</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>() {
+    <span class="hljs-keyword">unsafe</span> {
+        <span class="hljs-keyword">let</span> s = <span class="hljs-built_in">String</span>::from(<span class="hljs-string">"hello"</span>);
 
-        <span class="token keyword">let</span> ptr <span class="token operator">=</span> s<span class="token punctuation">.</span><span class="token function">as_mut_ptr</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token keyword">let</span> len <span class="token operator">=</span> s<span class="token punctuation">.</span><span class="token function">len</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token keyword">let</span> capactity <span class="token operator">=</span> s<span class="token punctuation">.</span><span class="token function">capacity</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="hljs-keyword">let</span> <span class="hljs-keyword">mut</span> s = mem::ManuallyDrop::new(s);
+        
+        <span class="hljs-keyword">let</span> ptr = s.as_mut_ptr();
+        <span class="hljs-keyword">let</span> len = s.len();
+        <span class="hljs-keyword">let</span> capactity = s.capacity();
 
-        <span class="token keyword">let</span> s <span class="token operator">=</span> String<span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token function">from_raw_parts</span><span class="token punctuation">(</span>ptr<span class="token punctuation">,</span> len<span class="token punctuation">,</span> capactity<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="hljs-keyword">let</span> s = <span class="hljs-built_in">String</span>::from_raw_parts(ptr, len, capactity);
 
-        <span class="token function">assert_eq!</span><span class="token punctuation">(</span>String<span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token function">from</span><span class="token punctuation">(</span><span class="token string">"hello"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>s<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-<span class="token punctuation">}</span>
-</code></pre>
-<h2 id="提取包含整个的字符串切片-amp-str"><a href="#提取包含整个的字符串切片-amp-str" class="headerlink" title="提取包含整个的字符串切片&amp;str"></a>提取包含整个的字符串切片&amp;str</h2><pre class=" language-rust"><code class="language-rust"><span class="token keyword">pub</span> <span class="token keyword">fn</span> <span class="token function">as_str</span><span class="token punctuation">(</span><span class="token operator">&amp;</span><span class="token keyword">self</span><span class="token punctuation">)</span> <span class="token punctuation">-></span> <span class="token operator">&amp;</span>str</code></pre>
+        <span class="hljs-built_in">assert_eq!</span>(<span class="hljs-built_in">String</span>::from(<span class="hljs-string">"hello"</span>),s);
+    }
+}
+</code></pre></div>
+
+<h2 id="提取包含整个的字符串切片-amp-str"><a href="#提取包含整个的字符串切片-amp-str" class="headerlink" title="提取包含整个的字符串切片&amp;str"></a>提取包含整个的字符串切片&amp;str</h2><div class="code-wrapper"><pre class=" language-hljs rust"><span class="hljs-keyword">pub</span> <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">as_str</span></span>(&amp;<span class="hljs-keyword">self</span>) -&gt; &amp;<span class="hljs-built_in"><code class="language-hljs rust"><span class="hljs-keyword">pub</span> <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">as_str</span></span>(&amp;<span class="hljs-keyword">self</span>) -&gt; &amp;<span class="hljs-built_in">str</span></code></pre></div>
 <p>获取自身，返回切片类型</p>
-<pre class=" language-rust"><code class="language-rust"><span class="token keyword">fn</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token keyword">let</span> string_one  <span class="token operator">=</span> String<span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token function">from</span><span class="token punctuation">(</span><span class="token string">"helloworld"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token function">assert_eq!</span><span class="token punctuation">(</span><span class="token string">"helloworld"</span><span class="token punctuation">,</span>string_one<span class="token punctuation">.</span><span class="token function">as_str</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span></code></pre>
-<h2 id="提取包含整个的字符串切片-amp-mut-str"><a href="#提取包含整个的字符串切片-amp-mut-str" class="headerlink" title="提取包含整个的字符串切片&amp;mut str"></a>提取包含整个的字符串切片&amp;mut str</h2><pre class=" language-rust"><code class="language-rust"><span class="token keyword">pub</span> <span class="token keyword">fn</span> <span class="token function">as_mut_str</span><span class="token punctuation">(</span><span class="token operator">&amp;</span><span class="token keyword">mut</span> <span class="token keyword">self</span><span class="token punctuation">)</span> <span class="token punctuation">-></span> <span class="token operator">&amp;</span><span class="token keyword">mut</span> str</code></pre>
+<div class="code-wrapper"><pre class=" language-hljs rust"><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title"><code class="language-hljs rust"><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>() {
+    <span class="hljs-keyword">let</span> string_one  = <span class="hljs-built_in">String</span>::from(<span class="hljs-string">"helloworld"</span>);
+    <span class="hljs-built_in">assert_eq!</span>(<span class="hljs-string">"helloworld"</span>,string_one.as_str());
+}</code></pre></div>
+
+<h2 id="提取包含整个的字符串切片-amp-mut-str"><a href="#提取包含整个的字符串切片-amp-mut-str" class="headerlink" title="提取包含整个的字符串切片&amp;mut str"></a>提取包含整个的字符串切片&amp;mut str</h2><div class="code-wrapper"><pre class=" language-hljs rust"><span class="hljs-keyword">pub</span> <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">as_mut_str</span></span>(&amp;<span class="hljs-keyword">mut</span> <span class="hljs-keyword">self</span>) -&gt; &amp;<span class="hljs-keyword">mut</span> <span class="hljs-built_in"><code class="language-hljs rust"><span class="hljs-keyword">pub</span> <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">as_mut_str</span></span>(&amp;<span class="hljs-keyword">mut</span> <span class="hljs-keyword">self</span>) -&gt; &amp;<span class="hljs-keyword">mut</span> <span class="hljs-built_in">str</span></code></pre></div>
 <p>获取自身，返回切片类型</p>
-<pre class=" language-rust"><code class="language-rust"><span class="token keyword">fn</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token keyword">let</span> <span class="token keyword">mut</span> s <span class="token operator">=</span> String<span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token function">from</span><span class="token punctuation">(</span><span class="token string">"hello"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">let</span> sss <span class="token operator">=</span> s<span class="token punctuation">.</span><span class="token function">as_mut_str</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token function">assert_eq!</span><span class="token punctuation">(</span><span class="token string">"hello"</span><span class="token punctuation">,</span>sss<span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span></code></pre>
-<h2 id="String添加-amp-str内容，返回-amp-str"><a href="#String添加-amp-str内容，返回-amp-str" class="headerlink" title="String添加&amp;str内容，返回&amp;str"></a>String添加&amp;str内容，返回&amp;str</h2><pre class=" language-rust"><code class="language-rust"><span class="token keyword">fn</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token keyword">let</span> <span class="token keyword">mut</span> s <span class="token operator">=</span> String<span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token function">from</span><span class="token punctuation">(</span><span class="token string">"hello"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    s<span class="token punctuation">.</span><span class="token function">push_str</span><span class="token punctuation">(</span><span class="token string">"bar"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token function">assert_eq!</span><span class="token punctuation">(</span><span class="token string">"hellobar"</span><span class="token punctuation">,</span>s<span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span></code></pre>
-<h2 id="String添加字符，返回-amp-str"><a href="#String添加字符，返回-amp-str" class="headerlink" title="String添加字符，返回&amp;str"></a>String添加字符，返回&amp;str</h2><pre class=" language-rust"><code class="language-rust"><span class="token keyword">fn</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token keyword">let</span> <span class="token keyword">mut</span> s <span class="token operator">=</span> String<span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token function">from</span><span class="token punctuation">(</span><span class="token string">"foo"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    s<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token string">'b'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token function">assert_eq!</span><span class="token punctuation">(</span><span class="token string">"foob"</span><span class="token punctuation">,</span>s<span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span></code></pre>
-<h2 id="返回字符串容量"><a href="#返回字符串容量" class="headerlink" title="返回字符串容量"></a>返回字符串容量</h2><pre class=" language-rust"><code class="language-rust"><span class="token keyword">fn</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token keyword">let</span> s <span class="token operator">=</span> String<span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token function">with_capacity</span><span class="token punctuation">(</span><span class="token number">20</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token function">println!</span><span class="token punctuation">(</span><span class="token string">"{}"</span><span class="token punctuation">,</span>s<span class="token punctuation">.</span><span class="token function">capacity</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment" spellcheck="true">//20</span>
-<span class="token punctuation">}</span></code></pre>
+<div class="code-wrapper"><pre class=" language-hljs rust"><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title"><code class="language-hljs rust"><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>() {
+    <span class="hljs-keyword">let</span> <span class="hljs-keyword">mut</span> s = <span class="hljs-built_in">String</span>::from(<span class="hljs-string">"hello"</span>);
+    <span class="hljs-keyword">let</span> sss = s.as_mut_str();
+    <span class="hljs-built_in">assert_eq!</span>(<span class="hljs-string">"hello"</span>,sss);
+}</code></pre></div>
+
+<h2 id="String添加-amp-str内容，返回-amp-str"><a href="#String添加-amp-str内容，返回-amp-str" class="headerlink" title="String添加&amp;str内容，返回&amp;str"></a>String添加&amp;str内容，返回&amp;str</h2><div class="code-wrapper"><pre class=" language-hljs rust"><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title"><code class="language-hljs rust"><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>() {
+    <span class="hljs-keyword">let</span> <span class="hljs-keyword">mut</span> s = <span class="hljs-built_in">String</span>::from(<span class="hljs-string">"hello"</span>);
+    s.push_str(<span class="hljs-string">"bar"</span>);
+    <span class="hljs-built_in">assert_eq!</span>(<span class="hljs-string">"hellobar"</span>,s);
+}</code></pre></div>
+<h2 id="String添加字符，返回-amp-str"><a href="#String添加字符，返回-amp-str" class="headerlink" title="String添加字符，返回&amp;str"></a>String添加字符，返回&amp;str</h2><div class="code-wrapper"><pre class=" language-hljs rust"><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title"><code class="language-hljs rust"><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>() {
+    <span class="hljs-keyword">let</span> <span class="hljs-keyword">mut</span> s = <span class="hljs-built_in">String</span>::from(<span class="hljs-string">"foo"</span>);
+    s.push(<span class="hljs-string">&#x27;b&#x27;</span>);
+    <span class="hljs-built_in">assert_eq!</span>(<span class="hljs-string">"foob"</span>,s);
+}</code></pre></div>
+
+<h2 id="返回字符串容量"><a href="#返回字符串容量" class="headerlink" title="返回字符串容量"></a>返回字符串容量</h2><div class="code-wrapper"><pre class=" language-hljs rust"><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title"><code class="language-hljs rust"><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>() {
+    <span class="hljs-keyword">let</span> s = <span class="hljs-built_in">String</span>::with_capacity(<span class="hljs-number">20</span>);
+    <span class="hljs-built_in">println!</span>(<span class="hljs-string">"{}"</span>,s.capacity());<span class="hljs-comment">//20</span>
+}</code></pre></div>
+
 <h2 id="对字符串进行扩容-reserve"><a href="#对字符串进行扩容-reserve" class="headerlink" title="对字符串进行扩容 reserve"></a>对字符串进行扩容 reserve</h2><p>字符串的本质也是一个集合，因此可以对字符串进行扩容，而保证原有的长度</p>
-<pre class=" language-rust"><code class="language-rust"><span class="token keyword">fn</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token comment" spellcheck="true">// let mut s = String::new();</span>
-    <span class="token comment" spellcheck="true">// s.reserve(10);</span>
-    <span class="token comment" spellcheck="true">// // let mut sss = String::from("helloworld");</span>
-    <span class="token comment" spellcheck="true">// //</span>
-    <span class="token comment" spellcheck="true">// // let mut ss = String::with_capacity(20);</span>
-    <span class="token comment" spellcheck="true">// // for i in 1..9{</span>
-    <span class="token comment" spellcheck="true">// //     ss.push('a');</span>
-    <span class="token comment" spellcheck="true">// // }</span>
+<div class="code-wrapper"><pre class=" language-hljs rust"><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title"><code class="language-hljs rust"><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>() {
+    <span class="hljs-comment">// let mut s = String::new();</span>
+    <span class="hljs-comment">// s.reserve(10);</span>
+    <span class="hljs-comment">// // let mut sss = String::from("helloworld");</span>
+    <span class="hljs-comment">// //</span>
+    <span class="hljs-comment">// // let mut ss = String::with_capacity(20);</span>
+    <span class="hljs-comment">// // for i in 1..9{</span>
+    <span class="hljs-comment">// //     ss.push(&#x27;a&#x27;);</span>
+    <span class="hljs-comment">// // }</span>
 
-    <span class="token comment" spellcheck="true">// assert!(s.capacity() >= 10);</span>
-    <span class="token comment" spellcheck="true">// 创建一个容量只有10的集合</span>
-    <span class="token keyword">let</span> <span class="token keyword">mut</span>  v<span class="token punctuation">:</span>Vec<span class="token operator">&lt;</span>i32<span class="token operator">></span> <span class="token operator">=</span> Vec<span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token function">new</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">for</span> i <span class="token keyword">in</span> <span class="token number">1</span><span class="token punctuation">..</span><span class="token number">9</span><span class="token punctuation">{</span>
-        v<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span> 
-    <span class="token function">println!</span><span class="token punctuation">(</span><span class="token string">"{}"</span><span class="token punctuation">,</span>v<span class="token punctuation">.</span><span class="token function">len</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// 9</span>
-    <span class="token function">println!</span><span class="token punctuation">(</span><span class="token string">"{}"</span><span class="token punctuation">,</span>v<span class="token punctuation">.</span><span class="token function">capacity</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// 9</span>
+    <span class="hljs-comment">// assert!(s.capacity() >= 10);</span>
+    <span class="hljs-comment">// 创建一个容量只有10的集合</span>
+    <span class="hljs-keyword">let</span> <span class="hljs-keyword">mut</span>  v:<span class="hljs-built_in">Vec</span><<span class="hljs-built_in">i32</span>> = <span class="hljs-built_in">Vec</span>::new();
+    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-number">1</span>..<span class="hljs-number">9</span>{
+        v.push(<span class="hljs-number">1</span>);
+    } 
+    <span class="hljs-built_in">println!</span>(<span class="hljs-string">"{}"</span>,v.len()); <span class="hljs-comment">// 9</span>
+    <span class="hljs-built_in">println!</span>(<span class="hljs-string">"{}"</span>,v.capacity()); <span class="hljs-comment">// 9</span>
 
-    <span class="token comment" spellcheck="true">// 对集合进行扩容</span>
-    v<span class="token punctuation">.</span><span class="token function">reserve</span><span class="token punctuation">(</span><span class="token number">20</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token function">println!</span><span class="token punctuation">(</span><span class="token string">"{}"</span><span class="token punctuation">,</span>v<span class="token punctuation">.</span><span class="token function">len</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// 9 </span>
-    <span class="token function">println!</span><span class="token punctuation">(</span><span class="token string">"{}"</span><span class="token punctuation">,</span>v<span class="token punctuation">.</span><span class="token function">capacity</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// 29</span>
-<span class="token punctuation">}</span>
+    <span class="hljs-comment">// 对集合进行扩容</span>
+    v.reserve(<span class="hljs-number">20</span>);
+    <span class="hljs-built_in">println!</span>(<span class="hljs-string">"{}"</span>,v.len()); <span class="hljs-comment">// 9 </span>
+    <span class="hljs-built_in">println!</span>(<span class="hljs-string">"{}"</span>,v.capacity()); <span class="hljs-comment">// 29</span>
+}
 
 
-<span class="token keyword">fn</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token keyword">let</span> <span class="token keyword">mut</span>  s <span class="token operator">=</span> String<span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token function">from</span><span class="token punctuation">(</span><span class="token string">"helloworld"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token function">println!</span><span class="token punctuation">(</span><span class="token string">"{}"</span><span class="token punctuation">,</span>s<span class="token punctuation">.</span><span class="token function">len</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">// 10</span>
-    <span class="token function">println!</span><span class="token punctuation">(</span><span class="token string">"{}"</span><span class="token punctuation">,</span>s<span class="token punctuation">.</span><span class="token function">capacity</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// 10 </span>
+<span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>() {
+    <span class="hljs-keyword">let</span> <span class="hljs-keyword">mut</span>  s = <span class="hljs-built_in">String</span>::from(<span class="hljs-string">"helloworld"</span>);
+    <span class="hljs-built_in">println!</span>(<span class="hljs-string">"{}"</span>,s.len());  <span class="hljs-comment">// 10</span>
+    <span class="hljs-built_in">println!</span>(<span class="hljs-string">"{}"</span>,s.capacity()); <span class="hljs-comment">// 10 </span>
 
-    s<span class="token punctuation">.</span><span class="token function">reserve</span><span class="token punctuation">(</span><span class="token number">20</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    s.reserve(<span class="hljs-number">20</span>);
 
-    <span class="token function">println!</span><span class="token punctuation">(</span><span class="token string">"{}"</span><span class="token punctuation">,</span>s<span class="token punctuation">.</span><span class="token function">len</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// 10 </span>
-    <span class="token function">println!</span><span class="token punctuation">(</span><span class="token string">"{}"</span><span class="token punctuation">,</span>s<span class="token punctuation">.</span><span class="token function">capacity</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// 30</span>
-<span class="token punctuation">}</span></code></pre>
-<h2 id="字符串插入单个字符-insert"><a href="#字符串插入单个字符-insert" class="headerlink" title="字符串插入单个字符  insert"></a>字符串插入单个字符  insert</h2><pre class=" language-rust"><code class="language-rust"><span class="token keyword">fn</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token keyword">let</span> <span class="token keyword">mut</span>  s <span class="token operator">=</span> String<span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token function">from</span><span class="token punctuation">(</span><span class="token string">"hellow"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    s<span class="token punctuation">.</span><span class="token function">insert</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token string">'d'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token function">assert_eq!</span><span class="token punctuation">(</span>s<span class="token punctuation">,</span><span class="token string">"hdellow"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span></code></pre>
-<h2 id="字符串插入字符串切片-insert-str"><a href="#字符串插入字符串切片-insert-str" class="headerlink" title="字符串插入字符串切片 insert_str"></a>字符串插入字符串切片 insert_str</h2><pre class=" language-rust"><code class="language-rust"><span class="token keyword">fn</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token keyword">let</span> <span class="token keyword">mut</span>  s <span class="token operator">=</span> String<span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token function">from</span><span class="token punctuation">(</span><span class="token string">"hello"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    s<span class="token punctuation">.</span><span class="token function">insert_str</span><span class="token punctuation">(</span><span class="token number">5</span><span class="token punctuation">,</span><span class="token string">"world"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token function">assert_eq!</span><span class="token punctuation">(</span><span class="token string">"helloworld"</span><span class="token punctuation">,</span>s<span class="token punctuation">)</span>
-<span class="token punctuation">}</span></code></pre>
+    <span class="hljs-built_in">println!</span>(<span class="hljs-string">"{}"</span>,s.len()); <span class="hljs-comment">// 10 </span>
+    <span class="hljs-built_in">println!</span>(<span class="hljs-string">"{}"</span>,s.capacity()); <span class="hljs-comment">// 30</span>
+}</code></pre></div>
 
+<h2 id="字符串插入单个字符-insert"><a href="#字符串插入单个字符-insert" class="headerlink" title="字符串插入单个字符  insert"></a>字符串插入单个字符  insert</h2><div class="code-wrapper"><pre class=" language-hljs rust"><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title"><code class="language-hljs rust"><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>() {
+    <span class="hljs-keyword">let</span> <span class="hljs-keyword">mut</span>  s = <span class="hljs-built_in">String</span>::from(<span class="hljs-string">"hellow"</span>);
+    s.insert(<span class="hljs-number">1</span>,<span class="hljs-string">&#x27;d&#x27;</span>);
+    <span class="hljs-built_in">assert_eq!</span>(s,<span class="hljs-string">"hdellow"</span>);
+}</code></pre></div>
+
+
+<h2 id="字符串插入字符串切片-insert-str"><a href="#字符串插入字符串切片-insert-str" class="headerlink" title="字符串插入字符串切片 insert_str"></a>字符串插入字符串切片 insert_str</h2><div class="code-wrapper"><pre class=" language-hljs rust"><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title"><code class="language-hljs rust"><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>() {
+    <span class="hljs-keyword">let</span> <span class="hljs-keyword">mut</span>  s = <span class="hljs-built_in">String</span>::from(<span class="hljs-string">"hello"</span>);
+    s.insert_str(<span class="hljs-number">5</span>,<span class="hljs-string">"world"</span>);
+    <span class="hljs-built_in">assert_eq!</span>(<span class="hljs-string">"helloworld"</span>,s)
+}</code></pre></div>
             </div>
             <hr>
             <div>
@@ -470,7 +479,7 @@
 
   <footer class="text-center mt-5 py-3">
   <div class="footer-content">
-     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+     <a rel="nofollow noopener"><span>Hzjsea</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
   </div>
   
 

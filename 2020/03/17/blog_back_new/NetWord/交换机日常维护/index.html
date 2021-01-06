@@ -67,7 +67,7 @@
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
-       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
+       href="/">&nbsp;<strong>hzjsea</strong>&nbsp;</a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
             data-target="#navbarSupportedContent"
@@ -265,7 +265,8 @@
 </ol>
 <p>两种方式最好先配置好端口的配置,第二种需要与汇聚口的配置方式相同,然后shutdown,等对端配置好了以后,再开起来</p>
 <p>扩容完成以后要看流量有没有匀过去</p>
-<pre class=" language-bash"><code class="language-bash">dis  c r i i </code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">dis  c r i i</code></pre></div>
+
 <h2 id="根据提供IP查找具体机器"><a href="#根据提供IP查找具体机器" class="headerlink" title="根据提供IP查找具体机器"></a>根据提供IP查找具体机器</h2><p>解决思路，arp中找到具体的IP表象，根据arp中的mac地址，找到对应的网口，再由机房找到对应的机器<br><img src="http://img.noback.top/2020-03-17-11-05-31.png" srcset="/img/loading.gif" alt="2020-03-17-11-05-31"><br><img src="http://img.noback.top/2020-03-17-11-06-20.png" srcset="/img/loading.gif" alt="2020-03-17-11-06-20"><br>如果出现Bridge 有两种情况 一种是汇聚口，一种是互联口，如果是互联口再根据互联IP找到对应的上联机器<br><img src="http://img.noback.top/2020-03-17-11-08-20.png" srcset="/img/loading.gif" alt="2020-03-17-11-08-20"><br><font color='red'>如果没有arp ，Ping一下就会生成</font></p>
 <h2 id="交换机下架流程"><a href="#交换机下架流程" class="headerlink" title="交换机下架流程"></a>交换机下架流程</h2><ul>
 <li>首先知道哪些机器要下架,知道以后登陆上去看一下交换机上下是不是有机器还连在上面，可以让机房帮忙看一下</li>
@@ -289,40 +290,45 @@
 <li>取消之前的mastr ip  直接undo </li>
 <li>取消sub  重新打一遍就行了</li>
 </ol>
-<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 配置从IP</span>
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 配置从IP</span>
 ip address 192.168.20.2 255.255.255.252 sub
-<span class="token comment" spellcheck="true"># 取消sub</span>
-ip address 192.168.20.2 255.255.255.252</code></pre>
+<span class="hljs-comment"># 取消sub</span>
+ip address 192.168.20.2 255.255.255.252</code></pre></div>
+
 <h2 id="查看端口占用比"><a href="#查看端口占用比" class="headerlink" title="查看端口占用比"></a>查看端口占用比</h2><p><code>dis interface ten1/0/48</code><br><img src="http://img.noback.top/2020-03-19-10-31-23.png" srcset="/img/loading.gif" alt="2020-03-19-10-31-23"></p>
 <p>CR冗余<br>在数据传输过程中，无论传输系统的设计再怎么完美，差错总会存在，这种差错可能会导致在链路上传输的一个或者多个帧被破坏(出现比特差错，0变为1，或者1变为0)，从而接受方接收到错误的数据。为尽量提高接受方收到数据的正确率，在接收方接收数据之前需要对数据进行差错检测，当且仅当检测的结果为正确时接收方才真正收下数据。检测的方式有多种，常见的有奇偶校验、因特网校验和循环冗余校验等。循环冗余校验是一种用于校验通信链路上数字传输准确性的计算方法（通过某种数学运算来建立数据位和校验位的约定关系的 [1]  ）。发送方计算机使用某公式计算出被传送数据所含信息的一个值，并将此值 附在被传送数据后，接收方计算机则对同一数据进行 相同的计算，应该得到相同的结果。如果这两个 CRC结果不一致，则说明发送中出现了差错，接收方计算机可要求发送方计算机重新发送该数据<br>如果CRC过高说明传输上有问题，可以更换模块解决，更换模块之后，需要重置端口的统计信息</p>
-<pre class=" language-bash"><code class="language-bash">reset counters int int-type int-number</code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">reset counters int int-type int-number</code></pre></div>
 <h2 id="重置交换机"><a href="#重置交换机" class="headerlink" title="重置交换机"></a>重置交换机</h2><p><code>reset saved-configuration</code></p>
 <h2 id="交换机撤口流程"><a href="#交换机撤口流程" class="headerlink" title="交换机撤口流程"></a>交换机撤口流程</h2><p>撤口就是撤的上联口，可能不需要那么的流量了之类的 进去找对应的交换机<br>然后找互联口，从前往后撤口就行了</p>
 <p>比如现在济南移动要撤一个口<br>登陆济南移动,找到上联口<br><img src="http://img.noback.top/2020-03-23-17-38-28.png" srcset="/img/loading.gif" alt="2020-03-23-17-38-28"><br><img src="http://img.noback.top/2020-03-23-17-38-48.png" srcset="/img/loading.gif" alt="2020-03-23-17-38-48"><br>另外还要把这个口对应的互联IP也发出去<br><img src="http://img.noback.top/2020-03-23-17-40-52.png" srcset="/img/loading.gif" alt="2020-03-23-17-40-52"></p>
-<pre><code>1/0/47 
-223.99.239.218/30
-2409:8C3C:FF:4::13/126</code></pre>
+<div class="code-wrapper"><pre class=" language-hljs angelscript"><span class="hljs-number">1</span>/<span class="hljs-number">0</span>/<span class="hljs-number"><code class="language-hljs angelscript"><span class="hljs-number">1</span>/<span class="hljs-number">0</span>/<span class="hljs-number">47</span> 
+<span class="hljs-number">223.99</span><span class="hljs-number">.239</span><span class="hljs-number">.218</span>/<span class="hljs-number">30</span>
+<span class="hljs-number">2409</span>:<span class="hljs-number">8</span>C3C:FF:<span class="hljs-number">4</span>::<span class="hljs-number">13</span>/<span class="hljs-number">126</span></code></pre></div>
+
+
 <h2 id="交换机三线端口"><a href="#交换机三线端口" class="headerlink" title="交换机三线端口"></a>交换机三线端口</h2><p>先找到对应的交换机，这个很难找<br><img src="http://img.noback.top/2020-03-24-12-42-30.png" srcset="/img/loading.gif" alt="2020-03-24-12-42-30"><br>然后知道三线的IP，三线指的就是三个运营商 分别是移动联通电信</p>
-<pre><code>XGE1/0/46            UP   10G(a)  F(a)   A    10                    CTN-UPLINK
-XGE1/0/47            UP   10G(a)  F(a)   A    20                    CUN-UPLINK
-BAGG100              UP   20G(a)  F(a)   A    100                   CMN-UPLINK
+<div class="code-wrapper"><pre class=" language-hljs reasonml">XGE1/<span class="hljs-number">0</span>/<span class="hljs-number">46</span>            UP   <span class="hljs-number">10</span><span class="hljs-constructor">G(<span class="hljs-params">a</span>)</span>  <span class="hljs-constructor">F(<span class="hljs-params">a</span>)</span>   A    <span class="hljs-number"><code class="language-hljs reasonml">XGE1/<span class="hljs-number">0</span>/<span class="hljs-number">46</span>            UP   <span class="hljs-number">10</span><span class="hljs-constructor">G(<span class="hljs-params">a</span>)</span>  <span class="hljs-constructor">F(<span class="hljs-params">a</span>)</span>   A    <span class="hljs-number">10</span>                    CTN-UPLINK
+XGE1/<span class="hljs-number">0</span>/<span class="hljs-number">47</span>            UP   <span class="hljs-number">10</span><span class="hljs-constructor">G(<span class="hljs-params">a</span>)</span>  <span class="hljs-constructor">F(<span class="hljs-params">a</span>)</span>   A    <span class="hljs-number">20</span>                    CUN-UPLINK
+BAGG100              UP   <span class="hljs-number">20</span><span class="hljs-constructor">G(<span class="hljs-params">a</span>)</span>  <span class="hljs-constructor">F(<span class="hljs-params">a</span>)</span>   A    <span class="hljs-number">100</span>                   CMN-UPLINK
 ↓
-XGE1/0/1             UP   10G(a)  F(a)   A    100
-XGE1/0/2             UP   10G(a)  F(a)   A    100</code></pre>
+XGE1/<span class="hljs-number">0</span>/<span class="hljs-number">1</span>             UP   <span class="hljs-number">10</span><span class="hljs-constructor">G(<span class="hljs-params">a</span>)</span>  <span class="hljs-constructor">F(<span class="hljs-params">a</span>)</span>   A    <span class="hljs-number">100</span>
+XGE1/<span class="hljs-number">0</span>/<span class="hljs-number">2</span>             UP   <span class="hljs-number">10</span><span class="hljs-constructor">G(<span class="hljs-params">a</span>)</span>  <span class="hljs-constructor">F(<span class="hljs-params">a</span>)</span>   A    <span class="hljs-number">100</span></code></pre></div>
 <p>然后他互联IP也给他们 在vlan1或者loop中</p>
 <h2 id="查找交换机下面对应的机器"><a href="#查找交换机下面对应的机器" class="headerlink" title="查找交换机下面对应的机器"></a>查找交换机下面对应的机器</h2><p>都要使用mac地址去寻找机器，mac地址是二层里面的<br>二层之间只有mac地址 ，没有ip<br>你用dis arp + ip 会出来一个mac地址，这个mac地址就是机器的mac地址，不是这台交换机专门为他分配的mac地址</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span>CTN-ZJ-LNA-S01<span class="token punctuation">]</span>dis arp 183.131.24.28
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">[CTN-ZJ-LNA-S01]dis arp 183.131.24.28
   Type: S-Static   D-Dynamic   O-Openflow   R-Rule   M-Multiport  I-Invalid
 IP address      MAC address    VLAN     Interface                Aging Type
-183.131.24.28   10c3-7b49-4886 80       BAGG110</code></pre>
+183.131.24.28   10c3-7b49-4886 80       BAGG110</code></pre></div>
 <p>根据mac地址找对应的机器</p>
-<pre class=" language-bash"><code class="language-bash">dis mac-address 10c3-7b49-4886 
-<span class="token punctuation">[</span>CTN-ZJ-LNA-S03<span class="token punctuation">]</span>dis mac-address 10c3-7b49-492e
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">dis mac-address 10c3-7b49-4886 
+[CTN-ZJ-LNA-S03]dis mac-address 10c3-7b49-492e
 MAC Address      VLAN ID    State            Port/NickName            Aging
-10c3-7b49-492e   80         Learned          BAGG20                   Y</code></pre>
-<h2 id="查找某一个汇聚口下面的接口"><a href="#查找某一个汇聚口下面的接口" class="headerlink" title="查找某一个汇聚口下面的接口"></a>查找某一个汇聚口下面的接口</h2><pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 查找汇聚口20这个下面的的借口</span>
-dis <span class="token function">link</span> verbose bri 20
-<span class="token punctuation">[</span>CTN-ZJ-LNA-S03<span class="token punctuation">]</span>dis link-aggregation verbose Bridge-Aggregation 20
+10c3-7b49-492e   80         Learned          BAGG20                   Y</code></pre></div>
+
+
+<h2 id="查找某一个汇聚口下面的接口"><a href="#查找某一个汇聚口下面的接口" class="headerlink" title="查找某一个汇聚口下面的接口"></a>查找某一个汇聚口下面的接口</h2><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 查找汇聚口20这个下面的的借口</span>
+dis link verbose bri 20
+[CTN-ZJ-LNA-S03]dis link-aggregation verbose Bridge-Aggregation 20
 Loadsharing Type: Shar -- Loadsharing, NonS -- Non-Loadsharing
 Port Status: S -- Selected, U -- Unselected,
              I -- Individual, * -- Management port
@@ -333,16 +339,17 @@ Flags:  A -- LACP_Activity, B -- LACP_Timeout, C -- Aggregation,
 Aggregate Interface: Bridge-Aggregation20
 Aggregation Mode: Static
 Loadsharing Type: Shar
-Management VLAN <span class="token keyword">:</span> None
+Management VLAN : None
   Port             Status  Priority Oper-Key
 --------------------------------------------------------------------------------
   GE1/0/39         S       32768    8
-  GE1/0/40         S       32768    8</code></pre>
+  GE1/0/40         S       32768    8</code></pre></div>
+
 <h2 id="回收接口"><a href="#回收接口" class="headerlink" title="回收接口"></a>回收接口</h2><blockquote>
 <p>月底需要关闭的4个端口，因为你们上联为聚合组，无法根据互联IP地址确定物理端口，为避免接口关闭错误导致业务流量异常，需要你们先关闭端口，默认时间定于4月1号凌晨，如需提前关闭，请提前联系</p>
 </blockquote>
 <p>这里要回收接口，可以提前关闭的话就可以不用等到凌晨了<br>首先的话先看一下汇聚口的总带宽<br><img src="http://img.noback.top/2020-03-27-18-10-03.png" srcset="/img/loading.gif" alt="2020-03-27-18-10-03"><br>两个口上面都跑了50G的带宽，现在是下两个口 每个口占10G带宽，也就是只要最近的最高带宽不超过30G就可以提前shutdown<br><img src="http://img.noback.top/2020-03-27-18-11-57.png" srcset="/img/loading.gif" alt="2020-03-27-18-11-57"><br><img src="http://img.noback.top/2020-03-27-18-12-36.png" srcset="/img/loading.gif" alt="2020-03-27-18-12-36"><br>发现带宽是在20G左右浮动的  就可以直接下了</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true">## CMN-AH-HNN-S01</span>
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment">## CMN-AH-HNN-S01</span>
 192.168.133.242/30
 1/0/38·
 192.168.133.242/30
@@ -358,42 +365,44 @@ B200 44 45
 192.168.133.246/30
 1/0/45
 
-<span class="token comment" spellcheck="true">## 笔记 </span>
+<span class="hljs-comment">## 笔记 </span>
 1. 下之前看看zabbix的流量图
 2. 问一下CDN 早下到规定下的这段时间有无流量操作
 
-<span class="token comment" spellcheck="true">## CMN-SD-TNA-S01</span>
+<span class="hljs-comment">## CMN-SD-TNA-S01</span>
 B130 
 1/0/17
 223.99.239.218/30
 2409:8C3C:FF:4::13/126
 最高3G 总共20G 去掉没事
-</code></pre>
-<h2 id="查看端口上的流量"><a href="#查看端口上的流量" class="headerlink" title="查看端口上的流量"></a>查看端口上的流量</h2><pre class=" language-bash"><code class="language-bash">dis int Bri 100
+</code></pre></div>
+
+
+<h2 id="查看端口上的流量"><a href="#查看端口上的流量" class="headerlink" title="查看端口上的流量"></a>查看端口上的流量</h2><div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">dis int Bri 100
 dis int T 1/0/1
 
-<span class="token operator">&lt;</span>9306-2<span class="token operator">></span>display interface XGigabitEthernet 2/0/0 
-XGigabitEthernet2/0/0 current state <span class="token keyword">:</span> UP
-Line protocol current state <span class="token keyword">:</span> UP
+<9306-2>display interface XGigabitEthernet 2/0/0 
+XGigabitEthernet2/0/0 current state : UP
+Line protocol current state : UP
 Description:connet to f5-2
-Switch Port, PVID <span class="token keyword">:</span>    1, TPID <span class="token keyword">:</span> 8100<span class="token punctuation">(</span>Hex<span class="token punctuation">)</span>, The Maximum Frame Length is 9216
-IP Sending Frames' Format is PKTFMT_ETHNT_2, Hardware address is f84a-bf70-3d00
-Last physical up <span class="token function">time</span>   <span class="token keyword">:</span> 2014-03-09 18:12
-Last physical down <span class="token function">time</span> <span class="token keyword">:</span> 2014-03-09 18:12
-Current system time: 2014-03-09 18:12
-Port Mode: COMMON FIBER
-Speed <span class="token keyword">:</span> 10000,  Loopback: NONE
-Duplex: FULL,  Negotiation: DISABLE
-Mdi   <span class="token keyword">:</span> NORMAL
-Last 300 seconds input rate 1602936 bits/sec, 1784 packets/sec
-Last 300 seconds output rate 1393224 bits/sec, 1732 packets/sec
-Input peak rate 142352400 bits/sec, Record time: 2014-03-09 18:12
-Output peak rate 136841800 bits/sec, Record time: 2014-03-09 18:12
-Input:  26101952708 packets, 3055712267640 bytes</code></pre>
+Switch Port, PVID :    1, TPID : 8100(Hex), The Maximum Frame Length is 9216
+IP Sending Frames<span class="hljs-string">&#x27; Format is PKTFMT_ETHNT_2, Hardware address is f84a-bf70-3d00</span>
+<span class="hljs-string">Last physical up time   : 2014-03-09 18:12</span>
+<span class="hljs-string">Last physical down time : 2014-03-09 18:12</span>
+<span class="hljs-string">Current system time: 2014-03-09 18:12</span>
+<span class="hljs-string">Port Mode: COMMON FIBER</span>
+<span class="hljs-string">Speed : 10000,  Loopback: NONE</span>
+<span class="hljs-string">Duplex: FULL,  Negotiation: DISABLE</span>
+<span class="hljs-string">Mdi   : NORMAL</span>
+<span class="hljs-string">Last 300 seconds input rate 1602936 bits/sec, 1784 packets/sec</span>
+<span class="hljs-string">Last 300 seconds output rate 1393224 bits/sec, 1732 packets/sec</span>
+<span class="hljs-string">Input peak rate 142352400 bits/sec, Record time: 2014-03-09 18:12</span>
+<span class="hljs-string">Output peak rate 136841800 bits/sec, Record time: 2014-03-09 18:12</span>
+<span class="hljs-string">Input:  26101952708 packets, 3055712267640 bytes</span></code></pre></div>
 <p>其中INPUT和OUTPUT部分就是交换机的进出口流量</p>
-<h2 id="查看交换机上下联状态"><a href="#查看交换机上下联状态" class="headerlink" title="查看交换机上下联状态"></a>查看交换机上下联状态</h2><pre class=" language-bash"><code class="language-bash">dis <span class="token function">link</span> s</code></pre>
+<h2 id="查看交换机上下联状态"><a href="#查看交换机上下联状态" class="headerlink" title="查看交换机上下联状态"></a>查看交换机上下联状态</h2><div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">dis link s</code></pre></div>
 <p>实例</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span>CMN-AH-HNN-S01<span class="token punctuation">]</span>dis <span class="token function">link</span> s
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">[CMN-AH-HNN-S01]dis link s
 
 AGG        AGG   Partner ID              Selected  Unselected  Individual  Share
 Interface  Mode                          Ports     Ports       Ports       Type
@@ -406,19 +415,21 @@ BAGG5      S     None                    2         0           0           Shar
 BAGG10     S     None                    8         0           0           Shar
 BAGG100    S     None                    5         3           0           Shar
 BAGG200    S     None                    5         3           0           Shar
-BAGG1000   S     None                    0         0           0           Shar</code></pre>
-<h2 id="mac地址显示与维护"><a href="#mac地址显示与维护" class="headerlink" title="mac地址显示与维护"></a>mac地址显示与维护</h2><pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 显示mac地址表信息</span>
+BAGG1000   S     None                    0         0           0           Shar</code></pre></div>
+
+<h2 id="mac地址显示与维护"><a href="#mac地址显示与维护" class="headerlink" title="mac地址显示与维护"></a>mac地址显示与维护</h2><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 显示mac地址表信息</span>
 display mac-address
-<span class="token comment" spellcheck="true"># 显示MAC地址表动态表项的老化时间</span>
+<span class="hljs-comment"># 显示MAC地址表动态表项的老化时间</span>
 display mac-address aging-time
-<span class="token comment" spellcheck="true"># 显示MAC地址学习功能的使能状态</span>
-display mac-address mac-learning <span class="token punctuation">[</span> interface interface-type interface-number <span class="token punctuation">]</span>
-<span class="token comment" spellcheck="true"># 显示MAC地址表的统计信息</span>
+<span class="hljs-comment"># 显示MAC地址学习功能的使能状态</span>
+display mac-address mac-learning [ interface interface-type interface-number ]
+<span class="hljs-comment"># 显示MAC地址表的统计信息</span>
 display mac-address statistics
-<span class="token comment" spellcheck="true"># 显示MAC地址迁移记录</span>
-display mac-address mac-move <span class="token punctuation">[</span> slot slot-number <span class="token punctuation">]</span> </code></pre>
+<span class="hljs-comment"># 显示MAC地址迁移记录</span>
+display mac-address mac-move [ slot slot-number ]</code></pre></div>
+
 <p>实例</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span>CMN-AH-HNN-S01<span class="token punctuation">]</span>display mac-address
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">[CMN-AH-HNN-S01]display mac-address
 MAC Address      VLAN ID    State            Port/NickName            Aging
 001e-67fb-8b3c   1          Learned          BAGG10                   Y
 001e-67fb-a5b8   1          Learned          BAGG10                   Y
@@ -432,66 +443,73 @@ MAC Address      VLAN ID    State            Port/NickName            Aging
 6c92-bf2e-8f70   1          Learned          BAGG10                   Y
 6c92-bf2e-8f74   1          Learned          BAGG10                   Y
 6c92-bf2e-8fa4   1          Learned          BAGG10                   Y
-6c92-bf34-5050   1          Learned          BAGG3                    Y</code></pre>
-<h2 id="H3C交换机查看SN-产品序列号"><a href="#H3C交换机查看SN-产品序列号" class="headerlink" title="H3C交换机查看SN(产品序列号)"></a>H3C交换机查看SN(产品序列号)</h2><pre class=" language-bash"><code class="language-bash">dis device manuinfo</code></pre>
+6c92-bf34-5050   1          Learned          BAGG3                    Y</code></pre></div>
+
+
+<h2 id="H3C交换机查看SN-产品序列号"><a href="#H3C交换机查看SN-产品序列号" class="headerlink" title="H3C交换机查看SN(产品序列号)"></a>H3C交换机查看SN(产品序列号)</h2><div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">dis device manuinfo</code></pre></div>
 <p>实例</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span>CMN-ZJ-WNZ-S01<span class="token punctuation">]</span>display device manuinfo
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">[CMN-ZJ-WNZ-S01]display device manuinfo
  Slot 1 CPU 0:
-DEVICE_NAME          <span class="token keyword">:</span> S6300-48S
-DEVICE_SERIAL_NUMBER <span class="token keyword">:</span> 210235A1DUH178000073
-MAC_ADDRESS          <span class="token keyword">:</span> 38AD-BE2F-AB08
-MANUFACTURING_DATE   <span class="token keyword">:</span> 2017-08-17
-VENDOR_NAME          <span class="token keyword">:</span> H3C
+DEVICE_NAME          : S6300-48S
+DEVICE_SERIAL_NUMBER : 210235A1DUH178000073
+MAC_ADDRESS          : 38AD-BE2F-AB08
+MANUFACTURING_DATE   : 2017-08-17
+VENDOR_NAME          : H3C
 Fan 1:
-DEVICE_NAME          <span class="token keyword">:</span> LSWM1FANSC
-DEVICE_SERIAL_NUMBER <span class="token keyword">:</span> 210231A0WEH177000079
-MANUFACTURING_DATE   <span class="token keyword">:</span> 2017-07-06
-VENDOR_NAME          <span class="token keyword">:</span> H3C
+DEVICE_NAME          : LSWM1FANSC
+DEVICE_SERIAL_NUMBER : 210231A0WEH177000079
+MANUFACTURING_DATE   : 2017-07-06
+VENDOR_NAME          : H3C
 Fan 2:
-DEVICE_NAME          <span class="token keyword">:</span> LSWM1FANSC
-DEVICE_SERIAL_NUMBER <span class="token keyword">:</span> 210231A0WEH177000167
-MANUFACTURING_DATE   <span class="token keyword">:</span> 2017-07-06
-VENDOR_NAME          <span class="token keyword">:</span> H3C
+DEVICE_NAME          : LSWM1FANSC
+DEVICE_SERIAL_NUMBER : 210231A0WEH177000167
+MANUFACTURING_DATE   : 2017-07-06
+VENDOR_NAME          : H3C
 Power 1:
-DEVICE_NAME          <span class="token keyword">:</span> LSVM1AC300
-DEVICE_SERIAL_NUMBER <span class="token keyword">:</span> 210231A1SUH163002239
-MANUFACTURING_DATE   <span class="token keyword">:</span> 2016-03-28
-VENDOR_NAME          <span class="token keyword">:</span> H3C
+DEVICE_NAME          : LSVM1AC300
+DEVICE_SERIAL_NUMBER : 210231A1SUH163002239
+MANUFACTURING_DATE   : 2016-03-28
+VENDOR_NAME          : H3C
 Power 2:
-DEVICE_NAME          <span class="token keyword">:</span> LSVM1AC300</code></pre>
+DEVICE_NAME          : LSVM1AC300</code></pre></div>
+
+
+
 <h2 id="H3C交换机风扇方向修改"><a href="#H3C交换机风扇方向修改" class="headerlink" title="H3C交换机风扇方向修改"></a>H3C交换机风扇方向修改</h2><p>查看交换机风扇方向<br><img src="http://img.noback.top/2020-06-01-10-26-35.png" srcset="/img/loading.gif" alt="2020-06-01-10-26-35"><br>修改交换机风向</p>
-<pre class=" language-bash"><code class="language-bash">fan prefer-direction slot 1 port-to-power  <span class="token comment" spellcheck="true"># 转个方向就ok了</span></code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash">fan prefer-direction slot 1 port-to-power  <span class="hljs-comment"><code class="language-hljs bash">fan prefer-direction slot 1 port-to-power  <span class="hljs-comment"># 转个方向就ok了</span></code></pre></div>
+
+
 <h2 id="H3C交换机查看光衰"><a href="#H3C交换机查看光衰" class="headerlink" title="H3C交换机查看光衰"></a>H3C交换机查看光衰</h2><p>查看单口的光衰</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># dis tran dia int 1/0/1</span>
-<span class="token punctuation">[</span>CMN-JS-YTY-S01<span class="token punctuation">]</span>display transceiver diagnosis  interface Ten-GigabitEthernet 1/0/1
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># dis tran dia int 1/0/1</span>
+[CMN-JS-YTY-S01]display transceiver diagnosis  interface Ten-GigabitEthernet 1/0/1
 Ten-GigabitEthernet1/0/1 transceiver diagnostic information:
   Current diagnostic parameters:
-    Temp.<span class="token punctuation">(</span>C<span class="token punctuation">)</span> Voltage<span class="token punctuation">(</span>V<span class="token punctuation">)</span>  Bias<span class="token punctuation">(</span>mA<span class="token punctuation">)</span>  RX power<span class="token punctuation">(</span>dBm<span class="token punctuation">)</span>  TX power<span class="token punctuation">(</span>dBm<span class="token punctuation">)</span>
+    Temp.(C) Voltage(V)  Bias(mA)  RX power(dBm)  TX power(dBm)
     39         3.28        6.66      -3.14          -2.27
   Alarm thresholds:
-          Temp.<span class="token punctuation">(</span>C<span class="token punctuation">)</span> Voltage<span class="token punctuation">(</span>V<span class="token punctuation">)</span>  Bias<span class="token punctuation">(</span>mA<span class="token punctuation">)</span>  RX power<span class="token punctuation">(</span>dBm<span class="token punctuation">)</span>  TX power<span class="token punctuation">(</span>dBm<span class="token punctuation">)</span>
+          Temp.(C) Voltage(V)  Bias(mA)  RX power(dBm)  TX power(dBm)
     High  90         3.63        15.00     3.01           0.79
-    Low   -10        2.97        1.00      -16.02         -7.97</code></pre>
+    Low   -10        2.97        1.00      -16.02         -7.97</code></pre></div>
 <p>上面的是当前的状态  下面的是标准值  只要在标准值内就OK了</p>
 <p>查看单口的模块介绍</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># dis tran int 1/0/1</span>
-<span class="token punctuation">[</span>CMN-JS-YTY-S01<span class="token punctuation">]</span>dis transceiver interface Ten-GigabitEthernet 1/0/1
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># dis tran int 1/0/1</span>
+[CMN-JS-YTY-S01]dis transceiver interface Ten-GigabitEthernet 1/0/1
 Ten-GigabitEthernet1/0/1 transceiver information:
-  Transceiver Type              <span class="token keyword">:</span> 10G_BASE_SR_SFP
-  Connector Type                <span class="token keyword">:</span> LC
-  Wavelength<span class="token punctuation">(</span>nm<span class="token punctuation">)</span>                <span class="token keyword">:</span> 850
-  Transfer Distance<span class="token punctuation">(</span>m<span class="token punctuation">)</span>          <span class="token keyword">:</span> 80<span class="token punctuation">(</span>OM2<span class="token punctuation">)</span>,20<span class="token punctuation">(</span>OM1<span class="token punctuation">)</span>,300<span class="token punctuation">(</span>OM3<span class="token punctuation">)</span>
-  Digital Diagnostic Monitoring <span class="token keyword">:</span> YES
-  Vendor Name                   <span class="token keyword">:</span> H3C
-  Ordering Name                 <span class="token keyword">:</span> SFP-XG-SX-MM850-A</code></pre>
-<p>查看单口的模块出厂属性</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># dis tran manuinfo int 1/0/1</span>
-<span class="token punctuation">[</span>CMN-JS-YTY-S01<span class="token punctuation">]</span>dis transceiver manuinfo interface Ten-GigabitEthernet 1/0/1
-Ten-GigabitEthernet1/0/1 transceiver manufacture information:
-  Manu. Serial Number <span class="token keyword">:</span> 210231A0A6HCAF037457
-  Manufacturing Date  <span class="token keyword">:</span> 2017-03-07
-  Vendor Name         <span class="token keyword">:</span> H3C</code></pre>
+  Transceiver Type              : 10G_BASE_SR_SFP
+  Connector Type                : LC
+  Wavelength(nm)                : 850
+  Transfer Distance(m)          : 80(OM2),20(OM1),300(OM3)
+  Digital Diagnostic Monitoring : YES
+  Vendor Name                   : H3C
+  Ordering Name                 : SFP-XG-SX-MM850-A</code></pre></div>
 
+<p>查看单口的模块出厂属性</p>
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># dis tran manuinfo int 1/0/1</span>
+[CMN-JS-YTY-S01]dis transceiver manuinfo interface Ten-GigabitEthernet 1/0/1
+Ten-GigabitEthernet1/0/1 transceiver manufacture information:
+  Manu. Serial Number : 210231A0A6HCAF037457
+  Manufacturing Date  : 2017-03-07
+  Vendor Name         : H3C</code></pre></div>
             </div>
             <hr>
             <div>
@@ -599,7 +617,7 @@ Ten-GigabitEthernet1/0/1 transceiver manufacture information:
 
   <footer class="text-center mt-5 py-3">
   <div class="footer-content">
-     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+     <a rel="nofollow noopener"><span>Hzjsea</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
   </div>
   
 

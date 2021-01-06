@@ -67,7 +67,7 @@
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
-       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
+       href="/">&nbsp;<strong>hzjsea</strong>&nbsp;</a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
             data-target="#navbarSupportedContent"
@@ -184,7 +184,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      200 字
+      197 字
     </span>
   
 
@@ -241,32 +241,31 @@
 <a id="more"></a>
 
 <h1 id="docker搭建wordpress"><a href="#docker搭建wordpress" class="headerlink" title="docker搭建wordpress"></a>docker搭建wordpress</h1><ol>
-<li>安装mysql、wordpress镜像<pre class=" language-bash"><code class="language-bash">docker pull mysql
-docker pyll wordpress </code></pre>
-</li>
-<li>创建mysql<br>需要做一些初始化的配置，建议在dockerhub上查看<br><a target="_blank" rel="noopener" href="https://hub.docker.com/_/mysql">https://hub.docker.com/_/mysql</a><br>```bash<br>docker run -it -d –name mysql \</li>
-</ol>
-<p>-v db_data:/var/lib/mysql <br>-e MYSQL_ROOT_PASSWORD=root <br>-e MYSQL_DATABASE=wordpress <br>mysql:8.0  </p>
-<pre><code>3. 创建wordpress
-需要连接数据库与暴露端口转换
-```bash
-docker run -d -e WORDPRESS_DB_HOST=mysql:3306 \
+<li>安装mysql、wordpress镜像<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">docker pull mysql
+docker pyll wordpress</code></pre></div></li>
+<li>创建mysql<br>需要做一些初始化的配置，建议在dockerhub上查看<br><a target="_blank" rel="noopener" href="https://hub.docker.com/_/mysql">https://hub.docker.com/_/mysql</a><div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">docker run -it -d --name mysql \
+-v db_data:/var/lib/mysql \
+-e MYSQL_ROOT_PASSWORD=root \
+-e MYSQL_DATABASE=wordpress \
+mysql:8.0</code></pre></div></li>
+<li>创建wordpress<br>需要连接数据库与暴露端口转换<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">docker run -d -e WORDPRESS_DB_HOST=mysql:3306 \
 --name wordpress \
 --link mysql  \
 -e WORDPRESS_DB_USER=root \
 -e WORDPRESS_DB_PASSWD=root \
 -p 8888:80 \
-wordpress </code></pre>
-<p><font color='red'>未成功，一直提醒数据库错误，不知道为什么? 是因为mysql没有加–default-auth=mysql_native_password这个嘛</font></p>
-<h2 id="使用docker-compose搭建wordpress"><a href="#使用docker-compose搭建wordpress" class="headerlink" title="使用docker-compose搭建wordpress"></a>使用docker-compose搭建wordpress</h2><pre class=" language-bash"><code class="language-bash">version: <span class="token string">"3"</span>
+wordpress</code></pre></div>
+<font color='red'>未成功，一直提醒数据库错误，不知道为什么? 是因为mysql没有加–default-auth=mysql_native_password这个嘛</font></li>
+</ol>
+<h2 id="使用docker-compose搭建wordpress"><a href="#使用docker-compose搭建wordpress" class="headerlink" title="使用docker-compose搭建wordpress"></a>使用docker-compose搭建wordpress</h2><div class="code-wrapper"><pre class=" language-hljs bash">version: <span class="hljs-string"><code class="language-hljs bash">version: <span class="hljs-string">"3"</span>
 services:
 
    db:
      image: mysql:8.0
-     command:
-      - --default_authentication_plugin<span class="token operator">=</span>mysql_native_password
-      - --character-set-server<span class="token operator">=</span>utf8mb4
-      - --collation-server<span class="token operator">=</span>utf8mb4_unicode_ci     
+     <span class="hljs-built_in">command</span>:
+      - --default_authentication_plugin=mysql_native_password
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci     
      volumes:
        - db_data:/var/lib/mysql
      restart: always
@@ -281,15 +280,14 @@ services:
        - db
      image: wordpress:latest
      ports:
-       - <span class="token string">"8000:80"</span>
+       - <span class="hljs-string">"8000:80"</span>
      restart: always
      environment:
        WORDPRESS_DB_HOST: db:3306
        WORDPRESS_DB_USER: wordpress
        WORDPRESS_DB_PASSWORD: wordpress
 volumes:
-  db_data: </code></pre>
-
+  db_data:</code></pre></div>
             </div>
             <hr>
             <div>
@@ -397,7 +395,7 @@ volumes:
 
   <footer class="text-center mt-5 py-3">
   <div class="footer-content">
-     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+     <a rel="nofollow noopener"><span>Hzjsea</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
   </div>
   
 

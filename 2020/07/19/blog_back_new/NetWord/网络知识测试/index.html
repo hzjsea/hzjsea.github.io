@@ -67,7 +67,7 @@
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
-       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
+       href="/">&nbsp;<strong>hzjsea</strong>&nbsp;</a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
             data-target="#navbarSupportedContent"
@@ -275,11 +275,12 @@
 <p>握手注意点 第一阶段-第二阶段会发生SYN泛洪 解决方法 使用SYN cookie，服务器接收到第一阶段的建立连接信号后，不会发生半开连接，会先生成一段序号(service_id)返回给客户端，客户端带着这段序号+1 以及确认信号去请求服务器，服务器再次进行计算+1 比较service_id+1 相同则为合法连接，产生一个全开链接</p>
 <p><font color='red'>TCP生命周期要写上去嘛</font></p>
 <h2 id="交换机端口动态汇聚和静态汇聚的优缺点对比"><a href="#交换机端口动态汇聚和静态汇聚的优缺点对比" class="headerlink" title="交换机端口动态汇聚和静态汇聚的优缺点对比"></a>交换机端口动态汇聚和静态汇聚的优缺点对比</h2><p>动静态汇聚主要依靠的协议是链路聚合协议 (lacp)，链路聚合主要作用就是把多条物理链路绑定成几组逻辑链路，逻辑链路的存在一是可以起到备份的作用，二是可以起到增加带宽的作用<br>静态汇聚的优点是配置完成以后 端口的选中/非选中状态就不会受网络环境的影响，比较稳定。但同样的 缺点在于不能根据对端的状态调整端口的选中/非选中状态，不够灵活<br>而动态汇聚的有点在于，会自动协商汇聚口上选中与非选中的状态 能够根据对端和本端的信息调整端口的选中/非选中状态，比较灵活   但是缺点在于会受到网络环境的影响<br>所以对于这两种状态是两个正反面，不同的环境选择使用不同的配置<br>现在公司的配置默认统一为动态汇聚，这样做的好处是可以保证在之后扩口的时候方便操作，只需要划一个新的口到汇聚口里面去就好了</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 配置动态汇聚</span>
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 配置动态汇聚</span>
 link-aggregation mode dynamic
-<span class="token comment" spellcheck="true"># 查看链路汇聚协商状态</span>
-dis link-aggretion summary <span class="token comment" spellcheck="true"># 当Partner ID出现mac地址时候，则表示处于协商状态</span></code></pre>
-<h2 id="设计一个有100台左右服务器网络架构，有一个总计100G带宽的公网出口，交换机型号和使用数量不限，内部互联接口类型不限，需要考虑高可用和负载均衡"><a href="#设计一个有100台左右服务器网络架构，有一个总计100G带宽的公网出口，交换机型号和使用数量不限，内部互联接口类型不限，需要考虑高可用和负载均衡" class="headerlink" title="设计一个有100台左右服务器网络架构，有一个总计100G带宽的公网出口，交换机型号和使用数量不限，内部互联接口类型不限，需要考虑高可用和负载均衡"></a>设计一个有100台左右服务器网络架构，有一个总计100G带宽的公网出口，交换机型号和使用数量不限，内部互联接口类型不限，需要考虑高可用和负载均衡</h2><pre class=" language-mermaid"><code class="language-mermaid">graph LR
+<span class="hljs-comment"># 查看链路汇聚协商状态</span>
+dis link-aggretion summary <span class="hljs-comment"># 当Partner ID出现mac地址时候，则表示处于协商状态</span></code></pre></div>
+
+<h2 id="设计一个有100台左右服务器网络架构，有一个总计100G带宽的公网出口，交换机型号和使用数量不限，内部互联接口类型不限，需要考虑高可用和负载均衡"><a href="#设计一个有100台左右服务器网络架构，有一个总计100G带宽的公网出口，交换机型号和使用数量不限，内部互联接口类型不限，需要考虑高可用和负载均衡" class="headerlink" title="设计一个有100台左右服务器网络架构，有一个总计100G带宽的公网出口，交换机型号和使用数量不限，内部互联接口类型不限，需要考虑高可用和负载均衡"></a>设计一个有100台左右服务器网络架构，有一个总计100G带宽的公网出口，交换机型号和使用数量不限，内部互联接口类型不限，需要考虑高可用和负载均衡</h2><pre class=" language- mermaid"><code class="language- mermaid">graph LR
    Switch1 --> 公网
    6300-2 --> Switch1
    6300-3 --> Switch1
@@ -300,6 +301,8 @@ dis link-aggretion summary <span class="token comment" spellcheck="true"># 当Pa
    service*10-2 --> 5130-2
    service*10-3 --> 5130-3
    service*10-4 --> 5130-4</code></pre>
+
+
 <h2 id="罗列交换机IRF优缺点"><a href="#罗列交换机IRF优缺点" class="headerlink" title="罗列交换机IRF优缺点"></a>罗列交换机IRF优缺点</h2><p>优点:</p>
 <ol>
 <li>配置方便,统一配置，IRF连接之后，只要在一台机器上进行配置管理就好了 简化管理</li>
@@ -334,8 +337,8 @@ dis link-aggretion summary <span class="token comment" spellcheck="true"># 当Pa
 <p>SNAT  实现没有公网IP的ECS实例借助有公网的ECS访问外网，但是外网无法访问到内网IP；也就是仅对源网络地址转换<br>DNAT  实现外网通过端口映射访问到内网服务器，但是不能实现内网ECS访问到外网； 也就是仅对目的网络地址进行转换</p>
 <h3 id="介绍nat-snat-dnat"><a href="#介绍nat-snat-dnat" class="headerlink" title="介绍nat snat dnat"></a>介绍nat snat dnat</h3><p>别名IP地址欺骗或者伪装<br>NAT也就是<code>网络地址转换</code> network address translation<br>主要是通过IP数据包中的IP地址进行转换的 内外网地址转发==&gt;内网地址与外网地址转换<br>DNAT <code>目的网络地址转换</code> destination network addres<br>SNAT <code>源网络地址转转换</code> source network address</p>
 <p>需要网络地址转发的原因是 </p>
-<pre class=" language-mermaid"><code class="language-mermaid">flowchart LR
-    A[公网地址 103.10.20.1] --> C[iptables] --x B[内网地址 19.168.20.1]  </code></pre>
+<pre class=" language- mermaid"><code class="language- mermaid">flowchart LR
+    A[公网地址 103.10.20.1] --> C[iptables] --x B[内网地址 19.168.20.1]</code></pre>
 <p>内网机器A向外网机器发出一个IP数据包，如果SNAT没有对A主机进行源地址转换，A和B的连接就会发生不正常终端，因为当路由器将外网的数据包发送到外网后，公网IP会给你的死亡IP回数据包，这时候公网IP根本就无法知道你的私网IP应该如何走。所以他会去问上一级的路由器，因为在公网中无法看到私网的IP，无法建立通信，为了实现数据包的正确发送及返回，网关必须将A的地址转换为一个合法的公网地址，同时为了以后B主机能将数据包钻发给A 这个合法的公网地址必须是网关的外网地址</p>
 <h3 id="数据中心内外网转发的形式"><a href="#数据中心内外网转发的形式" class="headerlink" title="数据中心内外网转发的形式"></a>数据中心内外网转发的形式</h3><p><img src="http://img.noback.top/2020-07-24-16-09-53.png" srcset="/img/loading.gif" alt="2020-07-24-16-09-53"></p>
 <p>NAT做地址转发是有消耗的，一般会建一组NAT机器去做NAT地址转发，此时这组机器相当于内外网地址转发的中心，所有的请求都会过这里<br>其中请求包较小，响应包或大或小</p>
@@ -343,13 +346,18 @@ dis link-aggretion summary <span class="token comment" spellcheck="true"># 当Pa
 <h3 id="边缘节点外to内的转发形式"><a href="#边缘节点外to内的转发形式" class="headerlink" title="边缘节点外to内的转发形式"></a>边缘节点外to内的转发形式</h3><p><img src="http://img.noback.top/2020-07-24-16-33-06.png" srcset="/img/loading.gif" alt="2020-07-24-16-33-06"></p>
 <p>外网请求走NAT<br>内网响应包走服务器自带的外网IP<br>NAT到服务器</p>
 <h3 id="配置SNAT与DNAT"><a href="#配置SNAT与DNAT" class="headerlink" title="配置SNAT与DNAT"></a>配置SNAT与DNAT</h3><p>首先配置SNAT，让内网机器能够访问到外网机器</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token keyword">echo</span> <span class="token string">"net.ipv4.ip_forward = 1"</span> <span class="token operator">>></span> /etc/sysct.conf
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-built_in">echo</span> <span class="hljs-string"><code class="language-hljs bash"><span class="hljs-built_in">echo</span> <span class="hljs-string">"net.ipv4.ip_forward = 1"</span> >> /etc/sysct.conf
 iptables -t nat -I POSTROUTING -s 172.16.0.0/16 -j SNAT --to-source 172.16.107.49
-<span class="token function">service</span> iptables save
-systemctl restart iptables.service</code></pre>
+service iptables save
+systemctl restart iptables.service</code></pre></div>
+
+
+
 <h2 id="需要在一台服务器上对异常大流量进行定位分析，有哪些方法？"><a href="#需要在一台服务器上对异常大流量进行定位分析，有哪些方法？" class="headerlink" title="需要在一台服务器上对异常大流量进行定位分析，有哪些方法？"></a>需要在一台服务器上对异常大流量进行定位分析，有哪些方法？</h2><ul>
-<li>iftop<br><img src="http://img.noback.top/2020-07-24-00-43-00.png" srcset="/img/loading.gif" alt="2020-07-24-00-43-00"><br>找到对应的端口号<pre class=" language-bash"><code class="language-bash"><span class="token function">lsof</span> -i:xxx <span class="token comment" spellcheck="true"># 找到对应的PID</span>
-<span class="token function">cat</span> /proc/16276/cmdline <span class="token comment" spellcheck="true"># 找到对应的进程</span></code></pre>
+<li>iftop<br><img src="http://img.noback.top/2020-07-24-00-43-00.png" srcset="/img/loading.gif" alt="2020-07-24-00-43-00"><br>找到对应的端口号<div class="code-wrapper"><pre class=" language-hljs bash">lsof -i:xxx <span class="hljs-comment"><code class="language-hljs bash">lsof -i:xxx <span class="hljs-comment"># 找到对应的PID</span>
+cat /proc/16276/cmdline <span class="hljs-comment"># 找到对应的进程</span></code></pre></div>
+
+
 </li>
 </ul>
 <ul>
@@ -358,9 +366,8 @@ systemctl restart iptables.service</code></pre>
 <li><p>iptraf<br>centos7之后 衍生除了iptraf-ng<br><img src="http://img.noback.top/2020-07-24-00-49-03.png" srcset="/img/loading.gif" alt="2020-07-24-00-49-03"></p>
 </li>
 </ul>
-<pre class=" language-mermaid"><code class="language-mermaid">graph LR
-    根据警报/监控图发现大流量预警 --> 确定节点 --> 确定机器 --> 确定业务程序 --> 确定程序PID --> 确定程序执行命令</code></pre>
-
+<pre class=" language- mermaid"><code class="language- mermaid">graph LR
+    根据警报&#x2F;监控图发现大流量预警 --> 确定节点 --> 确定机器 --> 确定业务程序 --> 确定程序PID --> 确定程序执行命令</code></pre>
             </div>
             <hr>
             <div>
@@ -468,7 +475,7 @@ systemctl restart iptables.service</code></pre>
 
   <footer class="text-center mt-5 py-3">
   <div class="footer-content">
-     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+     <a rel="nofollow noopener"><span>Hzjsea</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
   </div>
   
 

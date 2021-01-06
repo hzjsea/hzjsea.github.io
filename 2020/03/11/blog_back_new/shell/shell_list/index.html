@@ -67,7 +67,7 @@
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
-       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
+       href="/">&nbsp;<strong>hzjsea</strong>&nbsp;</a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
             data-target="#navbarSupportedContent"
@@ -184,7 +184,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      2.5k 字
+      865 字
     </span>
   
 
@@ -194,7 +194,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      47
+      15
        分钟
     </span>
   
@@ -248,21 +248,348 @@
 <a id="more"></a>
 
 
-<h1 id="shell-list"><a href="#shell-list" class="headerlink" title="shell_list"></a>shell_list</h1><h2 id="服务器之间发包测试"><a href="#服务器之间发包测试" class="headerlink" title="服务器之间发包测试"></a>服务器之间发包测试</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre class=" language-hljs bash"><span class="hljs-meta">#!/bin/bash</span><br><br><span class="hljs-built_in">set</span> -ex<br><br><span class="hljs-comment"># more_info=&quot;&quot;</span><br>more_info=<span class="hljs-string">&quot;-v&quot;</span><br>os_version=<span class="hljs-string">&quot;cat /etc/redhat-release&quot;</span><br>vip=<span class="hljs-string">&quot;10.0.6.55&quot;</span><br>vport=<span class="hljs-string">&quot;8081&quot;</span><br><br>record=<span class="hljs-string">&quot;/tmp/record.txt&quot;</span><br><br><span class="hljs-function"><span class="hljs-title">_clean</span></span>() &#123;<br>	rm -rf <span class="hljs-variable">$&#123;record&#125;</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-title">_server</span></span>() &#123;<br>	<span class="hljs-comment"># nc -v -e /bin/bash -ltkp 8081</span><br>	<span class="hljs-keyword">if</span> [ <span class="hljs-variable">$&#123;os_version&#125;</span> == <span class="hljs-string">&quot;CentOS release 6.5 (Final)&quot;</span> ]; <span class="hljs-keyword">then</span><br>		nc <span class="hljs-variable">$&#123;more_info&#125;</span> -e /bin/bash -ltk <span class="hljs-variable">$&#123;vport&#125;</span><br>	<span class="hljs-keyword">else</span><br>		nc <span class="hljs-variable">$&#123;more_info&#125;</span> -e /bin/bash -ltkp <span class="hljs-variable">$&#123;vport&#125;</span><br>	<span class="hljs-keyword">fi</span><br><br>&#125;<br><br><span class="hljs-function"><span class="hljs-title">_client</span></span>() &#123;<br>	<span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> &#123;1..1000&#125;; <span class="hljs-keyword">do</span><br>		<span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;=================<span class="hljs-variable">$&#123;i&#125;</span>===================&quot;</span><br>		<span class="hljs-comment"># nc -v 10.0.6.55 8081</span><br>		<span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;echo 1 &gt;&gt; <span class="hljs-variable">$&#123;record&#125;</span>&quot;</span> | nc <span class="hljs-variable">$&#123;more_info&#125;</span> <span class="hljs-variable">$&#123;vip&#125;</span> <span class="hljs-variable">$&#123;vport&#125;</span><br>	<span class="hljs-keyword">done</span><br>	<span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;cat <span class="hljs-variable">$&#123;record&#125;</span> | wc -l &gt;&gt; <span class="hljs-variable">$&#123;record&#125;</span>&quot;</span> | nc <span class="hljs-variable">$&#123;more_info&#125;</span> <span class="hljs-variable">$&#123;vip&#125;</span> <span class="hljs-variable">$&#123;vport&#125;</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-title">main</span></span>() &#123;<br><br>	<span class="hljs-keyword">case</span> <span class="hljs-variable">$1</span> <span class="hljs-keyword">in</span><br>	server)<br>		_server<br>		;;<br>	client)<br>		_client<br>		;;<br>	clean)<br>		_clean<br>		;;<br>	default)<br>		<span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;1&quot;</span><br>		;;<br>	*)<br>		<span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;1&quot;</span><br>		;;<br>	<span class="hljs-keyword">esac</span><br>&#125;<br><br>main <span class="hljs-variable"><code class="language-hljs bash"><span class="hljs-meta">#!/bin/bash</span><br><br><span class="hljs-built_in">set</span> -ex<br><br><span class="hljs-comment"># more_info=&quot;&quot;</span><br>more_info=<span class="hljs-string">&quot;-v&quot;</span><br>os_version=<span class="hljs-string">&quot;cat /etc/redhat-release&quot;</span><br>vip=<span class="hljs-string">&quot;10.0.6.55&quot;</span><br>vport=<span class="hljs-string">&quot;8081&quot;</span><br><br>record=<span class="hljs-string">&quot;/tmp/record.txt&quot;</span><br><br><span class="hljs-function"><span class="hljs-title">_clean</span></span>() &#123;<br>	rm -rf <span class="hljs-variable">$&#123;record&#125;</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-title">_server</span></span>() &#123;<br>	<span class="hljs-comment"># nc -v -e /bin/bash -ltkp 8081</span><br>	<span class="hljs-keyword">if</span> [ <span class="hljs-variable">$&#123;os_version&#125;</span> == <span class="hljs-string">&quot;CentOS release 6.5 (Final)&quot;</span> ]; <span class="hljs-keyword">then</span><br>		nc <span class="hljs-variable">$&#123;more_info&#125;</span> -e /bin/bash -ltk <span class="hljs-variable">$&#123;vport&#125;</span><br>	<span class="hljs-keyword">else</span><br>		nc <span class="hljs-variable">$&#123;more_info&#125;</span> -e /bin/bash -ltkp <span class="hljs-variable">$&#123;vport&#125;</span><br>	<span class="hljs-keyword">fi</span><br><br>&#125;<br><br><span class="hljs-function"><span class="hljs-title">_client</span></span>() &#123;<br>	<span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> &#123;1..1000&#125;; <span class="hljs-keyword">do</span><br>		<span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;=================<span class="hljs-variable">$&#123;i&#125;</span>===================&quot;</span><br>		<span class="hljs-comment"># nc -v 10.0.6.55 8081</span><br>		<span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;echo 1 &gt;&gt; <span class="hljs-variable">$&#123;record&#125;</span>&quot;</span> | nc <span class="hljs-variable">$&#123;more_info&#125;</span> <span class="hljs-variable">$&#123;vip&#125;</span> <span class="hljs-variable">$&#123;vport&#125;</span><br>	<span class="hljs-keyword">done</span><br>	<span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;cat <span class="hljs-variable">$&#123;record&#125;</span> | wc -l &gt;&gt; <span class="hljs-variable">$&#123;record&#125;</span>&quot;</span> | nc <span class="hljs-variable">$&#123;more_info&#125;</span> <span class="hljs-variable">$&#123;vip&#125;</span> <span class="hljs-variable">$&#123;vport&#125;</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-title">main</span></span>() &#123;<br><br>	<span class="hljs-keyword">case</span> <span class="hljs-variable">$1</span> <span class="hljs-keyword">in</span><br>	server)<br>		_server<br>		;;<br>	client)<br>		_client<br>		;;<br>	clean)<br>		_clean<br>		;;<br>	default)<br>		<span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;1&quot;</span><br>		;;<br>	*)<br>		<span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;1&quot;</span><br>		;;<br>	<span class="hljs-keyword">esac</span><br>&#125;<br><br>main <span class="hljs-variable">$@</span><br><br></code></pre></td></tr></table></figure>
+<h1 id="shell-list"><a href="#shell-list" class="headerlink" title="shell_list"></a>shell_list</h1><h2 id="服务器之间发包测试"><a href="#服务器之间发包测试" class="headerlink" title="服务器之间发包测试"></a>服务器之间发包测试</h2><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-meta"><code class="language-hljs bash"><span class="hljs-meta">#!/bin/bash</span>
 
-<h2 id="服务器ss健康状态检测"><a href="#服务器ss健康状态检测" class="headerlink" title="服务器ss健康状态检测"></a>服务器ss健康状态检测</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre class=" language-hljs shell"><span class="hljs-meta">#</span><span class="bash">!/bin/sh</span><br>state=&quot;established&quot;<br>timestamp=`date &quot;+%d/%b/%Y:%X&quot;`<br>tmpfile=&quot;z&quot;<br>hostname=$(hostname)<br><br>echo &quot;&#x27;&quot;  &gt; $tmpfile.json<br>ss2 -4itn state $state dport = :80 or sport = :80 or dport = :443 or sport = :433 or sport = :8100 or dport = :8100 |<br>awk &#x27;&#123; if(NR &gt; 1 &amp;&amp; $3 !~ /127.0.0.1/ &amp;&amp; $3 !~ /rt[to]/ ) &#123;<br>		line=$0; getline; if($0~/minrtt/) print line&quot;&quot;$0<br>  	&#125;<br>&#125;&#x27; |<br>awk &#x27;&#123;<br><span class="hljs-meta">	split($</span><span class="bash">3,src,<span class="hljs-string">&quot;:&quot;</span>); Saddress=<span class="hljs-variable">$3</span>;</span><br><span class="hljs-meta">	split($</span><span class="bash">4,dst,<span class="hljs-string"><code class="language-hljs shell"><span class="hljs-meta">#</span><span class="bash">!/bin/sh</span><br>state=&quot;established&quot;<br>timestamp=`date &quot;+%d/%b/%Y:%X&quot;`<br>tmpfile=&quot;z&quot;<br>hostname=$(hostname)<br><br>echo &quot;&#x27;&quot;  &gt; $tmpfile.json<br>ss2 -4itn state $state dport = :80 or sport = :80 or dport = :443 or sport = :433 or sport = :8100 or dport = :8100 |<br>awk &#x27;&#123; if(NR &gt; 1 &amp;&amp; $3 !~ /127.0.0.1/ &amp;&amp; $3 !~ /rt[to]/ ) &#123;<br>		line=$0; getline; if($0~/minrtt/) print line&quot;&quot;$0<br>  	&#125;<br>&#125;&#x27; |<br>awk &#x27;&#123;<br><span class="hljs-meta">	split($</span><span class="bash">3,src,<span class="hljs-string">&quot;:&quot;</span>); Saddress=<span class="hljs-variable">$3</span>;</span><br><span class="hljs-meta">	split($</span><span class="bash">4,dst,<span class="hljs-string">":"</span>); Daddress=dst[1];Dport=dst[2];</span><br>	node_type="network-attack";<br>        split($8,a,"[:/]");<br>        split($13,b,"[:/]");<br>        if ($0 ~ /retrans:/){<br>                split($0,c,"retrans:");<br>                gsub("/.*","",c[2]);<br>                Retrans=c[2]<br>        }else{<br>                Retrans=0<br>        };<br>        if ($0 ~ /send/){<br>                split($0,d,"send");<br>                gsub("bps.*","",d[2]);<br>                if(d[2] ~ /K/) {<br>                        gsub("K","",d[2]);<br>                        Send=d[2]/1000<br>                }<br>                else if(d[2] ~ /M/) {<br>                        gsub("M","",d[2]);<br>                        Send=d[2]<br>                }<br>                else {<br>                        Send=d[2]<br>                }<br>        }; <br>        print(Daddress,Saddress,a[2],b[2],Retrans,Send)<br>}&#x27; |<br>awk &#x27;{<br>    a[$2]++;d[$2]=$1;rtt[$2]+=$3;cwnd[$2]+=$4;retrans[$2]+=$5;send[$2]+=$6<br>    }END{<br>        for (i in a){ <br>            z=split(i,q,":")<br>            nums=0<br>            if (retrans[i]/a[i] != 0) {<br>                    nums=int(retrans[i]/a[i]+1)<br>                    }<br>            else{<br>                nums=retrans[i]/a[i]<br>          }<br>            printf("{\<br>\"Daddress\":\"%s\", \<br>\"Saddress\": \"%s\",\<br>\"SPort\": \"%s\",\<br>\"rtt\": %d,\<br>\"cwnd\": %d,\<br>\"Retrans\": %d,\<br>\"send\": %d,\<br>\"total\": %d,\<br>\"line_state\": \"%s\",\<br>\"type\": \"%s\",\<br>\"node_type\": \"%s\",\<br>\"timestamp\": \"%s +0800\",\<br>\"hostname\": \"%s\"\<br>}\n",<br>                    d[i],q[1],q[2],rtt[i]/a[i],cwnd[i]/a[i],nums,send[i]/a[i],a[i],"ESTAB","bbr","network-attack","&#x27;$timestamp&#x27;","&#x27;$hostname&#x27;")}<br>}&#x27; >> $tmpfile.json<br><br>echo "&#x27;" >> $tmpfile.json<br><br>curl -XPOST http://chopper.x.upyun.com:4000/v2/log/repo/cdn-common  -H &#x27;Apikey:1ndT12Jj85UsXQdat2KOMBEiiT28rsIQ&#x27; -H "Content-Type:application/json" -T $tmpfile.json -v -D-<br><br></code></pre></td></tr></table></figure>
+<span class="hljs-built_in">set</span> -ex
+
+<span class="hljs-comment"># more_info=""</span>
+more_info=<span class="hljs-string">"-v"</span>
+os_version=<span class="hljs-string">"cat /etc/redhat-release"</span>
+vip=<span class="hljs-string">"10.0.6.55"</span>
+vport=<span class="hljs-string">"8081"</span>
+
+record=<span class="hljs-string">"/tmp/record.txt"</span>
+
+<span class="hljs-function"><span class="hljs-title">_clean</span></span>() {
+	rm -rf <span class="hljs-variable">${record}</span>
+}
+
+<span class="hljs-function"><span class="hljs-title">_server</span></span>() {
+	<span class="hljs-comment"># nc -v -e /bin/bash -ltkp 8081</span>
+	<span class="hljs-keyword">if</span> [ <span class="hljs-variable">${os_version}</span> == <span class="hljs-string">"CentOS release 6.5 (Final)"</span> ]; <span class="hljs-keyword">then</span>
+		nc <span class="hljs-variable">${more_info}</span> -e /bin/bash -ltk <span class="hljs-variable">${vport}</span>
+	<span class="hljs-keyword">else</span>
+		nc <span class="hljs-variable">${more_info}</span> -e /bin/bash -ltkp <span class="hljs-variable">${vport}</span>
+	<span class="hljs-keyword">fi</span>
+
+}
+
+<span class="hljs-function"><span class="hljs-title">_client</span></span>() {
+	<span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> {1..1000}; <span class="hljs-keyword">do</span>
+		<span class="hljs-built_in">echo</span> <span class="hljs-string">"=================<span class="hljs-variable">${i}</span>==================="</span>
+		<span class="hljs-comment"># nc -v 10.0.6.55 8081</span>
+		<span class="hljs-built_in">echo</span> <span class="hljs-string">"echo 1 >> <span class="hljs-variable">${record}</span>"</span> | nc <span class="hljs-variable">${more_info}</span> <span class="hljs-variable">${vip}</span> <span class="hljs-variable">${vport}</span>
+	<span class="hljs-keyword">done</span>
+	<span class="hljs-built_in">echo</span> <span class="hljs-string">"cat <span class="hljs-variable">${record}</span> | wc -l >> <span class="hljs-variable">${record}</span>"</span> | nc <span class="hljs-variable">${more_info}</span> <span class="hljs-variable">${vip}</span> <span class="hljs-variable">${vport}</span>
+}
+
+<span class="hljs-function"><span class="hljs-title">main</span></span>() {
+
+	<span class="hljs-keyword">case</span> <span class="hljs-variable">$1</span> <span class="hljs-keyword">in</span>
+	server)
+		_server
+		;;
+	client)
+		_client
+		;;
+	clean)
+		_clean
+		;;
+	default)
+		<span class="hljs-built_in">echo</span> <span class="hljs-string">"1"</span>
+		;;
+	*)
+		<span class="hljs-built_in">echo</span> <span class="hljs-string">"1"</span>
+		;;
+	<span class="hljs-keyword">esac</span>
+}
+
+main <span class="hljs-variable">$@</span>
+</code></pre></div>
+
+<h2 id="服务器ss健康状态检测"><a href="#服务器ss健康状态检测" class="headerlink" title="服务器ss健康状态检测"></a>服务器ss健康状态检测</h2><div class="code-wrapper"><pre class=" language-hljs shell"><span class="hljs-meta">#</span><span class="bash"><code class="language-hljs shell"><span class="hljs-meta">#</span><span class="bash">!/bin/sh</span>
+state="established"
+timestamp=`date "+%d/%b/%Y:%X"`
+tmpfile="z"
+hostname=$(hostname)
+
+echo "&#x27;"  > $tmpfile.json
+ss2 -4itn state $state dport = :80 or sport = :80 or dport = :443 or sport = :433 or sport = :8100 or dport = :8100 |
+awk &#x27;{ if(NR > 1 && $3 !~ /127.0.0.1/ && $3 !~ /rt[to]/ ) {
+		line=$0; getline; if($0~/minrtt/) print line""$0
+  	}
+}&#x27; |
+awk &#x27;{
+<span class="hljs-meta">	split($</span><span class="bash">3,src,<span class="hljs-string">":"</span>); Saddress=<span class="hljs-variable">$3</span>;</span>
+<span class="hljs-meta">	split($</span><span class="bash">4,dst,<span class="hljs-string">":"</span>); Daddress=dst[1];Dport=dst[2];</span>
+	node_type="network-attack";
+        split($8,a,"[:/]");
+        split($13,b,"[:/]");
+        if ($0 ~ /retrans:/){
+                split($0,c,"retrans:");
+                gsub("/.*","",c[2]);
+                Retrans=c[2]
+        }else{
+                Retrans=0
+        };
+        if ($0 ~ /send/){
+                split($0,d,"send");
+                gsub("bps.*","",d[2]);
+                if(d[2] ~ /K/) {
+                        gsub("K","",d[2]);
+                        Send=d[2]/1000
+                }
+                else if(d[2] ~ /M/) {
+                        gsub("M","",d[2]);
+                        Send=d[2]
+                }
+                else {
+                        Send=d[2]
+                }
+        }; 
+        print(Daddress,Saddress,a[2],b[2],Retrans,Send)
+}&#x27; |
+awk &#x27;{
+    a[$2]++;d[$2]=$1;rtt[$2]+=$3;cwnd[$2]+=$4;retrans[$2]+=$5;send[$2]+=$6
+    }END{
+        for (i in a){ 
+            z=split(i,q,":")
+            nums=0
+            if (retrans[i]/a[i] != 0) {
+                    nums=int(retrans[i]/a[i]+1)
+                    }
+            else{
+                nums=retrans[i]/a[i]
+          }
+            printf("{\
+\"Daddress\":\"%s\", \
+\"Saddress\": \"%s\",\
+\"SPort\": \"%s\",\
+\"rtt\": %d,\
+\"cwnd\": %d,\
+\"Retrans\": %d,\
+\"send\": %d,\
+\"total\": %d,\
+\"line_state\": \"%s\",\
+\"type\": \"%s\",\
+\"node_type\": \"%s\",\
+\"timestamp\": \"%s +0800\",\
+\"hostname\": \"%s\"\
+}\n",
+                    d[i],q[1],q[2],rtt[i]/a[i],cwnd[i]/a[i],nums,send[i]/a[i],a[i],"ESTAB","bbr","network-attack","&#x27;$timestamp&#x27;","&#x27;$hostname&#x27;")}
+}&#x27; >> $tmpfile.json
+
+echo "&#x27;" >> $tmpfile.json
+
+curl -XPOST http://chopper.x.upyun.com:4000/v2/log/repo/cdn-common  -H &#x27;Apikey:1ndT12Jj85UsXQdat2KOMBEiiT28rsIQ&#x27; -H "Content-Type:application/json" -T $tmpfile.json -v -D-
+</code></pre></div>
 <p>ss 各个字段检测<br><a target="_blank" rel="noopener" href="https://kkc.github.io/2017/12/18/Network-Performance-Tuning/">https://kkc.github.io/2017/12/18/Network-Performance-Tuning/</a></p>
 <h2 id="查询inventoy"><a href="#查询inventoy" class="headerlink" title="查询inventoy"></a>查询inventoy</h2><p>查询inventoy 下面不是CWS的机器  </p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre class=" language-hljs shell"><span class="hljs-meta">#</span><span class="bash"><code class="language-hljs shell"><span class="hljs-meta">#</span><span class="bash">!/usr/bin/bash</span><br>grep "LNA" mingtao/inventory/machines/lists-* | awk -v FS=&#x27;[:= ]&#x27;  &#x27;{ if ($2 ~/CWS/) {print "1"} else { print $2 ,$4 }}&#x27;    > ./hezejun/xx<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre class=" language-hljs shell"><span class="hljs-meta">#</span><span class="bash"><code class="language-hljs shell"><span class="hljs-meta">#</span><span class="bash">!/usr/bin/bash</span>
+grep "LNA" mingtao/inventory/machines/lists-* | awk -v FS=&#x27;[:= ]&#x27;  &#x27;{ if ($2 ~/CWS/) {print "1"} else { print $2 ,$4 }}&#x27;    > ./hezejun/xx</code></pre></div>
 
 
 <h2 id="处理Inventory上的内容"><a href="#处理Inventory上的内容" class="headerlink" title="处理Inventory上的内容"></a>处理Inventory上的内容</h2><p>处理表格生成json格式的数据</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre class=" language-hljs bash"><span class="hljs-meta">#!/usr/bin/env bash</span><br><br><br><span class="hljs-comment"># 根据inventory上的文件生成json</span><br><span class="hljs-comment"># 格式如下</span><br><span class="hljs-comment"># CTN-ZJ-LNA-S02 ansible_ssh_host=183.134.101.131 uplink=T1/1/1</span><br><span class="hljs-comment"># ZEN-CN-HKG-S01 ansible_ssh_host=129.227.137.225 uplink=T1/0/21 T1/0/22</span><br><span class="hljs-comment"># CMN-SC-CTU4-S01 ansible_ssh_host=117.172.22.129 uplink=T1/0/47 T1/0/48</span><br><span class="hljs-comment"># CUN-FJ-XMN-S01 ansible_ssh_host=36.248.208.226 uplink=T2/0/49</span><br><span class="hljs-comment"># CUN-SD-DEZ-S01 ansible_ssh_host=61.179.240.158 uplink=T1/0/49</span><br><span class="hljs-comment"># CTN-SN-XIY-S01 ansible_ssh_host=1.81.5.161 uplink=B100</span><br><br><span class="hljs-comment"># target_file=&quot;/Users/alpaca/PycharmProjects/Npc/switch/lists-switch-edge&quot;</span><br>target_file=<span class="hljs-string">&quot;/Users/alpaca/PycharmProjects/Npc/switch/lists-switch&quot;</span><br><br>cat <span class="hljs-variable">$target_file</span> | grep <span class="hljs-string">&quot;ansible_ssh_host&quot;</span>  | awk  <span class="hljs-string">&#x27;BEGIN&#123;</span><br><span class="hljs-string">    printf(&quot;\&#123;\n \&quot;instances\&quot;: \[\n&quot;);</span><br><span class="hljs-string">&#125;&#123;</span><br><span class="hljs-string">       split($2,host,&quot;=&quot;);hostIp=host[2];</span><br><span class="hljs-string">       split($3,uplinkArray,&quot;=&quot;);uplink=uplinkArray[2];</span><br><span class="hljs-string"></span><br><span class="hljs-string">        # 这里getline用来识别是否跳转到了最后一行 1表示还有 0表示没有下一行，也就是最后一行了</span><br><span class="hljs-string">       if ( getline == 1)&#123;</span><br><span class="hljs-string">           printf(&quot;&#123;\&quot;name\&quot;:\&quot;%s\&quot;,\&quot;host\&quot;:\&quot;%s\&quot;,\&quot;uplink\&quot;:\&quot;%s\&quot;&#125;,\n&quot;,$1,hostIp,uplink);</span><br><span class="hljs-string">        &#125;else&#123;</span><br><span class="hljs-string">            printf(&quot;&#123;\&quot;name\&quot;:\&quot;%s\&quot;,\&quot;host\&quot;:\&quot;%s\&quot;,\&quot;uplink\&quot;:\&quot;%s\&quot;&#125;\n&quot;,$1,hostIp,uplink);</span><br><span class="hljs-string">        &#125;</span><br><span class="hljs-string">        </span><br><span class="hljs-string"></span><br><span class="hljs-string">    &#125;END&#123;</span><br><span class="hljs-string">        print(&quot;\]\&#125;&quot;)</span><br><span class="hljs-string">    &#125;&#x27;</span><br><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-meta">#!/usr/bin/env bash</span><br><br><br><span class="hljs-comment"># 根据inventory上的文件生成json</span><br><span class="hljs-comment"># 格式如下</span><br><span class="hljs-comment"># CTN-ZJ-LNA-S02 ansible_ssh_host=183.134.101.131 uplink=T1/1/1</span><br><span class="hljs-comment"># ZEN-CN-HKG-S01 ansible_ssh_host=129.227.137.225 uplink=T1/0/21 T1/0/22</span><br><span class="hljs-comment"># CMN-SC-CTU4-S01 ansible_ssh_host=117.172.22.129 uplink=T1/0/47 T1/0/48</span><br><span class="hljs-comment"># CUN-FJ-XMN-S01 ansible_ssh_host=36.248.208.226 uplink=T2/0/49</span><br><span class="hljs-comment"># CUN-SD-DEZ-S01 ansible_ssh_host=61.179.240.158 uplink=T1/0/49</span><br><span class="hljs-comment"># CTN-SN-XIY-S01 ansible_ssh_host=1.81.5.161 uplink=B100</span><br><br><span class="hljs-comment"># target_file=&quot;/Users/alpaca/PycharmProjects/Npc/switch/lists-switch-edge&quot;</span><br>target_file=<span class="hljs-string">&quot;/Users/alpaca/PycharmProjects/Npc/switch/lists-switch&quot;</span><br><br>cat <span class="hljs-variable">$target_file</span> | grep <span class="hljs-string">&quot;ansible_ssh_host&quot;</span>  | awk  <span class="hljs-string">&#x27;BEGIN&#123;</span><br><span class="hljs-string">    printf(&quot;\&#123;\n \&quot;instances\&quot;: \[\n&quot;);</span><br><span class="hljs-string">&#125;&#123;</span><br><span class="hljs-string">       split($2,host,&quot;=&quot;);hostIp=host[2];</span><br><span class="hljs-string">       split($3,uplinkArray,&quot;=&quot;);uplink=uplinkArray[2];</span><br><span class="hljs-string"></span><br><span class="hljs-string">        # 这里getline用来识别是否跳转到了最后一行 1表示还有 0表示没有下一行，也就是最后一行了</span><br><span class="hljs-string">       if ( getline == 1)&#123;</span><br><span class="hljs-string">           printf(&quot;&#123;\&quot;name\&quot;:\&quot;%s\&quot;,\&quot;host\&quot;:\&quot;%s\&quot;,\&quot;uplink\&quot;:\&quot;%s\&quot;&#125;,\n&quot;,$1,hostIp,uplink);</span><br><span class="hljs-string">        &#125;else&#123;</span><br><span class="hljs-string">            printf(&quot;&#123;\&quot;name\&quot;:\&quot;%s\&quot;,\&quot;host\&quot;:\&quot;%s\&quot;,\&quot;uplink\&quot;:\&quot;%s\&quot;&#125;\n&quot;,$1,hostIp,uplink);</span><br><span class="hljs-string">        &#125;</span><br><span class="hljs-string">        </span><br><span class="hljs-string"></span><br><span class="hljs-string">    &#125;END&#123;</span><br><span class="hljs-string">        print(&quot;\]\&#125;&quot;)</span><br><span class="hljs-string">    &#125;&#x27;</span><br><span class="hljs-comment"># cat $target_file</span><br><br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-meta"><code class="language-hljs bash"><span class="hljs-meta">#!/usr/bin/env bash</span>
 
 
-<h2 id="搭建使用supervisor管理的redis单机实例"><a href="#搭建使用supervisor管理的redis单机实例" class="headerlink" title="搭建使用supervisor管理的redis单机实例"></a>搭建使用supervisor管理的redis单机实例</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br></pre></td><td class="code"><pre class=" language-hljs bash"><br><span class="hljs-meta">#!/bin/bash</span><br><br><span class="hljs-function"><span class="hljs-title">_init</span></span>() &#123;<br>    os=$(uname -s)<br>    <span class="hljs-keyword">if</span> [ <span class="hljs-variable">$os</span>==<span class="hljs-string">&quot;Darwin&quot;</span> ]; <span class="hljs-keyword">then</span><br>        <span class="hljs-built_in">export</span> frontcolor=<span class="hljs-string">&quot;\033[34m&quot;</span><br>        <span class="hljs-built_in">export</span> backcolor=<span class="hljs-string">&quot;\033[33m&quot;</span><br>    <span class="hljs-keyword">elif</span> [ <span class="hljs-variable">$os</span>== <span class="hljs-string">&quot;Linux&quot;</span> ]; <span class="hljs-keyword">then</span><br>        <span class="hljs-built_in">export</span> frontcolor=<span class="hljs-string">&quot;\e[34m&quot;</span><br>        <span class="hljs-built_in">export</span> backcolor=<span class="hljs-string">&quot;\e[33m&quot;</span><br>    <span class="hljs-keyword">fi</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-title">_usage</span></span>() &#123;<br>    <span class="hljs-built_in">echo</span> -e <span class="hljs-string">&quot;</span><br><span class="hljs-string"><span class="hljs-variable">$&#123;frontcolor&#125;</span></span><br><span class="hljs-string">**************************************</span><br><span class="hljs-string">*       thank you use                *</span><br><span class="hljs-string">*       Author: hzjsea               *</span><br><span class="hljs-string">*       Date: you guess              *</span><br><span class="hljs-string">**************************************</span><br><span class="hljs-string"></span><br><span class="hljs-string">Use: xxxx</span><br><span class="hljs-string">shortDesc: 构建单机redis</span><br><span class="hljs-string">LongDesc: 构建单机redis</span><br><span class="hljs-string"></span><br><span class="hljs-string">Command</span><br><span class="hljs-string">    -n   add agrs</span><br><span class="hljs-string">    -d   add args</span><br><span class="hljs-string">    -z   add args</span><br><span class="hljs-string">    -s   true or false</span><br><span class="hljs-string">    -q   true or flase</span><br><span class="hljs-string"></span><br><span class="hljs-string">Global Command</span><br><span class="hljs-string">    -v</span><br><span class="hljs-string">Example:</span><br><span class="hljs-string">    ./xx.sh -n helloworld</span><br><span class="hljs-string"><span class="hljs-variable">$&#123;backcolor&#125;</span></span><br><span class="hljs-string">&quot;</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-title">_leave</span></span>() &#123;<br>    cat &lt;&lt;<span class="hljs-string">EOF</span><br><span class="hljs-string">+-------------------------------------------------+</span><br><span class="hljs-string">|  Thank you for usesing!                         |</span><br><span class="hljs-string">+-------------------------------------------------+</span><br><span class="hljs-string">EOF</span><br>&#125;<br><br><span class="hljs-comment"># 准备环境</span><br><span class="hljs-function"><span class="hljs-title">_install</span></span>() &#123;<br>    mkdir -p /root/package &amp;&amp; mkdir -p /usr/<span class="hljs-built_in">local</span>/redis<br>    mkdir -p /var/<span class="hljs-built_in">log</span>/redislog<br>    yum install wget epel-release -y<br>    yum install gcc bc bash-completion automake autoconf libtool make git -y<br>    wget http://download.redis.io/releases/redis-5.0.8.tar.gz -O /root/package/redis.tar.gz<br>    tar zxvf /root/package/redis.tar.gz -C /usr/<span class="hljs-built_in">local</span>/redis --strip-components 1<br>    <span class="hljs-built_in">cd</span> /usr/<span class="hljs-built_in">local</span>/redis/ &amp;&amp; make distclean &amp;&amp; make &amp;&amp; make install<br><br>    ln -fs /usr/<span class="hljs-built_in">local</span>/redis/src/redis-server /usr/<span class="hljs-built_in">local</span>/bin/redis-server<br>    ln -fs /usr/<span class="hljs-built_in">local</span>/redis/src/redis-cli /usr/<span class="hljs-built_in">local</span>/bin/redis-cli<br>    ln -fs /usr/<span class="hljs-built_in">local</span>/redis/src/redis-sentinel /usr/<span class="hljs-built_in">local</span>/bin/redis-sentinel<br>&#125;<br><br><span class="hljs-comment"># 准备supervisor</span><br><span class="hljs-function"><span class="hljs-title">_supervisor</span></span>() &#123;<br>    [ -d chenyuecc ] &amp;&amp; (rm -r chenyuecc)<br>    git <span class="hljs-built_in">clone</span> -b supervisor https://gitee.com/Alpaca-H/chenyuecc.git &amp;&amp; <span class="hljs-built_in">cd</span> /root/chenyuecc/ &amp;&amp; sh ./run.sh 2&gt;/dev/null<br>&#125;<br><br><span class="hljs-comment"># 准备redis</span><br><span class="hljs-function"><span class="hljs-title">_redis</span></span>() &#123;<br>    [ ! -d /usr/<span class="hljs-built_in">local</span>/redis/ ] &amp;&amp; (<br>        <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;please install redis&quot;</span><br>        <span class="hljs-built_in">exit</span> 0<br>    )<br>    [ -d chenyuecc ] &amp;&amp; (rm -r chenyuecc)<br>    git <span class="hljs-built_in">clone</span> -b redis https://gitee.com/Alpaca-H/chenyuecc.git &amp;&amp; cp /root/chenyuecc/redisCC/* /usr/<span class="hljs-built_in">local</span>/redis/<br>&#125;<br><br><span class="hljs-comment"># 准备单机redis</span><br><span class="hljs-function"><span class="hljs-title">_redis_single</span></span>() &#123;<br>    cat &gt;/etc/supervisor.d/redisgo.conf &lt;&lt;<span class="hljs-string">EOF</span><br><span class="hljs-string">[program:redis]</span><br><span class="hljs-string">command=/usr/local/redis/src/redis-server  /usr/local/redis/redis.conf</span><br><span class="hljs-string">autostart=true</span><br><span class="hljs-string">process_name=redis</span><br><span class="hljs-string">autostart=true</span><br><span class="hljs-string">autorestart=true</span><br><span class="hljs-string">startretries=10</span><br><span class="hljs-string">EOF</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-title">_check</span></span>() &#123;<br>    <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;检查选项&quot;</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-title">_stop</span></span>() &#123;<br>    <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;终止&quot;</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-title">_status</span></span>() &#123;<br>    <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;获取状态&quot;</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-title">_down</span></span>() &#123;<br>    <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;关闭&quot;</span><br>&#125;<br><br><br><br><span class="hljs-function"><span class="hljs-title">main</span></span>() &#123;<br><br>    [ ! -z <span class="hljs-variable">$frontcolor</span> ] || _init<br>    [ -d <span class="hljs-string">&quot;/root/package&quot;</span> ] || _install<br>    action=<span class="hljs-variable">$&#123;1:-&quot;default&quot;&#125;</span><br><br>    <span class="hljs-keyword">case</span> <span class="hljs-variable">$&#123;action&#125;</span> <span class="hljs-keyword">in</span><br>    redis | supervisor )<br>        _<span class="hljs-variable">$&#123;action&#125;</span><br>        ;;<br>    redisgo)<br>        _redis<br>        _supervisor<br>        ;;<br>    default)<br>        _usage<br>        _leave<br>        ;;<br>    *)<br>        _usage<br>        _leave<br>        ;;<br>    <span class="hljs-keyword">esac</span><br><br>&#125;<br><br>main <span class="hljs-variable"><code class="language-hljs bash"><br><span class="hljs-meta">#!/bin/bash</span><br><br><span class="hljs-function"><span class="hljs-title">_init</span></span>() &#123;<br>    os=$(uname -s)<br>    <span class="hljs-keyword">if</span> [ <span class="hljs-variable">$os</span>==<span class="hljs-string">&quot;Darwin&quot;</span> ]; <span class="hljs-keyword">then</span><br>        <span class="hljs-built_in">export</span> frontcolor=<span class="hljs-string">&quot;\033[34m&quot;</span><br>        <span class="hljs-built_in">export</span> backcolor=<span class="hljs-string">&quot;\033[33m&quot;</span><br>    <span class="hljs-keyword">elif</span> [ <span class="hljs-variable">$os</span>== <span class="hljs-string">&quot;Linux&quot;</span> ]; <span class="hljs-keyword">then</span><br>        <span class="hljs-built_in">export</span> frontcolor=<span class="hljs-string">&quot;\e[34m&quot;</span><br>        <span class="hljs-built_in">export</span> backcolor=<span class="hljs-string">&quot;\e[33m&quot;</span><br>    <span class="hljs-keyword">fi</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-title">_usage</span></span>() &#123;<br>    <span class="hljs-built_in">echo</span> -e <span class="hljs-string">&quot;</span><br><span class="hljs-string"><span class="hljs-variable">$&#123;frontcolor&#125;</span></span><br><span class="hljs-string">**************************************</span><br><span class="hljs-string">*       thank you use                *</span><br><span class="hljs-string">*       Author: hzjsea               *</span><br><span class="hljs-string">*       Date: you guess              *</span><br><span class="hljs-string">**************************************</span><br><span class="hljs-string"></span><br><span class="hljs-string">Use: xxxx</span><br><span class="hljs-string">shortDesc: 构建单机redis</span><br><span class="hljs-string">LongDesc: 构建单机redis</span><br><span class="hljs-string"></span><br><span class="hljs-string">Command</span><br><span class="hljs-string">    -n   add agrs</span><br><span class="hljs-string">    -d   add args</span><br><span class="hljs-string">    -z   add args</span><br><span class="hljs-string">    -s   true or false</span><br><span class="hljs-string">    -q   true or flase</span><br><span class="hljs-string"></span><br><span class="hljs-string">Global Command</span><br><span class="hljs-string">    -v</span><br><span class="hljs-string">Example:</span><br><span class="hljs-string">    ./xx.sh -n helloworld</span><br><span class="hljs-string"><span class="hljs-variable">$&#123;backcolor&#125;</span></span><br><span class="hljs-string">&quot;</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-title">_leave</span></span>() &#123;<br>    cat &lt;&lt;<span class="hljs-string">EOF</span><br><span class="hljs-string">+-------------------------------------------------+</span><br><span class="hljs-string">|  Thank you for usesing!                         |</span><br><span class="hljs-string">+-------------------------------------------------+</span><br><span class="hljs-string">EOF</span><br>&#125;<br><br><span class="hljs-comment"># 准备环境</span><br><span class="hljs-function"><span class="hljs-title">_install</span></span>() &#123;<br>    mkdir -p /root/package &amp;&amp; mkdir -p /usr/<span class="hljs-built_in">local</span>/redis<br>    mkdir -p /var/<span class="hljs-built_in">log</span>/redislog<br>    yum install wget epel-release -y<br>    yum install gcc bc bash-completion automake autoconf libtool make git -y<br>    wget http://download.redis.io/releases/redis-5.0.8.tar.gz -O /root/package/redis.tar.gz<br>    tar zxvf /root/package/redis.tar.gz -C /usr/<span class="hljs-built_in">local</span>/redis --strip-components 1<br>    <span class="hljs-built_in">cd</span> /usr/<span class="hljs-built_in">local</span>/redis/ &amp;&amp; make distclean &amp;&amp; make &amp;&amp; make install<br><br>    ln -fs /usr/<span class="hljs-built_in">local</span>/redis/src/redis-server /usr/<span class="hljs-built_in">local</span>/bin/redis-server<br>    ln -fs /usr/<span class="hljs-built_in">local</span>/redis/src/redis-cli /usr/<span class="hljs-built_in">local</span>/bin/redis-cli<br>    ln -fs /usr/<span class="hljs-built_in">local</span>/redis/src/redis-sentinel /usr/<span class="hljs-built_in">local</span>/bin/redis-sentinel<br>&#125;<br><br><span class="hljs-comment"># 准备supervisor</span><br><span class="hljs-function"><span class="hljs-title">_supervisor</span></span>() &#123;<br>    [ -d chenyuecc ] &amp;&amp; (rm -r chenyuecc)<br>    git <span class="hljs-built_in">clone</span> -b supervisor https://gitee.com/Alpaca-H/chenyuecc.git &amp;&amp; <span class="hljs-built_in">cd</span> /root/chenyuecc/ &amp;&amp; sh ./run.sh 2&gt;/dev/null<br>&#125;<br><br><span class="hljs-comment"># 准备redis</span><br><span class="hljs-function"><span class="hljs-title">_redis</span></span>() &#123;<br>    [ ! -d /usr/<span class="hljs-built_in">local</span>/redis/ ] &amp;&amp; (<br>        <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;please install redis&quot;</span><br>        <span class="hljs-built_in">exit</span> 0<br>    )<br>    [ -d chenyuecc ] &amp;&amp; (rm -r chenyuecc)<br>    git <span class="hljs-built_in">clone</span> -b redis https://gitee.com/Alpaca-H/chenyuecc.git &amp;&amp; cp /root/chenyuecc/redisCC/* /usr/<span class="hljs-built_in">local</span>/redis/<br>&#125;<br><br><span class="hljs-comment"># 准备单机redis</span><br><span class="hljs-function"><span class="hljs-title">_redis_single</span></span>() &#123;<br>    cat &gt;/etc/supervisor.d/redisgo.conf &lt;&lt;<span class="hljs-string">EOF</span><br><span class="hljs-string">[program:redis]</span><br><span class="hljs-string">command=/usr/local/redis/src/redis-server  /usr/local/redis/redis.conf</span><br><span class="hljs-string">autostart=true</span><br><span class="hljs-string">process_name=redis</span><br><span class="hljs-string">autostart=true</span><br><span class="hljs-string">autorestart=true</span><br><span class="hljs-string">startretries=10</span><br><span class="hljs-string">EOF</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-title">_check</span></span>() &#123;<br>    <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;检查选项&quot;</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-title">_stop</span></span>() &#123;<br>    <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;终止&quot;</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-title">_status</span></span>() &#123;<br>    <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;获取状态&quot;</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-title">_down</span></span>() &#123;<br>    <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;关闭&quot;</span><br>&#125;<br><br><br><br><span class="hljs-function"><span class="hljs-title">main</span></span>() &#123;<br><br>    [ ! -z <span class="hljs-variable">$frontcolor</span> ] || _init<br>    [ -d <span class="hljs-string">&quot;/root/package&quot;</span> ] || _install<br>    action=<span class="hljs-variable">$&#123;1:-&quot;default&quot;&#125;</span><br><br>    <span class="hljs-keyword">case</span> <span class="hljs-variable">$&#123;action&#125;</span> <span class="hljs-keyword">in</span><br>    redis | supervisor )<br>        _<span class="hljs-variable">$&#123;action&#125;</span><br>        ;;<br>    redisgo)<br>        _redis<br>        _supervisor<br>        ;;<br>    default)<br>        _usage<br>        _leave<br>        ;;<br>    *)<br>        _usage<br>        _leave<br>        ;;<br>    <span class="hljs-keyword">esac</span><br><br>&#125;<br><br>main <span class="hljs-variable">$@</span><br><br></code></pre></td></tr></table></figure>
+<span class="hljs-comment"># 根据inventory上的文件生成json</span>
+<span class="hljs-comment"># 格式如下</span>
+<span class="hljs-comment"># CTN-ZJ-LNA-S02 ansible_ssh_host=183.134.101.131 uplink=T1/1/1</span>
+<span class="hljs-comment"># ZEN-CN-HKG-S01 ansible_ssh_host=129.227.137.225 uplink=T1/0/21 T1/0/22</span>
+<span class="hljs-comment"># CMN-SC-CTU4-S01 ansible_ssh_host=117.172.22.129 uplink=T1/0/47 T1/0/48</span>
+<span class="hljs-comment"># CUN-FJ-XMN-S01 ansible_ssh_host=36.248.208.226 uplink=T2/0/49</span>
+<span class="hljs-comment"># CUN-SD-DEZ-S01 ansible_ssh_host=61.179.240.158 uplink=T1/0/49</span>
+<span class="hljs-comment"># CTN-SN-XIY-S01 ansible_ssh_host=1.81.5.161 uplink=B100</span>
 
-<h2 id="交换机生成聚合口脚本"><a href="#交换机生成聚合口脚本" class="headerlink" title="交换机生成聚合口脚本"></a>交换机生成聚合口脚本</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre class=" language-hljs bash"><span class="hljs-meta">#!/bin/bash</span><br><br><span class="hljs-comment"># member id</span><br>portType=<span class="hljs-string">&quot;1&quot;</span><br><br><span class="hljs-comment"># speed</span><br>portName=<span class="hljs-string">&quot;Ten&quot;</span><br><span class="hljs-comment"># portName=&quot;G&quot;</span><br><br><br><span class="hljs-comment"># bridgeNumber</span><br><br>start_port=1<br>end_port=24<br><br><br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> $(seq <span class="hljs-variable">$start_port</span> <span class="hljs-variable">$end_port</span>);<span class="hljs-keyword">do</span><br>    <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;interface bridge-aggregation <span class="hljs-variable">$&#123;i&#125;</span>&quot;</span><br>    <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;interface <span class="hljs-variable">$&#123;portName&#125;</span><span class="hljs-variable">$&#123;portType&#125;</span>/0/<span class="hljs-subst">$(($i*2-1)</span>)&quot;</span><br>    <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;port link-aggregation group <span class="hljs-variable">$&#123;i&#125;</span>&quot;</span><br>    <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;interface <span class="hljs-variable">$&#123;portName&#125;</span><span class="hljs-variable">$&#123;portType&#125;</span>/0/<span class="hljs-subst">$(($i*2)</span>)&quot;</span><br>    <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;port link-aggregation group <span class="hljs-variable">$&#123;i&#125;</span>&quot;</span><br><span class="hljs-keyword"><code class="language-hljs bash"><span class="hljs-meta">#!/bin/bash</span><br><br><span class="hljs-comment"># member id</span><br>portType=<span class="hljs-string">&quot;1&quot;</span><br><br><span class="hljs-comment"># speed</span><br>portName=<span class="hljs-string">&quot;Ten&quot;</span><br><span class="hljs-comment"># portName=&quot;G&quot;</span><br><br><br><span class="hljs-comment"># bridgeNumber</span><br><br>start_port=1<br>end_port=24<br><br><br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> $(seq <span class="hljs-variable">$start_port</span> <span class="hljs-variable">$end_port</span>);<span class="hljs-keyword">do</span><br>    <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;interface bridge-aggregation <span class="hljs-variable">$&#123;i&#125;</span>&quot;</span><br>    <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;interface <span class="hljs-variable">$&#123;portName&#125;</span><span class="hljs-variable">$&#123;portType&#125;</span>/0/<span class="hljs-subst">$(($i*2-1)</span>)&quot;</span><br>    <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;port link-aggregation group <span class="hljs-variable">$&#123;i&#125;</span>&quot;</span><br>    <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;interface <span class="hljs-variable">$&#123;portName&#125;</span><span class="hljs-variable">$&#123;portType&#125;</span>/0/<span class="hljs-subst">$(($i*2)</span>)&quot;</span><br>    <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;port link-aggregation group <span class="hljs-variable">$&#123;i&#125;</span>&quot;</span><br><span class="hljs-keyword">done</span><br></code></pre></td></tr></table></figure>
+<span class="hljs-comment"># target_file="/Users/alpaca/PycharmProjects/Npc/switch/lists-switch-edge"</span>
+target_file=<span class="hljs-string">"/Users/alpaca/PycharmProjects/Npc/switch/lists-switch"</span>
+
+cat <span class="hljs-variable">$target_file</span> | grep <span class="hljs-string">"ansible_ssh_host"</span>  | awk  <span class="hljs-string">&#x27;BEGIN{</span>
+<span class="hljs-string">    printf("\{\n \"instances\": \[\n");</span>
+<span class="hljs-string">}{</span>
+<span class="hljs-string">       split($2,host,"=");hostIp=host[2];</span>
+<span class="hljs-string">       split($3,uplinkArray,"=");uplink=uplinkArray[2];</span>
+<span class="hljs-string"></span>
+<span class="hljs-string">        # 这里getline用来识别是否跳转到了最后一行 1表示还有 0表示没有下一行，也就是最后一行了</span>
+<span class="hljs-string">       if ( getline == 1){</span>
+<span class="hljs-string">           printf("{\"name\":\"%s\",\"host\":\"%s\",\"uplink\":\"%s\"},\n",$1,hostIp,uplink);</span>
+<span class="hljs-string">        }else{</span>
+<span class="hljs-string">            printf("{\"name\":\"%s\",\"host\":\"%s\",\"uplink\":\"%s\"}\n",$1,hostIp,uplink);</span>
+<span class="hljs-string">        }</span>
+<span class="hljs-string">        </span>
+<span class="hljs-string"></span>
+<span class="hljs-string">    }END{</span>
+<span class="hljs-string">        print("\]\}")</span>
+<span class="hljs-string">    }&#x27;</span>
+<span class="hljs-comment"># cat $target_file</span>
+</code></pre></div>
+
+
+<h2 id="搭建使用supervisor管理的redis单机实例"><a href="#搭建使用supervisor管理的redis单机实例" class="headerlink" title="搭建使用supervisor管理的redis单机实例"></a>搭建使用supervisor管理的redis单机实例</h2><div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">
+<span class="hljs-meta">#!/bin/bash</span>
+
+<span class="hljs-function"><span class="hljs-title">_init</span></span>() {
+    os=$(uname -s)
+    <span class="hljs-keyword">if</span> [ <span class="hljs-variable">$os</span>==<span class="hljs-string">"Darwin"</span> ]; <span class="hljs-keyword">then</span>
+        <span class="hljs-built_in">export</span> frontcolor=<span class="hljs-string">"\033[34m"</span>
+        <span class="hljs-built_in">export</span> backcolor=<span class="hljs-string">"\033[33m"</span>
+    <span class="hljs-keyword">elif</span> [ <span class="hljs-variable">$os</span>== <span class="hljs-string">"Linux"</span> ]; <span class="hljs-keyword">then</span>
+        <span class="hljs-built_in">export</span> frontcolor=<span class="hljs-string">"\e[34m"</span>
+        <span class="hljs-built_in">export</span> backcolor=<span class="hljs-string">"\e[33m"</span>
+    <span class="hljs-keyword">fi</span>
+}
+
+<span class="hljs-function"><span class="hljs-title">_usage</span></span>() {
+    <span class="hljs-built_in">echo</span> -e <span class="hljs-string">"</span>
+<span class="hljs-string"><span class="hljs-variable">${frontcolor}</span></span>
+<span class="hljs-string">**************************************</span>
+<span class="hljs-string">*       thank you use                *</span>
+<span class="hljs-string">*       Author: hzjsea               *</span>
+<span class="hljs-string">*       Date: you guess              *</span>
+<span class="hljs-string">**************************************</span>
+<span class="hljs-string"></span>
+<span class="hljs-string">Use: xxxx</span>
+<span class="hljs-string">shortDesc: 构建单机redis</span>
+<span class="hljs-string">LongDesc: 构建单机redis</span>
+<span class="hljs-string"></span>
+<span class="hljs-string">Command</span>
+<span class="hljs-string">    -n   add agrs</span>
+<span class="hljs-string">    -d   add args</span>
+<span class="hljs-string">    -z   add args</span>
+<span class="hljs-string">    -s   true or false</span>
+<span class="hljs-string">    -q   true or flase</span>
+<span class="hljs-string"></span>
+<span class="hljs-string">Global Command</span>
+<span class="hljs-string">    -v</span>
+<span class="hljs-string">Example:</span>
+<span class="hljs-string">    ./xx.sh -n helloworld</span>
+<span class="hljs-string"><span class="hljs-variable">${backcolor}</span></span>
+<span class="hljs-string">"</span>
+}
+
+<span class="hljs-function"><span class="hljs-title">_leave</span></span>() {
+    cat <<<span class="hljs-string">EOF</span>
+<span class="hljs-string">+-------------------------------------------------+</span>
+<span class="hljs-string">|  Thank you for usesing!                         |</span>
+<span class="hljs-string">+-------------------------------------------------+</span>
+<span class="hljs-string">EOF</span>
+}
+
+<span class="hljs-comment"># 准备环境</span>
+<span class="hljs-function"><span class="hljs-title">_install</span></span>() {
+    mkdir -p /root/package && mkdir -p /usr/<span class="hljs-built_in">local</span>/redis
+    mkdir -p /var/<span class="hljs-built_in">log</span>/redislog
+    yum install wget epel-release -y
+    yum install gcc bc bash-completion automake autoconf libtool make git -y
+    wget http://download.redis.io/releases/redis-5.0.8.tar.gz -O /root/package/redis.tar.gz
+    tar zxvf /root/package/redis.tar.gz -C /usr/<span class="hljs-built_in">local</span>/redis --strip-components 1
+    <span class="hljs-built_in">cd</span> /usr/<span class="hljs-built_in">local</span>/redis/ && make distclean && make && make install
+
+    ln -fs /usr/<span class="hljs-built_in">local</span>/redis/src/redis-server /usr/<span class="hljs-built_in">local</span>/bin/redis-server
+    ln -fs /usr/<span class="hljs-built_in">local</span>/redis/src/redis-cli /usr/<span class="hljs-built_in">local</span>/bin/redis-cli
+    ln -fs /usr/<span class="hljs-built_in">local</span>/redis/src/redis-sentinel /usr/<span class="hljs-built_in">local</span>/bin/redis-sentinel
+}
+
+<span class="hljs-comment"># 准备supervisor</span>
+<span class="hljs-function"><span class="hljs-title">_supervisor</span></span>() {
+    [ -d chenyuecc ] && (rm -r chenyuecc)
+    git <span class="hljs-built_in">clone</span> -b supervisor https://gitee.com/Alpaca-H/chenyuecc.git && <span class="hljs-built_in">cd</span> /root/chenyuecc/ && sh ./run.sh 2>/dev/null
+}
+
+<span class="hljs-comment"># 准备redis</span>
+<span class="hljs-function"><span class="hljs-title">_redis</span></span>() {
+    [ ! -d /usr/<span class="hljs-built_in">local</span>/redis/ ] && (
+        <span class="hljs-built_in">echo</span> <span class="hljs-string">"please install redis"</span>
+        <span class="hljs-built_in">exit</span> 0
+    )
+    [ -d chenyuecc ] && (rm -r chenyuecc)
+    git <span class="hljs-built_in">clone</span> -b redis https://gitee.com/Alpaca-H/chenyuecc.git && cp /root/chenyuecc/redisCC/* /usr/<span class="hljs-built_in">local</span>/redis/
+}
+
+<span class="hljs-comment"># 准备单机redis</span>
+<span class="hljs-function"><span class="hljs-title">_redis_single</span></span>() {
+    cat >/etc/supervisor.d/redisgo.conf <<<span class="hljs-string">EOF</span>
+<span class="hljs-string">[program:redis]</span>
+<span class="hljs-string">command=/usr/local/redis/src/redis-server  /usr/local/redis/redis.conf</span>
+<span class="hljs-string">autostart=true</span>
+<span class="hljs-string">process_name=redis</span>
+<span class="hljs-string">autostart=true</span>
+<span class="hljs-string">autorestart=true</span>
+<span class="hljs-string">startretries=10</span>
+<span class="hljs-string">EOF</span>
+}
+
+<span class="hljs-function"><span class="hljs-title">_check</span></span>() {
+    <span class="hljs-built_in">echo</span> <span class="hljs-string">"检查选项"</span>
+}
+
+<span class="hljs-function"><span class="hljs-title">_stop</span></span>() {
+    <span class="hljs-built_in">echo</span> <span class="hljs-string">"终止"</span>
+}
+
+<span class="hljs-function"><span class="hljs-title">_status</span></span>() {
+    <span class="hljs-built_in">echo</span> <span class="hljs-string">"获取状态"</span>
+}
+
+<span class="hljs-function"><span class="hljs-title">_down</span></span>() {
+    <span class="hljs-built_in">echo</span> <span class="hljs-string">"关闭"</span>
+}
+
+
+
+<span class="hljs-function"><span class="hljs-title">main</span></span>() {
+
+    [ ! -z <span class="hljs-variable">$frontcolor</span> ] || _init
+    [ -d <span class="hljs-string">"/root/package"</span> ] || _install
+    action=<span class="hljs-variable">${1:-"default"}</span>
+
+    <span class="hljs-keyword">case</span> <span class="hljs-variable">${action}</span> <span class="hljs-keyword">in</span>
+    redis | supervisor )
+        _<span class="hljs-variable">${action}</span>
+        ;;
+    redisgo)
+        _redis
+        _supervisor
+        ;;
+    default)
+        _usage
+        _leave
+        ;;
+    *)
+        _usage
+        _leave
+        ;;
+    <span class="hljs-keyword">esac</span>
+
+}
+
+main <span class="hljs-variable">$@</span>
+</code></pre></div>
+
+<h2 id="交换机生成聚合口脚本"><a href="#交换机生成聚合口脚本" class="headerlink" title="交换机生成聚合口脚本"></a>交换机生成聚合口脚本</h2><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-meta"><code class="language-hljs bash"><span class="hljs-meta">#!/bin/bash</span>
+
+<span class="hljs-comment"># member id</span>
+portType=<span class="hljs-string">"1"</span>
+
+<span class="hljs-comment"># speed</span>
+portName=<span class="hljs-string">"Ten"</span>
+<span class="hljs-comment"># portName="G"</span>
+
+
+<span class="hljs-comment"># bridgeNumber</span>
+
+start_port=1
+end_port=24
+
+
+<span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> $(seq <span class="hljs-variable">$start_port</span> <span class="hljs-variable">$end_port</span>);<span class="hljs-keyword">do</span>
+    <span class="hljs-built_in">echo</span> <span class="hljs-string">"interface bridge-aggregation <span class="hljs-variable">${i}</span>"</span>
+    <span class="hljs-built_in">echo</span> <span class="hljs-string">"interface <span class="hljs-variable">${portName}</span><span class="hljs-variable">${portType}</span>/0/<span class="hljs-subst">$(($i*2-1)</span>)"</span>
+    <span class="hljs-built_in">echo</span> <span class="hljs-string">"port link-aggregation group <span class="hljs-variable">${i}</span>"</span>
+    <span class="hljs-built_in">echo</span> <span class="hljs-string">"interface <span class="hljs-variable">${portName}</span><span class="hljs-variable">${portType}</span>/0/<span class="hljs-subst">$(($i*2)</span>)"</span>
+    <span class="hljs-built_in">echo</span> <span class="hljs-string">"port link-aggregation group <span class="hljs-variable">${i}</span>"</span>
+<span class="hljs-keyword">done</span></code></pre></div>
             </div>
             <hr>
             <div>
@@ -370,7 +697,7 @@
 
   <footer class="text-center mt-5 py-3">
   <div class="footer-content">
-     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+     <a rel="nofollow noopener"><span>Hzjsea</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
   </div>
   
 

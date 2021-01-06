@@ -67,7 +67,7 @@
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
-       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
+       href="/">&nbsp;<strong>hzjsea</strong>&nbsp;</a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
             data-target="#navbarSupportedContent"
@@ -184,7 +184,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      892 字
+      649 字
     </span>
   
 
@@ -194,7 +194,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      14
+      10
        分钟
     </span>
   
@@ -245,86 +245,89 @@
 <h1 id="docker-swarm-wordpress"><a href="#docker-swarm-wordpress" class="headerlink" title="docker-swarm-wordpress"></a>docker-swarm-wordpress</h1><p>通过docker + swarm + wordpress 建立集群</p>
 <h2 id="实战"><a href="#实战" class="headerlink" title="实战"></a>实战</h2><p>在不指定同网络组的情况下，docker默认将所有的ip都归类到名字叫做docker0的bridge组里面，但是这样在跨机器的容器中，构建会十分麻烦，无法通过容器名来进行ip通信<br>因此，在创建的过程中需要指定网络组</p>
 <ol>
-<li>创建一个overlay的网络<pre class=" language-bash"><code class="language-bash">docker network create -d overlay demo
-<span class="token comment" spellcheck="true"># 查看是否创建成功 </span>
-<span class="token punctuation">[</span>root@manager55 ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># docker network ls</span>
+<li>创建一个overlay的网络<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">docker network create -d overlay demo
+<span class="hljs-comment"># 查看是否创建成功 </span>
+[root@manager55 ~]<span class="hljs-comment"># docker network ls</span>
 NETWORK ID          NAME                DRIVER              SCOPE
-ee5b54750620        bridge              bridge              local
+ee5b54750620        bridge              bridge              <span class="hljs-built_in">local</span>
 mxmjjml84ldx        demo                overlay             swarm
-6ad358de8e6b        docker_gwbridge     bridge              local
-f127d4764edd        host                host                local
-ihvz4z5lfwis        ingress             overlay             swarm   <span class="token operator">&lt;</span>----这里
-83efd9726723        none                null                local</code></pre>
+6ad358de8e6b        docker_gwbridge     bridge              <span class="hljs-built_in">local</span>
+f127d4764edd        host                host                <span class="hljs-built_in">local</span>
+ihvz4z5lfwis        ingress             overlay             swarm   <----这里
+83efd9726723        none                null                <span class="hljs-built_in">local</span></code></pre></div>
 一个manager 两台work都有了这个网络</li>
-<li>创建服务<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># mysql</span>
-docker <span class="token function">service</span> create --name mysql --env MYSQL_ROOT_PASSWORD<span class="token operator">=</span>root --env MYSQL_DATABASE<span class="token operator">=</span>wordpress --network demo --mount type<span class="token operator">=</span>volume,source<span class="token operator">=</span>mysql-data,destination<span class="token operator">=</span>/var/lib/mysql mysql:5.7 
-</code></pre>
-</li>
+<li>创建服务<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># mysql</span>
+docker service create --name mysql --env MYSQL_ROOT_PASSWORD=root --env MYSQL_DATABASE=wordpress --network demo --mount <span class="hljs-built_in">type</span>=volume,<span class="hljs-built_in">source</span>=mysql-data,destination=/var/lib/mysql mysql:5.7 
+
+<span class="hljs-comment"># wordpress</span>
+docker service create --name wordpress -p 80:80 --env WORDPRESS_DB_PASSWORD=root --env WORDPRESS_DB_HOST=mysql --network demo wordpress</code></pre></div>
+<h2 id="集群服务间通信"><a href="#集群服务间通信" class="headerlink" title="集群服务间通信"></a>集群服务间通信</h2>在一个service ,加入到overlay网络的机器都会添加一条DNS,docker基于DNS服务发现记录主机名与ip的对应关系<br>但由于docker swarm的横向扩展性，机器的ip随时都会改变，因此记录的并不是容器所在机器的ip，而是一个vip  virtual ip </li>
 </ol>
-<h1 id="wordpress"><a href="#wordpress" class="headerlink" title="wordpress"></a>wordpress</h1><p>docker service create –name wordpress -p 80:80 –env WORDPRESS_DB_PASSWORD=root –env WORDPRESS_DB_HOST=mysql –network demo wordpress</p>
-<pre><code>## 集群服务间通信
-在一个service ,加入到overlay网络的机器都会添加一条DNS,docker基于DNS服务发现记录主机名与ip的对应关系
-但由于docker swarm的横向扩展性，机器的ip随时都会改变，因此记录的并不是容器所在机器的ip，而是一个vip  virtual ip 
-
-
-1. 创建一个overlay的网络
-```bash 
-docker network create -d overylay demo </code></pre>
-<ol start="2">
+<ol>
+<li><p>创建一个overlay的网络</p>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">docker network create -d overylay demo</code></pre></div></li>
 <li><p>创建一个web服务,并加入demo这个网络</p>
-<pre class=" language-bash"><code class="language-bash">docker <span class="token function">service</span> create --name <span class="token function">whoami</span> -p 8000:8000 --network demo -d jwilder/whoami </code></pre>
-</li>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">docker service create --name whoami -p 8000:8000 --network demo -d jwilder/whoami</code></pre></div></li>
 <li><p>查看所建立的service</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span>root@manager55 ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># docker service ls</span>
+<div class="code-wrapper"><pre class=" language-hljs bash">[root@manager55 ~]<span class="hljs-comment"><code class="language-hljs bash">[root@manager55 ~]<span class="hljs-comment"># docker service ls</span>
 ID                  NAME                MODE                REPLICAS            IMAGE                   PORTS
 nnw1gekvbv0t        client              replicated          1/1                 busybox:latest
-3s9kfmq0eo8c        <span class="token function">whoami</span>              replicated          1/1                 jwilder/whoami:latest   *:8000-<span class="token operator">></span>8000/tcp
-<span class="token punctuation">[</span>root@manager55 ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># docker service ps client</span>
+3s9kfmq0eo8c        whoami              replicated          1/1                 jwilder/whoami:latest   *:8000->8000/tcp
+[root@manager55 ~]<span class="hljs-comment"># docker service ps client</span>
 ID                  NAME                IMAGE               NODE                DESIRED STATE       CURRENT STATE            ERROR               PORTS
-t7xe5omklz28        client.1            busybox:latest      work196             Running             Running 15 minutes ago </code></pre>
+t7xe5omklz28        client.1            busybox:latest      work196             Running             Running 15 minutes ago</code></pre></div>
 <p>可以发现busybox的容器是运行在work196上面的，这个时候我们去busybox ping whoami这个容器名，</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span>root@work196 ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># docker exec bd2b98fdc7f9 ping whoami</span>
-PING <span class="token function">whoami</span> <span class="token punctuation">(</span>10.0.2.2<span class="token punctuation">)</span>: 56 data bytes
-64 bytes from 10.0.2.2: seq<span class="token operator">=</span>0 ttl<span class="token operator">=</span>64 time<span class="token operator">=</span>0.077 ms
-64 bytes from 10.0.2.2: seq<span class="token operator">=</span>1 ttl<span class="token operator">=</span>64 time<span class="token operator">=</span>0.194 ms
-64 bytes from 10.0.2.2: seq<span class="token operator">=</span>2 ttl<span class="token operator">=</span>64 time<span class="token operator">=</span>0.193 ms 
-<span class="token comment" spellcheck="true"># 查看whoami容器的ip</span>
-<span class="token punctuation">[</span>root@manager55 ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># docker ecec dfcd2f4c0396 ip a</span>
-docker: <span class="token string">'ecec'</span> is not a docker command.
-See <span class="token string">'docker --help'</span>
-<span class="token punctuation">[</span>root@manager55 ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># docker exec  dfcd2f4c0396 ip a</span>
-1: lo: <span class="token operator">&lt;</span>LOOPBACK,UP,LOWER_UP<span class="token operator">></span> mtu 65536 qdisc noqueue state UNKNOWN qlen 1000
- link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
- inet 127.0.0.1/8 scope host lo
-    valid_lft forever preferred_lft forever
-31: eth1@if32: <span class="token operator">&lt;</span>BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN<span class="token operator">></span> mtu 1450 qdisc noqueue state UP
- link/ether 02:42:0a:00:00:08 brd ff:ff:ff:ff:ff:ff
- inet 10.0.0.8/24 brd 10.0.0.255 scope global eth1
-    valid_lft forever preferred_lft forever
-33: eth2@if34: <span class="token operator">&lt;</span>BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN<span class="token operator">></span> mtu 1500 qdisc noqueue state UP
- link/ether 02:42:ac:12:00:03 brd ff:ff:ff:ff:ff:ff
- inet 172.18.0.3/16 brd 172.18.255.255 scope global eth2
-    valid_lft forever preferred_lft forever
-35: eth0@if36: <span class="token operator">&lt;</span>BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN<span class="token operator">></span> mtu 1450 qdisc noqueue state UP
- link/ether 02:42:0a:00:02:03 brd ff:ff:ff:ff:ff:ff
- inet 10.0.2.3/24 brd 10.0.2.255 scope global eth0
-    valid_lft forever preferred_lft forever</code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash">[root@work196 ~]<span class="hljs-comment"><code class="language-hljs bash">[root@work196 ~]<span class="hljs-comment"># docker exec bd2b98fdc7f9 ping whoami</span>
+PING whoami (10.0.2.2): 56 data bytes
+64 bytes from 10.0.2.2: seq=0 ttl=64 time=0.077 ms
+64 bytes from 10.0.2.2: seq=1 ttl=64 time=0.194 ms
+64 bytes from 10.0.2.2: seq=2 ttl=64 time=0.193 ms 
+<span class="hljs-comment"># 查看whoami容器的ip</span>
+[root@manager55 ~]<span class="hljs-comment"># docker ecec dfcd2f4c0396 ip a</span>
+docker: <span class="hljs-string">&#x27;ecec&#x27;</span> is not a docker <span class="hljs-built_in">command</span>.
+See <span class="hljs-string">&#x27;docker --help&#x27;</span>
+[root@manager55 ~]<span class="hljs-comment"># docker exec  dfcd2f4c0396 ip a</span>
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+31: eth1@if32: <BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN> mtu 1450 qdisc noqueue state UP
+    link/ether 02:42:0a:00:00:08 brd ff:ff:ff:ff:ff:ff
+    inet 10.0.0.8/24 brd 10.0.0.255 scope global eth1
+       valid_lft forever preferred_lft forever
+33: eth2@if34: <BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN> mtu 1500 qdisc noqueue state UP
+    link/ether 02:42:ac:12:00:03 brd ff:ff:ff:ff:ff:ff
+    inet 172.18.0.3/16 brd 172.18.255.255 scope global eth2
+       valid_lft forever preferred_lft forever
+35: eth0@if36: <BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN> mtu 1450 qdisc noqueue state UP
+    link/ether 02:42:0a:00:02:03 brd ff:ff:ff:ff:ff:ff
+    inet 10.0.2.3/24 brd 10.0.2.255 scope global eth0
+       valid_lft forever preferred_lft forever</code></pre></div>
 <p>在ping whoami容器时候，并没有其ping他的任何一个ip说明在这之上又做了一层vip，用来统一管理所有容器名为whoami的机器</p>
 </li>
 <li><p>扩展whoamin容器</p>
-<pre class=" language-bash"><code class="language-bash">docker <span class="token function">service</span> scale whami<span class="token operator">=</span>4 </code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">docker service scale whami=4</code></pre></div>
 <p>再次使用ping的时候会发现，同样ping的是这个vip</p>
 </li>
 <li><p>查看虚拟ip下面的ip</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span>root@work196 ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># docker exec bd2b98fdc7f9 nslookup tasks.whoami</span>
+<div class="code-wrapper"><pre class=" language-hljs bash">[root@work196 ~]<span class="hljs-comment"><code class="language-hljs bash">[root@work196 ~]<span class="hljs-comment"># docker exec bd2b98fdc7f9 nslookup tasks.whoami</span>
 Server:         127.0.0.11
 Address:        127.0.0.11:53
-</code></pre>
+
+Non-authoritative answer:
+Name:   tasks.whoami
+Address: 10.0.2.10
+Name:   tasks.whoami
+Address: 10.0.2.3
+Name:   tasks.whoami
+Address: 10.0.2.9
+Name:   tasks.whoami
+Address: 10.0.2.8
+
+*** Can<span class="hljs-string">&#x27;t find tasks.whoami: No answer </span></code></pre></div>
+<p>其实这些内容就是vip下面的真正的IP<br>因此service 与service之间是通过vip进行通信的</p>
 </li>
 </ol>
-<p>Non-authoritative answer:<br>Name:   tasks.whoami<br>Address: 10.0.2.10<br>Name:   tasks.whoami<br>Address: 10.0.2.3<br>Name:   tasks.whoami<br>Address: 10.0.2.9<br>Name:   tasks.whoami<br>Address: 10.0.2.8</p>
-<p>*** Can’t find tasks.whoami: No answer </p>
-<p>```<br>其实这些内容就是vip下面的真正的IP<br>因此service 与service之间是通过vip进行通信的</p>
 
             </div>
             <hr>
@@ -433,7 +436,7 @@ Address:        127.0.0.11:53
 
   <footer class="text-center mt-5 py-3">
   <div class="footer-content">
-     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+     <a rel="nofollow noopener"><span>Hzjsea</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
   </div>
   
 

@@ -67,7 +67,7 @@
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
-       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
+       href="/">&nbsp;<strong>hzjsea</strong>&nbsp;</a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
             data-target="#navbarSupportedContent"
@@ -184,7 +184,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      344 字
+      398 字
     </span>
   
 
@@ -194,7 +194,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      5
+      6
        分钟
     </span>
   
@@ -232,31 +232,32 @@
 <a id="more"></a>
 
 <h1 id="subprocess模块"><a href="#subprocess模块" class="headerlink" title="subprocess模块"></a>subprocess模块</h1><p>这里跟os里面的popen一起使用 两个都是调用子进程的库</p>
-<h2 id="popen调用子进程"><a href="#popen调用子进程" class="headerlink" title="popen调用子进程"></a>popen调用子进程</h2><pre class=" language-bash"><code class="language-bash"><span class="token function">import</span> os
-data <span class="token operator">=</span> os.popen<span class="token punctuation">(</span><span class="token string">"ls -al"</span><span class="token punctuation">)</span>.read<span class="token punctuation">(</span><span class="token punctuation">)</span>  <span class="token comment" spellcheck="true"># 直接返回终端打印出来的东西</span>
-data1 <span class="token operator">=</span> os.popen<span class="token punctuation">(</span><span class="token string">"ls -al"</span><span class="token punctuation">)</span>.readlines<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true"># 返回一个数组</span>
-data2 <span class="token operator">=</span> os.popen<span class="token punctuation">(</span><span class="token string">"ls -al"</span><span class="token punctuation">)</span>.readline<span class="token punctuation">(</span>10<span class="token punctuation">)</span> <span class="token comment" spellcheck="true"># 返回一定数量的字符，由readline(size) 中的size决定</span>
-print<span class="token punctuation">(</span>data,<span class="token string">"\n"</span>,data1,<span class="token string">"\n"</span>,data2<span class="token punctuation">)</span>
+<h2 id="popen调用子进程"><a href="#popen调用子进程" class="headerlink" title="popen调用子进程"></a>popen调用子进程</h2><div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">import os
+data = os.popen(<span class="hljs-string">"ls -al"</span>).<span class="hljs-built_in">read</span>()  <span class="hljs-comment"># 直接返回终端打印出来的东西</span>
+data1 = os.popen(<span class="hljs-string">"ls -al"</span>).readlines() <span class="hljs-comment"># 返回一个数组</span>
+data2 = os.popen(<span class="hljs-string">"ls -al"</span>).readline(10) <span class="hljs-comment"># 返回一定数量的字符，由readline(size) 中的size决定</span>
+<span class="hljs-built_in">print</span>(data,<span class="hljs-string">"\n"</span>,data1,<span class="hljs-string">"\n"</span>,data2)
 
-<span class="token comment" spellcheck="true"># total 16</span>
-<span class="token comment" spellcheck="true"># drwxr-xr-x   4 alpaca  staff   128 Jul 15 18:20 .</span>
-<span class="token comment" spellcheck="true"># drwxr-xr-x  32 alpaca  staff  1024 Jul 15 16:55 ..</span>
-<span class="token comment" spellcheck="true"># -rw-r--r--   1 alpaca  staff   325 Jul 15 18:15 xx.py</span>
-<span class="token comment" spellcheck="true"># -rw-r--r--   1 alpaca  staff   286 Jul 15 18:28 yy.py</span>
+<span class="hljs-comment"># total 16</span>
+<span class="hljs-comment"># drwxr-xr-x   4 alpaca  staff   128 Jul 15 18:20 .</span>
+<span class="hljs-comment"># drwxr-xr-x  32 alpaca  staff  1024 Jul 15 16:55 ..</span>
+<span class="hljs-comment"># -rw-r--r--   1 alpaca  staff   325 Jul 15 18:15 xx.py</span>
+<span class="hljs-comment"># -rw-r--r--   1 alpaca  staff   286 Jul 15 18:28 yy.py</span>
+ 
+<span class="hljs-comment">#  [&#x27;total 16\n&#x27;, &#x27;drwxr-xr-x   4 alpaca  staff   128 Jul 15 18:20 .\n&#x27;, &#x27;drwxr-xr-x  32 alpaca  staff  1024 Jul 15 16:55 ..\n&#x27;, &#x27;-rw-r--r--   1 alpaca  staff   325 Jul 15 18:15 xx.py\n&#x27;, &#x27;-rw-r--r--   1 alpaca  staff   286 Jul 15 18:28 yy.py\n&#x27;] </span>
+<span class="hljs-comment">#  t</span></code></pre></div>
 
-<span class="token comment" spellcheck="true">#  ['total 16\n', 'drwxr-xr-x   4 alpaca  staff   128 Jul 15 18:20 .\n', 'drwxr-xr-x  32 alpaca  staff  1024 Jul 15 16:55 ..\n', '-rw-r--r--   1 alpaca  staff   325 Jul 15 18:15 xx.py\n', '-rw-r--r--   1 alpaca  staff   286 Jul 15 18:28 yy.py\n'] </span>
-<span class="token comment" spellcheck="true">#  t</span></code></pre>
 <p><font color='red'>但是popen会有一个问题，就是在调用awk的时候会出现错误,需要使用双花括号来解决 <code>\&#123;\&#123;\&#125;\&#125;</code></font></p>
-<pre class=" language-python"><code class="language-python"><span class="token keyword">import</span> os
-<span class="token comment" spellcheck="true"># res = os.popen("ls -al {} | awk '{ print $NF }'".format(".")).read() #  这样会报错无法识别{} 需要加双花括号来解决</span>
-res <span class="token operator">=</span> os<span class="token punctuation">.</span>popen<span class="token punctuation">(</span><span class="token string">"ls -al {} | awk '{{ print $NF }}'"</span><span class="token punctuation">.</span>format<span class="token punctuation">(</span><span class="token string">"."</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span>read<span class="token punctuation">(</span><span class="token punctuation">)</span>
-<span class="token keyword">print</span><span class="token punctuation">(</span>res<span class="token punctuation">)</span></code></pre>
+<div class="code-wrapper"><pre class=" language-hljs python"><span class="hljs-keyword"><code class="language-hljs python"><span class="hljs-keyword">import</span> os
+<span class="hljs-comment"># res = os.popen("ls -al {} | awk &#x27;{ print $NF }&#x27;".format(".")).read() #  这样会报错无法识别{} 需要加双花括号来解决</span>
+res = os.popen(<span class="hljs-string">"ls -al {} | awk &#x27;{{ print $NF }}&#x27;"</span>.<span class="hljs-built_in">format</span>(<span class="hljs-string">"."</span>)).read()
+print(res)</code></pre></div>
+
 <h2 id="subprocess调用子进程"><a href="#subprocess调用子进程" class="headerlink" title="subprocess调用子进程"></a>subprocess调用子进程</h2><p>subprocess模块比较新把，意在替代一些老的模块，比如<code>os.popen</code></p>
-<pre class=" language-py"><code class="language-py">filelist = subprocess.Popen(args="ls -al {} | awk '{{ print $NF}}' | xargs".format(filepath),shell=True,stdin=subprocess.PIPE,stdout=subprocess.PIPE)  # 这里返回的是一个tuple对象 (out,error)
+<div class="code-wrapper"><pre class=" language-hljs py">filelist = subprocess.Popen(args=<span class="hljs-string">&quot;ls -al &#123;&#125; | awk &#x27;&#123;&#123; print $NF&#125;&#125;&#x27; | xargs&quot;</span>.<span class="hljs-built_in">format</span>(filepath),shell=<span class="hljs-literal">True</span>,stdin=subprocess.PIPE,stdout=subprocess.PIPE)  <span class="hljs-comment"><code class="language-hljs py">filelist = subprocess.Popen(args=<span class="hljs-string">&quot;ls -al &#123;&#125; | awk &#x27;&#123;&#123; print $NF&#125;&#125;&#x27; | xargs&quot;</span>.<span class="hljs-built_in">format</span>(filepath),shell=<span class="hljs-literal">True</span>,stdin=subprocess.PIPE,stdout=subprocess.PIPE)  <span class="hljs-comment"># 这里返回的是一个tuple对象 (out,error)</span>
 (out,error) = filelist.communicate()
 
-print(out)</code></pre>
-
+print(out)</code></pre></div>
             </div>
             <hr>
             <div>
@@ -364,7 +365,7 @@ print(out)</code></pre>
 
   <footer class="text-center mt-5 py-3">
   <div class="footer-content">
-     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+     <a rel="nofollow noopener"><span>Hzjsea</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
   </div>
   
 

@@ -67,7 +67,7 @@
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
-       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
+       href="/">&nbsp;<strong>hzjsea</strong>&nbsp;</a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
             data-target="#navbarSupportedContent"
@@ -184,7 +184,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      815 字
+      829 字
     </span>
   
 
@@ -194,7 +194,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      11
+      12
        分钟
     </span>
   
@@ -232,134 +232,139 @@
 
 
 <h1 id="fastapi依赖注入"><a href="#fastapi依赖注入" class="headerlink" title="fastapi依赖注入"></a>fastapi依赖注入</h1><p>fastapi中的依赖注入，是为了减少同类型代码的出现，将重复动作归为一类，你可以把它看成简陋的接口实现<br>在fastapi中，他被称之为依赖</p>
-<pre class=" language-python"><code class="language-python"><span class="token keyword">from</span> typing <span class="token keyword">import</span>  List
-<span class="token keyword">from</span> fastapi <span class="token keyword">import</span> FastAPI
-<span class="token keyword">from</span> pydantic <span class="token keyword">import</span> BaseModel
-<span class="token keyword">from</span> fastapi <span class="token keyword">import</span>  Depends
+<div class="code-wrapper"><pre class=" language-hljs python"><span class="hljs-keyword">from</span> typing <span class="hljs-keyword"><code class="language-hljs python"><span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span>  List
+<span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> FastAPI
+<span class="hljs-keyword">from</span> pydantic <span class="hljs-keyword">import</span> BaseModel
+<span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span>  Depends
 
 
 
-app <span class="token operator">=</span> FastAPI<span class="token punctuation">(</span><span class="token punctuation">)</span>
+app = FastAPI()
 
 
-<span class="token comment" spellcheck="true"># 创建模型类</span>
-<span class="token keyword">class</span> <span class="token class-name">Item</span><span class="token punctuation">(</span>BaseModel<span class="token punctuation">)</span><span class="token punctuation">:</span>
-    name<span class="token punctuation">:</span> str <span class="token operator">=</span> None
-    desction<span class="token punctuation">:</span> str <span class="token operator">=</span> None
-    price<span class="token punctuation">:</span> float <span class="token operator">=</span> None
-    tax <span class="token punctuation">:</span> float <span class="token operator">=</span> None
-    tags<span class="token punctuation">:</span> List<span class="token punctuation">[</span>str<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+<span class="hljs-comment"># 创建模型类</span>
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Item</span>(<span class="hljs-params">BaseModel</span>):</span>
+    name: <span class="hljs-built_in">str</span> = <span class="hljs-literal">None</span>
+    desction: <span class="hljs-built_in">str</span> = <span class="hljs-literal">None</span>
+    price: <span class="hljs-built_in">float</span> = <span class="hljs-literal">None</span>
+    tax : <span class="hljs-built_in">float</span> = <span class="hljs-literal">None</span>
+    tags: List[<span class="hljs-built_in">str</span>] = []
 
-<span class="token triple-quoted-string string">"""
-    依赖注入
-"""</span>
-<span class="token comment" spellcheck="true"># 创建一个需要重复的动作</span>
-<span class="token comment" spellcheck="true"># 定义了一个动作，返回输入的三个参数</span>
-<span class="token keyword">async</span> <span class="token keyword">def</span> <span class="token function">repeat_action</span><span class="token punctuation">(</span>q<span class="token punctuation">:</span> str <span class="token operator">=</span> None<span class="token punctuation">,</span> skip<span class="token punctuation">:</span> int <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">,</span>limit<span class="token punctuation">:</span> int <span class="token operator">=</span> <span class="token number">100</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
-    <span class="token keyword">return</span> <span class="token punctuation">{</span><span class="token string">"q"</span><span class="token punctuation">:</span>q<span class="token punctuation">,</span><span class="token string">"skip"</span><span class="token punctuation">:</span>skip<span class="token punctuation">,</span><span class="token string">"limit"</span><span class="token punctuation">:</span>limit<span class="token punctuation">}</span>
-
-
+<span class="hljs-string">"""</span>
+<span class="hljs-string">    依赖注入</span>
+<span class="hljs-string">"""</span>
+<span class="hljs-comment"># 创建一个需要重复的动作</span>
+<span class="hljs-comment"># 定义了一个动作，返回输入的三个参数</span>
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">repeat_action</span>(<span class="hljs-params">q: <span class="hljs-built_in">str</span> = <span class="hljs-literal">None</span>, skip: <span class="hljs-built_in">int</span> = <span class="hljs-number">0</span>,limit: <span class="hljs-built_in">int</span> = <span class="hljs-number">100</span></span>):</span>
+    <span class="hljs-keyword">return</span> {<span class="hljs-string">"q"</span>:q,<span class="hljs-string">"skip"</span>:skip,<span class="hljs-string">"limit"</span>:limit}
 
 
-<span class="token comment" spellcheck="true"># 传入参数</span>
-@app<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">"/"</span><span class="token punctuation">)</span>
-<span class="token keyword">async</span> <span class="token keyword">def</span> <span class="token function">root</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
-    <span class="token keyword">return</span> <span class="token punctuation">{</span><span class="token string">"desc"</span><span class="token punctuation">:</span><span class="token string">"hello world"</span><span class="token punctuation">}</span>
 
-<span class="token comment" spellcheck="true"># 执行相同的动作</span>
-@app<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">"/items/"</span><span class="token punctuation">)</span>
-<span class="token keyword">async</span> <span class="token keyword">def</span> <span class="token function">read_item</span><span class="token punctuation">(</span>commons<span class="token punctuation">:</span> dict <span class="token operator">=</span> Depends<span class="token punctuation">(</span>repeat_action<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
-    <span class="token keyword">return</span> commons
-@app<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">"/uesrs/"</span><span class="token punctuation">)</span>
-<span class="token keyword">async</span> <span class="token keyword">def</span> <span class="token function">read_item</span><span class="token punctuation">(</span>commons<span class="token punctuation">:</span> dict <span class="token operator">=</span> Depends<span class="token punctuation">(</span>repeat_action<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
-    <span class="token keyword">return</span> commons</code></pre>
+
+<span class="hljs-comment"># 传入参数</span>
+<span class="hljs-meta">@app.get("/")</span>
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">root</span>():</span>
+    <span class="hljs-keyword">return</span> {<span class="hljs-string">"desc"</span>:<span class="hljs-string">"hello world"</span>}
+
+<span class="hljs-comment"># 执行相同的动作</span>
+<span class="hljs-meta">@app.get("/items/")</span>
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">read_item</span>(<span class="hljs-params">commons: <span class="hljs-built_in">dict</span> = Depends(<span class="hljs-params">repeat_action</span>)</span>):</span>
+    <span class="hljs-keyword">return</span> commons
+<span class="hljs-meta">@app.get("/uesrs/")</span>
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">read_item</span>(<span class="hljs-params">commons: <span class="hljs-built_in">dict</span> = Depends(<span class="hljs-params">repeat_action</span>)</span>):</span>
+    <span class="hljs-keyword">return</span> commons</code></pre></div>
+
 <p>另外 依赖的使用没有强制要求使用async也可以使用普通的def</p>
 <blockquote>
 <p>您可以在常规的 def 路径操作函数中使用 async def 声明依赖关系，或者在 async def 路径操作函数中使用 def 声明依赖关系，等等。</p>
 </blockquote>
 <h2 id="高级的依赖注入"><a href="#高级的依赖注入" class="headerlink" title="高级的依赖注入"></a>高级的依赖注入</h2><p>之前的依赖注入只是返回了一个dict字典，并不能对其中内容做一些处理，高级的依赖注入支持返回一个类，在类中可以完成对参数的操作</p>
-<pre class=" language-python"><code class="language-python">
-<span class="token keyword">from</span> typing <span class="token keyword">import</span>  List
-<span class="token keyword">from</span> fastapi <span class="token keyword">import</span> FastAPI
-<span class="token keyword">from</span> pydantic <span class="token keyword">import</span> BaseModel
-<span class="token keyword">from</span> fastapi <span class="token keyword">import</span>  Depends
+<div class="code-wrapper"><pre class=" language-hljs python"><code class="language-hljs python">
+<span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span>  List
+<span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> FastAPI
+<span class="hljs-keyword">from</span> pydantic <span class="hljs-keyword">import</span> BaseModel
+<span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span>  Depends
 
-app <span class="token operator">=</span> FastAPI<span class="token punctuation">(</span><span class="token punctuation">)</span>
+app = FastAPI()
 
 
-<span class="token comment" spellcheck="true">## 创建一个类</span>
-<span class="token keyword">class</span> <span class="token class-name">repeat_action</span><span class="token punctuation">(</span>object<span class="token punctuation">)</span><span class="token punctuation">:</span>
-    <span class="token keyword">def</span> <span class="token function">__init__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span>
-                 name<span class="token punctuation">:</span> str<span class="token punctuation">,</span>
-                 age<span class="token punctuation">:</span> int <span class="token operator">=</span> None<span class="token punctuation">,</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
-        self<span class="token punctuation">.</span>name <span class="token operator">=</span> name
-        <span class="token keyword">if</span> age <span class="token keyword">is</span> None<span class="token punctuation">:</span>
-            self<span class="token punctuation">.</span>age <span class="token operator">=</span> age
-        <span class="token keyword">else</span><span class="token punctuation">:</span>
-            self<span class="token punctuation">.</span>age <span class="token operator">=</span> age <span class="token operator">+</span> <span class="token number">1</span>
+<span class="hljs-comment">## 创建一个类</span>
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">repeat_action</span>(<span class="hljs-params"><span class="hljs-built_in">object</span></span>):</span>
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span>(<span class="hljs-params">self,</span></span>
+<span class="hljs-function"><span class="hljs-params">                 name: <span class="hljs-built_in">str</span>,</span></span>
+<span class="hljs-function"><span class="hljs-params">                 age: <span class="hljs-built_in">int</span> = <span class="hljs-literal">None</span>,</span>):</span>
+        self.name = name
+        <span class="hljs-keyword">if</span> age <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>:
+            self.age = age
+        <span class="hljs-keyword">else</span>:
+            self.age = age + <span class="hljs-number">1</span>
 
-@app<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">"/"</span><span class="token punctuation">)</span>
-<span class="token keyword">async</span> <span class="token keyword">def</span> <span class="token function">root</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
-    <span class="token keyword">return</span> <span class="token punctuation">{</span><span class="token string">"hello world"</span><span class="token punctuation">:</span><span class="token string">"helloworld"</span><span class="token punctuation">}</span>
-@app<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">"/age/"</span><span class="token punctuation">)</span>
-<span class="token keyword">async</span> <span class="token keyword">def</span> <span class="token function">read_info</span><span class="token punctuation">(</span>commons<span class="token punctuation">:</span> repeat_action<span class="token operator">=</span>Depends<span class="token punctuation">(</span>repeat_action<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
-<span class="token comment" spellcheck="true"># async  def read_info(commons: repeat_action=Depends()) 你还可以这样写</span>
-    res <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
-    <span class="token keyword">if</span> commons<span class="token punctuation">.</span>age <span class="token keyword">is</span> <span class="token operator">not</span> None<span class="token punctuation">:</span>
-        res <span class="token operator">=</span> None
-        <span class="token keyword">return</span> <span class="token punctuation">{</span><span class="token string">"is birth"</span><span class="token punctuation">:</span>res<span class="token punctuation">}</span>
-    <span class="token keyword">else</span><span class="token punctuation">:</span>
-        res <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token string">"res"</span><span class="token punctuation">:</span><span class="token string">"{} is not birth,age is {}"</span><span class="token punctuation">.</span>format<span class="token punctuation">(</span>commons<span class="token punctuation">.</span>name<span class="token punctuation">,</span>commons<span class="token punctuation">.</span>age<span class="token punctuation">)</span><span class="token punctuation">}</span>
-        <span class="token keyword">return</span> <span class="token punctuation">{</span><span class="token string">"is birth"</span><span class="token punctuation">:</span>res<span class="token punctuation">}</span></code></pre>
+<span class="hljs-meta">@app.get("/")</span>
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">root</span>():</span>
+    <span class="hljs-keyword">return</span> {<span class="hljs-string">"hello world"</span>:<span class="hljs-string">"helloworld"</span>}
+<span class="hljs-meta">@app.get("/age/")</span>
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">read_info</span>(<span class="hljs-params">commons: repeat_action=Depends(<span class="hljs-params">repeat_action</span>)</span>):</span>
+<span class="hljs-comment"># async  def read_info(commons: repeat_action=Depends()) 你还可以这样写</span>
+    res = {}
+    <span class="hljs-keyword">if</span> commons.age <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span>:
+        res = <span class="hljs-literal">None</span>
+        <span class="hljs-keyword">return</span> {<span class="hljs-string">"is birth"</span>:res}
+    <span class="hljs-keyword">else</span>:
+        res = {<span class="hljs-string">"res"</span>:<span class="hljs-string">"{} is not birth,age is {}"</span>.<span class="hljs-built_in">format</span>(commons.name,commons.age)}
+        <span class="hljs-keyword">return</span> {<span class="hljs-string">"is birth"</span>:res}</code></pre></div>
+
+
 <h2 id="子级依赖注入"><a href="#子级依赖注入" class="headerlink" title="子级依赖注入"></a>子级依赖注入</h2><p>既然依赖已经可以用类去申明，那他也有子级别依赖注入</p>
-<pre class=" language-python"><code class="language-python"><span class="token keyword">from</span> typing <span class="token keyword">import</span>  List
-<span class="token keyword">from</span> fastapi <span class="token keyword">import</span> FastAPI
-<span class="token keyword">from</span> pydantic <span class="token keyword">import</span> BaseModel
-<span class="token keyword">from</span> fastapi <span class="token keyword">import</span>  Depends
+<div class="code-wrapper"><pre class=" language-hljs python"><span class="hljs-keyword">from</span> typing <span class="hljs-keyword"><code class="language-hljs python"><span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span>  List
+<span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> FastAPI
+<span class="hljs-keyword">from</span> pydantic <span class="hljs-keyword">import</span> BaseModel
+<span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span>  Depends
 
-app <span class="token operator">=</span> FastAPI<span class="token punctuation">(</span><span class="token punctuation">)</span>
+app = FastAPI()
 
-<span class="token comment" spellcheck="true">## 创建子级依赖</span>
-<span class="token keyword">async</span>  <span class="token keyword">def</span> <span class="token function">sub_action</span><span class="token punctuation">(</span>q<span class="token punctuation">:</span> str <span class="token operator">=</span>None<span class="token punctuation">)</span><span class="token punctuation">:</span>
-    q <span class="token operator">=</span> <span class="token string">"my type is sub action for {}"</span><span class="token punctuation">.</span>format<span class="token punctuation">(</span>q<span class="token punctuation">)</span>
-    <span class="token keyword">return</span> q
+<span class="hljs-comment">## 创建子级依赖</span>
+<span class="hljs-keyword">async</span>  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">sub_action</span>(<span class="hljs-params">q: <span class="hljs-built_in">str</span> =<span class="hljs-literal">None</span></span>):</span>
+    q = <span class="hljs-string">"my type is sub action for {}"</span>.<span class="hljs-built_in">format</span>(q)
+    <span class="hljs-keyword">return</span> q
 
-<span class="token comment" spellcheck="true">## 创建一个类</span>
-<span class="token keyword">class</span> <span class="token class-name">repeat_action</span><span class="token punctuation">(</span>object<span class="token punctuation">)</span><span class="token punctuation">:</span>
-    <span class="token keyword">def</span> <span class="token function">__init__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span>
-                 name<span class="token punctuation">:</span> str<span class="token punctuation">,</span>
-                 age<span class="token punctuation">:</span> int <span class="token operator">=</span> None<span class="token punctuation">,</span>
-                 desc<span class="token punctuation">:</span> str <span class="token operator">=</span> None<span class="token punctuation">,</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
-        self<span class="token punctuation">.</span>name <span class="token operator">=</span> name
-        <span class="token keyword">if</span> age <span class="token keyword">is</span> None<span class="token punctuation">:</span>
-            self<span class="token punctuation">.</span>age <span class="token operator">=</span> age
-        <span class="token keyword">else</span><span class="token punctuation">:</span>
-            self<span class="token punctuation">.</span>age <span class="token operator">=</span> age <span class="token operator">+</span> <span class="token number">1</span>
-        self<span class="token punctuation">.</span>desc <span class="token operator">=</span> Depends<span class="token punctuation">(</span>sub_action<span class="token punctuation">(</span>desc<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-@app<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">"/age/"</span><span class="token punctuation">)</span>
-<span class="token keyword">async</span> <span class="token keyword">def</span> <span class="token function">read_info</span><span class="token punctuation">(</span>commons<span class="token punctuation">:</span> repeat_action<span class="token operator">=</span>Depends<span class="token punctuation">(</span>repeat_action<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
-    res <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
-    <span class="token keyword">if</span> commons<span class="token punctuation">.</span>age <span class="token keyword">is</span> <span class="token operator">not</span> None<span class="token punctuation">:</span>
-        res <span class="token operator">=</span> None
-        <span class="token keyword">return</span> <span class="token punctuation">{</span><span class="token string">"is birth"</span><span class="token punctuation">:</span>res<span class="token punctuation">}</span>
-    <span class="token keyword">else</span><span class="token punctuation">:</span>
-        res <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token string">"res"</span><span class="token punctuation">:</span><span class="token string">"{} is not birth,age is {}"</span><span class="token punctuation">.</span>format<span class="token punctuation">(</span>commons<span class="token punctuation">.</span>name<span class="token punctuation">,</span>commons<span class="token punctuation">.</span>age<span class="token punctuation">)</span><span class="token punctuation">}</span>
-        <span class="token comment" spellcheck="true"># return {"is birth":res}</span>
-        <span class="token keyword">if</span> commons<span class="token punctuation">.</span>desc <span class="token keyword">is</span> <span class="token operator">not</span> None<span class="token punctuation">:</span>
-            res<span class="token punctuation">[</span><span class="token string">'desc'</span><span class="token punctuation">]</span> <span class="token operator">=</span> commons<span class="token punctuation">.</span>desc
-        <span class="token keyword">else</span><span class="token punctuation">:</span>
-            <span class="token keyword">return</span> <span class="token punctuation">{</span><span class="token string">"is birth "</span><span class="token punctuation">:</span>res<span class="token punctuation">}</span>
-</code></pre>
+<span class="hljs-comment">## 创建一个类</span>
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">repeat_action</span>(<span class="hljs-params"><span class="hljs-built_in">object</span></span>):</span>
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span>(<span class="hljs-params">self,</span></span>
+<span class="hljs-function"><span class="hljs-params">                 name: <span class="hljs-built_in">str</span>,</span></span>
+<span class="hljs-function"><span class="hljs-params">                 age: <span class="hljs-built_in">int</span> = <span class="hljs-literal">None</span>,</span></span>
+<span class="hljs-function"><span class="hljs-params">                 desc: <span class="hljs-built_in">str</span> = <span class="hljs-literal">None</span>,</span>):</span>
+        self.name = name
+        <span class="hljs-keyword">if</span> age <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>:
+            self.age = age
+        <span class="hljs-keyword">else</span>:
+            self.age = age + <span class="hljs-number">1</span>
+        self.desc = Depends(sub_action(desc));
+<span class="hljs-meta">@app.get("/age/")</span>
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">read_info</span>(<span class="hljs-params">commons: repeat_action=Depends(<span class="hljs-params">repeat_action</span>)</span>):</span>
+    res = {}
+    <span class="hljs-keyword">if</span> commons.age <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span>:
+        res = <span class="hljs-literal">None</span>
+        <span class="hljs-keyword">return</span> {<span class="hljs-string">"is birth"</span>:res}
+    <span class="hljs-keyword">else</span>:
+        res = {<span class="hljs-string">"res"</span>:<span class="hljs-string">"{} is not birth,age is {}"</span>.<span class="hljs-built_in">format</span>(commons.name,commons.age)}
+        <span class="hljs-comment"># return {"is birth":res}</span>
+        <span class="hljs-keyword">if</span> commons.desc <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span>:
+            res[<span class="hljs-string">&#x27;desc&#x27;</span>] = commons.desc
+        <span class="hljs-keyword">else</span>:
+            <span class="hljs-keyword">return</span> {<span class="hljs-string">"is birth "</span>:res}
+</code></pre></div>
+
 <blockquote>
 <p>这里官方文档写了一个use_cache=False是什么用作 后面在解决</p>
 </blockquote>
 <p>补充，fastapi中，如果你在一个相同的请求路径中多次使用相同的依赖项，fastapi只会使用一次依赖注入 因为他会把第一次依赖注入的结果放到缓存中，<br>中如果需要使用多次调用，可以在调用的过程中使用<code>use_cache=False</code></p>
-<pre class=" language-python"><code class="language-python"><span class="token keyword">async</span> <span class="token keyword">def</span> <span class="token function">needy_dependency</span><span class="token punctuation">(</span>fresh_value<span class="token punctuation">:</span> str <span class="token operator">=</span> Depends<span class="token punctuation">(</span>get_value<span class="token punctuation">,</span> use_cache<span class="token operator">=</span><span class="token boolean">False</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
-    <span class="token keyword">return</span> <span class="token punctuation">{</span><span class="token string">"fresh_value"</span><span class="token punctuation">:</span> fresh_value<span class="token punctuation">}</span></code></pre>
+<div class="code-wrapper"><pre class=" language-hljs python"><span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">needy_dependency</span>(<span class="hljs-params">fresh_value: <span class="hljs-built_in">str</span> = Depends(<span class="hljs-params">get_value, use_cache=<span class="hljs-literal"><code class="language-hljs python"><span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">needy_dependency</span>(<span class="hljs-params">fresh_value: <span class="hljs-built_in">str</span> = Depends(<span class="hljs-params">get_value, use_cache=<span class="hljs-literal">False</span></span>)</span>):</span>
+    <span class="hljs-keyword">return</span> {<span class="hljs-string">"fresh_value"</span>: fresh_value}</code></pre></div>
+
 <h2 id="依赖注入的其他使用方法"><a href="#依赖注入的其他使用方法" class="headerlink" title="依赖注入的其他使用方法"></a>依赖注入的其他使用方法</h2><p>有时候只需要在Url调用的时候执行以下依赖注入的方法就可以了，不需要返回值，这时候就可以用到<code>Depends</code> 方法与Depends相同，但是不能返回结果<br>传入多个依赖注入</p>
-<pre class=" language-python"><code class="language-python">@app<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">"/items/"</span><span class="token punctuation">,</span> dependencies<span class="token operator">=</span><span class="token punctuation">[</span>Depends<span class="token punctuation">(</span>verify_token<span class="token punctuation">)</span><span class="token punctuation">,</span> Depends<span class="token punctuation">(</span>verify_key<span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
-<span class="token keyword">async</span> <span class="token keyword">def</span> <span class="token function">read_items</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
-    <span class="token keyword">return</span> <span class="token punctuation">[</span><span class="token punctuation">{</span><span class="token string">"item"</span><span class="token punctuation">:</span> <span class="token string">"Foo"</span><span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token punctuation">{</span><span class="token string">"item"</span><span class="token punctuation">:</span> <span class="token string">"Bar"</span><span class="token punctuation">}</span><span class="token punctuation">]</span></code></pre>
+<div class="code-wrapper"><pre class=" language-hljs python"><span class="hljs-meta"><code class="language-hljs python"><span class="hljs-meta">@app.get("/items/", dependencies=[Depends(verify_token), Depends(verify_key)])</span>
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">read_items</span>():</span>
+    <span class="hljs-keyword">return</span> [{<span class="hljs-string">"item"</span>: <span class="hljs-string">"Foo"</span>}, {<span class="hljs-string">"item"</span>: <span class="hljs-string">"Bar"</span>}]</code></pre></div>
 
             </div>
             <hr>
@@ -468,7 +473,7 @@ app <span class="token operator">=</span> FastAPI<span class="token punctuation"
 
   <footer class="text-center mt-5 py-3">
   <div class="footer-content">
-     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+     <a rel="nofollow noopener"><span>Hzjsea</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
   </div>
   
 

@@ -67,7 +67,7 @@
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
-       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
+       href="/">&nbsp;<strong>hzjsea</strong>&nbsp;</a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
             data-target="#navbarSupportedContent"
@@ -252,25 +252,26 @@
 </ul>
 <p>来说一下这两种配置的优缺点<br><font color='red'>第一种配置在接口上的方法，不需要考虑上联与下联对应的vlan关系，但是这样管理上会有一些缺陷，比较麻烦</font><br><font color='blue'>第二种配置在对应vlan的方法，需要考虑上下联对应的vlan关系，但是这样在管理上很方便 统一处理</font> </p>
 <h3 id="江苏泰州三层交换机上架"><a href="#江苏泰州三层交换机上架" class="headerlink" title="江苏泰州三层交换机上架"></a>江苏泰州三层交换机上架</h3><p>这里用第一种配置的方法</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 要求</span>
-<span class="token comment" spellcheck="true"># 业务vlan</span>
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 要求</span>
+<span class="hljs-comment"># 业务vlan</span>
 移动：223.111.169.64/27 ；联通：112.83.191.80/27
-<span class="token comment" spellcheck="true"># 互联</span>
+<span class="hljs-comment"># 互联</span>
 又拍云移动互联1：云下：10.200.3.145/30 又拍云：10.200.3.146/30
 又拍云移动互联2：云下：10.200.3.149/30 又拍云：10.200.3.150/30
 又拍云联通互联1：云下：10.200.3.153/30 又拍云：10.200.3.154/30
-<span class="token comment" spellcheck="true"># 机器</span>
-需安排邮寄5台2U服务器到机房+1台5820X交换机，</code></pre>
+<span class="hljs-comment"># 机器</span>
+需安排邮寄5台2U服务器到机房+1台5820X交换机，</code></pre></div>
+
 <p><img src="http://img.noback.top/2020-05-28-19-36-26.png" srcset="/img/loading.gif" alt="2020-05-28-19-36-26"></p>
 <p><font color='red'>配置</font></p>
-<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 1. 刷基础配置</span>
-<span class="token comment" spellcheck="true"># 2. 配置必须配置的内容，如关闭stp 开启loopback-detection等等</span>
-<span class="token comment" spellcheck="true"># 3. 配置汇聚，这个</span>
-<span class="token comment" spellcheck="true"># 上面的这些就不叙述了</span>
-undo info-center <span class="token function">enable</span>
-undo stp <span class="token function">enable</span>
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 1. 刷基础配置</span>
+<span class="hljs-comment"># 2. 配置必须配置的内容，如关闭stp 开启loopback-detection等等</span>
+<span class="hljs-comment"># 3. 配置汇聚，这个</span>
+<span class="hljs-comment"># 上面的这些就不叙述了</span>
+undo info-center <span class="hljs-built_in">enable</span>
+undo stp <span class="hljs-built_in">enable</span>
 
-<span class="token comment" spellcheck="true"># 配置聚合口实例</span>
+<span class="hljs-comment"># 配置聚合口实例</span>
 interface Bridge-Aggregation 1
 quit
 int ten1/0/1
@@ -278,7 +279,7 @@ port link-Aggregation group 1
 int ten1/0/2
 port link-Aggregation group 2
 
-<span class="token comment" spellcheck="true"># 22 23 24 配置互联</span>
+<span class="hljs-comment"># 22 23 24 配置互联</span>
 int ten1/0/22
 port link-mode route
 description CMN1
@@ -295,55 +296,57 @@ description CUN1
 ip address 10.200.3.153 255.255.255.252
 quit
 
-<span class="token comment" spellcheck="true"># 配置业务vlan 接口版，所有业务ip都放在vlan1上面</span>
+<span class="hljs-comment"># 配置业务vlan 接口版，所有业务ip都放在vlan1上面</span>
 int vlan-interface 1
 description JS-TZ-CUN
 ip address 223.111.169.65 255.255.255.224
 ip address 112.83.191.81 255.255.255.224 sub
 ip policy-based-route JS-TZ
 
-<span class="token comment" spellcheck="true"># 配置路由，移动走静态，联通走策略</span>
+<span class="hljs-comment"># 配置路由，移动走静态，联通走策略</span>
 ip route-static 0.0.0.0 0 10.200.3.145
-<span class="token comment" spellcheck="true"># 联通策略 acl </span>
-<span class="token comment" spellcheck="true"># 过滤其他IP，只保留联通的流量包</span>
+<span class="hljs-comment"># 联通策略 acl </span>
+<span class="hljs-comment"># 过滤其他IP，只保留联通的流量包</span>
 acl number  2201
 description JS-TZ-CUN
- rule 10 permit <span class="token function">source</span> 112.83.191.79 0.0.0.32
+ rule 10 permit <span class="hljs-built_in">source</span> 112.83.191.79 0.0.0.32
 policy-based-route JS-TZ permit node 0
  if-match acl 2201
  apply next-hop 10.200.3.153
- <span class="token comment" spellcheck="true"># 如果没有用default-next-hop 就要全局定义</span>
- <span class="token comment" spellcheck="true"># ip local policy-based-route JS-TZ</span>
+ <span class="hljs-comment"># 如果没有用default-next-hop 就要全局定义</span>
+ <span class="hljs-comment"># ip local policy-based-route JS-TZ</span>
 
-<span class="token comment" spellcheck="true"># 应用策略路由</span>
+<span class="hljs-comment"># 应用策略路由</span>
 int vlan-interface 1
-ip policy-based-route JS-TZ</code></pre>
+ip policy-based-route JS-TZ</code></pre></div>
+
 <p><font color='red'>我们是把业务vlan也充当管理vlan？</font><br><font color='red'>像上面这段如果是移动分开两端，那么静态路由是不是要写两个</font></p>
 <h3 id="常州上线交换机"><a href="#常州上线交换机" class="headerlink" title="常州上线交换机"></a>常州上线交换机</h3><p><img src="http://img.noback.top/2020-05-28-19-58-46.png" srcset="/img/loading.gif" alt="2020-05-28-19-58-46"><br><img src="http://img.noback.top/2020-05-28-20-18-24.png" srcset="/img/loading.gif" alt="2020-05-28-20-18-24"><br>这里.1是对端<br>需求</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 互联</span>
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 互联</span>
 对端:10.103.36.1/30 本端:10.103.36.2/30
 对端:10.102.45.1/30 本端:10.102.45.2/30
 对端:10.130.33.1/30 本端:10.130.33.2/30
-<span class="token comment" spellcheck="true"># 业务ip</span>
+<span class="hljs-comment"># 业务ip</span>
 电信:58.216.101.192/26
 联通:103.45.78.0/25
 移动:36.154.11.128/25
-<span class="token comment" spellcheck="true"># 管理ip</span>
+<span class="hljs-comment"># 管理ip</span>
 10.32.1.254 255.255.255.0
-<span class="token comment" spellcheck="true"># 机器</span>
+<span class="hljs-comment"># 机器</span>
 20台服务器汇聚接1-50口
 4台服务器接拆分后的49-50口
-一台6800交换机</code></pre>
+一台6800交换机</code></pre></div>
+
 <p>配置</p>
-<pre class=" language-bash"><code class="language-bash">
-undo stp <span class="token function">enable</span>
-undo info-center <span class="token function">enable</span>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">
+undo stp <span class="hljs-built_in">enable</span>
+undo info-center <span class="hljs-built_in">enable</span>
 
 max-ecmp-num 128 
 ecmp mode enhanced
-ip load-sharing symmetric <span class="token function">enable</span> <span class="token comment" spellcheck="true"># ospf负载均衡要加</span>
+ip load-sharing symmetric <span class="hljs-built_in">enable</span> <span class="hljs-comment"># ospf负载均衡要加</span>
 
-<span class="token comment" spellcheck="true"># 机器汇聚</span>
+<span class="hljs-comment"># 机器汇聚</span>
 interface Bridge-Aggregation 1
 quit
 int ten1/0/1
@@ -351,7 +354,7 @@ port link-Aggregation group 1
 int ten1/0/2
 port link-Aggregation group 2
 
-<span class="token comment" spellcheck="true"># 接口拆分  6800貌似不用重启就可以了但是58需要重启</span>
+<span class="hljs-comment"># 接口拆分  6800貌似不用重启就可以了但是58需要重启</span>
 int fo1/0/49
 using tengige
 int fo1/0/50
@@ -364,77 +367,77 @@ int ten1/0/49:2
 port link-Aggregation group 30
 quit
 
-<span class="token comment" spellcheck="true"># 配置互联</span>
-vlan 10 <span class="token comment" spellcheck="true"># 电信</span>
-vlan 20 <span class="token comment" spellcheck="true"># 联通 </span>
-vlan 30 <span class="token comment" spellcheck="true"># 移动</span>
+<span class="hljs-comment"># 配置互联</span>
+vlan 10 <span class="hljs-comment"># 电信</span>
+vlan 20 <span class="hljs-comment"># 联通 </span>
+vlan 30 <span class="hljs-comment"># 移动</span>
 interface vlan-interface 10
 ip address 10.103.36.2 255.255.255.252
 interface vlan-interface 20
 ip address 10.102.45.2 255.255.255.252
 interface vlan-interface 30
 ip address 10.130.33.2 255.255.255.252
-<span class="token comment" spellcheck="true">## 将接口划到互联vlan组里面</span>
+<span class="hljs-comment">## 将接口划到互联vlan组里面</span>
 int ten1/0/41
-port access vlan 10 <span class="token comment" spellcheck="true">#究竟是access还是trunk这个要和对端确定</span>
+port access vlan 10 <span class="hljs-comment">#究竟是access还是trunk这个要和对端确定</span>
 int ten1/0/42
 port access vlan 20
 int rang ten1/0/43 to ten1/0/48
 port link-Aggregation group 300
 int b300
 port access vlan 30 
-link-aggregation mode dynamic <span class="token comment" spellcheck="true"># 是不是dynamic也要对端确认 lacp 即动态汇聚</span>
+link-aggregation mode dynamic <span class="hljs-comment"># 是不是dynamic也要对端确认 lacp 即动态汇聚</span>
 
-<span class="token comment" spellcheck="true"># 配置路由，移动量大走静态</span>
+<span class="hljs-comment"># 配置路由，移动量大走静态</span>
 ip route-static 0.0.0.0 0 10.130.33.1
-<span class="token comment" spellcheck="true"># 策略路由</span>
-<span class="token comment" spellcheck="true"># 1.配置acl</span>
+<span class="hljs-comment"># 策略路由</span>
+<span class="hljs-comment"># 1.配置acl</span>
 acl  number 2010 
-rule 10 permit <span class="token function">source</span> 58.216.101.191 0.0.0.63  <span class="token comment" spellcheck="true"># 反掩码要减1</span>
+rule 10 permit <span class="hljs-built_in">source</span> 58.216.101.191 0.0.0.63  <span class="hljs-comment"># 反掩码要减1</span>
 acl number 2020
-rule 10 permit <span class="token function">source</span> 103.45.78.0 0.0.0.127
-<span class="token comment" spellcheck="true"># 2.配置策略路由规则</span>
+rule 10 permit <span class="hljs-built_in">source</span> 103.45.78.0 0.0.0.127
+<span class="hljs-comment"># 2.配置策略路由规则</span>
 policy-based-route CTN permit node 10
  if-match acl 2010
  apply default-next-hop 10.103.36.1
-<span class="token comment" spellcheck="true">#</span>
+<span class="hljs-comment">#</span>
 policy-based-route CUN permit node 20
  if-match acl 2020
  apply default-next-hop 10.102.45.1
-<span class="token comment" spellcheck="true"># 这里default-next-hop表示先去静态那边找路由表，没有再来这里策略路由这里找</span>
-<span class="token comment" spellcheck="true"># 应用策略路由</span>
+<span class="hljs-comment"># 这里default-next-hop表示先去静态那边找路由表，没有再来这里策略路由这里找</span>
+<span class="hljs-comment"># 应用策略路由</span>
 int vlan-interface 20
 ip policy-based-route CUN
 int vlan-interface 30
 ip policy-based-route CTN
 
-<span class="token comment" spellcheck="true"># 错误</span>
-<span class="token comment" spellcheck="true"># 错误</span>
-<span class="token comment" spellcheck="true"># 错误</span>
-<span class="token comment" spellcheck="true"># 错误</span>
-<span class="token comment" spellcheck="true"># 错误</span>
+<span class="hljs-comment"># 错误</span>
+<span class="hljs-comment"># 错误</span>
+<span class="hljs-comment"># 错误</span>
+<span class="hljs-comment"># 错误</span>
+<span class="hljs-comment"># 错误</span>
 
-<span class="token comment" spellcheck="true"># 配置传输</span>
+<span class="hljs-comment"># 配置传输</span>
 int vlan-interface 1
-ip address 10.32.1.254 255.255.255.0</code></pre>
+ip address 10.32.1.254 255.255.255.0</code></pre></div>
+
 <p><font color='red'>上面策略路由的这样配置是错误的，最好把策略路由放在同一个组里面,另外策略都要配在vlan1那边，</font></p>
-<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 1. 配置acl</span>
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 1. 配置acl</span>
 acl  number 2010 
-rule 10 permit <span class="token function">source</span> 58.216.101.191 0.0.0.64
+rule 10 permit <span class="hljs-built_in">source</span> 58.216.101.191 0.0.0.64
 acl number 2020
-rule 10 permit <span class="token function">source</span> 103.45.78.0 0.0.0.128
-<span class="token comment" spellcheck="true"># 2. 配置策略路由 放在同一个组(MULTI-OUTBOUND)里面 node 0空出来留作备用</span>
+rule 10 permit <span class="hljs-built_in">source</span> 103.45.78.0 0.0.0.128
+<span class="hljs-comment"># 2. 配置策略路由 放在同一个组(MULTI-OUTBOUND)里面 node 0空出来留作备用</span>
 policy-based-route MULTI-OUTBOUND permit node 10
  if-match acl 2010
  apply default-next-hop 10.103.36.1
-<span class="token comment" spellcheck="true">#</span>
+<span class="hljs-comment">#</span>
 policy-based-route MULTI-OUTBOUND permit node 20
  if-match acl 2020
  apply default-next-hop 10.102.45.1
 
 int vlan-interface 1
-ip policy-based-route MULTI-OUTBOUND</code></pre>
-
+ip policy-based-route MULTI-OUTBOUND</code></pre></div>
             </div>
             <hr>
             <div>
@@ -542,7 +545,7 @@ ip policy-based-route MULTI-OUTBOUND</code></pre>
 
   <footer class="text-center mt-5 py-3">
   <div class="footer-content">
-     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+     <a rel="nofollow noopener"><span>Hzjsea</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
   </div>
   
 

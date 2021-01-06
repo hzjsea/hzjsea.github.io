@@ -67,7 +67,7 @@
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
-       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
+       href="/">&nbsp;<strong>hzjsea</strong>&nbsp;</a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
             data-target="#navbarSupportedContent"
@@ -271,16 +271,17 @@
 </ol>
 <p>连接之后该做的事:</p>
 <p>连接完成之后，客户和服务器之间就可以正常接发报文段了，并且在之后的每一个报文段中 SYN的比特都将被置为0</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 总结一下</span>
-<span class="token comment" spellcheck="true"># client -> service 1</span>
-SYN<span class="token operator">=</span>1 ,seq<span class="token operator">=</span>client_id
-<span class="token comment" spellcheck="true"># service  -> client 2</span>
-SYN<span class="token operator">=</span>1 ,seq<span class="token operator">=</span>service_id ask<span class="token operator">=</span>client_id+1
-<span class="token comment" spellcheck="true"># client -> service 3</span>
-SYN<span class="token operator">=</span>0,seq<span class="token operator">=</span>client+1 ask<span class="token operator">=</span>service_id+1
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 总结一下</span>
+<span class="hljs-comment"># client -> service 1</span>
+SYN=1 ,seq=client_id
+<span class="hljs-comment"># service  -> client 2</span>
+SYN=1 ,seq=service_id ask=client_id+1
+<span class="hljs-comment"># client -> service 3</span>
+SYN=0,seq=client+1 ask=service_id+1
 
-<span class="token comment" spellcheck="true"># client -> service n or  service -> client n</span>
-SYN<span class="token operator">=</span>0</code></pre>
+<span class="hljs-comment"># client -> service n or  service -> client n</span>
+SYN=0</code></pre></div>
+
 <p>注意到三次握手的每一段都需要分配一定的缓存和变量来处理连接,这样的设定则会导致<code>SYN泛洪</code></p>
 <h2 id="TCP四次挥手"><a href="#TCP四次挥手" class="headerlink" title="TCP四次挥手"></a>TCP四次挥手</h2><p>TCP的四次挥手包含了四个阶段，这里假设客户端发起停止</p>
 <ol>
@@ -307,9 +308,9 @@ SYN<span class="token operator">=</span>0</code></pre>
 </ol>
 <p>:::<br>之前说了服务器在使用SYN-COOKIE之后不维护有关SYN报文段的记忆的，那他是怎么来验证客户端的合法性的呢<br>:::</p>
 <p>这里客户端发送了的SYNACK报文段中包含了一下几个内容</p>
-<pre class=" language-bash"><code class="language-bash">SYN<span class="token operator">=</span>1
-seq<span class="token operator">=</span>service_id+1
-ask<span class="token operator">=</span>client_id+1</code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">SYN=1
+seq=service_id+1
+ask=client_id+1</code></pre></div>
 <p>其中<code>seq=service_id+1</code>就是用来验证合法性的，当客户端接收到这一段报文之后，会和之前一样生成一段TCP序列号，再将这段序列号+1 与seq中的进行比较，如果相符合，则表示报文段合法，如果不符合则直接丢弃<br>合法之后，服务器会生成一个具有套接字的全开连接</p>
 <p>这样在一方面可以验证第二阶段中SYNACK报文段的合法性  又可以在第一阶段防止出现额外的半开连接 而导致服务器内存崩溃</p>
 <h2 id="RST标志位"><a href="#RST标志位" class="headerlink" title="RST标志位"></a>RST标志位</h2><p>当客户端发起一个SYN标志位到服务端时，但是服务端不接受这一段报文段，比如端口不被允许，则会发送一段标志位<code>RST=1</code>的报文段</p>
@@ -421,7 +422,7 @@ ask<span class="token operator">=</span>client_id+1</code></pre>
 
   <footer class="text-center mt-5 py-3">
   <div class="footer-content">
-     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+     <a rel="nofollow noopener"><span>Hzjsea</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
   </div>
   
 

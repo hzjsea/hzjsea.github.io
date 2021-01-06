@@ -67,7 +67,7 @@
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
-       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
+       href="/">&nbsp;<strong>hzjsea</strong>&nbsp;</a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
             data-target="#navbarSupportedContent"
@@ -184,7 +184,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      2.9k 字
+      760 字
     </span>
   
 
@@ -194,7 +194,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      38
+      10
        分钟
     </span>
   
@@ -234,106 +234,109 @@
 <p>shell可以看成一门独立的编程语言，但是和其他的编程语言不一样，shell的语法上有很多的不同，包括符号上的使用<br>这里做一下总结，不记所有，就记常用的</p>
 </blockquote>
 <p>shell错误输出重定向</p>
-<pre class=" language-bash"><code class="language-bash"> <span class="token function">command</span> <span class="token operator">></span> /dev/null 2<span class="token operator">></span><span class="token operator">&amp;</span>1</code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-built_in"><code class="language-hljs bash"><span class="hljs-built_in">command</span> > /dev/null 2>&1</code></pre></div>
+
 <p>shell初始化模板</p>
-<pre class=" language-bash"><code class="language-bash">
-<span class="token comment" spellcheck="true">#!/bin/bash</span>
-init<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    os<span class="token operator">=</span><span class="token variable"><span class="token variable">$(</span><span class="token function">uname</span> -s<span class="token variable">)</span></span>
-    <span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token variable">$os</span><span class="token operator">==</span><span class="token string">"Darwin"</span> <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
-        <span class="token function">export</span> frontcolor<span class="token operator">=</span><span class="token string">"\033[34m"</span>
-        <span class="token function">export</span> backcolor<span class="token operator">=</span><span class="token string">"\033[33m"</span>
-    <span class="token keyword">elif</span> <span class="token punctuation">[</span> <span class="token variable">$os</span><span class="token operator">==</span> <span class="token string">"Linux"</span> <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
-        <span class="token function">export</span> frontcolor<span class="token operator">=</span><span class="token string">"\e[34m"</span>
-        <span class="token function">export</span> backcolor<span class="token operator">=</span><span class="token string">"\e[33m"</span>
-    <span class="token keyword">fi</span>
-<span class="token punctuation">}</span>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">
+<span class="hljs-meta">#!/bin/bash</span>
+<span class="hljs-function"><span class="hljs-title">init</span></span>() {
+    os=$(uname -s)
+    <span class="hljs-keyword">if</span> [ <span class="hljs-variable">$os</span>==<span class="hljs-string">"Darwin"</span> ]; <span class="hljs-keyword">then</span>
+        <span class="hljs-built_in">export</span> frontcolor=<span class="hljs-string">"\033[34m"</span>
+        <span class="hljs-built_in">export</span> backcolor=<span class="hljs-string">"\033[33m"</span>
+    <span class="hljs-keyword">elif</span> [ <span class="hljs-variable">$os</span>== <span class="hljs-string">"Linux"</span> ]; <span class="hljs-keyword">then</span>
+        <span class="hljs-built_in">export</span> frontcolor=<span class="hljs-string">"\e[34m"</span>
+        <span class="hljs-built_in">export</span> backcolor=<span class="hljs-string">"\e[33m"</span>
+    <span class="hljs-keyword">fi</span>
+}
 
-_usage<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-<span class="token keyword">echo</span> -e <span class="token string">"
-<span class="token variable">${frontcolor}</span>
-**************************************
-*       thank you use                *
-*       Author: hzjsea               *
-*       Date: you guess              *
-**************************************
+<span class="hljs-function"><span class="hljs-title">_usage</span></span>() {
+<span class="hljs-built_in">echo</span> -e <span class="hljs-string">"</span>
+<span class="hljs-string"><span class="hljs-variable">${frontcolor}</span></span>
+<span class="hljs-string">**************************************</span>
+<span class="hljs-string">*       thank you use                *</span>
+<span class="hljs-string">*       Author: hzjsea               *</span>
+<span class="hljs-string">*       Date: you guess              *</span>
+<span class="hljs-string">**************************************</span>
+<span class="hljs-string"></span>
+<span class="hljs-string">Use: xxxx</span>
+<span class="hljs-string">shortDesc: 构建单机redis</span>
+<span class="hljs-string">LongDesc: 构建单机redis</span>
+<span class="hljs-string"></span>
+<span class="hljs-string">Command</span>
+<span class="hljs-string">    -n   add agrs</span>
+<span class="hljs-string">    -d   add args</span>
+<span class="hljs-string">    -z   add args</span>
+<span class="hljs-string">    -s   true or false</span>
+<span class="hljs-string">    -q   true or flase</span>
+<span class="hljs-string"></span>
+<span class="hljs-string">Global Command</span>
+<span class="hljs-string">    -v</span>
+<span class="hljs-string">Example:</span>
+<span class="hljs-string">    ./xx.sh -n helloworld</span>
+<span class="hljs-string"><span class="hljs-variable">${backcolor}</span></span>
+<span class="hljs-string">"</span>
+}
 
-Use: xxxx
-shortDesc: 构建单机redis
-LongDesc: 构建单机redis
-
-Command
-    -n   add agrs
-    -d   add args
-    -z   add args
-    -s   true or false
-    -q   true or flase
-
-Global Command
-    -v
-Example:
-    ./xx.sh -n helloworld
-<span class="token variable">${backcolor}</span>
-"</span>
-<span class="token punctuation">}</span>
-
-_leave<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-<span class="token function">cat</span> <span class="token operator">&lt;&lt;</span><span class="token string">EOF
-+-------------------------------------------------+
-|  Thank you for usesing!                         |
-+-------------------------------------------------+
-EOF</span>
-<span class="token punctuation">}</span>
+<span class="hljs-function"><span class="hljs-title">_leave</span></span>() {
+cat <<<span class="hljs-string">EOF</span>
+<span class="hljs-string">+-------------------------------------------------+</span>
+<span class="hljs-string">|  Thank you for usesing!                         |</span>
+<span class="hljs-string">+-------------------------------------------------+</span>
+<span class="hljs-string">EOF</span>
+}
 
 
-_check<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token keyword">echo</span> <span class="token string">"检查选项"</span>
-<span class="token punctuation">}</span>
+<span class="hljs-function"><span class="hljs-title">_check</span></span>() {
+    <span class="hljs-built_in">echo</span> <span class="hljs-string">"检查选项"</span>
+}
 
-_stop<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token keyword">echo</span> <span class="token string">"终止"</span>
-<span class="token punctuation">}</span>
+<span class="hljs-function"><span class="hljs-title">_stop</span></span>() {
+    <span class="hljs-built_in">echo</span> <span class="hljs-string">"终止"</span>
+}
 
-_status<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token keyword">echo</span> <span class="token string">"获取状态"</span>
-<span class="token punctuation">}</span>
+<span class="hljs-function"><span class="hljs-title">_status</span></span>() {
+    <span class="hljs-built_in">echo</span> <span class="hljs-string">"获取状态"</span>
+}
 
-down<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token keyword">echo</span> <span class="token string">"关闭"</span>
-<span class="token punctuation">}</span>
+<span class="hljs-function"><span class="hljs-title">down</span></span>() {
+    <span class="hljs-built_in">echo</span> <span class="hljs-string">"关闭"</span>
+}
 
-main<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+<span class="hljs-function"><span class="hljs-title">main</span></span>() {
 
     init
-    action<span class="token operator">=</span>$<span class="token punctuation">{</span>1:-<span class="token string">"default"</span><span class="token punctuation">}</span>
+    action=<span class="hljs-variable">${1:-"default"}</span>
 
-    <span class="token keyword">case</span> <span class="token variable">${action}</span> <span class="token keyword">in</span>
-    <span class="token function">install</span> <span class="token operator">|</span> uninstall <span class="token operator">|</span> update <span class="token operator">|</span> start <span class="token operator">|</span> stop <span class="token operator">|</span> restart<span class="token punctuation">)</span>
-        _<span class="token variable">${action}</span>
-        <span class="token punctuation">;</span><span class="token punctuation">;</span>
-    status<span class="token punctuation">)</span>
-        _<span class="token variable">${action}</span>
-        <span class="token punctuation">;</span><span class="token punctuation">;</span>
-    script<span class="token punctuation">)</span>
+    <span class="hljs-keyword">case</span> <span class="hljs-variable">${action}</span> <span class="hljs-keyword">in</span>
+    install | uninstall | update | start | stop | restart)
+        _<span class="hljs-variable">${action}</span>
+        ;;
+    status)
+        _<span class="hljs-variable">${action}</span>
+        ;;
+    script)
         check_script_update
-        <span class="token punctuation">;</span><span class="token punctuation">;</span>
-    uid<span class="token punctuation">)</span>
-        _<span class="token variable">${action}</span>
-        <span class="token punctuation">;</span><span class="token punctuation">;</span>
-    default<span class="token punctuation">)</span>
+        ;;
+    uid)
+        _<span class="hljs-variable">${action}</span>
+        ;;
+    default)
         _usage
         _leave
-        <span class="token punctuation">;</span><span class="token punctuation">;</span>
-    *<span class="token punctuation">)</span>
+        ;;
+    *)
         _usage
         _leave
-        <span class="token punctuation">;</span><span class="token punctuation">;</span>
-    esac
+        ;;
+    <span class="hljs-keyword">esac</span>
 
-<span class="token punctuation">}</span>
+}
 
-main <span class="token variable">$@</span>
-</code></pre>
+main <span class="hljs-variable">$@</span>
+</code></pre></div>
+
+
 <h2 id="特殊值"><a href="#特殊值" class="headerlink" title="特殊值"></a>特殊值</h2><ul>
 <li><code>$$</code> Shell本身的PID（ProcessID）</li>
 <li><code>$!</code> Shell最后运行的后台Process的PID </li>
@@ -351,24 +354,26 @@ main <span class="token variable">$@</span>
 </blockquote>
 <p>这两个是用来比较判断的，常用的是 <code>[]</code> 其实他们两个是一样的 无非是写法上的不同，一个是 <code>test expression</code> 而另一个是<code>[ expression ]</code> 注意这里必须要前后必须要有空格隔开，不然表达式无法被识别,当使用test判断成功时候，退出状态为 0，否则为非 0 值。</p>
 <p>在<code>test</code>和<code>[]</code> 中 进行字符串比较时，使用<code>==和!=</code><br>在<code>test</code>和<code>[]</code> 中 进行数值比较时，使用<code>-gt -eq</code>等等</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token shebang important">#!/bin/bash</span>
-a<span class="token operator">=</span>1
-b<span class="token operator">=</span>2
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-meta"><code class="language-hljs bash"><span class="hljs-meta">#!/bin/bash</span>
+a=1
+b=2
 
-<span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token variable">$a</span> -eq <span class="token variable">$b</span> <span class="token punctuation">]</span><span class="token punctuation">;</span><span class="token keyword">then</span>
-    <span class="token keyword">echo</span> <span class="token string">"true"</span>
-<span class="token keyword">else</span>
-    <span class="token keyword">echo</span> <span class="token string">"false"</span>
-<span class="token keyword">fi</span>
+<span class="hljs-keyword">if</span> [ <span class="hljs-variable">$a</span> -eq <span class="hljs-variable">$b</span> ];<span class="hljs-keyword">then</span>
+	<span class="hljs-built_in">echo</span> <span class="hljs-string">"true"</span>
+<span class="hljs-keyword">else</span>
+	<span class="hljs-built_in">echo</span> <span class="hljs-string">"false"</span>
+<span class="hljs-keyword">fi</span>
 
-a<span class="token operator">=</span><span class="token string">"hello"</span>
-b<span class="token operator">=</span><span class="token string">"world"</span>
-<span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token variable">$a</span> <span class="token operator">==</span> <span class="token variable">$b</span> <span class="token punctuation">]</span><span class="token punctuation">;</span><span class="token keyword">then</span>
-    <span class="token keyword">echo</span> <span class="token string">"true"</span>
-<span class="token keyword">else</span>
-    <span class="token keyword">echo</span> <span class="token string">"false"</span>
-<span class="token keyword">fi</span>
-</code></pre>
+a=<span class="hljs-string">"hello"</span>
+b=<span class="hljs-string">"world"</span>
+<span class="hljs-keyword">if</span> [ <span class="hljs-variable">$a</span> == <span class="hljs-variable">$b</span> ];<span class="hljs-keyword">then</span>
+	<span class="hljs-built_in">echo</span> <span class="hljs-string">"true"</span>
+<span class="hljs-keyword">else</span>
+	<span class="hljs-built_in">echo</span> <span class="hljs-string">"false"</span>
+<span class="hljs-keyword">fi</span>
+</code></pre></div>
+
+
 <blockquote>
 <p>单个括号 ()<br>命令的执行</p>
 </blockquote>
@@ -377,37 +382,39 @@ b<span class="token operator">=</span><span class="token string">"world"</span>
 <p>双小括号(())<br>用于计算</p>
 </blockquote>
 <p>使用的情况如下<code>((expression))</code><br>作用 </p>
-<pre class=" language-bash"><code class="language-bash"><span class="token shebang important">#!/bin/bash</span>
-<span class="token comment" spellcheck="true">#重新定义变量</span>
-a<span class="token operator">=</span>5
-<span class="token variable"><span class="token punctuation">((</span>a<span class="token operator">++</span><span class="token punctuation">))</span></span>
-<span class="token keyword">echo</span> <span class="token variable">$a</span> <span class="token comment" spellcheck="true"># 输出6</span>
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-meta"><code class="language-hljs bash"><span class="hljs-meta">#!/bin/bash</span>
+<span class="hljs-comment">#重新定义变量</span>
+a=5
+((a++))
+<span class="hljs-built_in">echo</span> <span class="hljs-variable">$a</span> <span class="hljs-comment"># 输出6</span>
 
-<span class="token comment" spellcheck="true">#for循环</span>
-<span class="token keyword">for</span> <span class="token variable"><span class="token punctuation">((</span>i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">5</span><span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">))</span></span><span class="token punctuation">;</span> <span class="token keyword">do</span>
-  <span class="token keyword">echo</span> 当前序号: <span class="token variable">$i</span>
-<span class="token keyword">done</span>
+<span class="hljs-comment">#for循环</span>
+<span class="hljs-keyword">for</span> ((i = 0; i < 5; i++)); <span class="hljs-keyword">do</span>
+  <span class="hljs-built_in">echo</span> 当前序号: <span class="hljs-variable">$i</span>
+<span class="hljs-keyword">done</span>
 
-<span class="token comment" spellcheck="true">#条件判断</span>
-<span class="token keyword">if</span> <span class="token variable"><span class="token punctuation">((</span><span class="token number">1</span> <span class="token operator">+</span> <span class="token number">2</span><span class="token punctuation">))</span></span><span class="token punctuation">;</span> <span class="token keyword">then</span>
-  <span class="token keyword">echo</span> 真
-<span class="token keyword">fi</span>
+<span class="hljs-comment">#条件判断</span>
+<span class="hljs-keyword">if</span> ((1 + 2)); <span class="hljs-keyword">then</span>
+  <span class="hljs-built_in">echo</span> 真
+<span class="hljs-keyword">fi</span>
 
-<span class="token keyword">if</span> <span class="token operator">!</span><span class="token variable"><span class="token punctuation">((</span><span class="token number">1</span> <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">))</span></span><span class="token punctuation">;</span> <span class="token keyword">then</span>
-  <span class="token keyword">echo</span> 假
-<span class="token keyword">fi</span>
+<span class="hljs-keyword">if</span> !((1 - 1)); <span class="hljs-keyword">then</span>
+  <span class="hljs-built_in">echo</span> 假
+<span class="hljs-keyword">fi</span>
 
-<span class="token comment" spellcheck="true">#算数运算</span>
-<span class="token keyword">echo</span> <span class="token variable"><span class="token variable">$((</span><span class="token number">1</span> <span class="token operator">+</span> <span class="token number">2</span> <span class="token operator">*</span> <span class="token number">3</span><span class="token variable">))</span></span> <span class="token comment" spellcheck="true"># 先运算，后用$取值输出7</span></code></pre>
+<span class="hljs-comment">#算数运算</span>
+<span class="hljs-built_in">echo</span> $((<span class="hljs-number">1</span> + <span class="hljs-number">2</span> * <span class="hljs-number">3</span>)) <span class="hljs-comment"># 先运算，后用$取值输出7</span></code></pre></div>
+
 <blockquote>
 <p>[[]]<br>模式匹配</p>
 </blockquote>
-<pre class=" language-bash"><code class="language-bash"><span class="token keyword">if</span> <span class="token punctuation">[</span><span class="token punctuation">[</span> hello <span class="token operator">==</span> hell? <span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">;</span><span class="token keyword">then</span>
-  <span class="token keyword">echo</span> <span class="token string">'hello == hell?  true'</span>
-<span class="token keyword">fi</span>
-<span class="token keyword">if</span> <span class="token punctuation">[</span><span class="token punctuation">[</span> 123 <span class="token operator">=</span>~ ^<span class="token punctuation">[</span>0-9<span class="token punctuation">]</span>+ <span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">;</span><span class="token keyword">then</span>
-  <span class="token keyword">echo</span> <span class="token string">'123 match ^[0-9]+'</span>
-<span class="token keyword">fi</span></code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-keyword">if</span> [[ hello == hell? ]];<span class="hljs-keyword"><code class="language-hljs bash"><span class="hljs-keyword">if</span> [[ hello == hell? ]];<span class="hljs-keyword">then</span>
+  <span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;hello == hell?  true&#x27;</span>
+<span class="hljs-keyword">fi</span>
+<span class="hljs-keyword">if</span> [[ 123 =~ ^[0-9]+ ]];<span class="hljs-keyword">then</span>
+  <span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;123 match ^[0-9]+&#x27;</span>
+<span class="hljs-keyword">fi</span></code></pre></div>
+
 <h2 id="变量"><a href="#变量" class="headerlink" title="变量"></a>变量</h2><blockquote>
 <p>变量基础</p>
 </blockquote>
@@ -416,276 +423,303 @@ a<span class="token operator">=</span>5
 <p>说一下普通变量引用与<code>$&#123;&#125;</code>变量引用</p>
 </blockquote>
 <p>正常情况下变量引用<code>$str</code>与<code>$&#123;str&#125;</code> 是一样的，但是后者可以用更高级的匹配模式，以后建议常使用后者<br>语法</p>
-<pre class=" language-bash"><code class="language-bash">$<span class="token punctuation">{</span>变量名<span class="token comment" spellcheck="true">#匹配规则} 从头开始匹配并且删除，非贪婪</span>
-$<span class="token punctuation">{</span>变量名<span class="token comment" spellcheck="true">##匹配规则} 从头开始匹配并且删除 ,贪婪</span>
-<span class="token variable">${变量名%匹配规则}</span> 从尾巴开始匹配并且删除，非贪婪
-<span class="token variable">${变量名%%匹配规则}</span> 从尾巴开始匹配并且删除，贪婪
-<span class="token variable">${变量名/旧字符/新字符}</span> 替换文字。只替换一次
-<span class="token variable">${变量名//旧字符/新字符}</span> 替换文字，全部替换
-<span class="token variable">${file:start_index:step}</span> 截取字符串
-<span class="token variable">${#string}</span> 返回字符串长度</code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-variable"><code class="language-hljs bash"><span class="hljs-variable">${变量名#匹配规则}</span> 从头开始匹配并且删除，非贪婪
+<span class="hljs-variable">${变量名##匹配规则}</span> 从头开始匹配并且删除 ,贪婪
+<span class="hljs-variable">${变量名%匹配规则}</span> 从尾巴开始匹配并且删除，非贪婪
+<span class="hljs-variable">${变量名%%匹配规则}</span> 从尾巴开始匹配并且删除，贪婪
+<span class="hljs-variable">${变量名/旧字符/新字符}</span> 替换文字。只替换一次
+<span class="hljs-variable">${变量名//旧字符/新字符}</span> 替换文字，全部替换
+<span class="hljs-variable">${file:start_index:step}</span> 截取字符串
+<span class="hljs-variable">${#string}</span> 返回字符串长度</code></pre></div>
+
 <blockquote>
 <p>说一下变量的几种形式</p>
 </blockquote>
 <p>shell中变量分为环境变量,全局变量以及局部变量<br>默认情况下申明的都是全局变量</p>
 <p>环境变量对子变量是有效果的,其实在shell的运行过程中,如果他使用了方法,他是会去开启一个子shell来进行运算的,案例如下</p>
-<pre class=" language-bash"><code class="language-bash">main<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-    <span class="token keyword">echo</span> <span class="token variable">$1</span>
-<span class="token punctuation">}</span>
-main</code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-function"><span class="hljs-title"><code class="language-hljs bash"><span class="hljs-function"><span class="hljs-title">main</span></span>(){
+    <span class="hljs-built_in">echo</span> <span class="hljs-variable">$1</span>
+}
+main</code></pre></div>
 <p>当前内容无法获取到<code>$1</code></p>
-<pre class=" language-bash"><code class="language-bash">main<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-    <span class="token keyword">echo</span> <span class="token variable">$1</span>
-<span class="token punctuation">}</span>
-main <span class="token variable">$@</span></code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-function"><span class="hljs-title"><code class="language-hljs bash"><span class="hljs-function"><span class="hljs-title">main</span></span>(){
+    <span class="hljs-built_in">echo</span> <span class="hljs-variable">$1</span>
+}
+main <span class="hljs-variable">$@</span></code></pre></div>
 <p>如上就可以,因为将所有的参数都传入到了数组当中去</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token function">export</span> nums<span class="token operator">=</span>1 <span class="token comment" spellcheck="true"># 环境变量</span>
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-built_in">export</span> nums=1 <span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-built_in">export</span> nums=1 <span class="hljs-comment"># 环境变量</span>
 
-_stats<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    local nums<span class="token operator">=</span>1 <span class="token comment" spellcheck="true"># 局部变量</span>
-    <span class="token keyword">echo</span> <span class="token variable">${nums}</span>
-<span class="token punctuation">}</span>
+<span class="hljs-function"><span class="hljs-title">_stats</span></span>() {
+	<span class="hljs-built_in">local</span> nums=1 <span class="hljs-comment"># 局部变量</span>
+	<span class="hljs-built_in">echo</span> <span class="hljs-variable">${nums}</span>
+}
 
-nums<span class="token operator">=</span>1 <span class="token comment" spellcheck="true"># 全局变量</span></code></pre>
+nums=1 <span class="hljs-comment"># 全局变量</span></code></pre></div>
+
 <h2 id="按行遍历读取内容"><a href="#按行遍历读取内容" class="headerlink" title="按行遍历读取内容"></a>按行遍历读取内容</h2><p><code>while read line;do;done &lt; xx.txt</code>  其中每一行的数据就是<code>$line</code></p>
 <p>两种写法</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token keyword">while</span> <span class="token function">read</span> line
-<span class="token keyword">do</span>
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-keyword">while</span> <span class="hljs-built_in"><code class="language-hljs bash"><span class="hljs-keyword">while</span> <span class="hljs-built_in">read</span> line
+<span class="hljs-keyword">do</span>
        …
-<span class="token keyword">done</span> <span class="token operator">&lt;</span> <span class="token function">file</span>
+<span class="hljs-keyword">done</span> < file
 
 
-<span class="token function">command</span> <span class="token operator">|</span> <span class="token keyword">while</span> <span class="token function">read</span> line
-<span class="token keyword">do</span>
+<span class="hljs-built_in">command</span> | <span class="hljs-keyword">while</span> <span class="hljs-built_in">read</span> line
+<span class="hljs-keyword">do</span>
     …
-<span class="token keyword">done</span></code></pre>
+<span class="hljs-keyword">done</span></code></pre></div>
 <p>read通过输入重定向，把file的第一行所有的内容赋值给变量line，循环体内的命令一般包含对变量line的处理；然后循环处理file的第二行、第三行。。。一直到file的最后一行。还记得while根据其后的命令退出状态来判断是否执行循环体吗？是的，read命令也有退出状态，当它从文件file中读到内容时，退出状态为0，循环继续惊醒；当read从文件中读完最后一行后，下次便没有内容可读了，此时read的退出状态为非0，所以循环才会退出</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token shebang important">#!/bin/bash</span>
-sum<span class="token operator">=</span>0
-<span class="token keyword">while</span> <span class="token function">read</span> line
-<span class="token keyword">do</span>
-line_n<span class="token operator">=</span>`echo <span class="token variable">${line}</span><span class="token operator">|</span><span class="token function">sed</span> <span class="token string">'s/[^0-9]//g'</span><span class="token operator">|</span><span class="token function">wc</span> -L`
-<span class="token keyword">echo</span> <span class="token variable">${line_n}</span>
-sum<span class="token operator">=</span><span class="token variable"><span class="token variable">$((</span>$sum<span class="token operator">+</span>$line_n<span class="token variable">))</span></span>
-<span class="token keyword">done</span> <span class="token operator">&lt;</span> <span class="token variable">$1</span>
-<span class="token keyword">echo</span> <span class="token string">"sum:<span class="token variable">$sum</span>"</span></code></pre>
-<h2 id="catEOF"><a href="#catEOF" class="headerlink" title="catEOF"></a>catEOF</h2><pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 覆盖写入</span>
-<span class="token function">cat</span> <span class="token operator">></span> xx.txt <span class="token operator">&lt;&lt;</span> <span class="token string">EOF
-> more  xx.txt
-> helloworld
-> helloworld
-> helloworld
-> xxxx
-EOF</span>
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-meta"><code class="language-hljs bash"><span class="hljs-meta">#!/bin/bash</span>
+sum=0
+<span class="hljs-keyword">while</span> <span class="hljs-built_in">read</span> line
+<span class="hljs-keyword">do</span>
+line_n=`<span class="hljs-built_in">echo</span> <span class="hljs-variable">${line}</span>|sed <span class="hljs-string">&#x27;s/[^0-9]//g&#x27;</span>|wc -L`
+<span class="hljs-built_in">echo</span> <span class="hljs-variable">${line_n}</span>
+sum=$((<span class="hljs-variable">$sum</span>+<span class="hljs-variable">$line_n</span>))
+<span class="hljs-keyword">done</span> < <span class="hljs-variable">$1</span>
+<span class="hljs-built_in">echo</span> <span class="hljs-string">"sum:<span class="hljs-variable">$sum</span>"</span></code></pre></div>
 
-<span class="token comment" spellcheck="true"># 追加写入</span>
-<span class="token function">cat</span> <span class="token operator">>></span> xx.txt <span class="token operator">&lt;&lt;</span> <span class="token string">EOF
-> more  xx.txt
-> helloworld
-> helloworld
-> helloworld
-> xxxx
-EOF</span></code></pre>
+
+<h2 id="catEOF"><a href="#catEOF" class="headerlink" title="catEOF"></a>catEOF</h2><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 覆盖写入</span>
+cat > xx.txt << <span class="hljs-string">EOF</span>
+<span class="hljs-string">> more  xx.txt</span>
+<span class="hljs-string">> helloworld</span>
+<span class="hljs-string">> helloworld</span>
+<span class="hljs-string">> helloworld</span>
+<span class="hljs-string">> xxxx</span>
+<span class="hljs-string">EOF</span>
+
+<span class="hljs-comment"># 追加写入</span>
+cat >> xx.txt << <span class="hljs-string">EOF</span>
+<span class="hljs-string">> more  xx.txt</span>
+<span class="hljs-string">> helloworld</span>
+<span class="hljs-string">> helloworld</span>
+<span class="hljs-string">> helloworld</span>
+<span class="hljs-string">> xxxx</span>
+<span class="hljs-string">EOF</span></code></pre></div>
+
+
 <h2 id="数值计算"><a href="#数值计算" class="headerlink" title="数值计算"></a>数值计算</h2><p>数值就算有很多的工具,也有对应的不同方式,有些只支持整数运算,最全的就是bc这个第三方库<br>但是有些机器上面是没有bc的第三方库的,需要下载</p>
-<pre class=" language-bash"><code class="language-bash">yum <span class="token function">install</span> -y <span class="token function">bc</span></code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">yum install -y bc</code></pre></div>
+
 <p>bc支持任意精度的数值运算,使用情况如下</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token keyword">echo</span> <span class="token string">"2+2"</span> <span class="token operator">|</span> <span class="token function">bc</span>
-<span class="token keyword">echo</span> <span class="token string">"2.0+2.0"</span> <span class="token operator">|</span> <span class="token function">bc</span>
-sum<span class="token operator">=</span><span class="token punctuation">$(</span>echo <span class="token string">"2+2"</span> <span class="token operator">|</span> bc<span class="token punctuation">)</span>
-sum<span class="token operator">=</span><span class="token punctuation">$(</span>echo <span class="token string">"2*2"</span> <span class="token operator">|</span> bc<span class="token punctuation">)</span></code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-built_in">echo</span> <span class="hljs-string"><code class="language-hljs bash"><span class="hljs-built_in">echo</span> <span class="hljs-string">"2+2"</span> | bc
+<span class="hljs-built_in">echo</span> <span class="hljs-string">"2.0+2.0"</span> | bc
+sum=$(<span class="hljs-built_in">echo</span> <span class="hljs-string">"2+2"</span> | bc)
+sum=$(<span class="hljs-built_in">echo</span> <span class="hljs-string">"2*2"</span> | bc)</code></pre></div>
+
 <p>整数计算,有很多的工具只能支持简单的整数运算,且expr在格式上也有一定的要求,因为他还能处理简单的字符串处理</p>
 <p>整数运算<code>$(())</code>,<code>$[]</code>,<code>expr 必须在运算符前后有空格,不然会被识别成为字符串</code><br>举例,如果是写成<code>$(expr 1+1)</code> 结果是 <code>1+1</code><br>举例,如果是写成<code>$(expr 1+ 1)</code> 结果是 <code>expr: syntax error</code> 报错,因为字符串和数值无法相加</p>
-<pre class=" language-bash"><code class="language-bash">sum<span class="token operator">=</span><span class="token variable"><span class="token variable">$((</span><span class="token number">1</span><span class="token operator">+</span><span class="token number">2</span><span class="token variable">))</span></span>
-sum<span class="token operator">=</span>$<span class="token punctuation">[</span>1+2<span class="token punctuation">]</span>
-sum<span class="token operator">=</span><span class="token variable"><span class="token variable">$(</span><span class="token function">expr</span> 1 + 1<span class="token variable">)</span></span></code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash">sum=$((<span class="hljs-number">1</span>+<span class="hljs-number"><code class="language-hljs bash">sum=$((<span class="hljs-number">1</span>+<span class="hljs-number">2</span>))
+sum=$[1+2]
+sum=$(expr 1 + 1)</code></pre></div>
+
 <p>expr的字符串操作</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 提取指定字符串下标,只能提取一个字符的位置</span>
-ind<span class="token operator">=</span><span class="token punctuation">$(</span>expr index <span class="token string">"69lki"</span> <span class="token string">"9"</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true"># res 2</span>
-<span class="token comment" spellcheck="true"># 截取字符串子串</span>
-substring<span class="token operator">=</span><span class="token punctuation">$(</span>expr substr <span class="token string">"63lki"</span>,<span class="token string">"1"</span>,3<span class="token punctuation">)</span> <span class="token comment" spellcheck="true"># res 63l</span>
-<span class="token comment" spellcheck="true"># 字符串长度</span>
-con<span class="token operator">=</span><span class="token punctuation">$(</span>expr length <span class="token string">"sdf"</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true"># res 3</span></code></pre>
-<h2 id="for循环的几种变式"><a href="#for循环的几种变式" class="headerlink" title="for循环的几种变式"></a>for循环的几种变式</h2><pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 语法</span>
-<span class="token keyword">for</span>   变量    <span class="token keyword">in</span>   <span class="token punctuation">{</span>起始值<span class="token punctuation">..</span>终止值<span class="token punctuation">}</span>
-<span class="token keyword">do</span> 
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 提取指定字符串下标,只能提取一个字符的位置</span>
+ind=$(expr index <span class="hljs-string">"69lki"</span> <span class="hljs-string">"9"</span>) <span class="hljs-comment"># res 2</span>
+<span class="hljs-comment"># 截取字符串子串</span>
+substring=$(expr substr <span class="hljs-string">"63lki"</span>,<span class="hljs-string">"1"</span>,3) <span class="hljs-comment"># res 63l</span>
+<span class="hljs-comment"># 字符串长度</span>
+con=$(expr length <span class="hljs-string">"sdf"</span>) <span class="hljs-comment"># res 3</span></code></pre></div>
+
+<h2 id="for循环的几种变式"><a href="#for循环的几种变式" class="headerlink" title="for循环的几种变式"></a>for循环的几种变式</h2><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 语法</span>
+<span class="hljs-keyword">for</span>   变量    <span class="hljs-keyword">in</span>   {起始值..终止值}
+<span class="hljs-keyword">do</span> 
     循环主体
-<span class="token keyword">done</span>
-<span class="token comment" spellcheck="true"># 语法3</span>
-<span class="token keyword">for</span>   变量    <span class="token keyword">in</span>     <span class="token variable"><span class="token variable">`</span>命令<span class="token variable">`</span></span>
-<span class="token keyword">do</span>
+<span class="hljs-keyword">done</span>
+<span class="hljs-comment"># 语法3</span>
+<span class="hljs-keyword">for</span>   变量    <span class="hljs-keyword">in</span>     `命令`
+<span class="hljs-keyword">do</span>
         循环主体
-<span class="token keyword">done</span>
-<span class="token comment" spellcheck="true"># 语法4</span>
-<span class="token keyword">for</span>   <span class="token variable"><span class="token punctuation">((</span>初始值<span class="token punctuation">;</span>循环控制<span class="token punctuation">;</span>变量变化<span class="token punctuation">))</span></span>
-<span class="token keyword">do</span>
+<span class="hljs-keyword">done</span>
+<span class="hljs-comment"># 语法4</span>
+<span class="hljs-keyword">for</span>   ((初始值;循环控制;变量变化))
+<span class="hljs-keyword">do</span>
         循环主体
-<span class="token keyword">done</span></code></pre>
-<h2 id="while循环"><a href="#while循环" class="headerlink" title="while循环"></a>while循环</h2><pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 语法1</span>
-<span class="token keyword">while</span>  <span class="token boolean">true</span><span class="token punctuation">;</span><span class="token keyword">do</span>
+<span class="hljs-keyword">done</span></code></pre></div>
+
+<h2 id="while循环"><a href="#while循环" class="headerlink" title="while循环"></a>while循环</h2><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 语法1</span>
+<span class="hljs-keyword">while</span>  <span class="hljs-literal">true</span>;<span class="hljs-keyword">do</span>
       循环主体
-      <span class="token keyword">break</span><span class="token punctuation">;</span>
-      <span class="token keyword">continue</span><span class="token punctuation">;</span>
-<span class="token keyword">done</span></code></pre>
-<h2 id="if判断"><a href="#if判断" class="headerlink" title="if判断"></a>if判断</h2><pre class=" language-bash"><code class="language-bash"><span class="token keyword">if</span> <span class="token punctuation">[</span> -d xx.txt <span class="token punctuation">]</span><span class="token punctuation">;</span><span class="token keyword">then</span> <span class="token keyword">echo</span> <span class="token string">"success"</span><span class="token punctuation">;</span><span class="token keyword">fi</span>
-<span class="token keyword">if</span> <span class="token punctuation">[</span> -d xx.txt <span class="token punctuation">]</span><span class="token punctuation">;</span><span class="token keyword">then</span> <span class="token keyword">echo</span> <span class="token string">"success"</span><span class="token punctuation">;</span><span class="token keyword">else</span> <span class="token keyword">echo</span> <span class="token string">"fail"</span><span class="token punctuation">;</span><span class="token keyword">fi</span>
-<span class="token punctuation">[</span> -d xx.txt <span class="token punctuation">]</span> <span class="token operator">||</span> action <span class="token comment" spellcheck="true"># 错则执行action</span>
-<span class="token punctuation">[</span> -d xx.txt <span class="token punctuation">]</span> <span class="token operator">&amp;&amp;</span> action <span class="token comment" spellcheck="true"># 对则执行action</span></code></pre>
-<h2 id="调试"><a href="#调试" class="headerlink" title="调试"></a>调试</h2><pre class=" language-bash"><code class="language-bash"><span class="token function">bash</span> -vx ./xx.sh</code></pre>
+      <span class="hljs-built_in">break</span>;
+      <span class="hljs-built_in">continue</span>;
+<span class="hljs-keyword">done</span></code></pre></div>
+
+<h2 id="if判断"><a href="#if判断" class="headerlink" title="if判断"></a>if判断</h2><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-keyword">if</span> [ -d xx.txt ];<span class="hljs-keyword">then</span> <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;success&quot;</span>;<span class="hljs-keyword"><code class="language-hljs bash"><span class="hljs-keyword">if</span> [ -d xx.txt ];<span class="hljs-keyword">then</span> <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;success&quot;</span>;<span class="hljs-keyword">fi</span>
+<span class="hljs-keyword">if</span> [ -d xx.txt ];<span class="hljs-keyword">then</span> <span class="hljs-built_in">echo</span> <span class="hljs-string">"success"</span>;<span class="hljs-keyword">else</span> <span class="hljs-built_in">echo</span> <span class="hljs-string">"fail"</span>;<span class="hljs-keyword">fi</span>
+[ -d xx.txt ] || action <span class="hljs-comment"># 错则执行action</span>
+[ -d xx.txt ] && action <span class="hljs-comment"># 对则执行action</span></code></pre></div>
+
+<h2 id="调试"><a href="#调试" class="headerlink" title="调试"></a>调试</h2><div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">bash -vx ./xx.sh</code></pre></div>
 <p>在vim中使用shell</p>
 <p>为了方便调试 可以在vim中使用shell 会自动保存，执行结束之后又可以按回车键回到vim当中去</p>
 <p><code>:!&#123;cmd&#125;</code> 是 Vim 命令，用来执行一条 Shell 命令，命令完成后按任意键回到 Vim</p>
-<pre class=" language-bash"><code class="language-bash">:<span class="token operator">!</span>ifconfig en0
-:<span class="token operator">!</span><span class="token operator">!</span>
-:<span class="token operator">!</span>ansible 10.0.6.35 -m script  -a "xx.sh -z xx -qs</code></pre>
-<h2 id="shell引入python程序"><a href="#shell引入python程序" class="headerlink" title="shell引入python程序"></a>shell引入python程序</h2><pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true">#!/usr/bin/bash</span>
-/usr/bin/python <span class="token operator">&lt;&lt;</span> <span class="token string">EOF
-print("hello world")
-EOF</span>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">:!ifconfig en0
+:!!
+:!ansible 10.0.6.35 -m script  -a <span class="hljs-string">"xx.sh -z xx -qs</span></code></pre></div>
 
-<span class="token comment" spellcheck="true"># or</span>
-/usr/bin/python ./xx.py</code></pre>
+
+
+<h2 id="shell引入python程序"><a href="#shell引入python程序" class="headerlink" title="shell引入python程序"></a>shell引入python程序</h2><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-meta"><code class="language-hljs bash"><span class="hljs-meta">#!/usr/bin/bash</span>
+/usr/bin/python << <span class="hljs-string">EOF</span>
+<span class="hljs-string">print("hello world")</span>
+<span class="hljs-string">EOF</span>
+
+<span class="hljs-comment"># or</span>
+/usr/bin/python ./xx.py</code></pre></div>
+
+
 <h2 id="shell系统方法总结"><a href="#shell系统方法总结" class="headerlink" title="shell系统方法总结"></a>shell系统方法总结</h2><p>shell脚本基本架构就是各类的方法,通过<code>usage</code>或者<code>tips</code>来做提示 通过<code>getops</code>做选项上的选择(只支持单个字符),通过<code>case</code>来做选项上的选择(可以做多个字符上的判断,使用$1 $2来判断,参数较少的时候适用)</p>
-<h3 id="读取版本"><a href="#读取版本" class="headerlink" title="读取版本"></a>读取版本</h3><pre class=" language-bash"><code class="language-bash">get_version<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-    <span class="token keyword">if</span> <span class="token punctuation">[</span><span class="token punctuation">[</span> -s /etc/redhat-release <span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
-        <span class="token function">grep</span> -oE  <span class="token string">"[0-9.]+"</span> /etc/redhat-release
-    <span class="token keyword">else</span>
-        <span class="token function">grep</span> -oE  <span class="token string">"[0-9.]+"</span> /etc/issue
-    <span class="token keyword">fi</span>
-<span class="token punctuation">}</span>
+<h3 id="读取版本"><a href="#读取版本" class="headerlink" title="读取版本"></a>读取版本</h3><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-function"><span class="hljs-title"><code class="language-hljs bash"><span class="hljs-function"><span class="hljs-title">get_version</span></span>(){
+    <span class="hljs-keyword">if</span> [[ -s /etc/redhat-release ]]; <span class="hljs-keyword">then</span>
+        grep -oE  <span class="hljs-string">"[0-9.]+"</span> /etc/redhat-release
+    <span class="hljs-keyword">else</span>
+        grep -oE  <span class="hljs-string">"[0-9.]+"</span> /etc/issue
+    <span class="hljs-keyword">fi</span>
+}
 
 
-get_version</code></pre>
-<h3 id="如果默认没有输入的参数-那么执行install"><a href="#如果默认没有输入的参数-那么执行install" class="headerlink" title="如果默认没有输入的参数,那么执行install"></a>如果默认没有输入的参数,那么执行install</h3><pre class=" language-bash"><code class="language-bash">action<span class="token operator">=</span>$<span class="token punctuation">{</span>1:-<span class="token string">"install"</span><span class="token punctuation">}</span>
-相当于  <span class="token punctuation">[</span> -z <span class="token variable">$1</span> <span class="token punctuation">]</span> <span class="token operator">&amp;&amp;</span> <span class="token variable">$1</span><span class="token operator">=</span><span class="token string">"install"</span></code></pre>
-<h3 id="read"><a href="#read" class="headerlink" title="read"></a>read</h3><pre class=" language-bash"><code class="language-bash">
-<span class="token keyword">echo</span> <span class="token operator">&amp;&amp;</span> <span class="token function">read</span>  -p <span class="token string">"请输入数字 [1-3]："</span> menu_num
-<span class="token comment" spellcheck="true"># 指定多个变量</span>
-<span class="token function">read</span> -p <span class="token string">"Enter your name:"</span> first last
-<span class="token comment" spellcheck="true"># 当不存在指定变量名的时候,会放到REPLY这个环境变量当中去</span>
-<span class="token function">read</span> -p <span class="token string">"Enter your name:"</span> <span class="token operator">&amp;&amp;</span> <span class="token keyword">echo</span> <span class="token variable">$REPLY</span>
-<span class="token comment" spellcheck="true"># 对输入时间要求 ,单位秒</span>
-<span class="token function">read</span> -p  -t 1 <span class="token string">"Enter your name:"</span> 
-<span class="token comment" spellcheck="true"># 对输入字符长度有要求</span>
-<span class="token function">read</span> -p  -n 1 <span class="token string">"Enter your name:"</span> 
-<span class="token comment" spellcheck="true"># 对输入的字符隐藏</span>
-<span class="token function">read</span> -s -p <span class="token string">"Enter your passwd: "</span> pass
-<span class="token comment" spellcheck="true"># 循环读取文本行</span>
-<span class="token keyword">while</span> <span class="token function">read</span> line<span class="token punctuation">;</span><span class="token keyword">do</span> <span class="token keyword">echo</span> <span class="token variable">${line}</span><span class="token punctuation">;</span><span class="token keyword">done</span> <span class="token operator">&lt;</span> xx.txt</code></pre>
-<h3 id="usage-or-tips"><a href="#usage-or-tips" class="headerlink" title="usage or tips"></a>usage or tips</h3><pre class=" language-bash"><code class="language-bash">usage<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-<span class="token function">cat</span> <span class="token operator">&lt;&lt;</span> <span class="token string">EOF
-**************************************
-*       thank you use                *
-*       Author: hzjsea               *
-*       Date: you guess              *
-**************************************
-EOF</span>
+get_version</code></pre></div>
+
+<h3 id="如果默认没有输入的参数-那么执行install"><a href="#如果默认没有输入的参数-那么执行install" class="headerlink" title="如果默认没有输入的参数,那么执行install"></a>如果默认没有输入的参数,那么执行install</h3><div class="code-wrapper"><pre class=" language-hljs bash">action=<span class="hljs-variable"><code class="language-hljs bash">action=<span class="hljs-variable">${1:-"install"}</span>
+相当于  [ -z <span class="hljs-variable">$1</span> ] && <span class="hljs-variable">$1</span>=<span class="hljs-string">"install"</span></code></pre></div>
+
+<h3 id="read"><a href="#read" class="headerlink" title="read"></a>read</h3><div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">
+<span class="hljs-built_in">echo</span> && <span class="hljs-built_in">read</span>  -p <span class="hljs-string">"请输入数字 [1-3]："</span> menu_num
+<span class="hljs-comment"># 指定多个变量</span>
+<span class="hljs-built_in">read</span> -p <span class="hljs-string">"Enter your name:"</span> first last
+<span class="hljs-comment"># 当不存在指定变量名的时候,会放到REPLY这个环境变量当中去</span>
+<span class="hljs-built_in">read</span> -p <span class="hljs-string">"Enter your name:"</span> && <span class="hljs-built_in">echo</span> <span class="hljs-variable">$REPLY</span>
+<span class="hljs-comment"># 对输入时间要求 ,单位秒</span>
+<span class="hljs-built_in">read</span> -p  -t 1 <span class="hljs-string">"Enter your name:"</span> 
+<span class="hljs-comment"># 对输入字符长度有要求</span>
+<span class="hljs-built_in">read</span> -p  -n 1 <span class="hljs-string">"Enter your name:"</span> 
+<span class="hljs-comment"># 对输入的字符隐藏</span>
+<span class="hljs-built_in">read</span> -s -p <span class="hljs-string">"Enter your passwd: "</span> pass
+<span class="hljs-comment"># 循环读取文本行</span>
+<span class="hljs-keyword">while</span> <span class="hljs-built_in">read</span> line;<span class="hljs-keyword">do</span> <span class="hljs-built_in">echo</span> <span class="hljs-variable">${line}</span>;<span class="hljs-keyword">done</span> < xx.txt</code></pre></div>
+
+
+<h3 id="usage-or-tips"><a href="#usage-or-tips" class="headerlink" title="usage or tips"></a>usage or tips</h3><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-function"><span class="hljs-title"><code class="language-hljs bash"><span class="hljs-function"><span class="hljs-title">usage</span></span>(){
+cat << <span class="hljs-string">EOF</span>
+<span class="hljs-string">**************************************</span>
+<span class="hljs-string">*       thank you use                *</span>
+<span class="hljs-string">*       Author: hzjsea               *</span>
+<span class="hljs-string">*       Date: you guess              *</span>
+<span class="hljs-string">**************************************</span>
+<span class="hljs-string">EOF</span>
 
 
 
 
-<span class="token function">cat</span> <span class="token operator">&lt;&lt;</span> <span class="token string">EOF
-+-------------------------------------------------+
-|  Thank you for usesing!                         |
-+-------------------------------------------------+
-EOF</span>
-<span class="token punctuation">}</span>
-</code></pre>
-<h3 id="menus"><a href="#menus" class="headerlink" title="menus"></a>menus</h3><pre class=" language-bash"><code class="language-bash">index<span class="token operator">=</span>-1
+cat << <span class="hljs-string">EOF</span>
+<span class="hljs-string">+-------------------------------------------------+</span>
+<span class="hljs-string">|  Thank you for usesing!                         |</span>
+<span class="hljs-string">+-------------------------------------------------+</span>
+<span class="hljs-string">EOF</span>
+}
+</code></pre></div>
 
-<span class="token keyword">function</span> show_menus<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-<span class="token keyword">echo</span> <span class="token operator">&amp;&amp;</span> <span class="token function">cat</span> <span class="token operator">&lt;&lt;</span> <span class="token string">EOF
-【System Environment】                            【Common Tools】
-[1] Initialization System environment.            [4] Install Nginx1.6.
-[2] Configure SSH_Auth.                           [5] Install Jdk1.7.
-[3] Configure Network-bonding.                    [6] Install Maven3.3.9.
+<h3 id="menus"><a href="#menus" class="headerlink" title="menus"></a>menus</h3><div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">index=-1
 
-[100] Show Menus.
-[0] Exit.
-EOF</span>
-<span class="token punctuation">}</span>
+<span class="hljs-keyword">function</span> <span class="hljs-function"><span class="hljs-title">show_menus</span></span>(){
+<span class="hljs-built_in">echo</span> && cat << <span class="hljs-string">EOF</span>
+<span class="hljs-string">【System Environment】                            【Common Tools】</span>
+<span class="hljs-string">[1] Initialization System environment.            [4] Install Nginx1.6.</span>
+<span class="hljs-string">[2] Configure SSH_Auth.                           [5] Install Jdk1.7.</span>
+<span class="hljs-string">[3] Configure Network-bonding.                    [6] Install Maven3.3.9.</span>
+<span class="hljs-string"></span>
+<span class="hljs-string">[100] Show Menus.</span>
+<span class="hljs-string">[0] Exit.</span>
+<span class="hljs-string">EOF</span>
+}
 
 show_menus
-<span class="token keyword">while</span><span class="token variable"><span class="token punctuation">((</span>$index<span class="token operator">!=</span><span class="token number">0</span><span class="token punctuation">))</span></span>
-<span class="token keyword">do</span>
-  <span class="token keyword">echo</span> <span class="token string">'Please input index:'</span>
-  <span class="token function">read</span> index
-  <span class="token keyword">case</span>  <span class="token variable">$index</span>  <span class="token keyword">in</span>
-    100 <span class="token punctuation">)</span> show_menus
-        <span class="token punctuation">;</span><span class="token punctuation">;</span>
-    1 <span class="token punctuation">)</span> <span class="token variable">$filepath</span>/base/sys.sh
-        <span class="token punctuation">;</span><span class="token punctuation">;</span>
-    2 <span class="token punctuation">)</span> <span class="token variable">$filepath</span>/base/ssh.sh
-        <span class="token punctuation">;</span><span class="token punctuation">;</span>
-    3 <span class="token punctuation">)</span> <span class="token variable">$filepath</span>/network/network-bonding.sh
-        <span class="token punctuation">;</span><span class="token punctuation">;</span>
-    4 <span class="token punctuation">)</span> <span class="token variable">$filepath</span>/mongodb/install_2.6.sh
-        <span class="token punctuation">;</span><span class="token punctuation">;</span>
-    5 <span class="token punctuation">)</span> <span class="token variable">$filepath</span>/mongodb/install_3.0.sh
-        <span class="token punctuation">;</span><span class="token punctuation">;</span>
-    6 <span class="token punctuation">)</span> <span class="token variable">$filepath</span>/mysql/install.sh
-        <span class="token punctuation">;</span><span class="token punctuation">;</span>
-    * <span class="token punctuation">)</span> show_menus
-        <span class="token punctuation">;</span><span class="token punctuation">;</span>
-  esac
-<span class="token keyword">done</span></code></pre>
-<h3 id="用拼接参数的形式来执行字符串形式的方法"><a href="#用拼接参数的形式来执行字符串形式的方法" class="headerlink" title="用拼接参数的形式来执行字符串形式的方法"></a>用拼接参数的形式来执行字符串形式的方法</h3><pre class=" language-bash"><code class="language-bash">action<span class="token operator">=</span>$<span class="token punctuation">{</span>1:-<span class="token string">"install"</span><span class="token punctuation">}</span>
+<span class="hljs-keyword">while</span>((<span class="hljs-variable">$index</span>!=0))
+<span class="hljs-keyword">do</span>
+  <span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;Please input index:&#x27;</span>
+  <span class="hljs-built_in">read</span> index
+  <span class="hljs-keyword">case</span>  <span class="hljs-variable">$index</span>  <span class="hljs-keyword">in</span>
+    100 ) show_menus
+        ;;
+    1 ) <span class="hljs-variable">$filepath</span>/base/sys.sh
+        ;;
+    2 ) <span class="hljs-variable">$filepath</span>/base/ssh.sh
+        ;;
+    3 ) <span class="hljs-variable">$filepath</span>/network/network-bonding.sh
+        ;;
+    4 ) <span class="hljs-variable">$filepath</span>/mongodb/install_2.6.sh
+        ;;
+    5 ) <span class="hljs-variable">$filepath</span>/mongodb/install_3.0.sh
+        ;;
+    6 ) <span class="hljs-variable">$filepath</span>/mysql/install.sh
+        ;;
+    * ) show_menus
+        ;;
+  <span class="hljs-keyword">esac</span>
+<span class="hljs-keyword">done</span></code></pre></div>
 
-<span class="token keyword">case</span> <span class="token variable">${action}</span> <span class="token keyword">in</span>
-    <span class="token function">install</span><span class="token operator">|</span>uninstall<span class="token operator">|</span>update<span class="token operator">|</span>start<span class="token operator">|</span>stop<span class="token operator">|</span>restart<span class="token punctuation">)</span>
-        do_<span class="token variable">${action}</span>
-        <span class="token punctuation">;</span><span class="token punctuation">;</span>
-    status<span class="token punctuation">)</span>
-        do_<span class="token variable">${action}</span>
-        <span class="token punctuation">;</span><span class="token punctuation">;</span>
-    script<span class="token punctuation">)</span>
+<h3 id="用拼接参数的形式来执行字符串形式的方法"><a href="#用拼接参数的形式来执行字符串形式的方法" class="headerlink" title="用拼接参数的形式来执行字符串形式的方法"></a>用拼接参数的形式来执行字符串形式的方法</h3><div class="code-wrapper"><pre class=" language-hljs bash">action=<span class="hljs-variable"><code class="language-hljs bash">action=<span class="hljs-variable">${1:-"install"}</span>
+
+<span class="hljs-keyword">case</span> <span class="hljs-variable">${action}</span> <span class="hljs-keyword">in</span>
+    install|uninstall|update|start|stop|restart)
+        do_<span class="hljs-variable">${action}</span>
+        ;;
+    status)
+        do_<span class="hljs-variable">${action}</span>
+        ;;
+    script)
         check_script_update
-        <span class="token punctuation">;</span><span class="token punctuation">;</span>
-    uid<span class="token punctuation">)</span>
-        do_<span class="token variable">${action}</span> 
-        <span class="token punctuation">;</span><span class="token punctuation">;</span>
-    *<span class="token punctuation">)</span>
+        ;;
+    uid)
+        do_<span class="hljs-variable">${action}</span> 
+        ;;
+    *)
         usage
-        <span class="token punctuation">;</span><span class="token punctuation">;</span>
-esac
+        ;;
+<span class="hljs-keyword">esac</span>
 
-do_install<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span><span class="token punctuation">}</span>
-do_unstall<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span><span class="token punctuation">}</span>
-do_status<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span><span class="token punctuation">}</span>
-do_uid<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span><span class="token punctuation">}</span></code></pre>
+<span class="hljs-function"><span class="hljs-title">do_install</span></span>(){}
+<span class="hljs-function"><span class="hljs-title">do_unstall</span></span>(){}
+<span class="hljs-function"><span class="hljs-title">do_status</span></span>(){}
+<span class="hljs-function"><span class="hljs-title">do_uid</span></span>(){}</code></pre></div>
+
+
 <h3 id="getopts"><a href="#getopts" class="headerlink" title="getopts"></a>getopts</h3><p>这是shell的一个内联函数，用来获取指定的参数</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token shebang important">#!/bin/bash</span>
-<span class="token comment" spellcheck="true"># 模板</span>
-tips<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token keyword">echo</span> <span class="token string">"
-Use : xxxx
-shortDesc : xxx
-LongDesc : xxxx
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-meta"><code class="language-hljs bash"><span class="hljs-meta">#!/bin/bash</span>
+<span class="hljs-comment"># 模板</span>
+<span class="hljs-function"><span class="hljs-title">tips</span></span>() {
+    <span class="hljs-built_in">echo</span> <span class="hljs-string">"</span>
+<span class="hljs-string">Use : xxxx</span>
+<span class="hljs-string">shortDesc : xxx</span>
+<span class="hljs-string">LongDesc : xxxx</span>
+<span class="hljs-string"></span>
+<span class="hljs-string">Command: xxxx</span>
+<span class="hljs-string">    -n   add agrs</span>
+<span class="hljs-string">    -d   add args</span>
+<span class="hljs-string">    -z   add args</span>
+<span class="hljs-string">    -s   true or false</span>
+<span class="hljs-string">    -q   true or flase</span>
+<span class="hljs-string"></span>
+<span class="hljs-string">Global Command : xxx</span>
+<span class="hljs-string">    -v</span>
+<span class="hljs-string">"</span>
+}
 
-Command: xxxx
-    -n   add agrs
-    -d   add args
-    -z   add args
-    -s   true or false
-    -q   true or flase
+<span class="hljs-keyword">while</span> <span class="hljs-built_in">getopts</span> <span class="hljs-string">&#x27;n:d:z:c:sqvm&#x27;</span> options; <span class="hljs-keyword">do</span>
+    <span class="hljs-keyword">case</span> <span class="hljs-variable">${options}</span> <span class="hljs-keyword">in</span>
+    z) <span class="hljs-built_in">echo</span> <span class="hljs-string">"option 当前参数内容 <span class="hljs-variable">${name}</span>"</span>+<span class="hljs-variable">${OPTARG}</span> ;;
+    s) <span class="hljs-built_in">echo</span> <span class="hljs-string">"is true"</span> ;;
+    q) <span class="hljs-built_in">echo</span> <span class="hljs-string">"is q true"</span> ;;
+    n) <span class="hljs-built_in">echo</span> <span class="hljs-variable">$OPTIND</span> ;;
+    m) <span class="hljs-built_in">echo</span> <span class="hljs-string">"<span class="hljs-subst">$(($OPTIND - 1 )</span>)"</span>;;
+    v) <span class="hljs-built_in">echo</span> <span class="hljs-string">"version is 0.1"</span> ;;
+    c) <span class="hljs-built_in">echo</span> <span class="hljs-string">"<span class="hljs-subst">$(($OPTIND - 1)</span>)"</span> ;;
+    *) tips ;;
+    <span class="hljs-keyword">esac</span>
+<span class="hljs-keyword">done</span>
+</code></pre></div>
 
-Global Command : xxx
-    -v
-"</span>
-<span class="token punctuation">}</span>
-
-<span class="token keyword">while</span> <span class="token function">getopts</span> <span class="token string">'n:d:z:c:sqvm'</span> options<span class="token punctuation">;</span> <span class="token keyword">do</span>
-    <span class="token keyword">case</span> <span class="token variable">${options}</span> <span class="token keyword">in</span>
-    z<span class="token punctuation">)</span> <span class="token keyword">echo</span> <span class="token string">"option 当前参数内容 <span class="token variable">${name}</span>"</span>+<span class="token variable">${OPTARG}</span> <span class="token punctuation">;</span><span class="token punctuation">;</span>
-    s<span class="token punctuation">)</span> <span class="token keyword">echo</span> <span class="token string">"is true"</span> <span class="token punctuation">;</span><span class="token punctuation">;</span>
-    q<span class="token punctuation">)</span> <span class="token keyword">echo</span> <span class="token string">"is q true"</span> <span class="token punctuation">;</span><span class="token punctuation">;</span>
-    n<span class="token punctuation">)</span> <span class="token keyword">echo</span> <span class="token variable">$OPTIND</span> <span class="token punctuation">;</span><span class="token punctuation">;</span>
-    m<span class="token punctuation">)</span> <span class="token keyword">echo</span> <span class="token string">"<span class="token variable"><span class="token variable">$((</span>$OPTIND <span class="token operator">-</span> <span class="token number">1</span> <span class="token variable">))</span></span>"</span><span class="token punctuation">;</span><span class="token punctuation">;</span>
-    v<span class="token punctuation">)</span> <span class="token keyword">echo</span> <span class="token string">"version is 0.1"</span> <span class="token punctuation">;</span><span class="token punctuation">;</span>
-    c<span class="token punctuation">)</span> <span class="token keyword">echo</span> <span class="token string">"<span class="token variable"><span class="token variable">$((</span>$OPTIND <span class="token operator">-</span> <span class="token number">1</span><span class="token variable">))</span></span>"</span> <span class="token punctuation">;</span><span class="token punctuation">;</span>
-    *<span class="token punctuation">)</span> tips <span class="token punctuation">;</span><span class="token punctuation">;</span>
-    esac
-<span class="token keyword">done</span>
-</code></pre>
 <p>getopts可以获取shell脚本后面加入的参数，并根据不同指令做出模式匹配<br>匹配的规则如下</p>
 <ul>
 <li><code>n:</code> 表示 匹配 <code>-n xx</code></li>
@@ -701,68 +735,70 @@ Global Command : xxx
 <h2 id="shell模板"><a href="#shell模板" class="headerlink" title="shell模板"></a>shell模板</h2><ol>
 <li>参数比较少，脚本化，使用<code>$1 ~ $n</code> 来获取参数</li>
 </ol>
-<pre class=" language-bash"><code class="language-bash"><span class="token shebang important">#!/bin/bash</span>
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-meta"><code class="language-hljs bash"><span class="hljs-meta">#!/bin/bash</span>
 
-<span class="token keyword">echo</span> <span class="token string">"helloworld"</span>
+<span class="hljs-built_in">echo</span> <span class="hljs-string">"helloworld"</span>
 
 
-<span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token operator">!</span> -z <span class="token variable">$1</span> <span class="token punctuation">]</span><span class="token punctuation">;</span><span class="token keyword">then</span>
-    <span class="token keyword">echo</span> <span class="token variable">$1</span>
-<span class="token keyword">else</span>
-    <span class="token keyword">echo</span> <span class="token string">"no args"</span>
-<span class="token keyword">fi</span></code></pre>
+<span class="hljs-keyword">if</span> [ ! -z <span class="hljs-variable">$1</span> ];<span class="hljs-keyword">then</span>
+    <span class="hljs-built_in">echo</span> <span class="hljs-variable">$1</span>
+<span class="hljs-keyword">else</span>
+    <span class="hljs-built_in">echo</span> <span class="hljs-string">"no args"</span>
+<span class="hljs-keyword">fi</span></code></pre></div>
+
 <ol start="2">
 <li>参数比较多，需要制定多种餐宿，使用getops来完成，写一个简单地echo 来完成提示  项目化</li>
 </ol>
-<pre class=" language-bash"><code class="language-bash">frontcolor<span class="token operator">=</span><span class="token string">"\033[34m"</span>
-backcolor<span class="token operator">=</span><span class="token string">"\033[33m"</span>
+<div class="code-wrapper"><pre class=" language-hljs bash">frontcolor=<span class="hljs-string"><code class="language-hljs bash">frontcolor=<span class="hljs-string">"\033[34m"</span>
+backcolor=<span class="hljs-string">"\033[33m"</span>
 
-tips<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-<span class="token keyword">echo</span> -e<span class="token string">"
-<span class="token variable">${frontcolor}</span>
-Use: xxxx
-shortDesc: xxx
-LongDesc: xxxx
+<span class="hljs-function"><span class="hljs-title">tips</span></span>(){
+<span class="hljs-built_in">echo</span> -e<span class="hljs-string">"</span>
+<span class="hljs-string"><span class="hljs-variable">${frontcolor}</span></span>
+<span class="hljs-string">Use: xxxx</span>
+<span class="hljs-string">shortDesc: xxx</span>
+<span class="hljs-string">LongDesc: xxxx</span>
+<span class="hljs-string"></span>
+<span class="hljs-string">Command</span>
+<span class="hljs-string">    -n   add agrs</span>
+<span class="hljs-string">    -d   add args</span>
+<span class="hljs-string">    -z   add args</span>
+<span class="hljs-string">    -s   true or false</span>
+<span class="hljs-string">    -q   true or flase</span>
+<span class="hljs-string"></span>
+<span class="hljs-string">Global Command</span>
+<span class="hljs-string">    -v</span>
+<span class="hljs-string">Example:</span>
+<span class="hljs-string">    ./xx.sh -n helloworld</span>
+<span class="hljs-string"><span class="hljs-variable">${backcolor}</span></span>
+<span class="hljs-string">"</span>
+}
 
-Command
-    -n   add agrs
-    -d   add args
-    -z   add args
-    -s   true or false
-    -q   true or flase
-
-Global Command
-    -v
-Example:
-    ./xx.sh -n helloworld
-<span class="token variable">${backcolor}</span>
-"</span>
-<span class="token punctuation">}</span>
-
-func<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-<span class="token keyword">while</span> <span class="token function">getopts</span> <span class="token string">'n:d:z:sqv'</span> options<span class="token punctuation">;</span>
-<span class="token keyword">do</span>
-    <span class="token keyword">case</span> <span class="token variable">${options}</span> <span class="token keyword">in</span>
-        z<span class="token punctuation">)</span>  <span class="token keyword">echo</span> <span class="token string">"option 当前参数内容 <span class="token variable">${name}</span>"</span>+<span class="token variable">${OPTARG}</span><span class="token punctuation">;</span><span class="token punctuation">;</span>
-        s<span class="token punctuation">)</span>  <span class="token keyword">echo</span> <span class="token string">"is true"</span><span class="token punctuation">;</span><span class="token punctuation">;</span>
-        q<span class="token punctuation">)</span>  <span class="token keyword">echo</span> <span class="token string">"is q true"</span><span class="token punctuation">;</span><span class="token punctuation">;</span>
-        n<span class="token punctuation">)</span>  <span class="token keyword">echo</span> <span class="token variable">$@</span> + <span class="token variable">$OPTIND</span><span class="token punctuation">;</span><span class="token punctuation">;</span>
-        v<span class="token punctuation">)</span>  <span class="token keyword">echo</span> <span class="token string">"version is 0.1"</span><span class="token punctuation">;</span><span class="token punctuation">;</span>
-        *<span class="token punctuation">)</span>  tips
-    esac
-<span class="token keyword">done</span>  
-<span class="token punctuation">}</span>
+<span class="hljs-function"><span class="hljs-title">func</span></span>(){
+<span class="hljs-keyword">while</span> <span class="hljs-built_in">getopts</span> <span class="hljs-string">&#x27;n:d:z:sqv&#x27;</span> options;
+<span class="hljs-keyword">do</span>
+    <span class="hljs-keyword">case</span> <span class="hljs-variable">${options}</span> <span class="hljs-keyword">in</span>
+        z)  <span class="hljs-built_in">echo</span> <span class="hljs-string">"option 当前参数内容 <span class="hljs-variable">${name}</span>"</span>+<span class="hljs-variable">${OPTARG}</span>;;
+        s)  <span class="hljs-built_in">echo</span> <span class="hljs-string">"is true"</span>;;
+        q)  <span class="hljs-built_in">echo</span> <span class="hljs-string">"is q true"</span>;;
+        n)  <span class="hljs-built_in">echo</span> <span class="hljs-variable">$@</span> + <span class="hljs-variable">$OPTIND</span>;;
+        v)  <span class="hljs-built_in">echo</span> <span class="hljs-string">"version is 0.1"</span>;;
+        *)  tips
+    <span class="hljs-keyword">esac</span>
+<span class="hljs-keyword">done</span>  
+}
 
 
-main<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-    <span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token operator">!</span> -z <span class="token variable">$1</span> <span class="token punctuation">]</span><span class="token punctuation">;</span><span class="token keyword">then</span>
-        func <span class="token variable">$1</span>
-    <span class="token keyword">else</span>
+<span class="hljs-function"><span class="hljs-title">main</span></span>(){
+    <span class="hljs-keyword">if</span> [ ! -z <span class="hljs-variable">$1</span> ];<span class="hljs-keyword">then</span>
+        func <span class="hljs-variable">$1</span>
+    <span class="hljs-keyword">else</span>
         tips
-    <span class="token keyword">fi</span> 
-<span class="token punctuation">}</span>
+    <span class="hljs-keyword">fi</span> 
+}
 
-main <span class="token variable">$@</span></code></pre>
+main <span class="hljs-variable">$@</span></code></pre></div>
+
 <ol start="3">
 <li>工程化  有二级命令的时候，可以使用gocobra来使用</li>
 </ol>
@@ -874,7 +910,7 @@ main <span class="token variable">$@</span></code></pre>
 
   <footer class="text-center mt-5 py-3">
   <div class="footer-content">
-     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+     <a rel="nofollow noopener"><span>Hzjsea</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
   </div>
   
 

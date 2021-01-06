@@ -67,7 +67,7 @@
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
-       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
+       href="/">&nbsp;<strong>hzjsea</strong>&nbsp;</a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
             data-target="#navbarSupportedContent"
@@ -253,171 +253,201 @@
 <li><code>.git/config</code> 这个是针对当前仓库的,你可以传递<code>--local</code>选项让 Git 强制读写此文件，虽然默认情况下用的就是它</li>
 </ul>
 <p>越底层,覆盖的等级越高,所以他们覆盖的顺序是</p>
-<pre><code>.git/config &gt; ~/.gitconfig &gt; /etc/gitconfig</code></pre>
+<div class="code-wrapper"><pre class=" language-hljs routeros">.git<span class="hljs-built_in"><code class="language-hljs routeros">.git<span class="hljs-built_in">/config </span>> ~/.gitconfig > /etc/gitconfig</code></pre></div>
+
 <p>查看对应的git配置</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token function">git</span> config --list --show-origin
-file:/usr/local/etc/gitconfig   credential.helper<span class="token operator">=</span>osxkeychain
-file:/Users/alpaca/.gitconfig   filter.lfs.clean<span class="token operator">=</span>git-lfs clean -- %f
-file:/Users/alpaca/.gitconfig   filter.lfs.smudge<span class="token operator">=</span>git-lfs smudge -- %f
-file:/Users/alpaca/.gitconfig   filter.lfs.process<span class="token operator">=</span>git-lfs filter-process
-file:/Users/alpaca/.gitconfig   filter.lfs.required<span class="token operator">=</span>true
-file:/Users/alpaca/.gitconfig   user.email<span class="token operator">=</span>user@gmail.com
-file:/Users/alpaca/.gitconfig   user.name<span class="token operator">=</span>user
-file:/Users/alpaca/.gitconfig   credential.helper<span class="token operator">=</span>store</code></pre>
-<h2 id="git基础"><a href="#git基础" class="headerlink" title="git基础"></a>git基础</h2><h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># ubuntu</span>
-<span class="token function">sudo</span> <span class="token function">apt-get</span> <span class="token function">install</span> <span class="token function">git</span>
-<span class="token comment" spellcheck="true"># centos </span>
-yum <span class="token function">install</span> <span class="token function">git</span> -y
-<span class="token comment" spellcheck="true"># mac </span>
-brew <span class="token function">install</span> <span class="token function">git</span></code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">git config --list --show-origin
+file:/usr/<span class="hljs-built_in">local</span>/etc/gitconfig   credential.helper=osxkeychain
+file:/Users/alpaca/.gitconfig   filter.lfs.clean=git-lfs clean -- %f
+file:/Users/alpaca/.gitconfig   filter.lfs.smudge=git-lfs smudge -- %f
+file:/Users/alpaca/.gitconfig   filter.lfs.process=git-lfs filter-process
+file:/Users/alpaca/.gitconfig   filter.lfs.required=<span class="hljs-literal">true</span>
+file:/Users/alpaca/.gitconfig   user.email=user@gmail.com
+file:/Users/alpaca/.gitconfig   user.name=user
+file:/Users/alpaca/.gitconfig   credential.helper=store</code></pre></div>
+
+
+<h2 id="git基础"><a href="#git基础" class="headerlink" title="git基础"></a>git基础</h2><h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># ubuntu</span>
+sudo apt-get install git
+<span class="hljs-comment"># centos </span>
+yum install git -y
+<span class="hljs-comment"># mac </span>
+brew install git</code></pre></div>
+
 <h2 id="全局声明用户"><a href="#全局声明用户" class="headerlink" title="全局声明用户"></a>全局声明用户</h2><p>安装完git之后就需要设置用户信息</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token function">git</span> config --global user.name <span class="token string">"your name"</span>
-<span class="token function">git</span> config --global user.email <span class="token string">"xxx@xxx.com"</span></code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash">git config --global user.name <span class="hljs-string"><code class="language-hljs bash">git config --global user.name <span class="hljs-string">"your name"</span>
+git config --global user.email <span class="hljs-string">"xxx@xxx.com"</span></code></pre></div>
 <p>设置全局<code>--global</code>之后,git会全局设定用户信息,如果需要制定特定的用户信息,可以在仓库中设置</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token function">git</span> config  user.name <span class="token string">"your name"</span>
-<span class="token function">git</span> config  user.email <span class="token string">"xxx@xxx.com"</span>
-<span class="token function">git</span> config --list --show-origin
-<span class="token comment" spellcheck="true"># file:.git/config        user.name=xx</span>
-<span class="token comment" spellcheck="true"># file:.git/config        user.email=zz</span>
-<span class="token comment" spellcheck="true"># 查看当前仓库的用户信息</span>
-<span class="token function">git</span> config user.name
-<span class="token comment" spellcheck="true"># xx</span></code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash">git config  user.name <span class="hljs-string"><code class="language-hljs bash">git config  user.name <span class="hljs-string">"your name"</span>
+git config  user.email <span class="hljs-string">"xxx@xxx.com"</span>
+git config --list --show-origin
+<span class="hljs-comment"># file:.git/config        user.name=xx</span>
+<span class="hljs-comment"># file:.git/config        user.email=zz</span>
+<span class="hljs-comment"># 查看当前仓库的用户信息</span>
+git config user.name
+<span class="hljs-comment"># xx</span></code></pre></div>
 <p>这样当前仓库的信息就会被更改,因为当前仓库的gitconfig覆盖等级是最高的</p>
 <h2 id="声明仓库"><a href="#声明仓库" class="headerlink" title="声明仓库"></a>声明仓库</h2><p>声明仓库有两种方式,一种是clone现成的仓库,一种是自己定义一个仓库,<br>两种方式最后都会在本地创建一个仓库</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># clone</span>
-<span class="token function">git</span> clone online/xx.git
-<span class="token comment" spellcheck="true"># init </span>
-<span class="token function">mkdir</span> -p project <span class="token operator">&amp;&amp;</span> <span class="token function">cd</span> project <span class="token operator">&amp;&amp;</span> <span class="token function">git</span> init</code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># clone</span>
+git <span class="hljs-built_in">clone</span> online/xx.git
+<span class="hljs-comment"># init </span>
+mkdir -p project && <span class="hljs-built_in">cd</span> project && git init</code></pre></div>
+
 <h2 id="文件追踪"><a href="#文件追踪" class="headerlink" title="文件追踪"></a>文件追踪</h2><p>初始化好以后的仓库,文件是没有被追踪的<br>可以通过<code>git add</code>命令来指定所需的文件来进行追踪，然后执行<code>git commit</code></p>
 <h2 id="提交并提供信息"><a href="#提交并提供信息" class="headerlink" title="提交并提供信息"></a>提交并提供信息</h2><p>将文件提交到仓库</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token function">git</span> commit -m <span class="token string">"your message"</span></code></pre>
-<h2 id="添加文件"><a href="#添加文件" class="headerlink" title="添加文件"></a>添加文件</h2><pre class=" language-bash"><code class="language-bash"><span class="token function">git</span> add xxx.txt
-<span class="token function">git</span> add <span class="token keyword">.</span> <span class="token comment" spellcheck="true">#添加当前文件夹所有文件 </span></code></pre>
-<h2 id="查看状态"><a href="#查看状态" class="headerlink" title="查看状态"></a>查看状态</h2><p>git status</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 添加文件后的状态</span>
- alpaca@hzj  ~/hzj/tu   master ●  <span class="token function">git</span> add README.md
- alpaca@hzj  ~/hzj/tu   master ✚  <span class="token function">git</span> status
+<div class="code-wrapper"><pre class=" language-hljs bash">git commit -m <span class="hljs-string"><code class="language-hljs bash">git commit -m <span class="hljs-string">"your message"</span></code></pre></div>
+
+<h2 id="添加文件"><a href="#添加文件" class="headerlink" title="添加文件"></a>添加文件</h2><div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">git add xxx.txt
+git add . <span class="hljs-comment">#添加当前文件夹所有文件 </span>
+``` 
+
+<span class="hljs-comment">## 查看状态</span>
+git status
+
+```bash
+<span class="hljs-comment"># 添加文件后的状态</span>
+ alpaca@hzj  ~/hzj/tu   master ●  git add README.md
+ alpaca@hzj  ~/hzj/tu   master ✚  git status
 On branch master
 Changes to be committed:
-  <span class="token punctuation">(</span>use <span class="token string">"git reset HEAD &lt;file>..."</span> to unstage<span class="token punctuation">)</span>
+  (use <span class="hljs-string">"git reset HEAD <file>..."</span> to unstage)
 
         modified:   README.md
 
 
-<span class="token comment" spellcheck="true"># 提交 commit 后的状态</span>
- alpaca@hzj  ~/hzj/tu   master ✚  <span class="token function">git</span> commit -m <span class="token string">"update some file"</span>
-<span class="token punctuation">[</span>master ff070f9<span class="token punctuation">]</span> update some <span class="token function">file</span>
- 1 <span class="token function">file</span> changed, 2 insertions<span class="token punctuation">(</span>+<span class="token punctuation">)</span>
+<span class="hljs-comment"># 提交 commit 后的状态</span>
+ alpaca@hzj  ~/hzj/tu   master ✚  git commit -m <span class="hljs-string">"update some file"</span>
+[master ff070f9] update some file
+ 1 file changed, 2 insertions(+)
  alpaca@hzj  ~/hzj/tu   master 
 
-<span class="token comment" spellcheck="true"># 状态</span>
-  alpaca@hzj  ~/hzj/tu   master  <span class="token function">git</span> status
+<span class="hljs-comment"># 状态</span>
+  alpaca@hzj  ~/hzj/tu   master  git status
 On branch master
-nothing to commit, working tree clean</code></pre>
-<h2 id="查看日志"><a href="#查看日志" class="headerlink" title="查看日志"></a>查看日志</h2><p>当你每一次使用commit 将文件提交到当前分支的时候，记录下每一个步骤<br>查看使用</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 查看日志</span>
-<span class="token function">git</span> log
+nothing to commit, working tree clean</code></pre></div>
 
-commit bb3c0e3a1e850af0c70d3ce3a22995eaae177e82 <span class="token punctuation">(</span>HEAD -<span class="token operator">></span> master<span class="token punctuation">)</span>
-Author: alpaca <span class="token operator">&lt;</span>1097690268@qq.com<span class="token operator">></span>
+<h2 id="查看日志"><a href="#查看日志" class="headerlink" title="查看日志"></a>查看日志</h2><p>当你每一次使用commit 将文件提交到当前分支的时候，记录下每一个步骤<br>查看使用</p>
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 查看日志</span>
+git <span class="hljs-built_in">log</span>
+
+commit bb3c0e3a1e850af0c70d3ce3a22995eaae177e82 (HEAD -> master)
+Author: alpaca <1097690268@qq.com>
 Date:   Thu Nov 21 11:46:24 2019 +0800
 
     update
 
 commit ff070f92dee18935752e5a98b2310d275e1191b6
-Author: alpaca <span class="token operator">&lt;</span>1097690268@qq.com<span class="token operator">></span>
+Author: alpaca <1097690268@qq.com>
 Date:   Thu Nov 21 11:42:58 2019 +0800
 
-    update some <span class="token function">file</span>
+    update some file
 
 commit 230660d585a95b90e3c6176ad21664c1b10f746a
-Author: alpaca <span class="token operator">&lt;</span>1097690268@qq.com<span class="token operator">></span>
+Author: alpaca <1097690268@qq.com>
 Date:   Thu Nov 21 10:37:04 2019 +0800
 
-    update some markdown <span class="token function">file</span>
+    update some markdown file
 
 
-<span class="token comment" spellcheck="true"># 仅查看版本号</span>
-<span class="token function">git</span> log --pretty<span class="token operator">=</span>oneline
-<span class="token comment" spellcheck="true"># 指定版本号 如果你装了zsh 按tab就会出来commit_id</span>
-<span class="token function">git</span> log commit_id </code></pre>
+<span class="hljs-comment"># 仅查看版本号</span>
+git <span class="hljs-built_in">log</span> --pretty=oneline
+<span class="hljs-comment"># 指定版本号 如果你装了zsh 按tab就会出来commit_id</span>
+git <span class="hljs-built_in">log</span> commit_id</code></pre></div>
 <p>由随机码(版本号) + 作者 + 日期 + commit_message 组成</p>
 <h2 id="回退操作"><a href="#回退操作" class="headerlink" title="回退操作"></a>回退操作</h2><p>版本回退，首先我们要知道一个事情 git log 只会记录下commit的过程，也就是上传到当前分支的过程，因此回退操作他并不会记录，但是他会重载之前的log状态，也就是当你一共提交了3次内容，你回退到了第三次提交前的版本。那么你的第三次提交log并不会被记录</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 回退add操作  checkout -- file  暂存区 --> 工作区</span>
-<span class="token function">git</span> checkout -- <span class="token function">file</span>
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 回退add操作  checkout -- file  暂存区 --> 工作区</span>
+git checkout -- file
 
-<span class="token comment" spellcheck="true"># 回退connit操作上  仓库 ---> 暂存区</span>
-<span class="token function">git</span> reset --hard commit_id 
+<span class="hljs-comment"># 回退connit操作上  仓库 ---> 暂存区</span>
+git reset --hard commit_id 
 
-<span class="token comment" spellcheck="true"># 查看回退日志</span>
-<span class="token function">git</span> reflog</code></pre>
+<span class="hljs-comment"># 查看回退日志</span>
+git reflog</code></pre></div>
+
+
 <h2 id="提交远程仓库"><a href="#提交远程仓库" class="headerlink" title="提交远程仓库"></a>提交远程仓库</h2><p>之前的操作都是本地的，包括最后一步git commit 也只是提交到了本地的仓库。为了更好的保存内容，我们已经引入云仓库或者说托管我们的项目</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 添加远程仓库地址</span>
-<span class="token function">git</span> remote add origin https://gitee.com/Alpaca-H/how-to-learn-git.git 
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 添加远程仓库地址</span>
+git remote add origin https://gitee.com/Alpaca-H/how-to-learn-git.git 
 
-<span class="token comment" spellcheck="true"># 提交当前分支到远程仓库</span>
-<span class="token function">git</span> push  origin master
+<span class="hljs-comment"># 提交当前分支到远程仓库</span>
+git push  origin master
 
-<span class="token comment" spellcheck="true"># 建议第一次使用push -u</span>
-<span class="token comment" spellcheck="true"># Git不但会把本地的master分支内容推送的远程新的master分支，还会把本地的master分支和远程的master分支关联起来 在以后的推送或者拉取时就可以简化命令。</span></code></pre>
-<h2 id="从远程仓库下载"><a href="#从远程仓库下载" class="headerlink" title="从远程仓库下载"></a>从远程仓库下载</h2><pre class=" language-bash"><code class="language-bash"><span class="token function">git</span> clone https://gitee.com/Alpaca-H/how-to-learn-git.git</code></pre>
+<span class="hljs-comment"># 建议第一次使用push -u</span>
+<span class="hljs-comment"># Git不但会把本地的master分支内容推送的远程新的master分支，还会把本地的master分支和远程的master分支关联起来 在以后的推送或者拉取时就可以简化命令。</span></code></pre></div>
+
+<h2 id="从远程仓库下载"><a href="#从远程仓库下载" class="headerlink" title="从远程仓库下载"></a>从远程仓库下载</h2><div class="code-wrapper"><pre class=" language-hljs bash">git <span class="hljs-built_in"><code class="language-hljs bash">git <span class="hljs-built_in">clone</span> https://gitee.com/Alpaca-H/how-to-learn-git.git</code></pre></div>
+
+
 <p>第一次提交的存在的问题</p>
-<pre class=" language-bash"><code class="language-bash"> <span class="token operator">!</span> <span class="token punctuation">[</span>rejected<span class="token punctuation">]</span>        master -<span class="token operator">></span> master <span class="token punctuation">(</span>fetch first<span class="token punctuation">)</span>
-error: failed to push some refs to <span class="token string">'https://gitee.com/Alpaca-H/how-to-learn-git.git'</span>
-hint: Updates were rejected because the remote contains work that you <span class="token keyword">do</span>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash"> ! [rejected]        master -> master (fetch first)
+error: failed to push some refs to <span class="hljs-string">&#x27;https://gitee.com/Alpaca-H/how-to-learn-git.git&#x27;</span>
+hint: Updates were rejected because the remote contains work that you <span class="hljs-keyword">do</span>
 hint: not have locally. This is usually caused by another repository pushing
 hint: to the same ref. You may want to first integrate the remote changes
-hint: <span class="token punctuation">(</span>e.g., <span class="token string">'git pull ...'</span><span class="token punctuation">)</span> before pushing again.
-hint: See the <span class="token string">'Note about fast-forwards'</span> <span class="token keyword">in</span> <span class="token string">'git push --help'</span> <span class="token keyword">for</span> details. </code></pre>
+hint: (e.g., <span class="hljs-string">&#x27;git pull ...&#x27;</span>) before pushing again.
+hint: See the <span class="hljs-string">&#x27;Note about fast-forwards&#x27;</span> <span class="hljs-keyword">in</span> <span class="hljs-string">&#x27;git push --help&#x27;</span> <span class="hljs-keyword">for</span> details.</code></pre></div>
 <p>如果你是在 码云上创建的项目，它本身就存在两个README文件，也就是说仓库中本身就存在文件了，这时候你删掉这两个也没用，(github上好像没这个问题)<br>我们需要同步远程仓库，也就是拉取下来并用–allow-unrelated-histories 合并</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token function">git</span> pull origin master --allow-unrelated-histories   
-<span class="token function">git</span> commit -m <span class="token string">"xxx"</span> <span class="token comment" spellcheck="true">#重新提交</span>
-<span class="token function">git</span> push origin master</code></pre>
-<h2 id="从远程仓库下载-–-指定分支"><a href="#从远程仓库下载-–-指定分支" class="headerlink" title="从远程仓库下载 – 指定分支"></a>从远程仓库下载 – 指定分支</h2><pre class=" language-bash"><code class="language-bash"><span class="token function">git</span> clone -b hzj_branch https://gitee.com/Alpaca-H/how-to-learn-git.git </code></pre>
-<h2 id="分支管理"><a href="#分支管理" class="headerlink" title="分支管理"></a>分支管理</h2><pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 创建分支  </span>
-<span class="token function">git</span> branch hzj
-<span class="token comment" spellcheck="true"># 切换分支</span>
-<span class="token function">git</span> checkout hzj
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">git pull origin master --allow-unrelated-histories   
+git commit -m <span class="hljs-string">"xxx"</span> <span class="hljs-comment">#重新提交</span>
+git push origin master</code></pre></div>
 
-<span class="token comment" spellcheck="true"># 创建并切换分支</span>
-<span class="token function">git</span> checkout -b hzj
+<h2 id="从远程仓库下载-–-指定分支"><a href="#从远程仓库下载-–-指定分支" class="headerlink" title="从远程仓库下载 – 指定分支"></a>从远程仓库下载 – 指定分支</h2><div class="code-wrapper"><pre class=" language-hljs bash">git <span class="hljs-built_in"><code class="language-hljs bash">git <span class="hljs-built_in">clone</span> -b hzj_branch https://gitee.com/Alpaca-H/how-to-learn-git.git</code></pre></div>
 
-<span class="token comment" spellcheck="true"># 查看当前分支</span>
-<span class="token function">git</span> branch</code></pre>
+
+<h2 id="分支管理"><a href="#分支管理" class="headerlink" title="分支管理"></a>分支管理</h2><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 创建分支  </span>
+git branch hzj
+<span class="hljs-comment"># 切换分支</span>
+git checkout hzj
+
+<span class="hljs-comment"># 创建并切换分支</span>
+git checkout -b hzj
+
+<span class="hljs-comment"># 查看当前分支</span>
+git branch</code></pre></div>
+
 <p>记住上面的只是分支管理，他只是在你的本地有了分支，在你没有push之前所有的一切都是本地操作</p>
-<h2 id="分支管理2"><a href="#分支管理2" class="headerlink" title="分支管理2"></a>分支管理2</h2><pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 切换到新的分支 </span>
-<span class="token function">git</span> swicth -c dev
-<span class="token comment" spellcheck="true"># 切换到已有分支</span>
-<span class="token function">git</span> swicth dev</code></pre>
-<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 添加文件</span>
-<span class="token keyword">echo</span> <span class="token string">"我是hzj分支"</span> <span class="token operator">></span> README2.md
-<span class="token function">git</span> add README2.md
-<span class="token function">git</span> commit -m <span class="token string">"update hzj"</span>
-<span class="token function">git</span> push -u origin  hzj <span class="token comment" spellcheck="true"># 提交到hzj的分支</span></code></pre>
+<h2 id="分支管理2"><a href="#分支管理2" class="headerlink" title="分支管理2"></a>分支管理2</h2><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 切换到新的分支 </span>
+git swicth -c dev
+<span class="hljs-comment"># 切换到已有分支</span>
+git swicth dev</code></pre></div>
+
+
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 添加文件</span>
+<span class="hljs-built_in">echo</span> <span class="hljs-string">"我是hzj分支"</span> > README2.md
+git add README2.md
+git commit -m <span class="hljs-string">"update hzj"</span>
+git push -u origin  hzj <span class="hljs-comment"># 提交到hzj的分支</span></code></pre></div>
+
 <h2 id="合并分支"><a href="#合并分支" class="headerlink" title="合并分支"></a>合并分支</h2><p>进入master</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token function">git</span>  merge hzj <span class="token comment" spellcheck="true"># 合并在本地仓库的文件</span></code></pre>
-<h2 id="删除分支"><a href="#删除分支" class="headerlink" title="删除分支"></a>删除分支</h2><pre class=" language-bash"><code class="language-bash"><span class="token function">git</span> branch -d hzj </code></pre>
-<h2 id="强制覆盖本地代码"><a href="#强制覆盖本地代码" class="headerlink" title="强制覆盖本地代码"></a>强制覆盖本地代码</h2><pre class=" language-bash"><code class="language-bash">$ <span class="token function">git</span> fetch --all
-$ <span class="token function">git</span> reset --hard origin/master 
-$ <span class="token function">git</span> pull </code></pre>
-<h2 id="git-关于Git每次进入都需要输入用户名和密码的问题解决"><a href="#git-关于Git每次进入都需要输入用户名和密码的问题解决" class="headerlink" title="git 关于Git每次进入都需要输入用户名和密码的问题解决"></a>git 关于Git每次进入都需要输入用户名和密码的问题解决</h2><pre class=" language-bash"><code class="language-bash"><span class="token function">cd</span> your-project
-<span class="token function">git</span> config --global credential.helper store 
-<span class="token function">git</span> pull</code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash">git  merge hzj <span class="hljs-comment"><code class="language-hljs bash">git  merge hzj <span class="hljs-comment"># 合并在本地仓库的文件</span></code></pre></div>
+
+<h2 id="删除分支"><a href="#删除分支" class="headerlink" title="删除分支"></a>删除分支</h2><div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">git branch -d hzj</code></pre></div>
+
+
+<h2 id="强制覆盖本地代码"><a href="#强制覆盖本地代码" class="headerlink" title="强制覆盖本地代码"></a>强制覆盖本地代码</h2><div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">$ git fetch --all
+$ git reset --hard origin/master 
+$ git pull</code></pre></div>
+
+<h2 id="git-关于Git每次进入都需要输入用户名和密码的问题解决"><a href="#git-关于Git每次进入都需要输入用户名和密码的问题解决" class="headerlink" title="git 关于Git每次进入都需要输入用户名和密码的问题解决"></a>git 关于Git每次进入都需要输入用户名和密码的问题解决</h2><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-built_in"><code class="language-hljs bash"><span class="hljs-built_in">cd</span> your-project
+git config --global credential.helper store 
+git pull</code></pre></div>
 <p>输过一遍以后就不用再输入了</p>
-<h2 id="分支同步主干"><a href="#分支同步主干" class="headerlink" title="分支同步主干"></a>分支同步主干</h2><pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 切换到master分支</span>
-<span class="token function">git</span> checkout master 
-<span class="token comment" spellcheck="true"># 下拉master</span>
-<span class="token function">git</span> pull origin master
-<span class="token comment" spellcheck="true"># 切换分支</span>
-<span class="token function">git</span> checkout hzj
-<span class="token comment" spellcheck="true"># 同步分支</span>
-<span class="token function">git</span> merge  master</code></pre>
-<h2 id="主干同步分支-慎用"><a href="#主干同步分支-慎用" class="headerlink" title="主干同步分支(慎用)"></a>主干同步分支(慎用)</h2><pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 切换到主分支</span>
-<span class="token function">git</span> checkout master
-<span class="token comment" spellcheck="true"># 同步分支</span>
-<span class="token function">git</span> merge hzj
-<span class="token comment" spellcheck="true"># 提交</span>
-<span class="token function">git</span> push origin master </code></pre>
+<h2 id="分支同步主干"><a href="#分支同步主干" class="headerlink" title="分支同步主干"></a>分支同步主干</h2><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 切换到master分支</span>
+git checkout master 
+<span class="hljs-comment"># 下拉master</span>
+git pull origin master
+<span class="hljs-comment"># 切换分支</span>
+git checkout hzj
+<span class="hljs-comment"># 同步分支</span>
+git merge  master</code></pre></div>
+
+<h2 id="主干同步分支-慎用"><a href="#主干同步分支-慎用" class="headerlink" title="主干同步分支(慎用)"></a>主干同步分支(慎用)</h2><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 切换到主分支</span>
+git checkout master
+<span class="hljs-comment"># 同步分支</span>
+git merge hzj
+<span class="hljs-comment"># 提交</span>
+git push origin master</code></pre></div>
+
 <h2 id="inventory操作"><a href="#inventory操作" class="headerlink" title="inventory操作"></a>inventory操作</h2><ol>
 <li>拉取项目<br>git clone <a target="_blank" rel="noopener" href="https://gitlab.s.upyun.com/infrastructure/inventory.git">https://gitlab.s.upyun.com/infrastructure/inventory.git</a></li>
 <li>查看当前分支<br>git branch</li>
@@ -429,9 +459,10 @@ $ <span class="token function">git</span> pull </code></pre>
 <p>发消息给有master权限的人，交由master来合并</p>
 <h2 id="错误整理"><a href="#错误整理" class="headerlink" title="错误整理"></a>错误整理</h2><h3 id="场景1"><a href="#场景1" class="headerlink" title="场景1"></a>场景1</h3><p>之前用过一个Alpaca-H的github账号，后来被弃用了，然后换成hzjsea的账号，并且使用git config –global更新了username和email也不行<br>后来发现mac会在本地生成一份凭证，存储在本地</p>
 <p>报错</p>
-<pre class=" language-bash"><code class="language-bash">➜  sea_blog git:<span class="token punctuation">(</span>master<span class="token punctuation">)</span> <span class="token function">git</span> push  origin master
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">➜  sea_blog git:(master) git push  origin master
 remote: Permission to hzjsea/sea_blog.git denied to Alpaca-H.
-fatal: unable to access <span class="token string">'https://github.com/hzjsea/sea_blog.git/'</span><span class="token keyword">:</span> The requested URL returned error: 403</code></pre>
+fatal: unable to access <span class="hljs-string">&#x27;https://github.com/hzjsea/sea_blog.git/&#x27;</span>: The requested URL returned error: 403</code></pre></div>
+
 <p>解决办法</p>
 <ol>
 <li>进入Keychain Access (不知道在哪儿的可以command+space查找)</li>
@@ -442,7 +473,7 @@ fatal: unable to access <span class="token string">'https://github.com/hzjsea/se
 <p><img src="http://img.noback.top/2020-03-14-23-38-56.png" srcset="/img/loading.gif" alt="2020-03-14-23-38-56"></p>
 <h3 id="场景2"><a href="#场景2" class="headerlink" title="场景2"></a>场景2</h3><p>经常要输账号密码</p>
 <p><img src="http://img.noback.top/2020-04-10-14-47-32.png" srcset="/img/loading.gif" alt="2020-04-10-14-47-32"><br>解决办法</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token function">git</span> config --global credential.helper store</code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">git config --global credential.helper store</code></pre></div>
 <p>生成一个本地文件用于存放账号密码，然后再pull一下就行了</p>
 
             </div>
@@ -552,7 +583,7 @@ fatal: unable to access <span class="token string">'https://github.com/hzjsea/se
 
   <footer class="text-center mt-5 py-3">
   <div class="footer-content">
-     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+     <a rel="nofollow noopener"><span>Hzjsea</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
   </div>
   
 

@@ -67,7 +67,7 @@
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
-       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
+       href="/">&nbsp;<strong>hzjsea</strong>&nbsp;</a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
             data-target="#navbarSupportedContent"
@@ -184,7 +184,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      484 字
+      487 字
     </span>
   
 
@@ -238,90 +238,97 @@
 <li>sqllite做数据库 ，更推荐使用postgresql</li>
 </ul>
 <p><a target="_blank" rel="noopener" href="https://fastapi.tiangolo.com/tutorial/sql-databases/#migrations">https://fastapi.tiangolo.com/tutorial/sql-databases/#migrations</a></p>
-<h1 id="项目目录"><a href="#项目目录" class="headerlink" title="项目目录"></a>项目目录</h1><pre class=" language-py"><code class="language-py">➜  project git:(master) ✗ tree .
+<h1 id="项目目录"><a href="#项目目录" class="headerlink" title="项目目录"></a>项目目录</h1><div class="code-wrapper"><pre class=" language-hljs py"><code class="language-hljs py">➜  project git:(master) ✗ tree .
 .
 ├── __init__.py
-├── crud.py           # database action
-├── database.py       # connect database  sqlalchemy for sqllite3  (device update setting)
-├── main.py           # main
-├── models.py         # database for sqlalchemy 类似于django中的models.py
-├── schemas.py        # show 
-└── test.db           # sqllite3</code></pre>
-<h2 id="自己对目录结构重新整理了一下"><a href="#自己对目录结构重新整理了一下" class="headerlink" title="自己对目录结构重新整理了一下"></a>自己对目录结构重新整理了一下</h2><p>自己整理了一下目录，像他给出的案例，里面放太多model后期不好维护</p>
-<pre class=" language-py"><code class="language-py">(py_env) ➜  project git:(master) ✗ tree .        
+├── crud.py           <span class="hljs-comment"># database action</span>
+├── database.py       <span class="hljs-comment"># connect database  sqlalchemy for sqllite3  (device update setting)</span>
+├── main.py           <span class="hljs-comment"># main</span>
+├── models.py         <span class="hljs-comment"># database for sqlalchemy 类似于django中的models.py</span>
+├── schemas.py        <span class="hljs-comment"># show </span>
+└── test.db           <span class="hljs-comment"># sqllite3</span>
+``` 
+
+
+<span class="hljs-comment">## 自己对目录结构重新整理了一下</span>
+自己整理了一下目录，像他给出的案例，里面放太多model后期不好维护
+
+```py
+(py_env) ➜  project git:(master) ✗ tree .        
 .
-├── app                                 # -> app 多个app组成  里面放一些crud 以及model
+├── app                                 <span class="hljs-comment"># -> app 多个app组成  里面放一些crud 以及model</span>
 │   ├── Item
 │   │   ├── __pycache__
-│   │   │   └── model.cpython-37.pyc
+│   │   │   └── model.cpython<span class="hljs-number">-37.</span>pyc
 │   │   ├── crud.py
 │   │   └── model.py
 │   ├── __init__.py
-│   ├── schemas.py                      # schemas这个文件一直不知道怎么处理，它相当于是对sqlalchemy设计出来的model做了一个映射把
+│   ├── schemas.py                      <span class="hljs-comment"># schemas这个文件一直不知道怎么处理，它相当于是对sqlalchemy设计出来的model做了一个映射把</span>
 │   └── user
 │       ├── crud.py
 │       └── models.py
 ├── main.py
-├── routers                             # 路由设计，这里是官方给出的设计
+├── routers                             <span class="hljs-comment"># 路由设计，这里是官方给出的设计</span>
 │   ├── __init__.py
 │   ├── items.py
 │   └── users.py
 ├── setting.py
-└── test.db</code></pre>
+└── test.db</code></pre></div>
+
 <p>上面的内容会传到github上，后面记录地址</p>
 <h2 id="关于APIrouter的使用"><a href="#关于APIrouter的使用" class="headerlink" title="关于APIrouter的使用"></a>关于APIrouter的使用</h2><p>他其实对第一层路径相同的情况下做了优化</p>
 <p>这个是一个user的请求路径，但是这样会重复user的这个第一层路径</p>
-<pre class=" language-py"><code class="language-py">from fastapi import APIRouter
-from app.user import crud
-from app import  schemas
+<div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword"><code class="language-hljs py"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> APIRouter
+<span class="hljs-keyword">from</span> app.user <span class="hljs-keyword">import</span> crud
+<span class="hljs-keyword">from</span> app <span class="hljs-keyword">import</span>  schemas
 
 
-from typing import  List
-from fastapi import  Depends, HTTPException
+<span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span>  List
+<span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span>  Depends, HTTPException
 
 
-from sqlalchemy.orm import  Session
-from setting import  SessionLocal
+<span class="hljs-keyword">from</span> sqlalchemy.orm <span class="hljs-keyword">import</span>  Session
+<span class="hljs-keyword">from</span> setting <span class="hljs-keyword">import</span>  SessionLocal
 
 
-def get_db():
-    try:
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_db</span>():</span>
+    <span class="hljs-keyword">try</span>:
         db = SessionLocal()
-        yield db
-    finally:
+        <span class="hljs-keyword">yield</span> db
+    <span class="hljs-keyword">finally</span>:
         db.close()
 
 router = APIRouter()
 
-@router.post("/users/", response_model=schemas.User)
-def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
+<span class="hljs-meta">@router.post("/users/", response_model=schemas.User)</span>
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">create_user</span>(<span class="hljs-params">user: schemas.UserCreate, db: Session = Depends(<span class="hljs-params">get_db</span>)</span>):</span>
     db_user = crud.get_user_by_email(db, email=user.email)
-    if db_user:
-        raise HTTPException(status_code=400, detail="Email already registered")
-    return crud.create_user(db=db, user=user)
+    <span class="hljs-keyword">if</span> db_user:
+        <span class="hljs-keyword">raise</span> HTTPException(status_code=<span class="hljs-number">400</span>, detail=<span class="hljs-string">"Email already registered"</span>)
+    <span class="hljs-keyword">return</span> crud.create_user(db=db, user=user)
 
 
 
 
-@router.get("/users/", response_model=List[schemas.User])
-def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+<span class="hljs-meta">@router.get("/users/", response_model=List[schemas.User])</span>
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">read_users</span>(<span class="hljs-params">skip: <span class="hljs-built_in">int</span> = <span class="hljs-number">0</span>, limit: <span class="hljs-built_in">int</span> = <span class="hljs-number">100</span>, db: Session = Depends(<span class="hljs-params">get_db</span>)</span>):</span>
     users = crud.get_users(db, skip=skip, limit=limit)
-    return users
+    <span class="hljs-keyword">return</span> users
 
 
-@router.get("/users/{user_id}", response_model=schemas.User)
-def read_user(user_id: int, db: Session = Depends(get_db)):
+<span class="hljs-meta">@router.get("/users/{user_id}", response_model=schemas.User)</span>
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">read_user</span>(<span class="hljs-params">user_id: <span class="hljs-built_in">int</span>, db: Session = Depends(<span class="hljs-params">get_db</span>)</span>):</span>
     db_user = crud.get_user(db, user_id=user_id)
-    if db_user is None:
-        raise HTTPException(status_code=404, detail="User not found")
-    return db_user</code></pre>
-<p>可以在路由中修改第一层路由路径</p>
-<pre class=" language-py"><code class="language-py">app.include_router(
-    users.router,
-    prefix="/users",
-)
-</code></pre>
+    <span class="hljs-keyword">if</span> db_user <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>:
+        <span class="hljs-keyword">raise</span> HTTPException(status_code=<span class="hljs-number">404</span>, detail=<span class="hljs-string">"User not found"</span>)
+    <span class="hljs-keyword">return</span> db_user</code></pre></div>
 
+<p>可以在路由中修改第一层路由路径</p>
+<div class="code-wrapper"><pre class=" language-hljs py"><code class="language-hljs py">app.include_router(
+    users.router,
+    prefix=<span class="hljs-string">"/users"</span>,
+)
+</code></pre></div>
             </div>
             <hr>
             <div>
@@ -429,7 +436,7 @@ def read_user(user_id: int, db: Session = Depends(get_db)):
 
   <footer class="text-center mt-5 py-3">
   <div class="footer-content">
-     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+     <a rel="nofollow noopener"><span>Hzjsea</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
   </div>
   
 

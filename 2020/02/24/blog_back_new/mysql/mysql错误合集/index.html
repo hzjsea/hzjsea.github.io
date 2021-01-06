@@ -67,7 +67,7 @@
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
-       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
+       href="/">&nbsp;<strong>hzjsea</strong>&nbsp;</a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
             data-target="#navbarSupportedContent"
@@ -184,7 +184,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      1.6k 字
+      1.8k 字
     </span>
   
 
@@ -194,7 +194,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      22
+      25
        分钟
     </span>
   
@@ -232,38 +232,42 @@
 <h1 id="mysql错误"><a href="#mysql错误" class="headerlink" title="mysql错误"></a>mysql错误</h1><blockquote>
 <p>不进入mysql 执行mysql命令</p>
 </blockquote>
-<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 使用-e</span>
-mysql -u root -p xxxxxx -e <span class="token string">"show databases;"</span>
-<span class="token comment" spellcheck="true"># 使用eof</span>
-mysql -u root -p xxxxxx <span class="token operator">&lt;&lt;</span> <span class="token string">eof
-show databases;
-eof</span>
-<span class="token comment" spellcheck="true"># 使用echo</span>
-<span class="token keyword">echo</span> <span class="token string">"show databases;"</span> <span class="token operator">|</span> mysql -u root -p xxxxxx
-<span class="token comment" spellcheck="true"># 使用sql文件执行</span>
-<span class="token keyword">echo</span> <span class="token string">"show databases;"</span> <span class="token operator">></span> show.sql
-mysql -u root -p xxxxxx <span class="token operator">&lt;</span> show.sql 
-<span class="token comment" spellcheck="true"># 使用shell</span>
-MYSQLCMD<span class="token operator">=</span><span class="token string">"mysql -hhost -uuser -ppasswd db"</span>
-CODE<span class="token operator">=</span><span class="token string">"SELECT * FROM table"</span>
-<span class="token keyword">echo</span> <span class="token string">"<span class="token variable">${CODE}</span>"</span> <span class="token operator">|</span> <span class="token variable">${MYSQLCMD}</span>
-</code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 使用-e</span>
+mysql -u root -p xxxxxx -e <span class="hljs-string">"show databases;"</span>
+<span class="hljs-comment"># 使用eof</span>
+mysql -u root -p xxxxxx << <span class="hljs-string">eof</span>
+<span class="hljs-string">show databases;</span>
+<span class="hljs-string">eof</span>
+<span class="hljs-comment"># 使用echo</span>
+<span class="hljs-built_in">echo</span> <span class="hljs-string">"show databases;"</span> | mysql -u root -p xxxxxx
+<span class="hljs-comment"># 使用sql文件执行</span>
+<span class="hljs-built_in">echo</span> <span class="hljs-string">"show databases;"</span> > show.sql
+mysql -u root -p xxxxxx < show.sql 
+<span class="hljs-comment"># 使用shell</span>
+MYSQLCMD=<span class="hljs-string">"mysql -hhost -uuser -ppasswd db"</span>
+CODE=<span class="hljs-string">"SELECT * FROM table"</span>
+<span class="hljs-built_in">echo</span> <span class="hljs-string">"<span class="hljs-variable">${CODE}</span>"</span> | <span class="hljs-variable">${MYSQLCMD}</span>
+</code></pre></div>
+
 <blockquote>
 <p>初始化错误</p>
 </blockquote>
-<pre class=" language-bash"><code class="language-bash">刚安装好的MySQL5.7.12，执行service mysqld start时报错，内容如下：
-2017-02-19T07:52:53.807647Z 0 <span class="token punctuation">[</span>Warning<span class="token punctuation">]</span> TIMESTAMP with implicit DEFAULT value is deprecated. Please use –explicit_defaults_for_timestamp server option <span class="token punctuation">(</span>see documentation <span class="token keyword">for</span> <span class="token function">more</span> details<span class="token punctuation">)</span>.
-2017-02-19T07:52:53.809065Z 0 <span class="token punctuation">[</span>ERROR<span class="token punctuation">]</span> –initialize specified but the data directory has files <span class="token keyword">in</span> it. Aborting.
-2017-02-19T07:52:53.809095Z 0 <span class="token punctuation">[</span>ERROR<span class="token punctuation">]</span> Aborting</code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">刚安装好的MySQL5.7.12，执行service mysqld start时报错，内容如下：
+2017-02-19T07:52:53.807647Z 0 [Warning] TIMESTAMP with implicit DEFAULT value is deprecated. Please use –explicit_defaults_for_timestamp server option (see documentation <span class="hljs-keyword">for</span> more details).
+2017-02-19T07:52:53.809065Z 0 [ERROR] –initialize specified but the data directory has files <span class="hljs-keyword">in</span> it. Aborting.
+2017-02-19T07:52:53.809095Z 0 [ERROR] Aborting</code></pre></div>
 <p>执行<code>mysql start</code>的时候,出现上面的错误,正常情况下 mysql是被systemd托管的, systemd启动的时候会先去执行mysql中的初始化程序<code>mysqld --initialize</code> ,这个程序会在<code>/var/lib/mysql/data</code> 初始化一系列数据, 然后当你第二次启动的时候,就不会出现这个错误,解决的办法,是先清空data下面的数据,然后再重新启动mysql  但是这样做会清空之前的数据,正常的做法应该是把这个文件夹做个备份,然后重新创个文件夹</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token function">cd</span> /var/lib/
-<span class="token function">mv</span> mysql mysql.back
-systemctl resatrt mysqld</code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-built_in"><code class="language-hljs bash"><span class="hljs-built_in">cd</span> /var/lib/
+mv mysql mysql.back
+systemctl resatrt mysqld</code></pre></div>
+
+
 <blockquote>
 <p>mysql插入汉字的问题</p>
 </blockquote>
 <p>创建数据库时使用utf8</p>
-<pre class=" language-sql"><code class="language-sql"><span class="token keyword">CREATE</span> <span class="token keyword">DATABASE</span> <span class="token punctuation">`</span>mydb<span class="token punctuation">`</span> <span class="token keyword">CHARACTER SET</span> utf8 <span class="token keyword">COLLATE</span> utf8_general_ci<span class="token punctuation">;</span></code></pre>
+<div class="code-wrapper"><pre class=" language-hljs sql"><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">DATABASE</span> <span class="hljs-string">`mydb`</span> <span class="hljs-built_in">CHARACTER</span> <span class="hljs-keyword">SET</span> utf8 <span class="hljs-keyword"><code class="language-hljs sql"><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">DATABASE</span> <span class="hljs-string">`mydb`</span> <span class="hljs-built_in">CHARACTER</span> <span class="hljs-keyword">SET</span> utf8 <span class="hljs-keyword">COLLATE</span> utf8_general_ci;</code></pre></div>
+
 <blockquote>
 <p>初始化服务器的密码问题<br>MySQL服务器初始化（从MySQL 5.7开始）：在服务器初始启动时，如果服务器的数据目录为空，则会发生以下情况：</p>
 </blockquote>
@@ -274,101 +278,112 @@ systemctl resatrt mysqld</code></pre>
 <li>创建超级用户‘root’@’localhost’,超级用户的密码被设置并存储在错误日志文件中。</li>
 </ul>
 <p>查询超级用户的密码</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token function">sudo</span> <span class="token function">grep</span> </code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">sudo grep</code></pre></div>
+
 <p>修改密码</p>
-<pre class=" language-sql"><code class="language-sql"><span class="token comment" spellcheck="true">-- 先登陆</span>
-mysql <span class="token operator">-</span>uroot <span class="token operator">-</span>p123456
-<span class="token comment" spellcheck="true">-- 修改密码</span>
-<span class="token keyword">alter</span> <span class="token keyword">user</span> <span class="token string">'root'</span>@'localhost<span class="token string">' identified by '</span><span class="token number">123456</span>'<span class="token punctuation">;</span>
-flush <span class="token keyword">all</span> <span class="token keyword">privileges</span></code></pre>
+<div class="code-wrapper"><pre class=" language-hljs sql"><span class="hljs-comment"><code class="language-hljs sql"><span class="hljs-comment">-- 先登陆</span>
+mysql -uroot -p123456
+<span class="hljs-comment">-- 修改密码</span>
+<span class="hljs-keyword">alter</span> <span class="hljs-keyword">user</span> <span class="hljs-string">&#x27;root&#x27;</span>@<span class="hljs-string">&#x27;localhost&#x27;</span> <span class="hljs-keyword">identified</span> <span class="hljs-keyword">by</span> <span class="hljs-string">&#x27;123456&#x27;</span>;
+<span class="hljs-keyword">flush</span> <span class="hljs-keyword">all</span> <span class="hljs-keyword">privileges</span></code></pre></div>
+
 <blockquote>
 <p>修改密码出现simple password not pass<br>ERROR 1820 (HY000): You must reset your password using ALTER USER statement before executing this statement.</p>
 </blockquote>
 <p>解决方法,先修改密码策略</p>
-<pre class=" language-sql"><code class="language-sql"><span class="token keyword">show</span> variables <span class="token operator">like</span> <span class="token string">'%password%'</span><span class="token punctuation">;</span>
-<span class="token keyword">set</span> <span class="token keyword">global</span> validate_password_policy<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span>
-<span class="token keyword">set</span> <span class="token keyword">global</span> validate_password_length<span class="token operator">=</span><span class="token number">4</span><span class="token punctuation">;</span></code></pre>
+<div class="code-wrapper"><pre class=" language-hljs sql"><span class="hljs-keyword">show</span> <span class="hljs-keyword">variables</span> <span class="hljs-keyword">like</span> <span class="hljs-string"><code class="language-hljs sql"><span class="hljs-keyword">show</span> <span class="hljs-keyword">variables</span> <span class="hljs-keyword">like</span> <span class="hljs-string">&#x27;%password%&#x27;</span>;
+<span class="hljs-keyword">set</span> <span class="hljs-keyword">global</span> validate_password_policy=<span class="hljs-number">0</span>;
+<span class="hljs-keyword">set</span> <span class="hljs-keyword">global</span> validate_password_length=<span class="hljs-number">4</span>;</code></pre></div>
+
 <blockquote>
 <p>忘记登陆密码</p>
 </blockquote>
 <p>解决方法:</p>
-<pre class=" language-sql"><code class="language-sql"><span class="token comment" spellcheck="true">-- 关闭mysql</span>
-systemctl stop mysqld
-<span class="token comment" spellcheck="true">-- 在/etc/my.conf中添加</span>
-在<span class="token punctuation">[</span>mysqld<span class="token punctuation">]</span>的段中加上一句：skip<span class="token operator">-</span><span class="token keyword">grant</span><span class="token operator">-</span><span class="token keyword">tables</span>
+<div class="code-wrapper"><pre class=" language-hljs sql"><span class="hljs-comment"><code class="language-hljs sql"><span class="hljs-comment">-- 关闭mysql</span>
+systemctl <span class="hljs-keyword">stop</span> mysqld
+<span class="hljs-comment">-- 在/etc/my.conf中添加</span>
+在[mysqld]的段中加上一句：<span class="hljs-keyword">skip</span>-<span class="hljs-keyword">grant</span>-<span class="hljs-keyword">tables</span>
 
-<span class="token comment" spellcheck="true">-- 重启</span>
+<span class="hljs-comment">-- 重启</span>
 systemctl restart mysqld
 
-<span class="token comment" spellcheck="true">-- 进入mysql</span>
+<span class="hljs-comment">-- 进入mysql</span>
 
 mysql
 
-<span class="token comment" spellcheck="true">-- 设置密码</span>
+<span class="hljs-comment">-- 设置密码</span>
 
-<span class="token comment" spellcheck="true">-- 5.6更新的方式</span>
-<span class="token keyword">update</span> <span class="token keyword">user</span> <span class="token keyword">set</span> Password<span class="token operator">=</span>password<span class="token punctuation">(</span><span class="token string">'123456'</span><span class="token punctuation">)</span> <span class="token keyword">where</span> <span class="token keyword">user</span><span class="token operator">=</span><span class="token string">'root'</span><span class="token punctuation">;</span>
-<span class="token comment" spellcheck="true">-- 这个是5.7版本的更新方式</span>
-<span class="token keyword">update</span> <span class="token keyword">user</span> <span class="token keyword">set</span> authentication_string<span class="token operator">=</span>password<span class="token punctuation">(</span><span class="token string">'123abc'</span><span class="token punctuation">)</span> <span class="token keyword">where</span> <span class="token keyword">user</span><span class="token operator">=</span><span class="token string">'root'</span><span class="token punctuation">;</span>
-flush <span class="token keyword">all</span> <span class="token keyword">privileges</span><span class="token punctuation">;</span>
+<span class="hljs-comment">-- 5.6更新的方式</span>
+<span class="hljs-keyword">update</span> <span class="hljs-keyword">user</span> <span class="hljs-keyword">set</span> <span class="hljs-keyword">Password</span>=<span class="hljs-keyword">password</span>(<span class="hljs-string">&#x27;123456&#x27;</span>) <span class="hljs-keyword">where</span> <span class="hljs-keyword">user</span>=<span class="hljs-string">&#x27;root&#x27;</span>;
+<span class="hljs-comment">-- 这个是5.7版本的更新方式</span>
+<span class="hljs-keyword">update</span> <span class="hljs-keyword">user</span> <span class="hljs-keyword">set</span> authentication_string=<span class="hljs-keyword">password</span>(<span class="hljs-string">&#x27;123abc&#x27;</span>) <span class="hljs-keyword">where</span> <span class="hljs-keyword">user</span>=<span class="hljs-string">&#x27;root&#x27;</span>;
+<span class="hljs-keyword">flush</span> <span class="hljs-keyword">all</span> <span class="hljs-keyword">privileges</span>;
 
-<span class="token comment" spellcheck="true">-- 授予主机权限</span>
-<span class="token keyword">grant</span> <span class="token keyword">all</span> pirvileges <span class="token keyword">on</span> <span class="token operator">*</span><span class="token punctuation">.</span><span class="token operator">*</span> <span class="token keyword">to</span> <span class="token string">'root'</span>@'localhost<span class="token string">' identified by '</span>mysqlpassword'<span class="token punctuation">;</span>
-flush <span class="token keyword">all</span> <span class="token keyword">privileges</span><span class="token punctuation">;</span>
+<span class="hljs-comment">-- 授予主机权限</span>
+<span class="hljs-keyword">grant</span> <span class="hljs-keyword">all</span> pirvileges <span class="hljs-keyword">on</span> *.* <span class="hljs-keyword">to</span> <span class="hljs-string">&#x27;root&#x27;</span>@<span class="hljs-string">&#x27;localhost&#x27;</span> <span class="hljs-keyword">identified</span> <span class="hljs-keyword">by</span> <span class="hljs-string">&#x27;mysqlpassword&#x27;</span>;
+<span class="hljs-keyword">flush</span> <span class="hljs-keyword">all</span> <span class="hljs-keyword">privileges</span>;
 
-<span class="token comment" spellcheck="true">-- 退出mysql 关闭mysql 删除skip-grant-tables  重新启动</span></code></pre>
+<span class="hljs-comment">-- 退出mysql 关闭mysql 删除skip-grant-tables  重新启动</span></code></pre></div>
+
 <blockquote>
 <p>root用户无法远程登陆</p>
 </blockquote>
-<pre class=" language-sql"><code class="language-sql"><span class="token keyword">GRANT</span> <span class="token keyword">ALL</span> <span class="token keyword">PRIVILEGES</span> <span class="token keyword">ON</span> <span class="token operator">*</span><span class="token punctuation">.</span><span class="token operator">*</span> <span class="token keyword">TO</span> <span class="token string">'root'</span>@'<span class="token operator">%</span><span class="token string">' IDENTIFIED BY '</span><span class="token number">123456</span>' <span class="token keyword">WITH</span> <span class="token keyword">GRANT</span> <span class="token keyword">OPTION</span><span class="token punctuation">;</span>
-flush <span class="token keyword">privileges</span><span class="token punctuation">;</span></code></pre>
+<div class="code-wrapper"><pre class=" language-hljs sql"><span class="hljs-keyword">GRANT</span> <span class="hljs-keyword">ALL</span> <span class="hljs-keyword">PRIVILEGES</span> <span class="hljs-keyword">ON</span> *.* <span class="hljs-keyword">TO</span> <span class="hljs-string">&#x27;root&#x27;</span>@<span class="hljs-string">&#x27;%&#x27;</span> <span class="hljs-keyword">IDENTIFIED</span> <span class="hljs-keyword">BY</span> <span class="hljs-string">&#x27;123456&#x27;</span> <span class="hljs-keyword">WITH</span> <span class="hljs-keyword">GRANT</span> <span class="hljs-keyword"><code class="language-hljs sql"><span class="hljs-keyword">GRANT</span> <span class="hljs-keyword">ALL</span> <span class="hljs-keyword">PRIVILEGES</span> <span class="hljs-keyword">ON</span> *.* <span class="hljs-keyword">TO</span> <span class="hljs-string">&#x27;root&#x27;</span>@<span class="hljs-string">&#x27;%&#x27;</span> <span class="hljs-keyword">IDENTIFIED</span> <span class="hljs-keyword">BY</span> <span class="hljs-string">&#x27;123456&#x27;</span> <span class="hljs-keyword">WITH</span> <span class="hljs-keyword">GRANT</span> <span class="hljs-keyword">OPTION</span>;
+<span class="hljs-keyword">flush</span> <span class="hljs-keyword">privileges</span>;</code></pre></div>
+
 <blockquote>
 <p>mysql无法插入汉字</p>
 </blockquote>
 <p><font color='red'>查看数据库</font></p>
-<pre class=" language-sql"><code class="language-sql"><span class="token keyword">show</span> VARIABLES <span class="token operator">like</span> <span class="token string">"character%"</span><span class="token punctuation">;</span></code></pre>
+<div class="code-wrapper"><pre class=" language-hljs sql"><span class="hljs-keyword">show</span> <span class="hljs-keyword">VARIABLES</span> <span class="hljs-keyword">like</span> <span class="hljs-string"><code class="language-hljs sql"><span class="hljs-keyword">show</span> <span class="hljs-keyword">VARIABLES</span> <span class="hljs-keyword">like</span> <span class="hljs-string">"character%"</span>;</code></pre></div>
 <p><img src="http://img.noback.top/2020-02-24-15-09-49.png" srcset="/img/loading.gif" alt="2020-02-24-15-09-49"></p>
 <p><font color='red'>如果数据不重要的话，一劳永逸的解决办法是，使用 alert database tuanplus character set utf8 更改数据库的编码格式，再重新建表。</font></p>
-<pre class=" language-sql"><code class="language-sql">alert <span class="token keyword">database</span> tuanplus <span class="token keyword">character set</span> utf8<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">-- 这里tuanplus是数据库</span></code></pre>
+<div class="code-wrapper"><pre class=" language-hljs sql">alert database tuanplus character <span class="hljs-keyword">set</span> utf8; <span class="hljs-comment"><code class="language-hljs sql">alert database tuanplus character <span class="hljs-keyword">set</span> utf8; <span class="hljs-comment">-- 这里tuanplus是数据库</span></code></pre></div>
+
 <p><font color='red'>如果项目中的数据是重要数据的话，使用 alter table address convert to character set utf8 转换需要插入汉字的数据表编码为utf8即可（此例中的数据表是address）:</font></p>
-<pre class=" language-sql"><code class="language-sql"><span class="token keyword">alter</span> <span class="token keyword">table</span> address <span class="token keyword">convert</span> <span class="token keyword">to</span> <span class="token keyword">character set</span> utf8<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">-- 这里address 是表</span>
-<span class="token keyword">set</span> character_set_results<span class="token operator">=</span>utf8<span class="token punctuation">;</span>
-<span class="token keyword">set</span> character_set_database<span class="token operator">=</span>utf8<span class="token punctuation">;</span>
-<span class="token keyword">set</span> character_set_server<span class="token operator">=</span>utf8<span class="token punctuation">;</span>
-<span class="token keyword">set</span> character_set_connection<span class="token operator">=</span>utf8<span class="token punctuation">;</span>
-<span class="token keyword">set</span> character_set_client<span class="token operator">=</span>utf8<span class="token punctuation">;</span></code></pre>
+<div class="code-wrapper"><pre class=" language-hljs sql"><span class="hljs-keyword">alter</span> <span class="hljs-keyword">table</span> address <span class="hljs-keyword">convert</span> <span class="hljs-keyword">to</span> <span class="hljs-built_in">character</span> <span class="hljs-keyword">set</span> utf8; <span class="hljs-comment"><code class="language-hljs sql"><span class="hljs-keyword">alter</span> <span class="hljs-keyword">table</span> address <span class="hljs-keyword">convert</span> <span class="hljs-keyword">to</span> <span class="hljs-built_in">character</span> <span class="hljs-keyword">set</span> utf8; <span class="hljs-comment">-- 这里address 是表</span>
+<span class="hljs-keyword">set</span> character_set_results=utf8;
+<span class="hljs-keyword">set</span> character_set_database=utf8;
+<span class="hljs-keyword">set</span> character_set_server=utf8;
+<span class="hljs-keyword">set</span> character_set_connection=utf8;
+<span class="hljs-keyword">set</span> character_set_client=utf8;</code></pre></div>
 <p>但重启mysql服务后，又还原了，得添加my.ini文件。然后再重启。</p>
 <blockquote>
 <p>错误 找不到sock文件</p>
 </blockquote>
-<pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span>root@mysql ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># mysql</span>
-ERROR 2002 <span class="token punctuation">(</span>HY000<span class="token punctuation">)</span>: Can<span class="token string">'t connect to local MySQL server through socket '</span>/data/mysql/my3306/mysql.sock' <span class="token punctuation">(</span>2<span class="token punctuation">)</span></code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash">[root@mysql ~]<span class="hljs-comment"><code class="language-hljs bash">[root@mysql ~]<span class="hljs-comment"># mysql</span>
+ERROR 2002 (HY000): Can<span class="hljs-string">&#x27;t connect to local MySQL server through socket &#x27;</span>/data/mysql/my3306/mysql.sock<span class="hljs-string">&#x27; (2)</span></code></pre></div>
 <p>这是是因为my.cnf这个配置文件中指定的sock文件路径中不存在这个文件 这个文件是s类型的好像还看不来。。<br>配置该路径</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span>client<span class="token punctuation">]</span>
-  port<span class="token operator">=</span>3306
-  socket <span class="token operator">=</span> /var/lib/mysql/mysql.sock</code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">[client]
+  port=3306
+  socket = /var/lib/mysql/mysql.sock</code></pre></div>
 <p>重启mysqld</p>
-<pre class=" language-bash"><code class="language-bash">systemctl restart mysqld</code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">systemctl restart mysqld</code></pre></div>
+
+
 <blockquote>
 <p>版本更新5.7修改密码指令变动</p>
 </blockquote>
-<pre class=" language-bash"><code class="language-bash">mysql<span class="token operator">></span> update user <span class="token keyword">set</span> password<span class="token operator">=</span>password<span class="token punctuation">(</span><span class="token string">"*******"</span><span class="token punctuation">)</span> where user<span class="token operator">=</span><span class="token string">"*******"</span><span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">#修改密码报错</span>
-ERROR 1054 <span class="token punctuation">(</span>42S22<span class="token punctuation">)</span>: Unknown column <span class="token string">'password'</span> <span class="token keyword">in</span> <span class="token string">'field list'</span>
-mysql<span class="token operator">></span> update mysql.user <span class="token keyword">set</span> authentication_string<span class="token operator">=</span>password<span class="token punctuation">(</span><span class="token string">'*******'</span><span class="token punctuation">)</span> where user<span class="token operator">=</span><span class="token string">'*******'</span><span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">#修改密码成功</span>
-Query OK, 1 row affected, 1 warning <span class="token punctuation">(</span>0.00 sec<span class="token punctuation">)</span></code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash">mysql&gt; update user <span class="hljs-built_in">set</span> password=password(<span class="hljs-string">&quot;*******&quot;</span>) <span class="hljs-built_in">where</span> user=<span class="hljs-string">&quot;*******&quot;</span>;  <span class="hljs-comment"><code class="language-hljs bash">mysql&gt; update user <span class="hljs-built_in">set</span> password=password(<span class="hljs-string">&quot;*******&quot;</span>) <span class="hljs-built_in">where</span> user=<span class="hljs-string">&quot;*******&quot;</span>;  <span class="hljs-comment">#修改密码报错</span>
+ERROR 1054 (42S22): Unknown column <span class="hljs-string">&#x27;password&#x27;</span> <span class="hljs-keyword">in</span> <span class="hljs-string">&#x27;field list&#x27;</span>
+mysql> update mysql.user <span class="hljs-built_in">set</span> authentication_string=password(<span class="hljs-string">&#x27;*******&#x27;</span>) <span class="hljs-built_in">where</span> user=<span class="hljs-string">&#x27;*******&#x27;</span>;  <span class="hljs-comment">#修改密码成功</span>
+Query OK, 1 row affected, 1 warning (0.00 sec)</code></pre></div>
+
+
 <blockquote>
 <p>mysql严格模式<br>mysql严格模式，禁止通过insert的方式直接修改mysql库中的user表进行添加新用户。<br>报错内容</p>
 </blockquote>
 <p><font color='red'>ERROR 1364 (HY000): Field ‘ssl_cipher’ doesn’t have a default value</font></p>
 <p>修改my.cnf上面的内容</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 原来的</span>
-sql-mode<span class="token operator">=</span>STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION
-<span class="token comment" spellcheck="true"># 修改后的</span>
-sql-mode<span class="token operator">=</span>NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 原来的</span>
+sql-mode=STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION
+<span class="hljs-comment"># 修改后的</span>
+sql-mode=NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION
 
-<span class="token comment" spellcheck="true"># 修改后重启</span>
+<span class="hljs-comment"># 修改后重启</span>
 
-systemctl restart mysqld</code></pre>
+systemctl restart mysqld</code></pre></div>
+
 <blockquote>
 <p>mysql驱动器报错<br>这个报错内容有两种情况</p>
 </blockquote>
@@ -377,23 +392,23 @@ systemctl restart mysqld</code></pre>
 <li>当MySQL的数据库隔离级别为REPEATABLE-READ时，查询一个select语句也算是事物的开始，而且在hibernate里会把以select语句开头的事务标记为只读事务，此时在这个事务里再执行insert、update、delete等DML语句就会出现如上的异常信息。</li>
 </ul>
 <p>报错2解决：<br>查看mysql数据库隔离级别</p>
-<pre class=" language-bash"><code class="language-bash">mysql root@10.0.6.55:mysql<span class="token operator">></span> SHOW VARIABLES LIKE <span class="token string">'%iso%'</span><span class="token punctuation">;</span>
+<div class="code-wrapper"><pre class=" language-hljs bash">mysql root@10.0.6.55:mysql&gt; SHOW VARIABLES LIKE <span class="hljs-string"><code class="language-hljs bash">mysql root@10.0.6.55:mysql&gt; SHOW VARIABLES LIKE <span class="hljs-string">&#x27;%iso%&#x27;</span>;
 +---------------+-----------------+
-<span class="token operator">|</span> Variable_name <span class="token operator">|</span> Value           <span class="token operator">|</span>
+| Variable_name | Value           |
 +---------------+-----------------+
-<span class="token operator">|</span> tx_isolation  <span class="token operator">|</span> REPEATABLE-READ <span class="token operator">|</span>
+| tx_isolation  | REPEATABLE-READ |
 +---------------+-----------------+
-1 row <span class="token keyword">in</span> <span class="token keyword">set</span>
-Time: 0.024s</code></pre>
+1 row <span class="hljs-keyword">in</span> <span class="hljs-built_in">set</span>
+Time: 0.024s</code></pre></div>
 <p>查看mysql驱动器版本</p>
-<pre class=" language-bash"><code class="language-bash">mysql root@10.0.6.55:mysql<span class="token operator">></span> <span class="token keyword">select</span> version<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">mysql root@10.0.6.55:mysql> select version();
 +-----------+
-<span class="token operator">|</span> version<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">|</span>
+| version() |
 +-----------+
-<span class="token operator">|</span> 5.6.46    <span class="token operator">|</span>
+| 5.6.46    |
 +-----------+
-1 row <span class="token keyword">in</span> <span class="token keyword">set</span>
-Time: 0.031s</code></pre>
+1 row <span class="hljs-keyword">in</span> <span class="hljs-built_in">set</span>
+Time: 0.031s</code></pre></div>
 <p>修改 REPEATABLE-READ 为READ-COMMITED</p>
 <p><font color='red'> Could not retrieve transaction read-only status from server</font></p>
 <blockquote>
@@ -401,50 +416,52 @@ Time: 0.031s</code></pre>
 </blockquote>
 <p><font color='red'>1045-Access denied for user ‘root’@’’(using password:YES)</font> </p>
 <p>这个是因为用户只有在本机登录数据库的权限，没有远程登录的权限，如下</p>
-<pre class=" language-bash"><code class="language-bash">mysql root@10.0.6.55:mysql<span class="token operator">></span> <span class="token keyword">select</span> user,host,password from mysql.user<span class="token punctuation">;</span>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">mysql root@10.0.6.55:mysql> select user,host,password from mysql.user;
 +-------+-----------+-------------------------------------------+
-<span class="token operator">|</span> user  <span class="token operator">|</span> host      <span class="token operator">|</span> password                                  <span class="token operator">|</span>
+| user  | host      | password                                  |
 +-------+-----------+-------------------------------------------+
-<span class="token operator">|</span> root  <span class="token operator">|</span> localhost <span class="token operator">|</span> *6BB4837EB74329105EE4568DDA7DC67ED2CA2AD9 <span class="token operator">|</span>
-<span class="token operator">|</span> root  <span class="token operator">|</span> xxx       <span class="token operator">|</span>                                           <span class="token operator">|</span>
-<span class="token operator">|</span> root  <span class="token operator">|</span> 127.0.0.1 <span class="token operator">|</span>                                           <span class="token operator">|</span>
-<span class="token operator">|</span> root  <span class="token operator">|</span> ::1       <span class="token operator">|</span>                                           <span class="token operator">|</span>
-<span class="token operator">|</span>       <span class="token operator">|</span> localhost <span class="token operator">|</span>                                           <span class="token operator">|</span>
-<span class="token operator">|</span>       <span class="token operator">|</span> xxx       <span class="token operator">|</span>                                           <span class="token operator">|</span>
-<span class="token operator">|</span> root  <span class="token operator">|</span> %         <span class="token operator">|</span> *6BB4837EB74329105EE4568DDA7DC67ED2CA2AD9 <span class="token operator">|</span>
-<span class="token operator">|</span> hzj   <span class="token operator">|</span> %         <span class="token operator">|</span> *05B00DF4BF36116F758117E401D26485E57DB407 <span class="token operator">|</span>
-<span class="token operator">|</span> hzjqq <span class="token operator">|</span> localhost <span class="token operator">|</span> hzjqq12.3                                 <span class="token operator">|</span>
-<span class="token operator">|</span> hzj   <span class="token operator">|</span> localhost <span class="token operator">|</span> *05B00DF4BF36116F758117E401D26485E57DB407 <span class="token operator">|</span>
-<span class="token operator">|</span> zz    <span class="token operator">|</span> localhost <span class="token operator">|</span> *05B00DF4BF36116F758117E401D26485E57DB407 <span class="token operator">|</span>
-+-------+-----------+-------------------------------------------+</code></pre>
+| root  | localhost | *6BB4837EB74329105EE4568DDA7DC67ED2CA2AD9 |
+| root  | xxx       |                                           |
+| root  | 127.0.0.1 |                                           |
+| root  | ::1       |                                           |
+|       | localhost |                                           |
+|       | xxx       |                                           |
+| root  | %         | *6BB4837EB74329105EE4568DDA7DC67ED2CA2AD9 |
+| hzj   | %         | *05B00DF4BF36116F758117E401D26485E57DB407 |
+| hzjqq | localhost | hzjqq12.3                                 |
+| hzj   | localhost | *05B00DF4BF36116F758117E401D26485E57DB407 |
+| zz    | localhost | *05B00DF4BF36116F758117E401D26485E57DB407 |
++-------+-----------+-------------------------------------------+</code></pre></div>
 <p>这个里面对zz用户名只允许localhost这个IP登录  也就是’127.0.0.1’，如果要开放所有ip，就需要添加一个用户</p>
-<pre class=" language-bash"><code class="language-bash">insert into mysql.user<span class="token punctuation">(</span>host,user,password<span class="token punctuation">)</span> values<span class="token punctuation">(</span><span class="token string">"%"</span>,<span class="token string">"zz"</span>,password<span class="token punctuation">(</span><span class="token string">"upyun123"</span><span class="token punctuation">))</span><span class="token punctuation">;</span>
-<span class="token comment" spellcheck="true"># 刷新权限</span>
-flush privileges<span class="token punctuation">;</span></code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash">insert into mysql.user(host,user,password) values(<span class="hljs-string">&quot;%&quot;</span>,<span class="hljs-string">&quot;zz&quot;</span>,password(<span class="hljs-string"><code class="language-hljs bash">insert into mysql.user(host,user,password) values(<span class="hljs-string">&quot;%&quot;</span>,<span class="hljs-string">&quot;zz&quot;</span>,password(<span class="hljs-string">"upyun123"</span>));
+<span class="hljs-comment"># 刷新权限</span>
+flush privileges;</code></pre></div>
+
 <h2 id="用户授权的问题"><a href="#用户授权的问题" class="headerlink" title="用户授权的问题"></a>用户授权的问题</h2><p>我这里用的是mycli来管理服务器，如果要给用户授权的话，需要给登录到本机服务器上去授权</p>
-<pre class=" language-bash"><code class="language-bash">mysql root@10.0.6.55:mysql<span class="token operator">></span> grant all on *.* to <span class="token string">'hzj'</span>@<span class="token string">'localhost'</span><span class="token punctuation">;</span>
-<span class="token punctuation">(</span>1045, <span class="token string">"Access denied for user 'root'@'%' (using password: YES)"</span><span class="token punctuation">)</span></code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash">mysql root@10.0.6.55:mysql&gt; grant all on *.* to <span class="hljs-string">&#x27;hzj&#x27;</span>@<span class="hljs-string"><code class="language-hljs bash">mysql root@10.0.6.55:mysql&gt; grant all on *.* to <span class="hljs-string">&#x27;hzj&#x27;</span>@<span class="hljs-string">&#x27;localhost&#x27;</span>;
+(1045, <span class="hljs-string">"Access denied for user &#x27;root&#x27;@&#x27;%&#x27; (using password: YES)"</span>)</code></pre></div>
 <p>这里远程连接上去授权直接报错了</p>
 <blockquote>
 <p>依赖已存在的问题<br>mysql安装过程中依赖已存在的问题</p>
 </blockquote>
-<pre class=" language-bash"><code class="language-bash">Error: mysql80-community-release conflicts with mysql-community-release-el7-5.noarch</code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">Error: mysql80-community-release conflicts with mysql-community-release-el7-5.noarch</code></pre></div>
 <p>这是因为centos中存在其他mysql的依赖，先删除</p>
-<pre class=" language-bash"><code class="language-bash">
-rpm -qa <span class="token operator">|</span> <span class="token function">grep</span> mysql
-rpm -e --nodeps xxx</code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">
+rpm -qa | grep mysql
+rpm -e --nodeps xxx</code></pre></div>
+
+
 <blockquote>
 <p>mysql5.7设置简单密码报错</p>
 </blockquote>
-<pre class=" language-bash"><code class="language-bash">ERROR 1819 <span class="token punctuation">(</span>HY000<span class="token punctuation">)</span>: Your password does not satisfy the current policy requirements</code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">ERROR 1819 (HY000): Your password does not satisfy the current policy requirements</code></pre></div>
 <p>修改配置文件</p>
-<pre class=" language-bash"><code class="language-bash">vim /etc/my.cnf
-validate_password_policy<span class="token operator">=</span>0
-validate_password_mixed_case_count<span class="token operator">=</span>0
-validate_password_number_count<span class="token operator">=</span>3
-validate_password_special_char_count<span class="token operator">=</span>0
-validate_password_length<span class="token operator">=</span>3</code></pre>
-
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">vim /etc/my.cnf
+validate_password_policy=0
+validate_password_mixed_case_count=0
+validate_password_number_count=3
+validate_password_special_char_count=0
+validate_password_length=3</code></pre></div>
             </div>
             <hr>
             <div>
@@ -552,7 +569,7 @@ validate_password_length<span class="token operator">=</span>3</code></pre>
 
   <footer class="text-center mt-5 py-3">
   <div class="footer-content">
-     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+     <a rel="nofollow noopener"><span>Hzjsea</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
   </div>
   
 

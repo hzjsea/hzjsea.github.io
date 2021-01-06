@@ -67,7 +67,7 @@
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
-       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
+       href="/">&nbsp;<strong>hzjsea</strong>&nbsp;</a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
             data-target="#navbarSupportedContent"
@@ -229,18 +229,19 @@
             <div class="markdown-body">
               <a id="more"></a>
 <h1 id="ansible-playbook合集"><a href="#ansible-playbook合集" class="headerlink" title="ansible-playbook合集"></a>ansible-playbook合集</h1><h2 id="shell"><a href="#shell" class="headerlink" title="shell"></a>shell</h2><h3 id="ansible利用shell结果注册变量"><a href="#ansible利用shell结果注册变量" class="headerlink" title="ansible利用shell结果注册变量"></a>ansible利用shell结果注册变量</h3><p><font color='red'>这里不只是使用于shell模块，也适用与command模块</font></p>
-<pre class=" language-bash"><code class="language-bash">---
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">---
   - name: start servers
-    shell: <span class="token string">"{{ prefix_path }}/{{ role }}/server.sh start"</span> 
+    shell: <span class="hljs-string">"{{ prefix_path }}/{{ role }}/server.sh start"</span> 
     register: info
   - name: check Asset
-    shell: <span class="token string">"{{ prefix_path }}/{{ role }}/checkAsset.sh"</span>
-    when: info.stdout.find<span class="token punctuation">(</span><span class="token string">"OK"</span><span class="token punctuation">)</span> <span class="token operator">!=</span> -1
+    shell: <span class="hljs-string">"{{ prefix_path }}/{{ role }}/checkAsset.sh"</span>
+    when: info.stdout.find(<span class="hljs-string">"OK"</span>) != -1
   - name: check Safe
-    shell: <span class="token string">"{{ prefix_path }}/{{ role }}/checkSafe.sh"</span>
-    when: info.stdout.find<span class="token punctuation">(</span><span class="token string">"OK"</span><span class="token punctuation">)</span> <span class="token operator">!=</span> -1
-  - name: <span class="token function">test</span> result
-    command: <span class="token string">"echo {{ info }}"</span></code></pre>
+    shell: <span class="hljs-string">"{{ prefix_path }}/{{ role }}/checkSafe.sh"</span>
+    when: info.stdout.find(<span class="hljs-string">"OK"</span>) != -1
+  - name: <span class="hljs-built_in">test</span> result
+    <span class="hljs-built_in">command</span>: <span class="hljs-string">"echo {{ info }}"</span></code></pre></div>
+
 <p>这里面是先执行<code>./server.sh start</code> 来获取返回结果 注册<code>register</code>到info这个变量<br>取值是<code>info.stdout</code><br>在ansible里面 when后面是可以跟python语句的，后面就是找有没有ok这个str,有的话就执行，没有的话就不执行</p>
 
             </div>
@@ -350,7 +351,7 @@
 
   <footer class="text-center mt-5 py-3">
   <div class="footer-content">
-     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+     <a rel="nofollow noopener"><span>Hzjsea</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
   </div>
   
 

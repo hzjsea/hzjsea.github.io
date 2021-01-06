@@ -67,7 +67,7 @@
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
-       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
+       href="/">&nbsp;<strong>hzjsea</strong>&nbsp;</a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
             data-target="#navbarSupportedContent"
@@ -184,7 +184,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      3.8k 字
+      3.6k 字
     </span>
   
 
@@ -194,7 +194,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      51
+      48
        分钟
     </span>
   
@@ -277,18 +277,19 @@
 <a id="more"></a>
 
 <h1 id="软件配置杂记"><a href="#软件配置杂记" class="headerlink" title="软件配置杂记"></a>软件配置杂记</h1><h2 id="vscode"><a href="#vscode" class="headerlink" title="vscode"></a>vscode</h2><h3 id="vscode设置代码块"><a href="#vscode设置代码块" class="headerlink" title="vscode设置代码块"></a>vscode设置代码块</h3><p>1.由于markdown不是什么编程语法，vscode不支持自动提示和补全,所以我们要现在用户设置中打开markdown的自动补全<br><font color='red'>ctrl+shift+p</font>打开设置—&gt; setting —-&gt; 在其中添加</p>
-<pre class=" language-json"><code class="language-json"><span class="token property">"[markdown]"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
-    <span class="token property">"editor.wordWrap"</span><span class="token operator">:</span> <span class="token string">"on"</span><span class="token punctuation">,</span>
-    <span class="token property">"editor.quickSuggestions"</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
-<span class="token punctuation">}</span><span class="token punctuation">,</span></code></pre>
+<div class="code-wrapper"><pre class=" language-hljs json"><code class="language-hljs json">"[markdown]": {
+    "editor.wordWrap": "on",
+    "editor.quickSuggestions": true,
+},</code></pre></div>
+
 <p>2.添加补全代码块<br>ctrl+shift+p —&gt; 输入markdown –&gt; 打开markdown.json —&gt; 添加内容</p>
-<pre class=" language-json"><code class="language-json"><span class="token property">"Print to console"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
-        <span class="token property">"prefix"</span><span class="token operator">:</span> <span class="token string">"fcr"</span><span class="token punctuation">,</span>
-        <span class="token property">"body"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
-            <span class="token string">"&lt;font color='red'>$1&lt;/font>"</span>
-        <span class="token punctuation">]</span><span class="token punctuation">,</span>
-        <span class="token property">"description"</span><span class="token operator">:</span> <span class="token string">"change font-color to red sign import "</span>
-    <span class="token punctuation">}</span></code></pre>
+<div class="code-wrapper"><pre class=" language-hljs json"><code class="language-hljs json">"Print to console": {
+		"prefix": "fcr",
+		"body": [
+			<span class="hljs-string">"<font color=&#x27;red&#x27;>$1</font>"</span>
+		],
+		"description": "change font-color to red sign import "
+	}</code></pre></div>
 <p>其中prefix 是指你代码块的简洁写法,在你输入的时候会出现代码块的提示<br>body是主体内容,也就是我们添加的代码块<br>description 是注释，你可以标注一下这代码块是用来干嘛的</p>
 <h3 id="vscode-绑定vim自定义快捷键"><a href="#vscode-绑定vim自定义快捷键" class="headerlink" title="vscode 绑定vim自定义快捷键"></a>vscode 绑定vim自定义快捷键</h3><p>在vscode中自定义vim快捷键<br>“vim.insertModeKeyBindings”: [<br>        {<br>            “before”: [“j”, “j”],<br>            “after”: [“<Esc>“]<br>        }<br>]<br><a target="_blank" rel="noopener" href="https://github.com/VSCodeVim/Vim/#key-remapping">https://github.com/VSCodeVim/Vim/#key-remapping</a></p>
 <h2 id="chrome"><a href="#chrome" class="headerlink" title="chrome"></a>chrome</h2><h3 id="清除特定网址的缓存"><a href="#清除特定网址的缓存" class="headerlink" title="清除特定网址的缓存"></a>清除特定网址的缓存</h3><p>打开开发者工具（F12），选择 Network——Disable cache 即可。需要清除某网站缓存时 F12 打开开发者工具就会自动清除这个网站的缓存，而不必清除所有网站的缓存了</p>
@@ -300,103 +301,104 @@
 </ol>
 <h2 id="mac"><a href="#mac" class="headerlink" title="mac"></a>mac</h2><h3 id="mac连接交换机"><a href="#mac连接交换机" class="headerlink" title="mac连接交换机"></a>mac连接交换机</h3><p>由于在mac中没有像windows中xshell这样简单方便的串口连接工具，因此我们只能使用screen来连接交换机</p>
 <p>首先用串口线连接交换机，然后查看接入的串口设备，他们放在/dev下面 由于不同的串口线命名不同，但是他们应该都会带有usb字样</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token function">ls</span> /dev <span class="token operator">|</span> <span class="token function">grep</span> -i tty.*usb
-<span class="token function">screen</span> /dev/tty.usbxxxxx  9600</code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">ls /dev | grep -i tty.*usb
+screen /dev/tty.usbxxxxx  9600</code></pre></div>
 <p>这里9600为交换机的默认波特率，但你也可以在交换机更换波特率的内容</p>
 <h3 id="mac下使用ftp"><a href="#mac下使用ftp" class="headerlink" title="mac下使用ftp"></a>mac下使用ftp</h3><p>由于新的Mac系统去调了自带的telnet命令和ftp命令，所以第一步我们要安装ftp命令。<br>我的系统是10.13.6</p>
 <p>ftp的安装需要很多的软件依赖</p>
-<pre class=" language-bash"><code class="language-bash">brew <span class="token function">install</span> telnet
-brew <span class="token function">install</span> inetutils
-brew <span class="token function">link</span> --overwrite inetutils </code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">brew install telnet
+brew install inetutils
+brew link --overwrite inetutils</code></pre></div>
 <p><font color='red'>登陆-</font></p>
-<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 方式一</span>
-<span class="token function">ftp</span> ip
-<span class="token comment" spellcheck="true"># 方式二</span>
-<span class="token function">ftp</span> 
-<span class="token function">open</span> ip</code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 方式一</span>
+ftp ip
+<span class="hljs-comment"># 方式二</span>
+ftp 
+open ip</code></pre></div>
 <p><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/10c4e46c77f1">https://www.jianshu.com/p/10c4e46c77f1</a><br>ftp使用方法<br><a target="_blank" rel="noopener" href="https://blog.csdn.net/tianlesoftware/article/details/5818990">https://blog.csdn.net/tianlesoftware/article/details/5818990</a></p>
 <h3 id="mac下改键记录"><a href="#mac下改键记录" class="headerlink" title="mac下改键记录"></a>mac下改键记录</h3><p>使用karabiner-element修改mac按键<br>修改内容为:<br>切换输入法 由之前的caps lock改成 shift<br>之前的caps 改成了 control</p>
 <ol>
 <li>下载karabiner-element</li>
 <li>在simple modifitions 中修改映射<br>from key caps_lock<br>to_key left_control</li>
-<li>修改shift和caps<br>由于karabiner-element不支持在窗口中修改，但可以指定json形式的配置文件<pre class=" language-bash"><code class="language-bash"><span class="token function">vi</span> /Users/alpaca/.config/karabiner/karabiner.json
-             <span class="token string">"rules"</span><span class="token keyword">:</span> <span class="token punctuation">[</span>
-                 <span class="token punctuation">{</span>
-                     <span class="token string">"manipulators"</span><span class="token keyword">:</span> <span class="token punctuation">[</span>
-                         <span class="token punctuation">{</span>
-                             <span class="token string">"description"</span><span class="token keyword">:</span> <span class="token string">"Change left_shift to control+space when used alone"</span>,
-                             <span class="token string">"from"</span><span class="token keyword">:</span> <span class="token punctuation">{</span>
-                                 <span class="token string">"key_code"</span><span class="token keyword">:</span> <span class="token string">"left_shift"</span>,
-                                 <span class="token string">"modifiers"</span><span class="token keyword">:</span> <span class="token punctuation">{</span>
-                                     <span class="token string">"optional"</span><span class="token keyword">:</span> <span class="token punctuation">[</span>
-                                         <span class="token string">"any"</span>
-                                     <span class="token punctuation">]</span>
-                                 <span class="token punctuation">}</span>
-                             <span class="token punctuation">}</span>,
-                             <span class="token string">"to"</span><span class="token keyword">:</span> <span class="token punctuation">[</span>
-                                 <span class="token punctuation">{</span>
-                                     <span class="token string">"key_code"</span><span class="token keyword">:</span> <span class="token string">"left_shift"</span>
-                                 <span class="token punctuation">}</span>
-                             <span class="token punctuation">]</span>,
-                             <span class="token string">"to_if_alone"</span><span class="token keyword">:</span> <span class="token punctuation">[</span>
-                                 <span class="token punctuation">{</span>
-                                     <span class="token string">"key_code"</span><span class="token keyword">:</span> <span class="token string">"spacebar"</span>,
-                                     <span class="token string">"modifiers"</span><span class="token keyword">:</span> <span class="token punctuation">[</span>
-                                         <span class="token string">"left_control"</span>
-                                     <span class="token punctuation">]</span>
-                                 <span class="token punctuation">}</span>
-                             <span class="token punctuation">]</span>,
-                             <span class="token string">"type"</span><span class="token keyword">:</span> <span class="token string">"basic"</span>
-                         <span class="token punctuation">}</span>
-                     <span class="token punctuation">]</span>
-                 <span class="token punctuation">}</span>
-             <span class="token punctuation">]</span></code></pre>
+<li>修改shift和caps<br>由于karabiner-element不支持在窗口中修改，但可以指定json形式的配置文件<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">vi /Users/alpaca/.config/karabiner/karabiner.json
+                <span class="hljs-string">"rules"</span>: [
+                    {
+                        <span class="hljs-string">"manipulators"</span>: [
+                            {
+                                <span class="hljs-string">"description"</span>: <span class="hljs-string">"Change left_shift to control+space when used alone"</span>,
+                                <span class="hljs-string">"from"</span>: {
+                                    <span class="hljs-string">"key_code"</span>: <span class="hljs-string">"left_shift"</span>,
+                                    <span class="hljs-string">"modifiers"</span>: {
+                                        <span class="hljs-string">"optional"</span>: [
+                                            <span class="hljs-string">"any"</span>
+                                        ]
+                                    }
+                                },
+                                <span class="hljs-string">"to"</span>: [
+                                    {
+                                        <span class="hljs-string">"key_code"</span>: <span class="hljs-string">"left_shift"</span>
+                                    }
+                                ],
+                                <span class="hljs-string">"to_if_alone"</span>: [
+                                    {
+                                        <span class="hljs-string">"key_code"</span>: <span class="hljs-string">"spacebar"</span>,
+                                        <span class="hljs-string">"modifiers"</span>: [
+                                            <span class="hljs-string">"left_control"</span>
+                                        ]
+                                    }
+                                ],
+                                <span class="hljs-string">"type"</span>: <span class="hljs-string">"basic"</span>
+                            }
+                        ]
+                    }
+                ]</code></pre></div>
+
 </li>
 </ol>
 <h3 id="mac-usr-bin-python-权限问题"><a href="#mac-usr-bin-python-权限问题" class="headerlink" title="mac /usr/bin/python 权限问题"></a>mac /usr/bin/python 权限问题</h3><p>operation not permitted<br>一般情况下我们在使用mac系统过程中下载一些文件、新建一些项目之后，这些文件都会默认是只读状态，这时我们只需要简单的一句权限设置命令就可以解决</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token function">sudo</span> <span class="token function">chmod</span> -R 777 filename </code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">sudo chmod -R 777 filename</code></pre></div>
 <p>/usr/bin下面的文件在mac中会出现一下的错误</p>
-<pre class=" language-bash"><code class="language-bash">operation not permitted </code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">operation not permitted</code></pre></div>
 <p>这是因为mac启用了SIP（System Integrity Protection），增加了rootless机制，导致即使在root权限下依然无法修改文件，在必要时候为了能够修改下面的文件，我们只能关闭该保护机制</p>
 <ol>
 <li>重启 开机过程中按住command+R 进入保护模式</li>
-<li>打开终端 <pre class=" language-bash"><code class="language-bash">csrutil disable </code></pre>
-</li>
+<li>打开终端 <div class="code-wrapper"><pre class=" language-hljs bash">csrutil <span class="hljs-built_in"><code class="language-hljs bash">csrutil <span class="hljs-built_in">disable</span></code></pre></div></li>
 <li>再次重启，就可以修改/usr/bin下的目录文件 </li>
 </ol>
 <p>4)恢复保护机制</p>
-<pre class=" language-bash"><code class="language-bash">csrutil <span class="token function">enable</span> </code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash">csrutil <span class="hljs-built_in"><code class="language-hljs bash">csrutil <span class="hljs-built_in">enable</span></code></pre></div>
+
 <h3 id="Mac-OS-中如何优雅的创建定时任务"><a href="#Mac-OS-中如何优雅的创建定时任务" class="headerlink" title="Mac OS 中如何优雅的创建定时任务"></a>Mac OS 中如何优雅的创建定时任务</h3><p>mac 可以像linux一样使用crontab来使用定时任务.另外还有一个launchctl的工具</p>
 <p><font color='red'>配置文件 xxx.plist</font>  </p>
-<pre class=" language-bash"><code class="language-bash"><span class="token operator">&lt;</span>?xml version<span class="token operator">=</span><span class="token string">"1.0"</span> encoding<span class="token operator">=</span><span class="token string">"UTF-8"</span>?<span class="token operator">></span> <span class="token operator">&lt;</span><span class="token operator">!</span>DOCTYPE plist PUBLIC <span class="token string">"-//Apple//DTD PLIST 1.0//EN"</span> <span class="token string">"http://www.apple.com/DTDs/PropertyList-1.0.dtd"</span><span class="token operator">></span> 
-<span class="token operator">&lt;</span>plist version<span class="token operator">=</span><span class="token string">"1.0"</span><span class="token operator">></span>
-    <span class="token operator">&lt;</span>dict<span class="token operator">></span>
-        <span class="token operator">&lt;</span><span class="token operator">!</span>--Plist 名称，必须唯一--<span class="token operator">></span> 
-        <span class="token operator">&lt;</span>key<span class="token operator">></span>Label<span class="token operator">&lt;</span>/key<span class="token operator">></span>
-        <span class="token operator">&lt;</span>string<span class="token operator">></span>cn.rayjun<span class="token punctuation">..</span>plist<span class="token operator">&lt;</span>/string<span class="token operator">></span> 
-        <span class="token operator">&lt;</span><span class="token operator">!</span>-- 指定要运行的程序的名称，可以是一个程序或者是一段脚本 --<span class="token operator">></span>   
-        <span class="token operator">&lt;</span>key<span class="token operator">></span>ProgramArguments<span class="token operator">&lt;</span>/key<span class="token operator">></span>
-        <span class="token operator">&lt;</span>array<span class="token operator">></span>
-            <span class="token operator">&lt;</span>string<span class="token operator">></span>/path/to/programer<span class="token operator">&lt;</span>/string<span class="token operator">></span> 
-        <span class="token operator">&lt;</span>/array<span class="token operator">></span>
-        <span class="token operator">&lt;</span><span class="token operator">!</span>-- 执行时间的指定 --<span class="token operator">></span> 
-        <span class="token operator">&lt;</span>key<span class="token operator">></span>StartCalendarInterval<span class="token operator">&lt;</span>/key<span class="token operator">></span> 
-        <span class="token operator">&lt;</span>dict<span class="token operator">></span> 
-            <span class="token operator">&lt;</span><span class="token operator">!</span>--在第几分钟会被执行 --<span class="token operator">></span>
-            <span class="token operator">&lt;</span>key<span class="token operator">></span>Minute<span class="token operator">&lt;</span>/key<span class="token operator">></span>
-            <span class="token operator">&lt;</span>integer<span class="token operator">></span>00<span class="token operator">&lt;</span>/integer<span class="token operator">></span>
-            <span class="token operator">&lt;</span><span class="token operator">!</span>-- 在第几个小时会被执行--<span class="token operator">></span>
-            <span class="token operator">&lt;</span>key<span class="token operator">></span>Hour<span class="token operator">&lt;</span>/key<span class="token operator">></span> 
-            <span class="token operator">&lt;</span>integer<span class="token operator">></span>22<span class="token operator">&lt;</span>/integer<span class="token operator">></span> 
-        <span class="token operator">&lt;</span>/dict<span class="token operator">></span>
-        <span class="token operator">&lt;</span><span class="token operator">!</span>-- 运行日志 --<span class="token operator">></span>
-        <span class="token operator">&lt;</span>key<span class="token operator">></span>StandardOutPath<span class="token operator">&lt;</span>/key<span class="token operator">></span>
-        <span class="token operator">&lt;</span>string<span class="token operator">></span>/path/to/log/x.log<span class="token operator">&lt;</span>/string<span class="token operator">></span>
-        <span class="token operator">&lt;</span><span class="token operator">!</span>-- 错误日志 --<span class="token operator">></span>
-        <span class="token operator">&lt;</span>key<span class="token operator">></span>StandardErrorPath<span class="token operator">&lt;</span>/key<span class="token operator">></span> 
-        <span class="token operator">&lt;</span>string<span class="token operator">></span>/path/to/err/x.err<span class="token operator">&lt;</span>/string<span class="token operator">></span>
-    <span class="token operator">&lt;</span>/dict<span class="token operator">></span> 
-<span class="token operator">&lt;</span>/plist<span class="token operator">></span> </code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash">&lt;?xml version=<span class="hljs-string">&quot;1.0&quot;</span> encoding=<span class="hljs-string">&quot;UTF-8&quot;</span>?&gt; &lt;!DOCTYPE plist PUBLIC <span class="hljs-string">&quot;-//Apple//DTD PLIST 1.0//EN&quot;</span> <span class="hljs-string"><code class="language-hljs bash">&lt;?xml version=<span class="hljs-string">&quot;1.0&quot;</span> encoding=<span class="hljs-string">&quot;UTF-8&quot;</span>?&gt; &lt;!DOCTYPE plist PUBLIC <span class="hljs-string">&quot;-//Apple//DTD PLIST 1.0//EN&quot;</span> <span class="hljs-string">"http://www.apple.com/DTDs/PropertyList-1.0.dtd"</span>> 
+<plist version=<span class="hljs-string">"1.0"</span>>
+    <dict>
+        <!--Plist 名称，必须唯一--> 
+        <key>Label</key>
+        <string>cn.rayjun..plist</string> 
+        <!-- 指定要运行的程序的名称，可以是一个程序或者是一段脚本 -->   
+        <key>ProgramArguments</key>
+        <array>
+            <string>/path/to/programer</string> 
+        </array>
+        <!-- 执行时间的指定 --> 
+        <key>StartCalendarInterval</key> 
+        <dict> 
+            <!--在第几分钟会被执行 -->
+            <key>Minute</key>
+            <<span class="hljs-built_in">integer</span>>00</<span class="hljs-built_in">integer</span>>
+            <!-- 在第几个小时会被执行-->
+            <key>Hour</key> 
+            <<span class="hljs-built_in">integer</span>>22</<span class="hljs-built_in">integer</span>> 
+        </dict>
+        <!-- 运行日志 -->
+        <key>StandardOutPath</key>
+        <string>/path/to/<span class="hljs-built_in">log</span>/x.log</string>
+        <!-- 错误日志 -->
+        <key>StandardErrorPath</key> 
+        <string>/path/to/err/x.err</string>
+    </dict> 
+</plist></code></pre></div>
 <p>在 Plist 中，支持两种定时任务的设置：</p>
 <ul>
 <li>StartInterval：定义任务多长时间（单位，秒）执行一次</li>
@@ -411,15 +413,16 @@ brew <span class="token function">link</span> --overwrite inetutils </code></pre
 <li>/System/Library/LaunchDaemons: 由 Mac OS X 定义的守护进程任务</li>
 </ul>
 <p><font color='red'>命令行</font></p>
-<pre class=" language-bash"><code class="language-bash">launchctl load xx.plist <span class="token comment" spellcheck="true"># 启动程序</span>
-launchctl unload xx.plist <span class="token comment" spellcheck="true"># 停止程序</span></code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash">launchctl load xx.plist <span class="hljs-comment"><code class="language-hljs bash">launchctl load xx.plist <span class="hljs-comment"># 启动程序</span>
+launchctl unload xx.plist <span class="hljs-comment"># 停止程序</span></code></pre></div>
+
 <h3 id="hexo博客中构建自己的页面"><a href="#hexo博客中构建自己的页面" class="headerlink" title="hexo博客中构建自己的页面"></a>hexo博客中构建自己的页面</h3><p><a target="_blank" rel="noopener" href="https://btsyq.github.io/2017/07/24/%E5%9C%A8-Hexo-%E5%8D%9A%E5%AE%A2%E4%B8%AD%E5%88%9B%E5%BB%BA%E8%87%AA%E5%AE%9A%E4%B9%89%E9%A1%B5%E9%9D%A2/">原地址</a></p>
-<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 创建一个public，可以使用hexo g 自动生成</span>
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 创建一个public，可以使用hexo g 自动生成</span>
 hexo g
-<span class="token comment" spellcheck="true"># 编写一个静态页面到public当中去，就可以了</span>
+<span class="hljs-comment"># 编写一个静态页面到public当中去，就可以了</span>
 hexo s 
 
-<span class="token comment" spellcheck="true"># 然后再_config.yml中配置静态页面的跳转地点</span></code></pre>
+<span class="hljs-comment"># 然后再_config.yml中配置静态页面的跳转地点</span></code></pre></div>
 <p>主要原理就是,hexo的发布步骤分为</p>
 <ul>
 <li>hexo s 本地查看</li>
@@ -428,121 +431,155 @@ hexo s
 </ul>
 <h3 id="解决讨厌的-DS-Store"><a href="#解决讨厌的-DS-Store" class="headerlink" title="解决讨厌的.DS_Store"></a>解决讨厌的.DS_Store</h3><p>.DS_Store (Desktop Services Store) 是一种由苹果公司的 Mac OS X 操作系统所创造的隐藏文件，目的在于存贮目录的自定义属性，例如文件们的图标位置或者是背景色的选择。相当于 Windows 下的 desktop.ini</p>
 <p><font color='red'>为什么要解决？</font><br>如果不处理，每次拷贝给你同事的文件里都会包含有这个文件，或者上传网页的时候，应该把这个文件删除比较妥当，因为里面包含了一些你不一定希望别人看见的信息。（尤其是网站，通过 .DS_Store 可以知道这个目录里面所有文件的清单，很多时候这是一个不希望出现的问题。）</p>
-<pre class=" language-php"><code class="language-php"><span class="token delimiter">&lt;?php</span> <span class="token comment" spellcheck="true">//例子</span>
-　　<span class="token variable">$filepath</span> <span class="token operator">=</span> <span class="token string">"images"</span><span class="token punctuation">;</span>
-　　<span class="token variable">$handle</span> <span class="token operator">=</span> <span class="token function">opendir</span><span class="token punctuation">(</span><span class="token variable">$filepath</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-　　<span class="token keyword">while</span> <span class="token punctuation">(</span><span class="token boolean">false</span> <span class="token operator">!=</span> <span class="token punctuation">(</span><span class="token variable">$file</span> <span class="token operator">=</span> <span class="token function">readdir</span><span class="token punctuation">(</span><span class="token variable">$handle</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-　　    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token variable">$file</span> <span class="token operator">!=</span> <span class="token string">"."</span> <span class="token operator">&amp;&amp;</span> <span class="token variable">$file</span> <span class="token operator">!=</span> <span class="token string">".."</span> <span class="token operator">&amp;&amp;</span> <span class="token variable">$file</span> <span class="token operator">!=</span> <span class="token string">".DS_Store"</span> <span class="token operator">&amp;&amp;</span> <span class="token variable">$file</span> <span class="token operator">!=</span> <span class="token string">"index.html"</span> <span class="token operator">&amp;&amp;</span> <span class="token variable">$file</span> <span class="token operator">!=</span> <span class="token string">"index.htm"</span> <span class="token operator">&amp;&amp;</span> <span class="token variable">$file</span> <span class="token operator">!=</span> <span class="token string">"index.php"</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-　　        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token variable">$output</span><span class="token punctuation">)</span> <span class="token variable">$output</span> <span class="token punctuation">.</span><span class="token operator">=</span> <span class="token string">"|"</span><span class="token punctuation">;</span>
-　　        <span class="token variable">$output</span> <span class="token punctuation">.</span><span class="token operator">=</span> <span class="token string">"$file"</span><span class="token punctuation">;</span>
-　　    <span class="token punctuation">}</span>
-　　<span class="token punctuation">}</span>
-　　<span class="token function">closedir</span><span class="token punctuation">(</span><span class="token variable">$handle</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-　　<span class="token keyword">echo</span> <span class="token string">"&amp;files=$output&amp;"</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//输出遍历此文件夹所有的内容</span>
-<span class="token delimiter">?></span> </code></pre>
+<div class="code-wrapper"><pre class=" language-hljs php"><span class="hljs-meta">&lt;?php</span> <span class="hljs-comment"><code class="language-hljs php"><span class="hljs-meta">&lt;?php</span> <span class="hljs-comment">//例子</span>
+　　$filepath = <span class="hljs-string">"images"</span>;
+　　$handle = opendir($filepath);
+　　<span class="hljs-keyword">while</span> (<span class="hljs-literal">false</span> != ($file = readdir($handle))) {
+　　    <span class="hljs-keyword">if</span> ($file != <span class="hljs-string">"."</span> && $file != <span class="hljs-string">".."</span> && $file != <span class="hljs-string">".DS_Store"</span> && $file != <span class="hljs-string">"index.html"</span> && $file != <span class="hljs-string">"index.htm"</span> && $file != <span class="hljs-string">"index.php"</span>) {
+　　        <span class="hljs-keyword">if</span> ($output) $output .= <span class="hljs-string">"|"</span>;
+　　        $output .= <span class="hljs-string">"<span class="hljs-subst">$file</span>"</span>;
+　　    }
+　　}
+　　closedir($handle);
+　　<span class="hljs-keyword">echo</span> <span class="hljs-string">"&files=<span class="hljs-subst">$output</span>&"</span>; <span class="hljs-comment">//输出遍历此文件夹所有的内容</span>
+<span class="hljs-meta">?></span></code></pre></div>
+
 <p><font color='red'>解决</font></p>
 <ul>
-<li>删除当前目录的.DS_Store<pre class=" language-bash"><code class="language-bash"><span class="token function">find</span> <span class="token keyword">.</span> -name <span class="token string">'*.DS_Store'</span> -type f -delete</code></pre>
+<li>删除当前目录的.DS_Store<div class="code-wrapper"><pre class=" language-hljs bash">find . -name <span class="hljs-string">&#x27;*.DS_Store&#x27;</span> -<span class="hljs-built_in"><code class="language-hljs bash">find . -name <span class="hljs-string">&#x27;*.DS_Store&#x27;</span> -<span class="hljs-built_in">type</span> f -delete</code></pre></div></li>
+<li>删除所有目录的.DS_Store<div class="code-wrapper"><pre class=" language-hljs bash">sudo find / -name <span class="hljs-string">&quot;.DS_Store&quot;</span> -depth -<span class="hljs-built_in"><code class="language-hljs bash">sudo find / -name <span class="hljs-string">&quot;.DS_Store&quot;</span> -depth -<span class="hljs-built_in">exec</span> rm {} \;</code></pre></div></li>
+<li>禁止.DS_Store生成<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool TRUE</code></pre></div></li>
+<li>恢复.DS_Store生成<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">defaults delete com.apple.desktopservices DSDontWriteNetworkStores</code></pre></div>
+git上传忽略全局文件，并且在gitconfig中引入<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">touch ~/.gitigonre_global
+<span class="hljs-comment"># .gitignore_global</span>
+<span class="hljs-comment">####################################</span>
+<span class="hljs-comment">######## OS generated files ########</span>
+<span class="hljs-comment">####################################</span>
+.DS_Store
+.DS_Store?
+*.swp
+._*
+.Spotlight-V100
+.Trashes
+Icon?
+ehthumbs.db
+Thumbs.db
+<span class="hljs-comment">####################################</span>
+<span class="hljs-comment">############# packages #############</span>
+<span class="hljs-comment">####################################</span>
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip 
+
+<span class="hljs-comment">#.gitconfig</span>
+[filter <span class="hljs-string">"lfs"</span>]
+	required = <span class="hljs-literal">true</span>
+	clean = git-lfs clean %f
+	smudge = git-lfs smudge %f
+[user]
+	name = bingozb
+	email = 454113692@qq.com
+[core]
+    excludesfile = /Users/bingo/.gitignore_global
+</code></pre></div>
+
+
 </li>
-<li>删除所有目录的.DS_Store<pre class=" language-bash"><code class="language-bash"><span class="token function">sudo</span> <span class="token function">find</span> / -name <span class="token string">".DS_Store"</span> -depth -exec <span class="token function">rm</span> <span class="token punctuation">{</span><span class="token punctuation">}</span> \<span class="token punctuation">;</span></code></pre>
-</li>
-<li>禁止.DS_Store生成<pre class=" language-bash"><code class="language-bash">defaults <span class="token function">write</span> com.apple.desktopservices DSDontWriteNetworkStores -bool TRUE</code></pre>
-</li>
-<li>恢复.DS_Store生成<pre class=" language-bash"><code class="language-bash">defaults delete com.apple.desktopservices DSDontWriteNetworkStores</code></pre>
-git上传忽略全局文件，并且在gitconfig中引入<br>```bash<br>touch ~/.gitigonre_global<h1 id="gitignore-global"><a href="#gitignore-global" class="headerlink" title=".gitignore_global"></a>.gitignore_global</h1>####################################<br>######## OS generated files ########<br>####################################<br>.DS_Store<br>.DS_Store?</li>
 </ul>
-<p><em>.swp<br>._</em><br>.Spotlight-V100<br>.Trashes<br>Icon?<br>ehthumbs.db<br>Thumbs.db<br>####################################<br>############# packages #############<br>####################################<br>*.7z<br>*.dmg<br>*.gz<br>*.iso<br>*.jar<br>*.rar<br>*.tar<br>*.zip </p>
-<p>#.gitconfig<br>[filter “lfs”]<br>    required = true<br>    clean = git-lfs clean %f<br>    smudge = git-lfs smudge %f<br>[user]<br>    name = bingozb<br>    email = <a href="mailto:&#x34;&#x35;&#52;&#x31;&#x31;&#x33;&#54;&#x39;&#50;&#64;&#x71;&#x71;&#46;&#x63;&#x6f;&#x6d;">&#x34;&#x35;&#52;&#x31;&#x31;&#x33;&#54;&#x39;&#50;&#64;&#x71;&#x71;&#46;&#x63;&#x6f;&#x6d;</a><br>[core]<br>    excludesfile = /Users/bingo/.gitignore_global</p>
-<pre><code>
+<h2 id="vimrc基础配置"><a href="#vimrc基础配置" class="headerlink" title="vimrc基础配置"></a>vimrc基础配置</h2><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-string"><code class="language-hljs bash"><span class="hljs-string">" ---------------------文件树</span>
+<span class="hljs-string">"</span> \"表示注视
+<span class="hljs-string">" 关闭NERDTree快捷键</span>
+<span class="hljs-string">map <leader>t :NERDTreeToggle<CR></span>
+<span class="hljs-string">"</span> 当NERDTree为剩下的唯一窗口时自动关闭
+autocmd bufenter * <span class="hljs-keyword">if</span> (winnr(<span class="hljs-string">"$"</span>) == 1 && exists(<span class="hljs-string">"b:NERDTree"</span>) && b:NERDTree.isTabTree()) | q | endif
+<span class="hljs-string">" 修改树的显示图标</span>
+<span class="hljs-string">let g:NERDTreeDirArrowExpandable = &#x27;►&#x27;</span>
+<span class="hljs-string">let g:NERDTreeDirArrowCollapsible = &#x27;▼&#x27;</span>
+<span class="hljs-string">let NERDTreeAutoCenter=1</span>
+<span class="hljs-string"></span>
+<span class="hljs-string">"</span> 显示行号
+<span class="hljs-built_in">let</span> NERDTreeShowLineNumbers=1
+<span class="hljs-string">" 是否显示隐藏文件</span>
+<span class="hljs-string">let NERDTreeShowHidden=1</span>
+<span class="hljs-string">"</span> 设置宽度
+<span class="hljs-built_in">let</span> NERDTreeWinSize=25
+<span class="hljs-string">" 在终端启动vim时，共享NERDTree</span>
+<span class="hljs-string">let g:nerdtree_tabs_open_on_console_startup=1</span>
+<span class="hljs-string">"</span> 忽略一下文件的显示
+<span class="hljs-built_in">let</span> NERDTreeIgnore=[<span class="hljs-string">&#x27;\.pyc&#x27;</span>,<span class="hljs-string">&#x27;\~$&#x27;</span>,<span class="hljs-string">&#x27;\.swp&#x27;</span>]
+<span class="hljs-built_in">let</span> g:NERDTreeIndicatorMapCustom = {
+    \ <span class="hljs-string">"Modified"</span>  : <span class="hljs-string">"✹"</span>,
+    \ <span class="hljs-string">"Staged"</span>    : <span class="hljs-string">"✚"</span>,
+    \ <span class="hljs-string">"Untracked"</span> : <span class="hljs-string">"✭"</span>,
+    \ <span class="hljs-string">"Renamed"</span>   : <span class="hljs-string">"➜"</span>,
+    \ <span class="hljs-string">"Unmerged"</span>  : <span class="hljs-string">"═"</span>,
+    \ <span class="hljs-string">"Deleted"</span>   : <span class="hljs-string">"✖"</span>,
+    \ <span class="hljs-string">"Dirty"</span>     : <span class="hljs-string">"✗"</span>,
+    \ <span class="hljs-string">"Clean"</span>     : <span class="hljs-string">"✔︎"</span>,
+    \ <span class="hljs-string">&#x27;Ignored&#x27;</span>   : <span class="hljs-string">&#x27;☒&#x27;</span>,
+    \ <span class="hljs-string">"Unknown"</span>   : <span class="hljs-string">"?"</span>
+    \ }
+<span class="hljs-string">" 打开NERDTree的快捷键设置为F6</span>
+<span class="hljs-string">map <F6> :NERDTreeToggle<CR></span></code></pre></div>
 
-## vimrc基础配置
 
-```bash
-&quot; ---------------------文件树
-&quot; \&quot;表示注视
-&quot; 关闭NERDTree快捷键
-map &lt;leader&gt;t :NERDTreeToggle&lt;CR&gt;
-&quot; 当NERDTree为剩下的唯一窗口时自动关闭
-autocmd bufenter * if (winnr(&quot;$&quot;) == 1 &amp;&amp; exists(&quot;b:NERDTree&quot;) &amp;&amp; b:NERDTree.isTabTree()) | q | endif
-&quot; 修改树的显示图标
-let g:NERDTreeDirArrowExpandable = &#39;►&#39;
-let g:NERDTreeDirArrowCollapsible = &#39;▼&#39;
-let NERDTreeAutoCenter=1
-
-&quot; 显示行号
-let NERDTreeShowLineNumbers=1
-&quot; 是否显示隐藏文件
-let NERDTreeShowHidden=1
-&quot; 设置宽度
-let NERDTreeWinSize=25
-&quot; 在终端启动vim时，共享NERDTree
-let g:nerdtree_tabs_open_on_console_startup=1
-&quot; 忽略一下文件的显示
-let NERDTreeIgnore=[&#39;\.pyc&#39;,&#39;\~$&#39;,&#39;\.swp&#39;]
-let g:NERDTreeIndicatorMapCustom = &#123;
-    \ &quot;Modified&quot;  : &quot;✹&quot;,
-    \ &quot;Staged&quot;    : &quot;✚&quot;,
-    \ &quot;Untracked&quot; : &quot;✭&quot;,
-    \ &quot;Renamed&quot;   : &quot;➜&quot;,
-    \ &quot;Unmerged&quot;  : &quot;═&quot;,
-    \ &quot;Deleted&quot;   : &quot;✖&quot;,
-    \ &quot;Dirty&quot;     : &quot;✗&quot;,
-    \ &quot;Clean&quot;     : &quot;✔︎&quot;,
-    \ &#39;Ignored&#39;   : &#39;☒&#39;,
-    \ &quot;Unknown&quot;   : &quot;?&quot;
-    \ &#125;
-&quot; 打开NERDTree的快捷键设置为F6
-map &lt;F6&gt; :NERDTreeToggle&lt;CR&gt;</code></pre>
-<h2 id="tmux配置"><a href="#tmux配置" class="headerlink" title="tmux配置"></a>tmux配置</h2><h3 id="安装Tumx"><a href="#安装Tumx" class="headerlink" title="安装Tumx"></a>安装Tumx</h3><pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 先安装Homebrew，有则跳过</span>
-ruby -e <span class="token string">"<span class="token variable"><span class="token variable">$(</span>curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install<span class="token variable">)</span></span>"</span>
-<span class="token comment" spellcheck="true"># 安装tmux</span>
-brew <span class="token function">install</span> tmux</code></pre>
+<h2 id="tmux配置"><a href="#tmux配置" class="headerlink" title="tmux配置"></a>tmux配置</h2><h3 id="安装Tumx"><a href="#安装Tumx" class="headerlink" title="安装Tumx"></a>安装Tumx</h3><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 先安装Homebrew，有则跳过</span>
+ruby -e <span class="hljs-string">"<span class="hljs-subst">$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)</span>"</span>
+<span class="hljs-comment"># 安装tmux</span>
+brew install tmux</code></pre></div>
 <p>tmux的配置文件在～/.tmux.conf<br>退出tmux后生成配置 source .tmux.conf</p>
 <h3 id="tmux简介"><a href="#tmux简介" class="headerlink" title="tmux简介"></a>tmux简介</h3><p>对于tmux来说,最好能了解一些概念,在tmux中,一共分为 窗口（windows)，会话(session) 以及 面板(pane)三块内容,</p>
-<h3 id="tumx-使用指南（会话篇）"><a href="#tumx-使用指南（会话篇）" class="headerlink" title="tumx 使用指南（会话篇）"></a>tumx 使用指南（会话篇）</h3><pre class=" language-bash"><code class="language-bash">tumx <span class="token comment" spellcheck="true"># 新建一个无名称的会话</span>
-tmux new -s demo  <span class="token comment" spellcheck="true"># (-s -session) 新建一个名称为demo的会话</span>
+<h3 id="tumx-使用指南（会话篇）"><a href="#tumx-使用指南（会话篇）" class="headerlink" title="tumx 使用指南（会话篇）"></a>tumx 使用指南（会话篇）</h3><div class="code-wrapper"><pre class=" language-hljs bash">tumx <span class="hljs-comment"><code class="language-hljs bash">tumx <span class="hljs-comment"># 新建一个无名称的会话</span>
+tmux new -s demo  <span class="hljs-comment"># (-s -session) 新建一个名称为demo的会话</span>
 
-tmux detach <span class="token comment" spellcheck="true"># 断开当前会话，会话在后台运行</span>
+tmux detach <span class="hljs-comment"># 断开当前会话，会话在后台运行</span>
 
-tmux <span class="token function">ls</span> <span class="token comment" spellcheck="true"># 查看当前会话列表</span>
-tmux a <span class="token comment" spellcheck="true"># 默认进入第一个会话</span>
-tmux a -t demo <span class="token comment" spellcheck="true"># 进入到名称为demo的会话 (-t -tmux)</span>
+tmux ls <span class="hljs-comment"># 查看当前会话列表</span>
+tmux a <span class="hljs-comment"># 默认进入第一个会话</span>
+tmux a -t demo <span class="hljs-comment"># 进入到名称为demo的会话 (-t -tmux)</span>
 
-tmux kill-session -t demo <span class="token comment" spellcheck="true">#关闭demo会话</span>
-tmux kill-server <span class="token comment" spellcheck="true"># 关闭服务器，即所有的会话都将关闭</span>
+tmux kill-session -t demo <span class="hljs-comment">#关闭demo会话</span>
+tmux kill-server <span class="hljs-comment"># 关闭服务器，即所有的会话都将关闭</span>
 
-tmux <span class="token function">ls</span> <span class="token comment" spellcheck="true"># 查看所有会话</span>
-</code></pre>
-<h3 id="tmux使用指南（窗口篇）"><a href="#tmux使用指南（窗口篇）" class="headerlink" title="tmux使用指南（窗口篇）"></a>tmux使用指南（窗口篇）</h3><pre class=" language-bash"><code class="language-bash">c-b  d <span class="token comment" spellcheck="true"># 断开当前窗口，后台运行</span>
-c-b  s <span class="token comment" spellcheck="true"># 在当前窗口打来其他正在运行的tmux</span>
-c-b  ? <span class="token comment" spellcheck="true"># 显示快捷键帮助文档</span>
-c-b  d <span class="token comment" spellcheck="true"># 断开当前会话</span>
-c-b  c+z <span class="token comment" spellcheck="true"># 挂起当前会话</span>
-c-b  r <span class="token comment" spellcheck="true"># 强制重载当前会话</span>
-c-b  s <span class="token comment" spellcheck="true"># 显示会话列表用于选择并切换</span>
-c-b  <span class="token punctuation">[</span> <span class="token comment" spellcheck="true"># 进入复制模式 按q退出</span>
-c-b  <span class="token punctuation">]</span> <span class="token comment" spellcheck="true"># 粘贴复制模式中的文本</span>
+tmux ls <span class="hljs-comment"># 查看所有会话</span>
+</code></pre></div>
+
+<h3 id="tmux使用指南（窗口篇）"><a href="#tmux使用指南（窗口篇）" class="headerlink" title="tmux使用指南（窗口篇）"></a>tmux使用指南（窗口篇）</h3><div class="code-wrapper"><pre class=" language-hljs bash">c-b  d <span class="hljs-comment"><code class="language-hljs bash">c-b  d <span class="hljs-comment"># 断开当前窗口，后台运行</span>
+c-b  s <span class="hljs-comment"># 在当前窗口打来其他正在运行的tmux</span>
+c-b  ? <span class="hljs-comment"># 显示快捷键帮助文档</span>
+c-b  d <span class="hljs-comment"># 断开当前会话</span>
+c-b  c+z <span class="hljs-comment"># 挂起当前会话</span>
+c-b  r <span class="hljs-comment"># 强制重载当前会话</span>
+c-b  s <span class="hljs-comment"># 显示会话列表用于选择并切换</span>
+c-b  [ <span class="hljs-comment"># 进入复制模式 按q退出</span>
+c-b  ] <span class="hljs-comment"># 粘贴复制模式中的文本</span>
 
 
-c-b  c <span class="token comment" spellcheck="true"># 新建窗口</span>
-c-b  <span class="token operator">&amp;</span> <span class="token comment" spellcheck="true"># 关闭当前窗口 需要输入y n 确认</span>
-c-b  0~9 <span class="token comment" spellcheck="true"># 切换到指定窗口</span>
-c-b  p <span class="token comment" spellcheck="true"># 切换到指定窗口</span>
-c-b  n <span class="token comment" spellcheck="true"># 切换到下一个窗口</span>
-c-b  w <span class="token comment" spellcheck="true"># 打开窗口列表，用于切换窗口</span>
-c-b  , <span class="token comment" spellcheck="true"># 重命名当前窗口</span>
-c-b  <span class="token keyword">.</span> <span class="token comment" spellcheck="true"># 修改当前窗口编号</span>
-c-b  f <span class="token comment" spellcheck="true"># 快速定位到窗口</span></code></pre>
+c-b  c <span class="hljs-comment"># 新建窗口</span>
+c-b  & <span class="hljs-comment"># 关闭当前窗口 需要输入y n 确认</span>
+c-b  0~9 <span class="hljs-comment"># 切换到指定窗口</span>
+c-b  p <span class="hljs-comment"># 切换到指定窗口</span>
+c-b  n <span class="hljs-comment"># 切换到下一个窗口</span>
+c-b  w <span class="hljs-comment"># 打开窗口列表，用于切换窗口</span>
+c-b  , <span class="hljs-comment"># 重命名当前窗口</span>
+c-b  . <span class="hljs-comment"># 修改当前窗口编号</span>
+c-b  f <span class="hljs-comment"># 快速定位到窗口</span></code></pre></div>
+
 <p><strong>Tmux使用手册地址：<a target="_blank" rel="noopener" href="http://louiszhai.github.io/2017/09/30/tmux/">http://louiszhai.github.io/2017/09/30/tmux/</a></strong></p>
 <p>还需要在记录一下</p>
 <h3 id="tmux美化篇"><a href="#tmux美化篇" class="headerlink" title="tmux美化篇"></a>tmux美化篇</h3><h3 id="tumx配置篇"><a href="#tumx配置篇" class="headerlink" title="tumx配置篇"></a>tumx配置篇</h3><p>首先tmux默认将作为启动功能的前缀按键，当然我们可以自定义修改这个前缀按键，具体配置可以参照下面的配置文件</p>
 <h3 id="常用按键"><a href="#常用按键" class="headerlink" title="常用按键"></a>常用按键</h3><p>在具体配置之前我们先来了解一下tmux常用按键,这里我已经把前缀按键替换成了c-z</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 常用按键</span>
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 常用按键</span>
 c-z ？显示快捷键帮助
 c-z c-o 调换窗口位置
 c-z space 采用上下布局或左右布局
 c-z u 纵向分割窗口
-c-z <span class="token function">v</span> 横向分割窗口
+c-z v 横向分割窗口
 c-z q 显示分割窗口的编号
 c-z hjkl 上下左右选择窗口
 c-z c 创建新窗口
@@ -558,104 +595,106 @@ c-z s 以菜单形式显示和选择会话
 c-z $ 修改当前会话名字
 
 tmux new -s xxx 创建并指定session名字
-tmux <span class="token function">ls</span> 列出session
+tmux ls 列出session
 tmux a -t xxx进入已经在的session
 tmux kill-session -t session_name 删除指定session
 
-</code></pre>
-<h3 id="具体配置"><a href="#具体配置" class="headerlink" title="具体配置"></a>具体配置</h3><pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># Tumx配置文件</span>
-<span class="token comment" spellcheck="true"># from hzj</span>
+</code></pre></div>
 
-<span class="token comment" spellcheck="true"># remap prefix from 'C-b' to 'C-a'</span>
-<span class="token comment" spellcheck="true"># 修改前缀权限</span>
-unbind C-b     <span class="token comment" spellcheck="true"># 取消Ctrl-B</span>
-<span class="token keyword">set</span> -g prefix C-z <span class="token comment" spellcheck="true">#  添加Ctrl-z</span>
+<h3 id="具体配置"><a href="#具体配置" class="headerlink" title="具体配置"></a>具体配置</h3><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># Tumx配置文件</span>
+<span class="hljs-comment"># from hzj</span>
+
+<span class="hljs-comment"># remap prefix from &#x27;C-b&#x27; to &#x27;C-a&#x27;</span>
+<span class="hljs-comment"># 修改前缀权限</span>
+unbind C-b     <span class="hljs-comment"># 取消Ctrl-B</span>
+<span class="hljs-built_in">set</span> -g prefix C-z <span class="hljs-comment">#  添加Ctrl-z</span>
 bind-key C-z send-prefix  绑定ctrl+z为新的前缀
-
-<span class="token comment" spellcheck="true"># split panes using | and -</span>
-<span class="token comment" spellcheck="true"># 使用c-u c-v分割面板</span>
-bind u split-window -h
-bind <span class="token function">v</span> split-window -v
-unbind <span class="token string">'"'</span>
+ 
+<span class="hljs-comment"># split panes using | and -</span>
+<span class="hljs-comment"># 使用c-u c-v分割面板</span>
+<span class="hljs-built_in">bind</span> u split-window -h
+<span class="hljs-built_in">bind</span> v split-window -v
+unbind <span class="hljs-string">&#x27;"&#x27;</span>
 unbind %
 
-<span class="token comment" spellcheck="true"># 使用c-(hijk)选择面板</span>
-bind h select-pane -L
-bind l select-pane -R
-bind j select-pane -D
-bind k select-pane -U
-
+<span class="hljs-comment"># 使用c-(hijk)选择面板</span>
+<span class="hljs-built_in">bind</span> h select-pane -L
+<span class="hljs-built_in">bind</span> l select-pane -R
+<span class="hljs-built_in">bind</span> j select-pane -D
+<span class="hljs-built_in">bind</span> k select-pane -U
+ 
 bind-key e setw synchronize-panes
+ 
+<span class="hljs-comment"># Set the default terminal mode to 256color mode</span>
+<span class="hljs-built_in">set</span> -g default-terminal <span class="hljs-string">"screen-256color"</span>
+ 
+<span class="hljs-comment"># Set scrollback buffer to 10000</span>
+<span class="hljs-built_in">set</span> -g history-limit 10000
 
-<span class="token comment" spellcheck="true"># Set the default terminal mode to 256color mode</span>
-<span class="token keyword">set</span> -g default-terminal <span class="token string">"screen-256color"</span>
 
-<span class="token comment" spellcheck="true"># Set scrollback buffer to 10000</span>
-<span class="token keyword">set</span> -g history-limit 10000
-
-
-<span class="token comment" spellcheck="true"># resize pane</span>
-bind -r ^k resizep -U 10 <span class="token comment" spellcheck="true"># upward (prefix Ctrl+k)</span>
-bind -r ^j resizep -D 10 <span class="token comment" spellcheck="true"># downward (prefix Ctrl+j)</span>
-bind -r ^h resizep -L 10 <span class="token comment" spellcheck="true"># to the left (prefix Ctrl+h)</span>
-bind -r ^l resizep -R 10 <span class="token comment" spellcheck="true"># to the right (prefix Ctrl+l)</span>
-
-<span class="token comment" spellcheck="true"># app</span>
-<span class="token comment" spellcheck="true"># htop (prefix !)</span>
-bind <span class="token operator">!</span> splitw <span class="token function">htop</span>
-
-<span class="token comment" spellcheck="true"># python </span>
-bind / command-prompt <span class="token string">"splitw 'exec python3 %%'"</span>
-
-<span class="token comment" spellcheck="true"># reload config (prefix r)</span>
-bind r <span class="token function">source</span> ~/.tmux.conf \<span class="token punctuation">;</span> display <span class="token string">"Configuration reloaded!"</span>
-
-<span class="token comment" spellcheck="true">#-- statusbar --#</span>
-<span class="token keyword">set</span> -g status-interval 1
-<span class="token keyword">set</span> -g status-keys <span class="token function">vi</span>
-
-setw -g mode-keys <span class="token function">vi</span>
+<span class="hljs-comment"># resize pane</span>
+<span class="hljs-built_in">bind</span> -r ^k resizep -U 10 <span class="hljs-comment"># upward (prefix Ctrl+k)</span>
+<span class="hljs-built_in">bind</span> -r ^j resizep -D 10 <span class="hljs-comment"># downward (prefix Ctrl+j)</span>
+<span class="hljs-built_in">bind</span> -r ^h resizep -L 10 <span class="hljs-comment"># to the left (prefix Ctrl+h)</span>
+<span class="hljs-built_in">bind</span> -r ^l resizep -R 10 <span class="hljs-comment"># to the right (prefix Ctrl+l)</span>
+ 
+<span class="hljs-comment"># app</span>
+<span class="hljs-comment"># htop (prefix !)</span>
+<span class="hljs-built_in">bind</span> ! splitw htop
+ 
+<span class="hljs-comment"># python </span>
+<span class="hljs-built_in">bind</span> / command-prompt <span class="hljs-string">"splitw &#x27;exec python3 %%&#x27;"</span>
+ 
+<span class="hljs-comment"># reload config (prefix r)</span>
+<span class="hljs-built_in">bind</span> r <span class="hljs-built_in">source</span> ~/.tmux.conf \; display <span class="hljs-string">"Configuration reloaded!"</span>
+ 
+<span class="hljs-comment">#-- statusbar --#</span>
+<span class="hljs-built_in">set</span> -g status-interval 1
+<span class="hljs-built_in">set</span> -g status-keys vi
+ 
+setw -g mode-keys vi
 setw -g automatic-rename off
+ 
+<span class="hljs-comment">#-- colorscheme --#</span>
+<span class="hljs-comment">#https://github.com/daethorian/conf-tmux/blob/master/colors/zenburn.conf</span>
 
-<span class="token comment" spellcheck="true">#-- colorscheme --#</span>
-<span class="token comment" spellcheck="true">#https://github.com/daethorian/conf-tmux/blob/master/colors/zenburn.conf</span>
 
-
-<span class="token comment" spellcheck="true"># mouse</span>
-<span class="token comment" spellcheck="true"># 支持鼠标</span>
+<span class="hljs-comment"># mouse</span>
+<span class="hljs-comment"># 支持鼠标</span>
 set-option -g mouse on 
 
-<span class="token comment" spellcheck="true"># 支持复制粘贴连续到剪切板</span>
-bind C-c run <span class="token string">"tmux save-buffer - | reattach-to-user-namespace pbcopy"</span>
-bind C-v run <span class="token string">"reattach-to-user-namespace pbpaste | tmux load-buffer - \; paste-buffer"</span>
-bind-key -T copy-mode-vi <span class="token string">'y'</span> send-keys -X copy-pipe-and-cancel <span class="token string">'reattach-to-user-namespace pbcopy'</span>bind-key -T copy-mode-vi MouseDragEnd1Pane send -X copy-pipe-and-cancel <span class="token string">"pbcopy"</span>
+<span class="hljs-comment"># 支持复制粘贴连续到剪切板</span>
+<span class="hljs-built_in">bind</span> C-c run <span class="hljs-string">"tmux save-buffer - | reattach-to-user-namespace pbcopy"</span>
+<span class="hljs-built_in">bind</span> C-v run <span class="hljs-string">"reattach-to-user-namespace pbpaste | tmux load-buffer - \; paste-buffer"</span>
+bind-key -T copy-mode-vi <span class="hljs-string">&#x27;y&#x27;</span> send-keys -X copy-pipe-and-cancel <span class="hljs-string">&#x27;reattach-to-user-namespace pbcopy&#x27;</span>bind-key -T copy-mode-vi MouseDragEnd1Pane send -X copy-pipe-and-cancel <span class="hljs-string">"pbcopy"</span>
 
-<span class="token keyword">set</span> -g status-utf8 on <span class="token comment" spellcheck="true"># 状态栏支持utf8</span>
-<span class="token keyword">set</span> -g status-interval 1 <span class="token comment" spellcheck="true"># 状态栏刷新时间</span>
-<span class="token keyword">set</span> -g status-justify left <span class="token comment" spellcheck="true"># 状态栏列表左对齐</span>
-setw -g monitor-activity on <span class="token comment" spellcheck="true"># 非当前窗口有内容更新时在状态栏通知</span>
+<span class="hljs-built_in">set</span> -g status-utf8 on <span class="hljs-comment"># 状态栏支持utf8</span>
+<span class="hljs-built_in">set</span> -g status-interval 1 <span class="hljs-comment"># 状态栏刷新时间</span>
+<span class="hljs-built_in">set</span> -g status-justify left <span class="hljs-comment"># 状态栏列表左对齐</span>
+setw -g monitor-activity on <span class="hljs-comment"># 非当前窗口有内容更新时在状态栏通知</span>
 
-<span class="token keyword">set</span> -g status-bg black <span class="token comment" spellcheck="true"># 设置状态栏背景黑色</span>
-<span class="token keyword">set</span> -g status-fg yellow <span class="token comment" spellcheck="true"># 设置状态栏前景黄色</span>
-<span class="token keyword">set</span> -g status-style <span class="token string">"bg=black, fg=yellow"</span> <span class="token comment" spellcheck="true"># 状态栏前景背景色</span>
+<span class="hljs-built_in">set</span> -g status-bg black <span class="hljs-comment"># 设置状态栏背景黑色</span>
+<span class="hljs-built_in">set</span> -g status-fg yellow <span class="hljs-comment"># 设置状态栏前景黄色</span>
+<span class="hljs-built_in">set</span> -g status-style <span class="hljs-string">"bg=black, fg=yellow"</span> <span class="hljs-comment"># 状态栏前景背景色</span>
 
-<span class="token keyword">set</span> -g status-left <span class="token string">"#[bg=#FF661D] ❐ #S "</span> # 状态栏左侧内容
-<span class="token keyword">set</span> -g status-right <span class="token string">'Continuum status: #{continuum_status}'</span> # 状态栏右侧内容
-<span class="token keyword">set</span> -g status-left-length 300 <span class="token comment" spellcheck="true"># 状态栏左边长度300</span>
-<span class="token keyword">set</span> -g status-right-length 500 <span class="token comment" spellcheck="true"># 状态栏左边长度500</span>
+<span class="hljs-built_in">set</span> -g status-left <span class="hljs-string">"#[bg=#FF661D] ❐ #S "</span> <span class="hljs-comment"># 状态栏左侧内容</span>
+<span class="hljs-built_in">set</span> -g status-right <span class="hljs-string">&#x27;Continuum status: #{continuum_status}&#x27;</span> <span class="hljs-comment"># 状态栏右侧内容</span>
+<span class="hljs-built_in">set</span> -g status-left-length 300 <span class="hljs-comment"># 状态栏左边长度300</span>
+<span class="hljs-built_in">set</span> -g status-right-length 500 <span class="hljs-comment"># 状态栏左边长度500</span>
 
-<span class="token keyword">set</span> -wg window-status-format <span class="token string">" #I #W "</span> # 状态栏窗口名称格式
-<span class="token keyword">set</span> -wg window-status-current-format <span class="token string">" #I:#W#F "</span> # 状态栏当前窗口名称格式<span class="token punctuation">(</span>#I：序号，#w：窗口名称，#F：间隔符<span class="token punctuation">)</span>
-<span class="token keyword">set</span> -wg window-status-separator <span class="token string">""</span> <span class="token comment" spellcheck="true"># 状态栏窗口名称之间的间隔</span>
-<span class="token keyword">set</span> -wg window-status-current-style <span class="token string">"bg=red"</span> <span class="token comment" spellcheck="true"># 状态栏当前窗口名称的样式</span>
-<span class="token keyword">set</span> -wg window-status-last-style <span class="token string">"fg=red"</span> <span class="token comment" spellcheck="true"># 状态栏最后一个窗口名称的样式</span>
+<span class="hljs-built_in">set</span> -wg window-status-format <span class="hljs-string">" #I #W "</span> <span class="hljs-comment"># 状态栏窗口名称格式</span>
+<span class="hljs-built_in">set</span> -wg window-status-current-format <span class="hljs-string">" #I:#W#F "</span> <span class="hljs-comment"># 状态栏当前窗口名称格式(#I：序号，#w：窗口名称，#F：间隔符)</span>
+<span class="hljs-built_in">set</span> -wg window-status-separator <span class="hljs-string">""</span> <span class="hljs-comment"># 状态栏窗口名称之间的间隔</span>
+<span class="hljs-built_in">set</span> -wg window-status-current-style <span class="hljs-string">"bg=red"</span> <span class="hljs-comment"># 状态栏当前窗口名称的样式</span>
+<span class="hljs-built_in">set</span> -wg window-status-last-style <span class="hljs-string">"fg=red"</span> <span class="hljs-comment"># 状态栏最后一个窗口名称的样式</span>
 
-<span class="token keyword">set</span> -g message-style <span class="token string">"bg=#202529, fg=#91A8BA"</span> # 指定消息通知的前景、后景色
-<span class="token keyword">set</span> -g default-terminal <span class="token string">"screen-256color"</span></code></pre>
-<h2 id="vim-文档中文注释乱码"><a href="#vim-文档中文注释乱码" class="headerlink" title="vim 文档中文注释乱码"></a>vim 文档中文注释乱码</h2><pre class=" language-bash"><code class="language-bash">Error E513, <span class="token function">write</span> error, conversion failed <span class="token punctuation">(</span>make <span class="token string">'fenc'</span> empty to override<span class="token punctuation">)</span>"</code></pre>
+<span class="hljs-built_in">set</span> -g message-style <span class="hljs-string">"bg=#202529, fg=#91A8BA"</span> <span class="hljs-comment"># 指定消息通知的前景、后景色</span>
+<span class="hljs-built_in">set</span> -g default-terminal <span class="hljs-string">"screen-256color"</span></code></pre></div>
+
+<h2 id="vim-文档中文注释乱码"><a href="#vim-文档中文注释乱码" class="headerlink" title="vim 文档中文注释乱码"></a>vim 文档中文注释乱码</h2><div class="code-wrapper"><pre class=" language-hljs bash">Error E513, write error, conversion failed (make <span class="hljs-string">&#x27;fenc&#x27;</span> empty to override)<span class="hljs-string"><code class="language-hljs bash">Error E513, write error, conversion failed (make <span class="hljs-string">&#x27;fenc&#x27;</span> empty to override)<span class="hljs-string">"</span></code></pre></div>
+
 <p>解决办法，设置当前编码为utf-8</p>
-<pre class=" language-bash"><code class="language-bash">:set fileencoding<span class="token operator">=</span>utf-8</code></pre>
-
+<div class="code-wrapper"><pre class=" language-hljs bash">:<span class="hljs-built_in"><code class="language-hljs bash">:<span class="hljs-built_in">set</span> fileencoding=utf-8</code></pre></div>
             </div>
             <hr>
             <div>
@@ -763,7 +802,7 @@ setw -g monitor-activity on <span class="token comment" spellcheck="true"># 非�
 
   <footer class="text-center mt-5 py-3">
   <div class="footer-content">
-     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+     <a rel="nofollow noopener"><span>Hzjsea</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
   </div>
   
 

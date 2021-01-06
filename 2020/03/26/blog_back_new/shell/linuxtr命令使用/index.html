@@ -67,7 +67,7 @@
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
-       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
+       href="/">&nbsp;<strong>hzjsea</strong>&nbsp;</a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
             data-target="#navbarSupportedContent"
@@ -184,7 +184,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      514 字
+      542 字
     </span>
   
 
@@ -194,7 +194,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      6
+      7
        分钟
     </span>
   
@@ -243,65 +243,66 @@
 <a id="more"></a>
 
 <h1 id="linux-tr命令使用"><a href="#linux-tr命令使用" class="headerlink" title="linux tr命令使用"></a>linux tr命令使用</h1><p>tr 命令主要用于删除文件中控制字符或进行字符转换</p>
-<h2 id="tr基本语法"><a href="#tr基本语法" class="headerlink" title="tr基本语法"></a>tr基本语法</h2><pre class=" language-bash"><code class="language-bash"><span class="token function">tr</span> <span class="token punctuation">[</span>-d<span class="token punctuation">]</span> <span class="token punctuation">[</span>-c<span class="token punctuation">]</span> <span class="token punctuation">[</span>-s<span class="token punctuation">]</span> <span class="token punctuation">[</span>字符串1<span class="token punctuation">]</span> <span class="token punctuation">[</span>字符串2<span class="token punctuation">]</span> 文件名
-<span class="token comment" spellcheck="true"># 字符串1用于查询，字符串2用于处理各种转换。</span>
+<h2 id="tr基本语法"><a href="#tr基本语法" class="headerlink" title="tr基本语法"></a>tr基本语法</h2><div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">tr [-d] [-c] [-s] [字符串1] [字符串2] 文件名
+<span class="hljs-comment"># 字符串1用于查询，字符串2用于处理各种转换。</span>
 -d 删除字符串中所有输入的字符串
--c 查询替换，先取字符串1 再取反 再查询 再替换成字符串2<span class="token punctuation">(</span>可以理解成保留字符串1 其他都替换成字符串2<span class="token punctuation">)</span>
--s 删除所有重复出现的字符序列，只保留第一个，就是将重复出现的字符串替换成为字符串2</code></pre>
+-c 查询替换，先取字符串1 再取反 再查询 再替换成字符串2(可以理解成保留字符串1 其他都替换成字符串2)
+-s 删除所有重复出现的字符序列，只保留第一个，就是将重复出现的字符串替换成为字符串2</code></pre></div>
 <p>字符串1和字符串2内容只能使用单字符，字符串范围或列表 比如字符串范围<code>[a-z]</code>表示小写字母、<code>[0-9]</code>表示数字。</p>
-<h2 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h2><pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 直接替换</span>
-<span class="token keyword">echo</span> <span class="token string">"dsadsadasdasdsad"</span> <span class="token operator">|</span> <span class="token function">tr</span> d s
-<span class="token comment" spellcheck="true"># res: ssassasassasssas</span>
+<h2 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h2><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 直接替换</span>
+<span class="hljs-built_in">echo</span> <span class="hljs-string">"dsadsadasdasdsad"</span> | tr d s
+<span class="hljs-comment"># res: ssassasassasssas</span>
 
-<span class="token comment" spellcheck="true"># 保留替换</span>
-<span class="token keyword">echo</span> <span class="token string">"dsadsadasdasdsad"</span> <span class="token operator">|</span> <span class="token function">tr</span> -c d 1
-<span class="token comment" spellcheck="true"># res: d11d11d11d11d11d1</span>
+<span class="hljs-comment"># 保留替换</span>
+<span class="hljs-built_in">echo</span> <span class="hljs-string">"dsadsadasdasdsad"</span> | tr -c d 1
+<span class="hljs-comment"># res: d11d11d11d11d11d1</span>
 
-<span class="token comment" spellcheck="true"># 压缩</span>
-<span class="token keyword">echo</span> <span class="token string">"dsadsadasdasdsad"</span> <span class="token operator">|</span> <span class="token function">tr</span> -s sa 1
-<span class="token comment" spellcheck="true"># res: d1d1d1d1d1d</span>
+<span class="hljs-comment"># 压缩</span>
+<span class="hljs-built_in">echo</span> <span class="hljs-string">"dsadsadasdasdsad"</span> | tr -s sa 1
+<span class="hljs-comment"># res: d1d1d1d1d1d</span>
 
-<span class="token comment" spellcheck="true"># 仅压缩 不替换</span>
-<span class="token keyword">echo</span> -e <span class="token string">"1\n\n2\n\n\n3"</span> <span class="token operator">|</span> <span class="token function">tr</span> -s <span class="token string">'\n'</span> 
-<span class="token comment" spellcheck="true"># res: 1 </span>
-<span class="token comment" spellcheck="true"># 2 </span>
-<span class="token comment" spellcheck="true"># 3</span>
+<span class="hljs-comment"># 仅压缩 不替换</span>
+<span class="hljs-built_in">echo</span> -e <span class="hljs-string">"1\n\n2\n\n\n3"</span> | tr -s <span class="hljs-string">&#x27;\n&#x27;</span> 
+<span class="hljs-comment"># res: 1 </span>
+<span class="hljs-comment"># 2 </span>
+<span class="hljs-comment"># 3</span>
 
-<span class="token comment" spellcheck="true"># 删除</span>
-<span class="token keyword">echo</span> <span class="token string">"dsadsadasdasdsad"</span> <span class="token operator">|</span> <span class="token function">tr</span> -d sa
-<span class="token comment" spellcheck="true"># res: dddddd</span>
+<span class="hljs-comment"># 删除</span>
+<span class="hljs-built_in">echo</span> <span class="hljs-string">"dsadsadasdasdsad"</span> | tr -d sa
+<span class="hljs-comment"># res: dddddd</span>
 
 
-<span class="token comment" spellcheck="true"># 删除空格</span>
-<span class="token keyword">echo</span> <span class="token string">"   Hello World  "</span> <span class="token operator">|</span> <span class="token function">tr</span> -d <span class="token string">'[ \t]'</span>
+<span class="hljs-comment"># 删除空格</span>
+<span class="hljs-built_in">echo</span> <span class="hljs-string">"   Hello World  "</span> | tr -d <span class="hljs-string">&#x27;[ \t]&#x27;</span>
 
-<span class="token comment" spellcheck="true"># 大小写替换</span>
-<span class="token keyword">echo</span> <span class="token string">"Hello World"</span> <span class="token operator">|</span> <span class="token function">tr</span> <span class="token string">'[a-z]'</span> <span class="token string">'[A-Z]'</span> <span class="token comment" spellcheck="true">#小写转大写，输出HELLO WORLD</span>
-<span class="token keyword">echo</span> <span class="token string">"Hello World"</span> <span class="token operator">|</span> <span class="token function">tr</span> <span class="token string">'[A-Z]'</span> <span class="token string">'[a-z]'</span> <span class="token comment" spellcheck="true">#大写转小写，输出hello world</span>
-<span class="token keyword">echo</span> <span class="token string">"Hello World"</span> <span class="token operator">|</span> <span class="token function">tr</span> <span class="token string">'[A-Za-z]'</span> <span class="token string">'[a-zA-Z]'</span> <span class="token comment" spellcheck="true">#大小写互换，输出hELLO wORLD</span>
+<span class="hljs-comment"># 大小写替换</span>
+<span class="hljs-built_in">echo</span> <span class="hljs-string">"Hello World"</span> | tr <span class="hljs-string">&#x27;[a-z]&#x27;</span> <span class="hljs-string">&#x27;[A-Z]&#x27;</span> <span class="hljs-comment">#小写转大写，输出HELLO WORLD</span>
+<span class="hljs-built_in">echo</span> <span class="hljs-string">"Hello World"</span> | tr <span class="hljs-string">&#x27;[A-Z]&#x27;</span> <span class="hljs-string">&#x27;[a-z]&#x27;</span> <span class="hljs-comment">#大写转小写，输出hello world</span>
+<span class="hljs-built_in">echo</span> <span class="hljs-string">"Hello World"</span> | tr <span class="hljs-string">&#x27;[A-Za-z]&#x27;</span> <span class="hljs-string">&#x27;[a-zA-Z]&#x27;</span> <span class="hljs-comment">#大小写互换，输出hELLO wORLD</span>
 
-<span class="token comment" spellcheck="true">#删除非数字字符 </span>
-<span class="token keyword">echo</span> <span class="token string">"2018abcdefdf06zzz01"</span> <span class="token operator">|</span><span class="token function">tr</span> -d -c <span class="token string">'[0-9]'</span>
+<span class="hljs-comment">#删除非数字字符 </span>
+<span class="hljs-built_in">echo</span> <span class="hljs-string">"2018abcdefdf06zzz01"</span> |tr -d -c <span class="hljs-string">&#x27;[0-9]&#x27;</span>
 20180601
-<span class="token keyword">echo</span> <span class="token string">"2018abcdefdf06zzz01"</span> <span class="token operator">|</span> <span class="token function">tr</span> -cd <span class="token string">'[:digit:]'</span>
+<span class="hljs-built_in">echo</span> <span class="hljs-string">"2018abcdefdf06zzz01"</span> | tr -<span class="hljs-built_in">cd</span> <span class="hljs-string">&#x27;[:digit:]&#x27;</span>
 
-<span class="token comment" spellcheck="true"># 将小写字母改写成大写字母</span>
-<span class="token keyword">echo</span> <span class="token string">'myfreax'</span> <span class="token operator">|</span> <span class="token function">tr</span> <span class="token string">'[:lower:]'</span> <span class="token string">'[:upper:]'</span>
+<span class="hljs-comment"># 将小写字母改写成大写字母</span>
+<span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;myfreax&#x27;</span> | tr <span class="hljs-string">&#x27;[:lower:]&#x27;</span> <span class="hljs-string">&#x27;[:upper:]&#x27;</span>
 
-<span class="token comment" spellcheck="true"># 替换所有字母</span>
-<span class="token keyword">echo</span> <span class="token string">"hello world"</span> <span class="token operator">|</span> <span class="token function">tr</span> -s <span class="token string">'[:alnum:]'</span> 1
-<span class="token comment" spellcheck="true"># 1 1</span>
-</code></pre>
-<h2 id="字符范围"><a href="#字符范围" class="headerlink" title="字符范围"></a>字符范围</h2><pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span>:lower:<span class="token punctuation">]</span> 小写字母
-<span class="token punctuation">[</span>:upper:<span class="token punctuation">]</span> 大写字母
-<span class="token punctuation">[</span>:digit:<span class="token punctuation">]</span> 所有数字字符
-<span class="token punctuation">[</span>:alnum:<span class="token punctuation">]</span> 所有单词
-<span class="token punctuation">[</span>az<span class="token punctuation">]</span> az内的字符组成的字符串。
-<span class="token punctuation">[</span>AZ<span class="token punctuation">]</span> AZ内的字符组成的字符串。
-<span class="token punctuation">[</span>0-9<span class="token punctuation">]</span>数字串。
+<span class="hljs-comment"># 替换所有字母</span>
+<span class="hljs-built_in">echo</span> <span class="hljs-string">"hello world"</span> | tr -s <span class="hljs-string">&#x27;[:alnum:]&#x27;</span> 1
+<span class="hljs-comment"># 1 1</span>
+</code></pre></div>
+
+
+<h2 id="字符范围"><a href="#字符范围" class="headerlink" title="字符范围"></a>字符范围</h2><div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">[:lower:] 小写字母
+[:upper:] 大写字母
+[:digit:] 所有数字字符
+[:alnum:] 所有单词
+[az] az内的字符组成的字符串。
+[AZ] AZ内的字符组成的字符串。
+[0-9]数字串。
 \octal一个三位的八进制数，对应有效的ASCII字符。
-<span class="token punctuation">[</span>O*n<span class="token punctuation">]</span>表示字符O重复出现指定次数n。因此<span class="token punctuation">[</span>O*2<span class="token punctuation">]</span>匹配OO的字符串。</code></pre>
-
+[O*n]表示字符O重复出现指定次数n。因此[O*2]匹配OO的字符串。</code></pre></div>
             </div>
             <hr>
             <div>
@@ -411,7 +412,7 @@
 
   <footer class="text-center mt-5 py-3">
   <div class="footer-content">
-     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+     <a rel="nofollow noopener"><span>Hzjsea</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
   </div>
   
 

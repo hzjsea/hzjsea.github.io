@@ -67,7 +67,7 @@
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
-       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
+       href="/">&nbsp;<strong>hzjsea</strong>&nbsp;</a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
             data-target="#navbarSupportedContent"
@@ -184,7 +184,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      572 字
+      584 字
     </span>
   
 
@@ -231,16 +231,17 @@
 
 
 <h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p><font color='red'>这个方法已经不实用了</font></p>
-<pre class=" language-bash"><code class="language-bash">
-<span class="token comment" spellcheck="true"># centos7老版本安装</span>
-yum <span class="token function">install</span> docker -y 
-<span class="token comment" spellcheck="true"># 查看版本</span>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">
+<span class="hljs-comment"># centos7老版本安装</span>
+yum install docker -y 
+<span class="hljs-comment"># 查看版本</span>
 docker --version
-Docker version 19.03.1, build 74b1e89</code></pre>
+Docker version 19.03.1, build 74b1e89</code></pre></div>
+
 <h2 id="安装docker-ce-社区版本"><a href="#安装docker-ce-社区版本" class="headerlink" title="安装docker-ce 社区版本"></a>安装docker-ce 社区版本</h2><p>docker 具有社区版和企业版，在企业版中会提供一起额外的收费服务<br><a target="_blank" rel="noopener" href="https://docs.docker.com/install/linux/docker-ce/centos/">https://docs.docker.com/install/linux/docker-ce/centos/</a></p>
-<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># centos7安装docker-ce</span>
-<span class="token comment" spellcheck="true"># 卸载旧版本docker</span>
-<span class="token function">sudo</span> yum remove docker \
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># centos7安装docker-ce</span>
+<span class="hljs-comment"># 卸载旧版本docker</span>
+sudo yum remove docker \
                   docker-client \
                   docker-client-latest \
                   docker-common \
@@ -248,77 +249,77 @@ Docker version 19.03.1, build 74b1e89</code></pre>
                   docker-latest-logrotate \
                   docker-logrotate \
                   docker-engine
-<span class="token comment" spellcheck="true"># 设置存储库</span>
-<span class="token function">sudo</span> yum <span class="token function">install</span> -y yum-utils \
+<span class="hljs-comment"># 设置存储库</span>
+sudo yum install -y yum-utils \
   device-mapper-persistent-data \
   lvm2 -y 
-<span class="token comment" spellcheck="true"># 添加下载源</span>
-<span class="token comment" spellcheck="true"># 国外源</span>
-<span class="token function">sudo</span> yum-config-manager  --add-repo https://download.docker.com/linux/centos/docker-ce.repo -y 
-<span class="token comment" spellcheck="true"># 阿里源</span>
-<span class="token function">sudo</span> yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo -y 
-<span class="token comment" spellcheck="true"># 安装docker社区版本</span>
-<span class="token function">sudo</span> yum <span class="token function">install</span> docker-ce docker-ce-cli containerd.io -y
-<span class="token comment" spellcheck="true"># 启动docker</span>
-<span class="token function">sudo</span> systemctl start docker
-<span class="token comment" spellcheck="true"># 测试</span>
+<span class="hljs-comment"># 添加下载源</span>
+<span class="hljs-comment"># 国外源</span>
+sudo yum-config-manager  --add-repo https://download.docker.com/linux/centos/docker-ce.repo -y 
+<span class="hljs-comment"># 阿里源</span>
+sudo yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo -y 
+<span class="hljs-comment"># 安装docker社区版本</span>
+sudo yum install docker-ce docker-ce-cli containerd.io -y
+<span class="hljs-comment"># 启动docker</span>
+sudo systemctl start docker
+<span class="hljs-comment"># 测试</span>
 docker run hello-world
-<span class="token comment" spellcheck="true"># 查看版本</span>
+<span class="hljs-comment"># 查看版本</span>
 docker version
-<span class="token comment" spellcheck="true"># 启动docker服务</span>
-systemctl start docker</code></pre>
+<span class="hljs-comment"># 启动docker服务</span>
+systemctl start docker</code></pre></div>
+
 <h2 id="错误"><a href="#错误" class="headerlink" title="错误"></a>错误</h2><h3 id="docker无法ping通外网"><a href="#docker无法ping通外网" class="headerlink" title="docker无法ping通外网"></a>docker无法ping通外网</h3><p>网关也ping不通</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span>root@fileserver ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># ping 172.17.78.2</span>
-PING 172.17.78.2 <span class="token punctuation">(</span>172.17.78.2<span class="token punctuation">)</span> 56<span class="token punctuation">(</span>84<span class="token punctuation">)</span> bytes of data.
-From 172.17.78.1 icmp_seq<span class="token operator">=</span>1 Destination Host Unreachable
-From 172.17.78.1 icmp_seq<span class="token operator">=</span>2 Destination Host Unreachable
-From 172.17.78.1 icmp_seq<span class="token operator">=</span>3 Destination Host Unreachable
-From 172.17.78.1 icmp_seq<span class="token operator">=</span>4 Destination Host Unreachable</code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash">[root@fileserver ~]<span class="hljs-comment"><code class="language-hljs bash">[root@fileserver ~]<span class="hljs-comment"># ping 172.17.78.2</span>
+PING 172.17.78.2 (172.17.78.2) 56(84) bytes of data.
+From 172.17.78.1 icmp_seq=1 Destination Host Unreachable
+From 172.17.78.1 icmp_seq=2 Destination Host Unreachable
+From 172.17.78.1 icmp_seq=3 Destination Host Unreachable
+From 172.17.78.1 icmp_seq=4 Destination Host Unreachable</code></pre></div>
 <p>解决方法如下</p>
-<pre class=" language-bash"><code class="language-bash">
-<span class="token comment" spellcheck="true">## 方法0,openstack中的机器就是这么解决的,重启大法</span>
-<span class="token function">reboot</span>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">
+<span class="hljs-comment">## 方法0,openstack中的机器就是这么解决的,重启大法</span>
+reboot
 
-<span class="token comment" spellcheck="true">## 方法1</span>
-<span class="token comment" spellcheck="true"># 关闭防火墙</span>
-<span class="token function">sudo</span> systemctl stop iptables
-<span class="token function">sudo</span> systemctl disable iptables
-<span class="token function">sudo</span> systemctl stop firewalld
-<span class="token function">sudo</span> systemctl disable firewalld
-<span class="token comment" spellcheck="true"># 关闭selinux</span>
-<span class="token function">vi</span> /etc/selinux/config
+<span class="hljs-comment">## 方法1</span>
+<span class="hljs-comment"># 关闭防火墙</span>
+sudo systemctl stop iptables
+sudo systemctl <span class="hljs-built_in">disable</span> iptables
+sudo systemctl stop firewalld
+sudo systemctl <span class="hljs-built_in">disable</span> firewalld
+<span class="hljs-comment"># 关闭selinux</span>
+vi /etc/selinux/config
 
 
-<span class="token comment" spellcheck="true">## 方法2</span>
-<span class="token comment" spellcheck="true">## 开启主机网络,不建议,最好做隔离</span>
-docker run -d --name <span class="token function">test</span> --net<span class="token operator">=</span>host image:1.0
+<span class="hljs-comment">## 方法2</span>
+<span class="hljs-comment">## 开启主机网络,不建议,最好做隔离</span>
+docker run -d --name <span class="hljs-built_in">test</span> --net=host image:1.0
 
-<span class="token comment" spellcheck="true">## 方法3</span>
-<span class="token comment" spellcheck="true">## 升级系统内核</span>
+<span class="hljs-comment">## 方法3</span>
+<span class="hljs-comment">## 升级系统内核</span>
 
-<span class="token comment" spellcheck="true"># uname -r</span>
+<span class="hljs-comment"># uname -r</span>
 3.10.0-327.el7.x86_64
-<span class="token comment" spellcheck="true">## 导入内核源</span>
+<span class="hljs-comment">## 导入内核源</span>
 rpm -import https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
 rpm -Uvh http://www.elrepo.org/elrepo-release-7.0-2.el7.elrepo.noarch.rpm
-yum --enablerepo<span class="token operator">=</span>elrepo-kernel <span class="token function">install</span> -y kernel-ml
+yum --enablerepo=elrepo-kernel install -y kernel-ml
 
-<span class="token comment" spellcheck="true">## 安装完后, 查看内核列表</span>
-<span class="token comment" spellcheck="true"># cat /boot/grub2/grub.cfg |grep menuentry</span>
-menuentry <span class="token string">'CentOS Linux (5.7.8-1.el7.elrepo.x86_64) 7 (Core)'</span> --class centos --class gnu-linux --class gnu --class os --unrestricted <span class="token variable">$menuentry_id_option</span> <span class="token string">'gnulinux-3.10.0-327.el7.x86_64-advanced-3bfef048-3886-4956-9ec3-7bdbfa7f6726'</span> <span class="token punctuation">{</span>
-menuentry <span class="token string">'CentOS Linux (3.10.0-327.el7.x86_64) 7 (Core)'</span> --class centos --class gnu-linux --class gnu --class os --unrestricted <span class="token variable">$menuentry_id_option</span> <span class="token string">'gnulinux-3.10.0-327.el7.x86_64-advanced-3bfef048-3886-4956-9ec3-7bdbfa7f6726'</span> <span class="token punctuation">{</span>
-<span class="token punctuation">..</span>.
+<span class="hljs-comment">## 安装完后, 查看内核列表</span>
+<span class="hljs-comment"># cat /boot/grub2/grub.cfg |grep menuentry</span>
+menuentry <span class="hljs-string">&#x27;CentOS Linux (5.7.8-1.el7.elrepo.x86_64) 7 (Core)&#x27;</span> --class centos --class gnu-linux --class gnu --class os --unrestricted <span class="hljs-variable">$menuentry_id_option</span> <span class="hljs-string">&#x27;gnulinux-3.10.0-327.el7.x86_64-advanced-3bfef048-3886-4956-9ec3-7bdbfa7f6726&#x27;</span> {
+menuentry <span class="hljs-string">&#x27;CentOS Linux (3.10.0-327.el7.x86_64) 7 (Core)&#x27;</span> --class centos --class gnu-linux --class gnu --class os --unrestricted <span class="hljs-variable">$menuentry_id_option</span> <span class="hljs-string">&#x27;gnulinux-3.10.0-327.el7.x86_64-advanced-3bfef048-3886-4956-9ec3-7bdbfa7f6726&#x27;</span> {
+...
 
-<span class="token comment" spellcheck="true">## 设置默认启动高版本内核, 注意替换版本为上面查询得到的版本号</span>
-grub2-set-default <span class="token string">'CentOS Linux (5.7.8-1.el7.elrepo.x86_64) 7 (Core)'</span>
+<span class="hljs-comment">## 设置默认启动高版本内核, 注意替换版本为上面查询得到的版本号</span>
+grub2-set-default <span class="hljs-string">&#x27;CentOS Linux (5.7.8-1.el7.elrepo.x86_64) 7 (Core)&#x27;</span>
 
-<span class="token comment" spellcheck="true">## 重启</span>
-<span class="token function">reboot</span>
+<span class="hljs-comment">## 重启</span>
+reboot
 
-<span class="token comment" spellcheck="true"># uname -r</span>
+<span class="hljs-comment"># uname -r</span>
 5.7.8-1.el7.elrepo.x86_64
-</code></pre>
-
+</code></pre></div>
             </div>
             <hr>
             <div>
@@ -426,7 +427,7 @@ grub2-set-default <span class="token string">'CentOS Linux (5.7.8-1.el7.elrepo.x
 
   <footer class="text-center mt-5 py-3">
   <div class="footer-content">
-     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+     <a rel="nofollow noopener"><span>Hzjsea</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
   </div>
   
 

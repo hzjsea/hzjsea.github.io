@@ -67,7 +67,7 @@
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
-       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
+       href="/">&nbsp;<strong>hzjsea</strong>&nbsp;</a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
             data-target="#navbarSupportedContent"
@@ -184,7 +184,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      469 字
+      471 字
     </span>
   
 
@@ -229,64 +229,67 @@
             <div class="markdown-body">
               <a id="more"></a>
 
-<h1 id="redis优化"><a href="#redis优化" class="headerlink" title="redis优化"></a>redis优化</h1><pre class=" language-bash"><code class="language-bash"><span class="token function">cat</span> redis-base.conf 
-daemonize no <span class="token comment" spellcheck="true"># 使用supervisor管理redis 可以自动重启</span>
-bind 0.0.0.0  <span class="token comment" spellcheck="true"># 支持远程管理</span>
-<span class="token function">timeout</span> 300  
+<h1 id="redis优化"><a href="#redis优化" class="headerlink" title="redis优化"></a>redis优化</h1><div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">cat redis-base.conf 
+daemonize no <span class="hljs-comment"># 使用supervisor管理redis 可以自动重启</span>
+<span class="hljs-built_in">bind</span> 0.0.0.0  <span class="hljs-comment"># 支持远程管理</span>
+timeout 300  
 loglevel warning
 databases 16
-save 86400 1  <span class="token comment" spellcheck="true">#  触发bgsave 存储到rdb 这里是每次出现数据变化，就保存一次</span>
-rdbcompression <span class="token function">yes</span> <span class="token comment" spellcheck="true"># 使用LZF算法对rdb文件进行压缩，如果要节省一些CPU，可以设置为no。</span>
+save 86400 1  <span class="hljs-comment">#  触发bgsave 存储到rdb 这里是每次出现数据变化，就保存一次</span>
+rdbcompression yes <span class="hljs-comment"># 使用LZF算法对rdb文件进行压缩，如果要节省一些CPU，可以设置为no。</span>
 appendfsync no
-no-appendfsync-on-rewrite <span class="token function">yes</span>
+no-appendfsync-on-rewrite yes
 hash-max-ziplist-entries 512
 hash-max-ziplist-value 64
 list-max-ziplist-entries 512
 list-max-ziplist-value 64
 set-max-intset-entries 512
-activerehashing <span class="token function">yes</span>
+activerehashing yes
 maxmemory 3000000000
 maxmemory-policy volatile-lru
-slave-serve-stale-data <span class="token function">yes</span>
-appendonly <span class="token function">yes</span>
+slave-serve-stale-data yes
+appendonly yes
 
-cluster-enabled <span class="token function">yes</span>
+cluster-enabled yes
 cluster-config-file nodes.conf
 cluster-node-timeout 5000
 
-<span class="token function">cat</span> redis-6379.conf 
-include /usr/local/redis/etc/yupoo/redis-base.conf
+cat redis-6379.conf 
+include /usr/<span class="hljs-built_in">local</span>/redis/etc/yupoo/redis-base.conf
 
 pidfile /var/run/redis-6379.pid
 port 6379
 logfile /disk/ssd1/logs/redis/redis-6379.log
 dbfilename redis-6379.rdb
-<span class="token function">dir</span> /disk/ssd1/redisdb/yupoo/6379</code></pre>
-<pre class=" language-bash"><code class="language-bash">daemonize no <span class="token comment" spellcheck="true"># 使用supervisor管理redis 可以自动重启 注意配置成守护进程后Redis会将进程号写入文件/var/run/redis.pid</span>
-bind 0.0.0.0  <span class="token comment" spellcheck="true"># 支持远程管理</span>
-<span class="token function">timeout</span> 300  <span class="token comment" spellcheck="true"># 客户端空闲多少秒后关闭连接(0为不关闭)</span>
-loglevel warning <span class="token comment" spellcheck="true"># 配置日志级别</span>
-databases 16 <span class="token comment" spellcheck="true"># 数据库的数量 默认为16个</span>
-save 86400 1  <span class="token comment" spellcheck="true">#  触发bgsave 存储到rdb</span>
-rdbcompression <span class="token function">yes</span> <span class="token comment" spellcheck="true"># 使用LZF算法对rdb文件进行压缩，如果要节省一些CPU，可以设置为no。</span>
-<span class="token comment" spellcheck="true"># Redis支持三种不同的模式：</span>
-<span class="token comment" spellcheck="true"># no：不要立刻刷，只有在操作系统需要刷的时候再刷。比较快。</span>
-<span class="token comment" spellcheck="true"># always：每次写操作都立刻写入到aof文件。慢，但是最安全。</span>
-<span class="token comment" spellcheck="true"># everysec：每秒写一次。折中方案。</span>
-appendfsync no <span class="token comment" spellcheck="true"># AOF模式</span>
-no-appendfsync-on-rewrite <span class="token function">yes</span> <span class="token comment" spellcheck="true"># 关闭延迟</span>
-hash-max-ziplist-entries 512 <span class="token comment" spellcheck="true"># 键值对哈希存储方式</span>
+dir /disk/ssd1/redisdb/yupoo/6379</code></pre></div>
+
+
+
+
+<div class="code-wrapper"><pre class=" language-hljs bash">daemonize no <span class="hljs-comment"><code class="language-hljs bash">daemonize no <span class="hljs-comment"># 使用supervisor管理redis 可以自动重启 注意配置成守护进程后Redis会将进程号写入文件/var/run/redis.pid</span>
+<span class="hljs-built_in">bind</span> 0.0.0.0  <span class="hljs-comment"># 支持远程管理</span>
+timeout 300  <span class="hljs-comment"># 客户端空闲多少秒后关闭连接(0为不关闭)</span>
+loglevel warning <span class="hljs-comment"># 配置日志级别</span>
+databases 16 <span class="hljs-comment"># 数据库的数量 默认为16个</span>
+save 86400 1  <span class="hljs-comment">#  触发bgsave 存储到rdb</span>
+rdbcompression yes <span class="hljs-comment"># 使用LZF算法对rdb文件进行压缩，如果要节省一些CPU，可以设置为no。</span>
+<span class="hljs-comment"># Redis支持三种不同的模式：</span>
+<span class="hljs-comment"># no：不要立刻刷，只有在操作系统需要刷的时候再刷。比较快。</span>
+<span class="hljs-comment"># always：每次写操作都立刻写入到aof文件。慢，但是最安全。</span>
+<span class="hljs-comment"># everysec：每秒写一次。折中方案。</span>
+appendfsync no <span class="hljs-comment"># AOF模式</span>
+no-appendfsync-on-rewrite yes <span class="hljs-comment"># 关闭延迟</span>
+hash-max-ziplist-entries 512 <span class="hljs-comment"># 键值对哈希存储方式</span>
 hash-max-ziplist-value 64
 list-max-ziplist-entries 512
 list-max-ziplist-value 64
 set-max-intset-entries 512
-activerehashing <span class="token function">yes</span> 
-maxmemory 3000000000 <span class="token comment" spellcheck="true"># 最大内存</span>
+activerehashing yes 
+maxmemory 3000000000 <span class="hljs-comment"># 最大内存</span>
 maxmemory-policy volatile-lru 
-slave-serve-stale-data <span class="token function">yes</span>  <span class="token comment" spellcheck="true"># 当slave 失去连接的时候,继续响应客户端的请求</span>
-appendonly <span class="token function">yes</span> <span class="token comment" spellcheck="true">#开启AOF</span>
-</code></pre>
-
+slave-serve-stale-data yes  <span class="hljs-comment"># 当slave 失去连接的时候,继续响应客户端的请求</span>
+appendonly yes <span class="hljs-comment">#开启AOF</span>
+</code></pre></div>
             </div>
             <hr>
             <div>
@@ -394,7 +397,7 @@ appendonly <span class="token function">yes</span> <span class="token comment" s
 
   <footer class="text-center mt-5 py-3">
   <div class="footer-content">
-     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+     <a rel="nofollow noopener"><span>Hzjsea</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
   </div>
   
 

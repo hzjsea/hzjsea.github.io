@@ -67,7 +67,7 @@
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
-       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
+       href="/">&nbsp;<strong>hzjsea</strong>&nbsp;</a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
             data-target="#navbarSupportedContent"
@@ -184,7 +184,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      916 字
+      903 字
     </span>
   
 
@@ -252,59 +252,58 @@
 <h2 id="获取uid"><a href="#获取uid" class="headerlink" title="获取uid"></a>获取uid</h2><p>既然不会发生改变，那么我们就用爬虫来获取这些uid把<br><strong>注意</strong></p>
 <p><img src="http://img.noback.top/youtobe%E7%88%AC%E8%99%AB.png" srcset="/img/loading.gif"><br>像这样的页面虽然在他的右侧出现了列表，但这样的情况在当我们使用爬虫+正则的时，会被下方的视频连接干扰，因此最好先进入播放列表后再爬取<br><img src="http://img.noback.top/190909youtobe%E7%88%AC%E8%99%AB2.png" srcset="/img/loading.gif"><br>像当前页面这样，我们所获取出来的uid就相对于完整一些<br><img src="http://img.noback.top/190909youtobe%E7%88%AC%E8%99%AB2.png" srcset="/img/loading.gif"></p>
 <h2 id="整理循环下载"><a href="#整理循环下载" class="headerlink" title="整理循环下载"></a>整理循环下载</h2><p>OK,有了uid再加上之前我们发现的不变的元素，那么一条条完整的视频链接就有了</p>
-<h2 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h2><pre class=" language-python"><code class="language-python"><span class="token comment" spellcheck="true">#!/usr/bin/python3</span>
-<span class="token keyword">from</span> you_get <span class="token keyword">import</span> common <span class="token keyword">as</span> you_get
-<span class="token keyword">import</span> sys
-<span class="token keyword">import</span> os
-<span class="token keyword">import</span> time
-<span class="token keyword">import</span> requests
-<span class="token keyword">import</span> re
+<h2 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h2><div class="code-wrapper"><pre class=" language-hljs python"><span class="hljs-comment"><code class="language-hljs python"><span class="hljs-comment">#!/usr/bin/python3</span>
+<span class="hljs-keyword">from</span> you_get <span class="hljs-keyword">import</span> common <span class="hljs-keyword">as</span> you_get
+<span class="hljs-keyword">import</span> sys
+<span class="hljs-keyword">import</span> os
+<span class="hljs-keyword">import</span> time
+<span class="hljs-keyword">import</span> requests
+<span class="hljs-keyword">import</span> re
 
-static_url <span class="token operator">=</span> <span class="token string">"https://www.youtube.com{0}list=PLAyxoOmo7O7eoz-Wkii_bwtBEbPwCWQzD"</span>
-file_path <span class="token operator">=</span> <span class="token string">"D:\\video\youtobe_nginx_mooc"</span>
-<span class="token comment" spellcheck="true"># file_path = "F:\\video\youtobe_nginx_mooc"</span>
+static_url = <span class="hljs-string">"https://www.youtube.com{0}list=PLAyxoOmo7O7eoz-Wkii_bwtBEbPwCWQzD"</span>
+file_path = <span class="hljs-string">"D:\\video\youtobe_nginx_mooc"</span>
+<span class="hljs-comment"># file_path = "F:\\video\youtobe_nginx_mooc"</span>
 
 
-resp <span class="token operator">=</span> requests<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">"https://www.youtube.com/playlist?list=PLAyxoOmo7O7eoz-Wkii_bwtBEbPwCWQzD"</span><span class="token punctuation">)</span>
-pattern <span class="token operator">=</span> <span class="token string">"\/watch\?v=[0-9a-zA-Z_-]{11}&amp;"</span>
-video_url_lists <span class="token operator">=</span> re<span class="token punctuation">.</span>findall<span class="token punctuation">(</span>pattern<span class="token punctuation">,</span>resp<span class="token punctuation">.</span>text<span class="token punctuation">)</span>
-<span class="token comment" spellcheck="true"># 去重</span>
-video_url_lists <span class="token operator">=</span> list<span class="token punctuation">(</span>set<span class="token punctuation">(</span>video_url_lists<span class="token punctuation">)</span><span class="token punctuation">)</span>
-<span class="token keyword">print</span><span class="token punctuation">(</span>len<span class="token punctuation">(</span>video_url_lists<span class="token punctuation">)</span><span class="token punctuation">)</span>
-<span class="token keyword">for</span> list <span class="token keyword">in</span> video_url_lists<span class="token punctuation">:</span>
-    format_url <span class="token operator">=</span> static_url<span class="token punctuation">.</span>format<span class="token punctuation">(</span>list<span class="token punctuation">)</span>
-    <span class="token keyword">print</span><span class="token punctuation">(</span>format_url<span class="token punctuation">)</span>
-    <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"start get video from YouTobe"</span><span class="token punctuation">)</span>
-    sys<span class="token punctuation">.</span>argv <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string">'you-get'</span><span class="token punctuation">,</span><span class="token string">'-o'</span><span class="token punctuation">,</span>file_path<span class="token punctuation">,</span>format_url<span class="token punctuation">]</span>
-    you_get<span class="token punctuation">.</span>main<span class="token punctuation">(</span><span class="token punctuation">)</span>
-    time<span class="token punctuation">.</span>sleep<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
-<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"download finished"</span><span class="token punctuation">)</span>
+resp = requests.get(<span class="hljs-string">"https://www.youtube.com/playlist?list=PLAyxoOmo7O7eoz-Wkii_bwtBEbPwCWQzD"</span>)
+pattern = <span class="hljs-string">"\/watch\?v=[0-9a-zA-Z_-]{11}&"</span>
+video_url_lists = re.findall(pattern,resp.text)
+<span class="hljs-comment"># 去重</span>
+video_url_lists = <span class="hljs-built_in">list</span>(<span class="hljs-built_in">set</span>(video_url_lists))
+print(<span class="hljs-built_in">len</span>(video_url_lists))
+<span class="hljs-keyword">for</span> <span class="hljs-built_in">list</span> <span class="hljs-keyword">in</span> video_url_lists:
+    format_url = static_url.<span class="hljs-built_in">format</span>(<span class="hljs-built_in">list</span>)
+    print(format_url)
+    print(<span class="hljs-string">"start get video from YouTobe"</span>)
+    sys.argv = [<span class="hljs-string">&#x27;you-get&#x27;</span>,<span class="hljs-string">&#x27;-o&#x27;</span>,file_path,format_url]
+    you_get.main()
+    time.sleep(<span class="hljs-number">1</span>)
+print(<span class="hljs-string">"download finished"</span>)
 
-<span class="token comment" spellcheck="true"># print(type(resp)) ## 由于这是返回的类型是 &lt;class 'requests.models.Response'></span>
-<span class="token comment" spellcheck="true"># 但是在正则表达式中，要求是为str类型，因此如果我们使用pattern = re.findall('index' resp)时候就会报错</span>
-<span class="token comment" spellcheck="true"># 报错内容为TypeError: expected string or bytes-like object</span>
-<span class="token comment" spellcheck="true"># 修改 pattern = re.findall('index=',str(resp))</span>
-<span class="token comment" spellcheck="true"># 或者使用pattern = re.findall('index=',resp.text)</span>
+<span class="hljs-comment"># print(type(resp)) ## 由于这是返回的类型是 <class &#x27;requests.models.Response&#x27;></span>
+<span class="hljs-comment"># 但是在正则表达式中，要求是为str类型，因此如果我们使用pattern = re.findall(&#x27;index&#x27; resp)时候就会报错</span>
+<span class="hljs-comment"># 报错内容为TypeError: expected string or bytes-like object</span>
+<span class="hljs-comment"># 修改 pattern = re.findall(&#x27;index=&#x27;,str(resp))</span>
+<span class="hljs-comment"># 或者使用pattern = re.findall(&#x27;index=&#x27;,resp.text)</span>
 
-<span class="token triple-quoted-string string">""""
-https://www.bilibili.com/read/cv4360/
-https://www.jianshu.com/p/e323cf85bd3d
+<span class="hljs-string">""""</span>
+<span class="hljs-string">https://www.bilibili.com/read/cv4360/</span>
+<span class="hljs-string">https://www.jianshu.com/p/e323cf85bd3d</span>
+<span class="hljs-string"></span>
+<span class="hljs-string">"""</span>
 
-"""</span>
-
-<span class="token triple-quoted-string string">"""
-https://www.youtube.com/watch?v=5i9Ce9vzGxE&amp;list=PLAyxoOmo7O7eoz-Wkii_bwtBEbPwCWQzD&amp;index=1
-https://www.youtube.com/watch?v=Do1Opl6DbvM&amp;list=PLAyxoOmo7O7eoz-Wkii_bwtBEbPwCWQzD&amp;index=1
-https://www.youtube.com/watch?v=R4p7xxd3BTo&amp;list=PLAyxoOmo7O7eoz-Wkii_bwtBEbPwCWQzD&amp;index=4
-https://www.youtube.com/watch?v=Do1Opl6DbvM&amp;list=PLAyxoOmo7O7eoz-Wkii_bwtBEbPwCWQzD&amp;index=1
-https://www.youtube.com/watch?v=Do1Opl6DbvM&amp;list=PLAyxoOmo7O7eoz-Wkii_bwtBEbPwCWQzD&amp;index=1
-/watch?v=Do1Opl6DbvM&amp;list=PLAyxoOmo7O7eoz-Wkii_bwtBEbPwCWQzD&amp;index=1
-https://www.youtube.com/watch?v=0JwSFgWUUQE&amp;list=PLAyxoOmo7O7eoz-Wkii_bwtBEbPwCWQzD
-
-https://www.youtube.com/watch?v=fvxAQsRy8Kk&amp;list=PLAyxoOmo7O7eoz-Wkii_bwtBEbPwCWQzD&amp;index=8
-https://www.youtube.com/watch?v=R4p7xxd3BTo&amp;list=PLAyxoOmo7O7eoz-Wkii_bwtBEbPwCWQzD&amp;index=4
-"""</span></code></pre>
-
+<span class="hljs-string">"""</span>
+<span class="hljs-string">https://www.youtube.com/watch?v=5i9Ce9vzGxE&list=PLAyxoOmo7O7eoz-Wkii_bwtBEbPwCWQzD&index=1</span>
+<span class="hljs-string">https://www.youtube.com/watch?v=Do1Opl6DbvM&list=PLAyxoOmo7O7eoz-Wkii_bwtBEbPwCWQzD&index=1</span>
+<span class="hljs-string">https://www.youtube.com/watch?v=R4p7xxd3BTo&list=PLAyxoOmo7O7eoz-Wkii_bwtBEbPwCWQzD&index=4</span>
+<span class="hljs-string">https://www.youtube.com/watch?v=Do1Opl6DbvM&list=PLAyxoOmo7O7eoz-Wkii_bwtBEbPwCWQzD&index=1</span>
+<span class="hljs-string">https://www.youtube.com/watch?v=Do1Opl6DbvM&list=PLAyxoOmo7O7eoz-Wkii_bwtBEbPwCWQzD&index=1</span>
+<span class="hljs-string">/watch?v=Do1Opl6DbvM&list=PLAyxoOmo7O7eoz-Wkii_bwtBEbPwCWQzD&index=1</span>
+<span class="hljs-string">https://www.youtube.com/watch?v=0JwSFgWUUQE&list=PLAyxoOmo7O7eoz-Wkii_bwtBEbPwCWQzD</span>
+<span class="hljs-string"></span>
+<span class="hljs-string">https://www.youtube.com/watch?v=fvxAQsRy8Kk&list=PLAyxoOmo7O7eoz-Wkii_bwtBEbPwCWQzD&index=8</span>
+<span class="hljs-string">https://www.youtube.com/watch?v=R4p7xxd3BTo&list=PLAyxoOmo7O7eoz-Wkii_bwtBEbPwCWQzD&index=4</span>
+<span class="hljs-string">"""</span></code></pre></div>
             </div>
             <hr>
             <div>
@@ -412,7 +411,7 @@ https://www.youtube.com/watch?v=R4p7xxd3BTo&amp;list=PLAyxoOmo7O7eoz-Wkii_bwtBEb
 
   <footer class="text-center mt-5 py-3">
   <div class="footer-content">
-     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+     <a rel="nofollow noopener"><span>Hzjsea</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
   </div>
   
 

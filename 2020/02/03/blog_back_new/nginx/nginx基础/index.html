@@ -67,7 +67,7 @@
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
-       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
+       href="/">&nbsp;<strong>hzjsea</strong>&nbsp;</a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
             data-target="#navbarSupportedContent"
@@ -184,7 +184,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      3.2k 字
+      2.2k 字
     </span>
   
 
@@ -194,7 +194,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      43
+      27
        分钟
     </span>
   
@@ -250,54 +250,47 @@
 <a id="more"></a>
 
 <h1 id="nginx"><a href="#nginx" class="headerlink" title="nginx"></a>nginx</h1><h2 id="nginx安装"><a href="#nginx安装" class="headerlink" title="nginx安装"></a>nginx安装</h2><ul>
-<li>直接安装<pre class=" language-bash"><code class="language-bash">yum <span class="token function">install</span> nginx 
-<span class="token comment" spellcheck="true"># 查看版本</span>
-nginx -v</code></pre>
-</li>
+<li>直接安装<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">yum install nginx 
+<span class="hljs-comment"># 查看版本</span>
+nginx -v</code></pre></div></li>
 <li>编译安装<br>安装gcc、make、wget、g++这些软件</li>
 </ul>
 <ol start="0">
 <li><p>创建一个临时目录下载安装所需要的内容</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token function">cd</span> /tmp
-<span class="token function">mkdir</span> gen_nginx </code></pre>
-</li>
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-built_in"><code class="language-hljs bash"><span class="hljs-built_in">cd</span> /tmp
+mkdir gen_nginx</code></pre></div></li>
 <li><p>下载安装openssl,主要用于ssl模块加密，支持htps </p>
-<pre class=" language-bash"><code class="language-bash"><span class="token function">wget</span> https://www.openssl.org/source/openssl-1.0.2s.tar.gz</code></pre>
-</li>
+<div class="code-wrapper"><pre class=" language-hljs bash">wget https://www.openssl.org/<span class="hljs-built_in"><code class="language-hljs bash">wget https://www.openssl.org/<span class="hljs-built_in">source</span>/openssl-1.0.2s.tar.gz</code></pre></div></li>
 <li><p>下载pcre来实现对地址重定向，地址重写功能和localtion指令以及正则表达式的支持</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token function">wget</span> https://ftp.pcre.org/pub/pcre/pcre-8.43.tar.gz</code></pre>
-</li>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">wget https://ftp.pcre.org/pub/pcre/pcre-8.43.tar.gz</code></pre></div></li>
 <li><p>下载zlib gzip压缩模块</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token function">wget</span> https://zlib.net/zlib-1.2.11.tar.gz </code></pre>
-</li>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">wget https://zlib.net/zlib-1.2.11.tar.gz</code></pre></div></li>
 <li><p>下载nginx</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token function">wget</span> http://nginx.org/download/nginx-1.17.1.tar.gz</code></pre>
-</li>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">wget http://nginx.org/download/nginx-1.17.1.tar.gz</code></pre></div></li>
 <li><p>解压所有的文件</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token function">ls</span> *.tar.gz <span class="token operator">|</span> <span class="token function">xargs</span> -n1 <span class="token function">tar</span> xzvf </code></pre>
-</li>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">ls *.tar.gz | xargs -n1 tar xzvf</code></pre></div></li>
 <li><p>使用configure编译安装<br>具体的编译内容可以自己决定</p>
-<pre class=" language-bash"><code class="language-bash">./configure \
---with-openssl<span class="token operator">=</span><span class="token punctuation">..</span>/openssl-1.0.2s \
---with-pcre<span class="token operator">=</span><span class="token punctuation">..</span>/pcre-8.43 \
---with-zlib<span class="token operator">=</span><span class="token punctuation">..</span>/zlib-1.2.11 \
---with-pcre-jit --user<span class="token operator">=</span>admin \
---prefix<span class="token operator">=</span>/home/admin/nginx \
---with-http_ssl_module \
---with-http_v2_module</code></pre>
-</li>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">./configure \
+   --with-openssl=../openssl-1.0.2s \
+   --with-pcre=../pcre-8.43 \
+   --with-zlib=../zlib-1.2.11 \
+   --with-pcre-jit --user=admin \
+   --prefix=/home/admin/nginx \
+   --with-http_ssl_module \
+   --with-http_v2_module</code></pre></div></li>
 <li><p>编译安装</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token function">make</span> <span class="token operator">&amp;&amp;</span> <span class="token function">make</span> <span class="token function">install</span></code></pre>
-</li>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">make && make install</code></pre></div></li>
 <li><p>分配权限</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token function">sudo</span> <span class="token function">chown</span> root nginx 
-<span class="token function">sudo</span> <span class="token function">chmod</span> u+s nginx</code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">sudo chown root nginx 
+sudo chmod u+s nginx</code></pre></div>
 </li>
 <li><p>查找安装路径<br>源码编译的时候，我们指定了一个prefix的文件，也就是nginx安装的目标目录 <code>/home/admin/nginx</code> 下面<br><img src="http://img.noback.top/2020-05-12-13-49-59.png" srcset="/img/loading.gif" alt="2020-05-12-13-49-59"></p>
 </li>
 </ol>
 <p>可以使用软连接把nginx指令映射到<code>/usr/bin/</code>下面</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token function">ln</span> -s /home/admin/nginx/sbin/nginx /usr/bin/nginx</code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">ln -s /home/admin/nginx/sbin/nginx /usr/bin/nginx</code></pre></div>
+
+
 <ul>
 <li>正向代理<br>局域网通过代理服务器访问Internet上的内容，这个过程叫做正向代理</li>
 <li>反向代理<br>客户端发送请求到反向代理服务器，由反向代理服务器选择目标服务器获取数据后，在返回给客户端，此时反向代理服务器和目标服务器对外就是一个服务器，暴露的是代理服务器地址，隐藏了真实服务器IP的地址 </li>
@@ -305,219 +298,228 @@ nginx -v</code></pre>
 <li>动静分离<br>动态资源与动态资源分开放，由反向代理服务器来根据请求内容，将请求转发到指定目标服务器</li>
 </ul>
 <h2 id="nginx常用命令"><a href="#nginx常用命令" class="headerlink" title="nginx常用命令"></a>nginx常用命令</h2><p>首先要进入到Nginx的目录下,如果是编译安装的话，nginx的目录应该在/usr/local/sbin/nginx中，如果是直接安装下载的话，nginx的目录应该在/usr/sbin/nginx</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 查看Nginx进程</span>
-<span class="token function">ps</span> -ef <span class="token operator">|</span> <span class="token function">grep</span> nginx
-<span class="token comment" spellcheck="true"># 查看nginx的版本号</span>
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 查看Nginx进程</span>
+ps -ef | grep nginx
+<span class="hljs-comment"># 查看nginx的版本号</span>
 ./nginx -v
-<span class="token comment" spellcheck="true"># 强制关闭Nginx</span>
+<span class="hljs-comment"># 强制关闭Nginx</span>
 ./nginx -s stop
-<span class="token comment" spellcheck="true"># 退出nginx</span>
+<span class="hljs-comment"># 退出nginx</span>
 ./nginx -s quit
-<span class="token comment" spellcheck="true"># 启动nginx</span>
+<span class="hljs-comment"># 启动nginx</span>
 ./nginx
-<span class="token comment" spellcheck="true"># 重新加载nginx</span>
-./nginx -s reload </code></pre>
+<span class="hljs-comment"># 重新加载nginx</span>
+./nginx -s reload</code></pre></div>
+
 <h2 id="nginx配置文件"><a href="#nginx配置文件" class="headerlink" title="nginx配置文件"></a>nginx配置文件</h2><p>如果是直接安装，则配置文件在/etc/nginx/nginx.conf，如果是编译安装，则配置文件在/usr/local/nginx中<br>查找nginx配置文件</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token function">find</span> / <span class="token operator">|</span> <span class="token function">grep</span> nginx.conf  </code></pre>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">find / | grep nginx.conf</code></pre></div>
+
 <p>nginx配置文件的组成主要分成3大块内容</p>
 <ul>
 <li><p>第一部分: 全局模块</p>
-<pre class=" language-bash"><code class="language-bash">user nginx<span class="token punctuation">;</span> <span class="token comment" spellcheck="true"># 用户 用户组 ; 一般只有类unix系统有,windows不需要</span>
-worker_processes auto<span class="token punctuation">;</span> <span class="token comment" spellcheck="true"># 工作进程，一般配置为cpu核心数的2倍，值越大，可以支持的并发处理量越多</span>
-error_log /var/log/nginx/error.log<span class="token punctuation">;</span> <span class="token comment" spellcheck="true"># 错误日志的配置路径</span>
-pid /run/nginx.pid<span class="token punctuation">;</span> <span class="token comment" spellcheck="true"># 进程ID存放路径</span>
-include /usr/share/nginx/modules/*.conf<span class="token punctuation">;</span> </code></pre>
-</li>
+<div class="code-wrapper"><pre class=" language-hljs bash">user nginx; <span class="hljs-comment"><code class="language-hljs bash">user nginx; <span class="hljs-comment"># 用户 用户组 ; 一般只有类unix系统有,windows不需要</span>
+worker_processes auto; <span class="hljs-comment"># 工作进程，一般配置为cpu核心数的2倍，值越大，可以支持的并发处理量越多</span>
+error_log /var/<span class="hljs-built_in">log</span>/nginx/error.log; <span class="hljs-comment"># 错误日志的配置路径</span>
+pid /run/nginx.pid; <span class="hljs-comment"># 进程ID存放路径</span>
+include /usr/share/nginx/modules/*.conf;</code></pre></div></li>
 <li><p>第二部分: events模块<br>主要影响nginx服务器与用户的网络连接</p>
-<pre class=" language-bash"><code class="language-bash">events <span class="token punctuation">{</span>
-  <span class="token comment" spellcheck="true"># 使用epoll的I/O 模型；epoll 使用于Linux内核2.6版本及以后的系统</span>
-  use epoll<span class="token punctuation">;</span>
-  <span class="token comment" spellcheck="true"># 每一个工作进程的最大连接数量； 理论上而言每一台nginx服务器的最大连接数为： worker_processes*worker_connections</span>
-  worker_connections  1024<span class="token punctuation">;</span>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">events {
+    <span class="hljs-comment"># 使用epoll的I/O 模型；epoll 使用于Linux内核2.6版本及以后的系统</span>
+    use epoll;
+    <span class="hljs-comment"># 每一个工作进程的最大连接数量； 理论上而言每一台nginx服务器的最大连接数为： worker_processes*worker_connections</span>
+    worker_connections  1024;
 
-  <span class="token comment" spellcheck="true"># 超时时间</span>
-  keepalive_timeout 60
+    <span class="hljs-comment"># 超时时间</span>
+    keepalive_timeout 60
 
-  <span class="token comment" spellcheck="true"># 客户端请求头部的缓冲区大小，客户端请求一般会小于一页； 可以根据你的系统的分页大小来设定， 命令 getconf PAGESIZE 可以获得当前系统的分页大小（一般4K）</span>
-  client_header_buffer_size 4k<span class="token punctuation">;</span>
+    <span class="hljs-comment"># 客户端请求头部的缓冲区大小，客户端请求一般会小于一页； 可以根据你的系统的分页大小来设定， 命令 getconf PAGESIZE 可以获得当前系统的分页大小（一般4K）</span>
+    client_header_buffer_size 4k;
 
-  <span class="token comment" spellcheck="true"># 为打开的文件指定缓存，默认是不启用； max指定缓存数量，建议和打开文件数一致；inactive是指经过这个时间后还没有被请求过则清除该文件的缓存。</span>
-  open_file_cache max<span class="token operator">=</span>65535 inactive<span class="token operator">=</span>60s<span class="token punctuation">;</span>
+    <span class="hljs-comment"># 为打开的文件指定缓存，默认是不启用； max指定缓存数量，建议和打开文件数一致；inactive是指经过这个时间后还没有被请求过则清除该文件的缓存。</span>
+    open_file_cache max=65535 inactive=60s;
 
-  <span class="token comment" spellcheck="true"># 多久会检查一次缓存的有效信息</span>
-  open_file_cache_valid 80s<span class="token punctuation">;</span>
+    <span class="hljs-comment"># 多久会检查一次缓存的有效信息</span>
+    open_file_cache_valid 80s;
 
-  <span class="token comment" spellcheck="true"># 如果在指定的参数open_file_cache的属性inactive设置的值之内，没有被访问这么多次（open_file_cache_min_uses），则清除缓存</span>
-  <span class="token comment" spellcheck="true"># 则这里指的是 60s内都没有被访问过一次则清除 的意思</span>
-  open_file_cache_min_uses 1<span class="token punctuation">;</span>
-<span class="token punctuation">}</span></code></pre>
+    <span class="hljs-comment"># 如果在指定的参数open_file_cache的属性inactive设置的值之内，没有被访问这么多次（open_file_cache_min_uses），则清除缓存</span>
+    <span class="hljs-comment"># 则这里指的是 60s内都没有被访问过一次则清除 的意思</span>
+    open_file_cache_min_uses 1;
+}</code></pre></div>
 </li>
 <li><p>第三部分1: http模块<br>http全局配置的指令包括文件引入、MIME-TYPE定义、日志自定义、连接超时时间、单链请求数上限等。</p>
-<pre class=" language-bash"><code class="language-bash">http <span class="token punctuation">{</span>
-  <span class="token comment" spellcheck="true"># 日志发送</span>
-  <span class="token comment" spellcheck="true"># 日志格式  其中main是日志文件的名字</span>
-  <span class="token comment" spellcheck="true"># --------------------------------------------------------------------------   #</span>
-  <span class="token comment" spellcheck="true"># 日志格式设置：</span>
-  <span class="token comment" spellcheck="true">#   $remote_addr、$http_x_forwarded_for     可以获得客户端ip地址</span>
-  <span class="token comment" spellcheck="true">#   $remote_user                            可以获得客户端用户名</span>
-  <span class="token comment" spellcheck="true">#   $time_local                             记录访问的时区以及时间</span>
-  <span class="token comment" spellcheck="true">#   $request                                请求的url与http协议</span>
-  <span class="token comment" spellcheck="true">#   $status                                 响应状态成功为200</span>
-  <span class="token comment" spellcheck="true">#   $body_bytes_sent                        发送给客户端主体内容大小</span>
-  <span class="token comment" spellcheck="true">#   $http_referer                           记录从哪个页面过来的请求</span>
-  <span class="token comment" spellcheck="true">#   $http_user_agent                        客户端浏览器信息</span>
-  <span class="token comment" spellcheck="true">#</span>
-  <span class="token comment" spellcheck="true">#   注意事项：</span>
-  <span class="token comment" spellcheck="true">#           通常web服务器(我们的tomcat)放在反向代理(nginx)的后面，这样就不能获取到客户的IP地址了，通过$remote_add拿到的IP地址是反向代理服务器的iP地址。</span>
-  <span class="token comment" spellcheck="true">#           反向代理服务器(nginx)在转发请求的http头信息中，可以增加$http_x_forwarded_for信息，记录原有客户端的IP地址和原来客户端的请求的服务器地址。</span>
-  <span class="token comment" spellcheck="true"># --------------------------------------------------------------------------   #</span>
-  log_format  main  <span class="token string">'<span class="token variable">$remote_addr</span> - <span class="token variable">$remote_user</span> [<span class="token variable">$time_local</span>] "<span class="token variable">$request</span>" '</span>
-                    <span class="token string">'<span class="token variable">$status</span> <span class="token variable">$body_bytes_sent</span> "<span class="token variable">$http_referer</span>" '</span>
-                    <span class="token string">'"<span class="token variable">$http_user_agent</span>" "<span class="token variable">$http_x_forwarded_for</span>"'</span><span class="token punctuation">;</span>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">http {
+    <span class="hljs-comment"># 日志发送</span>
+    <span class="hljs-comment"># 日志格式  其中main是日志文件的名字</span>
+    <span class="hljs-comment"># --------------------------------------------------------------------------   #</span>
+    <span class="hljs-comment"># 日志格式设置：</span>
+    <span class="hljs-comment">#   $remote_addr、$http_x_forwarded_for     可以获得客户端ip地址</span>
+    <span class="hljs-comment">#   $remote_user                            可以获得客户端用户名</span>
+    <span class="hljs-comment">#   $time_local                             记录访问的时区以及时间</span>
+    <span class="hljs-comment">#   $request                                请求的url与http协议</span>
+    <span class="hljs-comment">#   $status                                 响应状态成功为200</span>
+    <span class="hljs-comment">#   $body_bytes_sent                        发送给客户端主体内容大小</span>
+    <span class="hljs-comment">#   $http_referer                           记录从哪个页面过来的请求</span>
+    <span class="hljs-comment">#   $http_user_agent                        客户端浏览器信息</span>
+    <span class="hljs-comment">#</span>
+    <span class="hljs-comment">#   注意事项：</span>
+    <span class="hljs-comment">#           通常web服务器(我们的tomcat)放在反向代理(nginx)的后面，这样就不能获取到客户的IP地址了，通过$remote_add拿到的IP地址是反向代理服务器的iP地址。</span>
+    <span class="hljs-comment">#           反向代理服务器(nginx)在转发请求的http头信息中，可以增加$http_x_forwarded_for信息，记录原有客户端的IP地址和原来客户端的请求的服务器地址。</span>
+    <span class="hljs-comment"># --------------------------------------------------------------------------   #</span>
+    log_format  main  <span class="hljs-string">&#x27;$remote_addr - $remote_user [$time_local] "$request" &#x27;</span>
+                      <span class="hljs-string">&#x27;$status $body_bytes_sent "$http_referer" &#x27;</span>
+                      <span class="hljs-string">&#x27;"$http_user_agent" "$http_x_forwarded_for"&#x27;</span>;
 
-  <span class="token comment" spellcheck="true"># 指定日志文件存储地址</span>
-  access_log  /var/log/nginx/access.log  main<span class="token punctuation">;</span>
+    <span class="hljs-comment"># 指定日志文件存储地址</span>
+    access_log  /var/<span class="hljs-built_in">log</span>/nginx/access.log  main;
 
-  <span class="token comment" spellcheck="true"># sendfile 指定 nginx 是否调用sendfile 函数（零拷贝 方式）来输出文件；</span>
-  <span class="token comment" spellcheck="true"># 对于一般常见应用，必须设为on。</span>
-  <span class="token comment" spellcheck="true"># 如果用来进行下载等应用磁盘IO重负载应用，可设置为off，以平衡磁盘与网络IO处理速度，降低系统uptime。</span>
-  sendfile            on<span class="token punctuation">;</span>
-  tcp_nopush          on<span class="token punctuation">;</span>
-  tcp_nodelay         on<span class="token punctuation">;</span>
-  keepalive_timeout   65<span class="token punctuation">;</span>
-  types_hash_max_size 2048<span class="token punctuation">;</span>
+    <span class="hljs-comment"># sendfile 指定 nginx 是否调用sendfile 函数（零拷贝 方式）来输出文件；</span>
+    <span class="hljs-comment"># 对于一般常见应用，必须设为on。</span>
+    <span class="hljs-comment"># 如果用来进行下载等应用磁盘IO重负载应用，可设置为off，以平衡磁盘与网络IO处理速度，降低系统uptime。</span>
+    sendfile            on;
+    tcp_nopush          on;
+    tcp_nodelay         on;
+    keepalive_timeout   65;
+    types_hash_max_size 2048;
 
-  <span class="token comment" spellcheck="true"># 负载均衡 START>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>></span>
-  <span class="token comment" spellcheck="true"># upstream 指令定义的节点可以被proxy_pass指令引用；二者结合用来反向代理+负载均衡配置</span>
-  <span class="token comment" spellcheck="true"># 【内置策略】：轮询、加权轮询、ip_hash、最少连接 默认编译进了nginx</span>
-  <span class="token comment" spellcheck="true"># 【扩展策略】：fair、通用hash、一致性hash 默认没有编译进nginx</span>
-  <span class="token comment" spellcheck="true">#-----------------------------------------------------------------------------------------------#</span>
-  <span class="token comment" spellcheck="true"># 【1】默认是轮询；如果后端服务器down掉，能自动剔除。</span>
-  <span class="token comment" spellcheck="true">#   upstream bakend {</span>
-  <span class="token comment" spellcheck="true">#        server 192.168.75.130:8080;</span>
-  <span class="token comment" spellcheck="true">#        server 192.168.75.132:8080;</span>
-  <span class="token comment" spellcheck="true">#        server 192.168.75.134:8080;</span>
-  <span class="token comment" spellcheck="true">#    }</span>
-  <span class="token comment" spellcheck="true">#</span>
-  <span class="token comment" spellcheck="true">#【2】权重轮询(加权轮询)：这样配置后，如果总共请求了3次，则前面两次请求到130，后面一次请求到132</span>
-  <span class="token comment" spellcheck="true">#   upstream bakend {</span>
-  <span class="token comment" spellcheck="true">#        server 192.168.75.130:8080 weight=2;</span>
-  <span class="token comment" spellcheck="true">#        server 192.168.75.132:8080 weight=1;</span>
-  <span class="token comment" spellcheck="true">#   }</span>
-  <span class="token comment" spellcheck="true">#</span>
-  <span class="token comment" spellcheck="true">#【3】ip_hash：这种配置会使得每个请求按访问者的ip的hash结果分配，这样每个访客固定访问一个后端服务器，这样也可以解决session的问题。</span>
-  <span class="token comment" spellcheck="true">#   upstream bakend {</span>
-  <span class="token comment" spellcheck="true">#        ip_hash;</span>
-  <span class="token comment" spellcheck="true">#        server 192.168.75.130:8080;</span>
-  <span class="token comment" spellcheck="true">#        server 192.168.75.132:8080;</span>
-  <span class="token comment" spellcheck="true">#   }</span>
-  <span class="token comment" spellcheck="true">#</span>
-  <span class="token comment" spellcheck="true">#【4】最少连接：将请求分配给连接数最少的服务器。Nginx会统计哪些服务器的连接数最少。</span>
-  <span class="token comment" spellcheck="true">#   upstream bakend {</span>
-  <span class="token comment" spellcheck="true">#        least_conn;</span>
-  <span class="token comment" spellcheck="true">#        server 192.168.75.130:8080;</span>
-  <span class="token comment" spellcheck="true">#        server 192.168.75.132:8080;</span>
-  <span class="token comment" spellcheck="true">#   }</span>
-  <span class="token comment" spellcheck="true">#</span>
-  <span class="token comment" spellcheck="true">#</span>
-  <span class="token comment" spellcheck="true">#【5】fair策略(需要安装nginx的第三方模块fair)：按后端服务器的响应时间来分配请求，响应时间短的优先分配。</span>
-  <span class="token comment" spellcheck="true">#   upstream bakend {</span>
-  <span class="token comment" spellcheck="true">#        fair;</span>
-  <span class="token comment" spellcheck="true">#        server 192.168.75.130:8080;</span>
-  <span class="token comment" spellcheck="true">#        server 192.168.75.132:8080;</span>
-  <span class="token comment" spellcheck="true">#   }</span>
-  <span class="token comment" spellcheck="true">#</span>
-  <span class="token comment" spellcheck="true">#【6】url_hash策略（也是第三方策略）：按访问url的hash结果来分配请求，使每个url定向到同一个后端服务器，后端服务器为缓存时比较有效。</span>
-  <span class="token comment" spellcheck="true">#               在upstream中加入hash语句，server语句中不能写入weight等其他的参数，hash_method指定hash算法</span>
-  <span class="token comment" spellcheck="true">#   upstream bakend {</span>
-  <span class="token comment" spellcheck="true">#        server 192.168.75.130:8080;</span>
-  <span class="token comment" spellcheck="true">#        server 192.168.75.132:8080;</span>
-  <span class="token comment" spellcheck="true">#        hash $request_uri;</span>
-  <span class="token comment" spellcheck="true">#        hash_method crc32;</span>
-  <span class="token comment" spellcheck="true">#   }</span>
-  <span class="token comment" spellcheck="true">#</span>
-  <span class="token comment" spellcheck="true">#【7】其他设置，主要是设备的状态设置</span>
-  <span class="token comment" spellcheck="true">#   upstream bakend{</span>
-  <span class="token comment" spellcheck="true">#       ip_hash;</span>
-  <span class="token comment" spellcheck="true">#       server 127.0.0.1:9090 down;   # down 表示该机器处于下线状态不可用</span>
-  <span class="token comment" spellcheck="true">#       server 127.0.0.1:8080 weight=2;</span>
-  <span class="token comment" spellcheck="true">#       server 127.0.0.1:6060;</span>
-  <span class="token comment" spellcheck="true">#       </span>
-  <span class="token comment" spellcheck="true">#       # max_fails 默认为1； 最大请求失败的次数，结合fail_timeout使用；</span>
-  <span class="token comment" spellcheck="true">#       # 以下配置表示 192.168.0.100:8080在处理请求失败3次后，将在15s内不会受到任何请求了</span>
-  <span class="token comment" spellcheck="true">#       # fail_timeout 默认为10秒。某台Server达到max_fails次失败请求后，在fail_timeout期间内，nginx会认为这台Server暂时不可用，不会将请求分配给它。</span>
-  <span class="token comment" spellcheck="true">#       server 192.168.0.100:8080 weight=2 max_fails=3 fail_timeout=15;</span>
-  <span class="token comment" spellcheck="true">#       server 192.168.0.101:8080 weight=3;</span>
-  <span class="token comment" spellcheck="true">#       server 192.168.0.102:8080 weight=1;</span>
-  <span class="token comment" spellcheck="true">#       # 限制分配给某台Server处理的最大连接数量，超过这个数量，将不会分配新的连接给它。默认为0，表示不限制。注意：1.5.9之后的版本才有这个配置</span>
-  <span class="token comment" spellcheck="true">#       server 192.168.0.103:8080 max_conns=1000;</span>
-  <span class="token comment" spellcheck="true">#       server 127.0.0.1:7070 backup;  # 备份机；其他机器都不可用时，这台机器就上场了</span>
-  <span class="token comment" spellcheck="true">#       server example.com my_dns_resolve;  # 指定域名解析器；my_dns_resolve需要在http节点配置resolver节点如：resolver 10.0.0.1;</span>
-  <span class="token comment" spellcheck="true">#   }</span>
-  <span class="token comment" spellcheck="true">#</span>
-  <span class="token comment" spellcheck="true">#</span>
-  <span class="token comment" spellcheck="true">#</span>
-  <span class="token comment" spellcheck="true">#负载均衡 END&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;</span>
-  <span class="token comment" spellcheck="true">#-------------------------------------------------------------------------------------------#</span>
+    <span class="hljs-comment"># 负载均衡 START>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>></span>
+    <span class="hljs-comment"># upstream 指令定义的节点可以被proxy_pass指令引用；二者结合用来反向代理+负载均衡配置</span>
+    <span class="hljs-comment"># 【内置策略】：轮询、加权轮询、ip_hash、最少连接 默认编译进了nginx</span>
+    <span class="hljs-comment"># 【扩展策略】：fair、通用hash、一致性hash 默认没有编译进nginx</span>
+    <span class="hljs-comment">#-----------------------------------------------------------------------------------------------#</span>
+    <span class="hljs-comment"># 【1】默认是轮询；如果后端服务器down掉，能自动剔除。</span>
+    <span class="hljs-comment">#   upstream bakend {</span>
+    <span class="hljs-comment">#        server 192.168.75.130:8080;</span>
+    <span class="hljs-comment">#        server 192.168.75.132:8080;</span>
+    <span class="hljs-comment">#        server 192.168.75.134:8080;</span>
+    <span class="hljs-comment">#    }</span>
+    <span class="hljs-comment">#</span>
+    <span class="hljs-comment">#【2】权重轮询(加权轮询)：这样配置后，如果总共请求了3次，则前面两次请求到130，后面一次请求到132</span>
+    <span class="hljs-comment">#   upstream bakend {</span>
+    <span class="hljs-comment">#        server 192.168.75.130:8080 weight=2;</span>
+    <span class="hljs-comment">#        server 192.168.75.132:8080 weight=1;</span>
+    <span class="hljs-comment">#   }</span>
+    <span class="hljs-comment">#</span>
+    <span class="hljs-comment">#【3】ip_hash：这种配置会使得每个请求按访问者的ip的hash结果分配，这样每个访客固定访问一个后端服务器，这样也可以解决session的问题。</span>
+    <span class="hljs-comment">#   upstream bakend {</span>
+    <span class="hljs-comment">#        ip_hash;</span>
+    <span class="hljs-comment">#        server 192.168.75.130:8080;</span>
+    <span class="hljs-comment">#        server 192.168.75.132:8080;</span>
+    <span class="hljs-comment">#   }</span>
+    <span class="hljs-comment">#</span>
+    <span class="hljs-comment">#【4】最少连接：将请求分配给连接数最少的服务器。Nginx会统计哪些服务器的连接数最少。</span>
+    <span class="hljs-comment">#   upstream bakend {</span>
+    <span class="hljs-comment">#        least_conn;</span>
+    <span class="hljs-comment">#        server 192.168.75.130:8080;</span>
+    <span class="hljs-comment">#        server 192.168.75.132:8080;</span>
+    <span class="hljs-comment">#   }</span>
+    <span class="hljs-comment">#</span>
+    <span class="hljs-comment">#</span>
+    <span class="hljs-comment">#【5】fair策略(需要安装nginx的第三方模块fair)：按后端服务器的响应时间来分配请求，响应时间短的优先分配。</span>
+    <span class="hljs-comment">#   upstream bakend {</span>
+    <span class="hljs-comment">#        fair;</span>
+    <span class="hljs-comment">#        server 192.168.75.130:8080;</span>
+    <span class="hljs-comment">#        server 192.168.75.132:8080;</span>
+    <span class="hljs-comment">#   }</span>
+    <span class="hljs-comment">#</span>
+    <span class="hljs-comment">#【6】url_hash策略（也是第三方策略）：按访问url的hash结果来分配请求，使每个url定向到同一个后端服务器，后端服务器为缓存时比较有效。</span>
+    <span class="hljs-comment">#               在upstream中加入hash语句，server语句中不能写入weight等其他的参数，hash_method指定hash算法</span>
+    <span class="hljs-comment">#   upstream bakend {</span>
+    <span class="hljs-comment">#        server 192.168.75.130:8080;</span>
+    <span class="hljs-comment">#        server 192.168.75.132:8080;</span>
+    <span class="hljs-comment">#        hash $request_uri;</span>
+    <span class="hljs-comment">#        hash_method crc32;</span>
+    <span class="hljs-comment">#   }</span>
+    <span class="hljs-comment">#</span>
+    <span class="hljs-comment">#【7】其他设置，主要是设备的状态设置</span>
+    <span class="hljs-comment">#   upstream bakend{</span>
+    <span class="hljs-comment">#       ip_hash;</span>
+    <span class="hljs-comment">#       server 127.0.0.1:9090 down;   # down 表示该机器处于下线状态不可用</span>
+    <span class="hljs-comment">#       server 127.0.0.1:8080 weight=2;</span>
+    <span class="hljs-comment">#       server 127.0.0.1:6060;</span>
+    <span class="hljs-comment">#       </span>
+    <span class="hljs-comment">#       # max_fails 默认为1； 最大请求失败的次数，结合fail_timeout使用；</span>
+    <span class="hljs-comment">#       # 以下配置表示 192.168.0.100:8080在处理请求失败3次后，将在15s内不会受到任何请求了</span>
+    <span class="hljs-comment">#       # fail_timeout 默认为10秒。某台Server达到max_fails次失败请求后，在fail_timeout期间内，nginx会认为这台Server暂时不可用，不会将请求分配给它。</span>
+    <span class="hljs-comment">#       server 192.168.0.100:8080 weight=2 max_fails=3 fail_timeout=15;</span>
+    <span class="hljs-comment">#       server 192.168.0.101:8080 weight=3;</span>
+    <span class="hljs-comment">#       server 192.168.0.102:8080 weight=1;</span>
+    <span class="hljs-comment">#       # 限制分配给某台Server处理的最大连接数量，超过这个数量，将不会分配新的连接给它。默认为0，表示不限制。注意：1.5.9之后的版本才有这个配置</span>
+    <span class="hljs-comment">#       server 192.168.0.103:8080 max_conns=1000;</span>
+    <span class="hljs-comment">#       server 127.0.0.1:7070 backup;  # 备份机；其他机器都不可用时，这台机器就上场了</span>
+    <span class="hljs-comment">#       server example.com my_dns_resolve;  # 指定域名解析器；my_dns_resolve需要在http节点配置resolver节点如：resolver 10.0.0.1;</span>
+    <span class="hljs-comment">#   }</span>
+    <span class="hljs-comment">#</span>
+    <span class="hljs-comment">#</span>
+    <span class="hljs-comment">#</span>
+    <span class="hljs-comment">#负载均衡 END<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<</span>
+    <span class="hljs-comment">#-------------------------------------------------------------------------------------------#</span>
 
-  <span class="token comment" spellcheck="true">#设定mime类型,类型由mime.types文件定义；  可以 cat nginx/conf/mime.types  查看下支持哪些类型</span>
-  include             /etc/nginx/mime.types<span class="token punctuation">;</span>
-  <span class="token comment" spellcheck="true"># 默认mime类型；  application/octet-stream 指的是原始二进制流</span>
-  default_type        application/octet-stream<span class="token punctuation">;</span>
-  include /etc/nginx/conf.d/*.conf<span class="token punctuation">;</span> </code></pre>
+    <span class="hljs-comment">#设定mime类型,类型由mime.types文件定义；  可以 cat nginx/conf/mime.types  查看下支持哪些类型</span>
+    include             /etc/nginx/mime.types;
+    <span class="hljs-comment"># 默认mime类型；  application/octet-stream 指的是原始二进制流</span>
+    default_type        application/octet-stream;
+    include /etc/nginx/conf.d/*.conf;</code></pre></div>
 </li>
 <li><p>第三部分2: http-server模块</p>
-<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># server模块 </span>
-server <span class="token punctuation">{</span>
-      listen       80 default_server<span class="token punctuation">;</span> <span class="token comment" spellcheck="true"># 监听端口</span>
-      listen       <span class="token punctuation">[</span>::<span class="token punctuation">]</span>:80 default_server<span class="token punctuation">;</span>
-      server_name  localhost
-      root         /usr/share/nginx/html<span class="token punctuation">;</span> 
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># server模块 </span>
+server {
+        listen       80 default_server; <span class="hljs-comment"># 监听端口</span>
+        listen       [::]:80 default_server;
+        server_name  localhost
+        root         /usr/share/nginx/html; 
 
-      <span class="token comment" spellcheck="true"># Load configuration files for the default server block.</span>
-      include /etc/nginx/default.d/*.conf<span class="token punctuation">;</span>
-      include /etc/nginx/default.d/*.conf<span class="token punctuation">;</span>
+        <span class="hljs-comment"># Load configuration files for the default server block.</span>
+        include /etc/nginx/default.d/*.conf;
+        include /etc/nginx/default.d/*.conf;
 
-      location / <span class="token punctuation">{</span>
+        location / {
 
-      <span class="token punctuation">}</span>
+        }
 
-      error_page 404 /404.html<span class="token punctuation">;</span>
-          location <span class="token operator">=</span> /40x.html <span class="token punctuation">{</span>
-      <span class="token punctuation">}</span>
+        error_page 404 /404.html;
+            location = /40x.html {
+        }
 
-      error_page 500 502 503 504 /50x.html<span class="token punctuation">;</span>
-          location <span class="token operator">=</span> /50x.html <span class="token punctuation">{</span>
-      <span class="token punctuation">}</span>
-  <span class="token punctuation">}</span> </code></pre>
-<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 单文件 nginx.conf</span>
-</code></pre>
+        error_page 500 502 503 504 /50x.html;
+            location = /50x.html {
+        }
+    }</code></pre></div>
+<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 单文件 nginx.conf</span>
+
+<span class="hljs-comment">#user  nobody;</span>
+worker_processes  1;
+
+events {
+    worker_connections  1024;
+}
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+
+    sendfile        on;
+
+    keepalive_timeout  65;
+
+    server {
+        listen       8888;  <span class="hljs-comment"># 监听端口</span>
+        server_name  localhost; <span class="hljs-comment"># 监听的ip  加起来就是监听本地8888的变化 127.0.0.1:8888 == 公网IP:8888</span>
+        location / {  <span class="hljs-comment"># 根目录，不设置目录</span>
+            root   html;  <span class="hljs-comment"># html静态文件，存放html文件的地方，nginx安装之后就会产生这么一个文件夹，与conf同级</span>
+            index  xx.html index.htm; <span class="hljs-comment"># 匹配对应的html文件</span>
+
+        }
+    }
+
+}
+</code></pre></div>
+
+
 </li>
 </ul>
-<p>#user  nobody;<br>worker_processes  1;</p>
-<p>events {<br>    worker_connections  1024;<br>}<br>http {<br>    include       mime.types;<br>    default_type  application/octet-stream;</p>
-<pre><code>sendfile        on;
-
-keepalive_timeout  65;
-
-server &#123;
-    listen       8888;  # 监听端口
-    server_name  localhost; # 监听的ip  加起来就是监听本地8888的变化 127.0.0.1:8888 == 公网IP:8888
-    location / &#123;  # 根目录，不设置目录
-        root   html;  # html静态文件，存放html文件的地方，nginx安装之后就会产生这么一个文件夹，与conf同级
-        index  xx.html index.htm; # 匹配对应的html文件
-
-    &#125;
-&#125;</code></pre>
-<p>}</p>
-<pre><code>
-
-## nginx文件配置
-如果是直接安装的nginx，则nginx所安装的目录文件如下
-```bash
-root:/etc/nginx# ls -l
+<h2 id="nginx文件配置"><a href="#nginx文件配置" class="headerlink" title="nginx文件配置"></a>nginx文件配置</h2><p>如果是直接安装的nginx，则nginx所安装的目录文件如下</p>
+<div class="code-wrapper"><pre class=" language-hljs bash">root:/etc/nginx<span class="hljs-comment"><code class="language-hljs bash">root:/etc/nginx<span class="hljs-comment"># ls -l</span>
 total 72
-drwxr-xr-x. 2 root root   24 Feb  3 17:14 conf.d   # http-server配置
+drwxr-xr-x. 2 root root   24 Feb  3 17:14 conf.d   <span class="hljs-comment"># http-server配置</span>
 drwxr-xr-x. 2 root root    6 Oct  3 13:15 default.d 
 -rw-r--r--. 1 root root 1077 Oct  3 13:15 fastcgi.conf
 -rw-r--r--. 1 root root 1077 Oct  3 13:15 fastcgi.conf.default
@@ -527,62 +529,64 @@ drwxr-xr-x. 2 root root    6 Oct  3 13:15 default.d
 -rw-r--r--. 1 root root 2223 Oct  3 13:15 koi-win
 -rw-r--r--. 1 root root 5231 Oct  3 13:15 mime.types
 -rw-r--r--. 1 root root 5231 Oct  3 13:15 mime.types.default
--rw-r--r--. 1 root root 2340 Feb  3 17:40 nginx.conf    # nginx配置
--rw-r--r--. 1 root root 2698 Feb  3 17:03 nginx.conf.default # 
+-rw-r--r--. 1 root root 2340 Feb  3 17:40 nginx.conf    <span class="hljs-comment"># nginx配置</span>
+-rw-r--r--. 1 root root 2698 Feb  3 17:03 nginx.conf.default <span class="hljs-comment"># </span>
 -rw-r--r--. 1 root root  636 Oct  3 13:15 scgi_params
 -rw-r--r--. 1 root root  636 Oct  3 13:15 scgi_params.default
 -rw-r--r--. 1 root root  664 Oct  3 13:15 uwsgi_params
 -rw-r--r--. 1 root root  664 Oct  3 13:15 uwsgi_params.default
--rw-r--r--. 1 root root 3610 Oct  3 13:15 win-utf </code></pre>
+-rw-r--r--. 1 root root 3610 Oct  3 13:15 win-utf</code></pre></div>
 <p>在 nginx.conf配置中有这么一段话，其中表明了几个文件夹的作用<br>/etc/nginx/default.d/ 主要存放location<br>/etc/nginx/conf.d/ 主要存放server<br>否则会报错 <font color='red'>nginx: [emerg] “user” directive is not allowed here in /etc/nginx/conf.d/nginx.conf:5</font></p>
-<pre class=" language-bash"><code class="language-bash">http <span class="token punctuation">{</span>
-    log_format  main  <span class="token string">'<span class="token variable">$remote_addr</span> - <span class="token variable">$remote_user</span> [<span class="token variable">$time_local</span>] "<span class="token variable">$request</span>" '</span>
-                      <span class="token string">'<span class="token variable">$status</span> <span class="token variable">$body_bytes_sent</span> "<span class="token variable">$http_referer</span>" '</span>
-                      <span class="token string">'"<span class="token variable">$http_user_agent</span>" "<span class="token variable">$http_x_forwarded_for</span>"'</span><span class="token punctuation">;</span>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">http {
+    log_format  main  <span class="hljs-string">&#x27;$remote_addr - $remote_user [$time_local] "$request" &#x27;</span>
+                      <span class="hljs-string">&#x27;$status $body_bytes_sent "$http_referer" &#x27;</span>
+                      <span class="hljs-string">&#x27;"$http_user_agent" "$http_x_forwarded_for"&#x27;</span>;
 
-    access_log  /var/log/nginx/access.log  main<span class="token punctuation">;</span>
+    access_log  /var/<span class="hljs-built_in">log</span>/nginx/access.log  main;
 
-    sendfile            on<span class="token punctuation">;</span>
-    tcp_nopush          on<span class="token punctuation">;</span>
-    tcp_nodelay         on<span class="token punctuation">;</span>
-    keepalive_timeout   65<span class="token punctuation">;</span>
-    types_hash_max_size 2048<span class="token punctuation">;</span>
+    sendfile            on;
+    tcp_nopush          on;
+    tcp_nodelay         on;
+    keepalive_timeout   65;
+    types_hash_max_size 2048;
 
-    include             /etc/nginx/mime.types<span class="token punctuation">;</span>
-    default_type        application/octet-stream<span class="token punctuation">;</span>
+    include             /etc/nginx/mime.types;
+    default_type        application/octet-stream;
 
-    <span class="token comment" spellcheck="true"># Load modular configuration files from the /etc/nginx/conf.d directory.</span>
-    <span class="token comment" spellcheck="true"># See http://nginx.org/en/docs/ngx_core_module.html#include</span>
-    <span class="token comment" spellcheck="true"># for more information</span>
-    include /etc/nginx/conf.d/*.conf<span class="token punctuation">;</span>   <span class="token comment" spellcheck="true"># 存放server</span>
+    <span class="hljs-comment"># Load modular configuration files from the /etc/nginx/conf.d directory.</span>
+    <span class="hljs-comment"># See http://nginx.org/en/docs/ngx_core_module.html#include</span>
+    <span class="hljs-comment"># for more information</span>
+    include /etc/nginx/conf.d/*.conf;   <span class="hljs-comment"># 存放server</span>
 
-    server <span class="token punctuation">{</span>
-        listen       80<span class="token punctuation">;</span>
-        server_name  10.0.5.233<span class="token punctuation">;</span>
-        root         /usr/share/nginx/html<span class="token punctuation">;</span>
+    server {
+        listen       80;
+        server_name  10.0.5.233;
+        root         /usr/share/nginx/html;
 
-        <span class="token comment" spellcheck="true"># Load configuration files for the default server block.</span>
-        include /etc/nginx/default.d/*.conf<span class="token punctuation">;</span> <span class="token comment" spellcheck="true"># 存放location</span>
+        <span class="hljs-comment"># Load configuration files for the default server block.</span>
+        include /etc/nginx/default.d/*.conf; <span class="hljs-comment"># 存放location</span>
 
-        location / <span class="token punctuation">{</span>
-           root html<span class="token punctuation">;</span>
-           proxy_pass http://127.0.0.1:8001<span class="token punctuation">;</span>
-           index index.html index.htm<span class="token punctuation">;</span>
-        <span class="token punctuation">}</span>
-    <span class="token punctuation">}</span></code></pre>
+        location / {
+           root html;
+           proxy_pass http://127.0.0.1:8001;
+           index index.html index.htm;
+        }
+    }</code></pre></div>
 <hr>
 <p>在/etc/nginx/nginx.conf中存放了一些初始的配置，可以选择在在这个文件中直接添加server来配置nginx，也可以将自己的server单独写到conf.d/文件夹中去，或者写到nginx.conf.default中去</p>
 <h3 id="location模块配置"><a href="#location模块配置" class="headerlink" title="location模块配置"></a>location模块配置</h3><p>配置内容如下</p>
-<pre class=" language-bash"><code class="language-bash">location <span class="token punctuation">[</span> <span class="token operator">=</span> <span class="token operator">|</span> ~ <span class="token operator">|</span> ~* <span class="token operator">|</span> ^~ <span class="token punctuation">]</span>  uri <span class="token punctuation">{</span>
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">location [ = | ~ | ~* | ^~ ]  uri {
 
-<span class="token punctuation">}</span></code></pre>
+}</code></pre></div>
 <p>= 用于不需要正则表达式的uri 要求严格匹配，如果匹配成功，就往下搜索并处理请求<br>~ 用于需要正则表达式的uri 区分大小写<br><del>* 用于需要正则表达式的uri 不区分大小写<br>^</del> 用于不需要正则表达式的uri，要求Nginx服务器找到标识uri和请求字符串匹配度最高的location后，立即使用此location处理请求，而不在使用location块中的正则uri和请求字符串做匹配</p>
 <h2 id="配置实例"><a href="#配置实例" class="headerlink" title="配置实例"></a>配置实例</h2><p><img src="https://img2018.cnblogs.com/blog/1381066/201906/1381066-20190627141117429-435885754.png" srcset="/img/loading.gif"></p>
-<h2 id="nginx错误"><a href="#nginx错误" class="headerlink" title="nginx错误"></a>nginx错误</h2><pre class=" language-bash"><code class="language-bash">nginx bind<span class="token punctuation">(</span><span class="token punctuation">)</span> to 0.0.0.0:**** failed <span class="token punctuation">(</span>13: Permission denied<span class="token punctuation">)</span></code></pre>
+<h2 id="nginx错误"><a href="#nginx错误" class="headerlink" title="nginx错误"></a>nginx错误</h2><div class="code-wrapper"><pre class=" language-hljs bash">nginx <span class="hljs-built_in"><code class="language-hljs bash">nginx <span class="hljs-built_in">bind</span>() to 0.0.0.0:**** failed (13: Permission denied)</code></pre></div>
 <p>这是因为防火墙没有关闭或者selinux没有关闭</p>
-<pre class=" language-bash"><code class="language-bash">systemct  stop firewalld
+<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">systemct  stop firewalld
 setenforce 0
-<span class="token function">sed</span> -in -r <span class="token string">'/^.*=Enforce/s#Enforce#disabled#g'</span> /etc/selinux/config</code></pre>
+sed -<span class="hljs-keyword">in</span> -r <span class="hljs-string">&#x27;/^.*=Enforce/s#Enforce#disabled#g&#x27;</span> /etc/selinux/config</code></pre></div>
+
+
 
             </div>
             <hr>
@@ -691,7 +695,7 @@ setenforce 0
 
   <footer class="text-center mt-5 py-3">
   <div class="footer-content">
-     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+     <a rel="nofollow noopener"><span>Hzjsea</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
   </div>
   
 

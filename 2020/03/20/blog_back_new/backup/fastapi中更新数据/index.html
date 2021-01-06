@@ -67,7 +67,7 @@
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
-       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
+       href="/">&nbsp;<strong>hzjsea</strong>&nbsp;</a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
             data-target="#navbarSupportedContent"
@@ -184,7 +184,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      460 字
+      462 字
     </span>
   
 
@@ -231,118 +231,118 @@
 <a id="more"></a>
 
 <h1 id="fastapi中利用json-code更新数据"><a href="#fastapi中利用json-code更新数据" class="headerlink" title="fastapi中利用json_code更新数据"></a>fastapi中利用json_code更新数据</h1><p>更新数据使用到的http方法是put ，大致就是利用jsonable_encoder来序列化我们传过去的dict数据，然后交互数据库更新就Ok了</p>
-<h2 id="使用put来更新"><a href="#使用put来更新" class="headerlink" title="使用put来更新"></a>使用put来更新</h2><pre class=" language-python"><code class="language-python"><span class="token keyword">from</span> typing <span class="token keyword">import</span>  List
-<span class="token keyword">from</span> fastapi <span class="token keyword">import</span> FastAPI
-<span class="token keyword">from</span> fastapi<span class="token punctuation">.</span>encoders <span class="token keyword">import</span> jsonable_encoder
-<span class="token keyword">from</span> pydantic <span class="token keyword">import</span> BaseModel
+<h2 id="使用put来更新"><a href="#使用put来更新" class="headerlink" title="使用put来更新"></a>使用put来更新</h2><div class="code-wrapper"><pre class=" language-hljs python"><span class="hljs-keyword">from</span> typing <span class="hljs-keyword"><code class="language-hljs python"><span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span>  List
+<span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> FastAPI
+<span class="hljs-keyword">from</span> fastapi.encoders <span class="hljs-keyword">import</span> jsonable_encoder
+<span class="hljs-keyword">from</span> pydantic <span class="hljs-keyword">import</span> BaseModel
 
-app <span class="token operator">=</span> FastAPI<span class="token punctuation">(</span><span class="token punctuation">)</span>
-
-
-<span class="token comment" spellcheck="true"># 创建模型类</span>
-<span class="token keyword">class</span> <span class="token class-name">Item</span><span class="token punctuation">(</span>BaseModel<span class="token punctuation">)</span><span class="token punctuation">:</span>
-    name<span class="token punctuation">:</span> str <span class="token operator">=</span> None
-    desction<span class="token punctuation">:</span> str <span class="token operator">=</span> None
-    price<span class="token punctuation">:</span> float <span class="token operator">=</span> None
-    tax <span class="token punctuation">:</span> float <span class="token operator">=</span> None
-    tags<span class="token punctuation">:</span> List<span class="token punctuation">[</span>str<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+app = FastAPI()
 
 
+<span class="hljs-comment"># 创建模型类</span>
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Item</span>(<span class="hljs-params">BaseModel</span>):</span>
+    name: <span class="hljs-built_in">str</span> = <span class="hljs-literal">None</span>
+    desction: <span class="hljs-built_in">str</span> = <span class="hljs-literal">None</span>
+    price: <span class="hljs-built_in">float</span> = <span class="hljs-literal">None</span>
+    tax : <span class="hljs-built_in">float</span> = <span class="hljs-literal">None</span>
+    tags: List[<span class="hljs-built_in">str</span>] = []
 
 
 
-<span class="token comment" spellcheck="true"># 模拟数据库中的数据</span>
-items <span class="token operator">=</span> <span class="token punctuation">{</span>
-    <span class="token string">"foo"</span><span class="token punctuation">:</span> <span class="token punctuation">{</span><span class="token string">"name"</span><span class="token punctuation">:</span> <span class="token string">"Foo"</span><span class="token punctuation">,</span> <span class="token string">"price"</span><span class="token punctuation">:</span> <span class="token number">50.2</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
-    <span class="token string">"bar"</span><span class="token punctuation">:</span> <span class="token punctuation">{</span><span class="token string">"name"</span><span class="token punctuation">:</span> <span class="token string">"Bar"</span><span class="token punctuation">,</span> <span class="token string">"description"</span><span class="token punctuation">:</span> <span class="token string">"The bartenders"</span><span class="token punctuation">,</span> <span class="token string">"price"</span><span class="token punctuation">:</span> <span class="token number">62</span><span class="token punctuation">,</span> <span class="token string">"tax"</span><span class="token punctuation">:</span> <span class="token number">20.2</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
-    <span class="token string">"baz"</span><span class="token punctuation">:</span> <span class="token punctuation">{</span><span class="token string">"name"</span><span class="token punctuation">:</span> <span class="token string">"Baz"</span><span class="token punctuation">,</span> <span class="token string">"description"</span><span class="token punctuation">:</span> None<span class="token punctuation">,</span> <span class="token string">"price"</span><span class="token punctuation">:</span> <span class="token number">50.2</span><span class="token punctuation">,</span> <span class="token string">"tax"</span><span class="token punctuation">:</span> <span class="token number">10.5</span><span class="token punctuation">,</span> <span class="token string">"tags"</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
-<span class="token punctuation">}</span>
 
 
-<span class="token comment" spellcheck="true"># 传入参数</span>
-@app<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">"/"</span><span class="token punctuation">)</span>
-<span class="token keyword">async</span> <span class="token keyword">def</span> <span class="token function">root</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
-    <span class="token keyword">return</span> <span class="token punctuation">{</span><span class="token string">"desc"</span><span class="token punctuation">:</span><span class="token string">"hello world"</span><span class="token punctuation">}</span>
-
-<span class="token comment" spellcheck="true"># 传入参数</span>
-@app<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">"/items/{item_id}"</span><span class="token punctuation">,</span>response_model<span class="token operator">=</span>Item<span class="token punctuation">)</span>
-<span class="token keyword">async</span> <span class="token keyword">def</span> <span class="token function">read_item</span><span class="token punctuation">(</span>item_id<span class="token punctuation">:</span> str<span class="token punctuation">)</span><span class="token punctuation">:</span>
-    <span class="token comment" spellcheck="true">## 这里只是模拟了数据库中的内容，实际上这里要多一步数据库提取数据的过程</span>
-    <span class="token keyword">return</span> items<span class="token punctuation">[</span>item_id<span class="token punctuation">]</span>
+<span class="hljs-comment"># 模拟数据库中的数据</span>
+items = {
+    <span class="hljs-string">"foo"</span>: {<span class="hljs-string">"name"</span>: <span class="hljs-string">"Foo"</span>, <span class="hljs-string">"price"</span>: <span class="hljs-number">50.2</span>},
+    <span class="hljs-string">"bar"</span>: {<span class="hljs-string">"name"</span>: <span class="hljs-string">"Bar"</span>, <span class="hljs-string">"description"</span>: <span class="hljs-string">"The bartenders"</span>, <span class="hljs-string">"price"</span>: <span class="hljs-number">62</span>, <span class="hljs-string">"tax"</span>: <span class="hljs-number">20.2</span>},
+    <span class="hljs-string">"baz"</span>: {<span class="hljs-string">"name"</span>: <span class="hljs-string">"Baz"</span>, <span class="hljs-string">"description"</span>: <span class="hljs-literal">None</span>, <span class="hljs-string">"price"</span>: <span class="hljs-number">50.2</span>, <span class="hljs-string">"tax"</span>: <span class="hljs-number">10.5</span>, <span class="hljs-string">"tags"</span>: []},
+}
 
 
+<span class="hljs-comment"># 传入参数</span>
+<span class="hljs-meta">@app.get("/")</span>
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">root</span>():</span>
+    <span class="hljs-keyword">return</span> {<span class="hljs-string">"desc"</span>:<span class="hljs-string">"hello world"</span>}
 
-<span class="token comment" spellcheck="true"># 更新参数</span>
-@app<span class="token punctuation">.</span>put<span class="token punctuation">(</span><span class="token string">"/items/{item_id}"</span><span class="token punctuation">,</span>response_model<span class="token operator">=</span>Item<span class="token punctuation">)</span>
-<span class="token keyword">async</span> <span class="token keyword">def</span> <span class="token function">update_item</span><span class="token punctuation">(</span>item_id<span class="token punctuation">:</span>str<span class="token punctuation">,</span>item<span class="token punctuation">:</span>Item<span class="token punctuation">)</span><span class="token punctuation">:</span>
-    update_item_encode <span class="token operator">=</span> jsonable_encoder<span class="token punctuation">(</span>item<span class="token punctuation">)</span>
-    items<span class="token punctuation">[</span>item_id<span class="token punctuation">]</span> <span class="token operator">=</span> update_item_encode
-    <span class="token keyword">return</span> update_item_encode</code></pre>
+<span class="hljs-comment"># 传入参数</span>
+<span class="hljs-meta">@app.get("/items/{item_id}",response_model=Item)</span>
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">read_item</span>(<span class="hljs-params">item_id: <span class="hljs-built_in">str</span></span>):</span>
+    <span class="hljs-comment">## 这里只是模拟了数据库中的内容，实际上这里要多一步数据库提取数据的过程</span>
+    <span class="hljs-keyword">return</span> items[item_id]
+
+
+
+<span class="hljs-comment"># 更新参数</span>
+<span class="hljs-meta">@app.put("/items/{item_id}",response_model=Item)</span>
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">update_item</span>(<span class="hljs-params">item_id:<span class="hljs-built_in">str</span>,item:Item</span>):</span>
+    update_item_encode = jsonable_encoder(item)
+    items[item_id] = update_item_encode
+    <span class="hljs-keyword">return</span> update_item_encode</code></pre></div>
+
 <p>这里response_model有什么用，暂时还不知道，官方文档是这样写的，后面还有带研究</p>
-<h2 id="使用Patch部分更新"><a href="#使用Patch部分更新" class="headerlink" title="使用Patch部分更新"></a>使用Patch部分更新</h2><pre class=" language-python"><code class="language-python">
-<span class="token keyword">from</span> typing <span class="token keyword">import</span>  List
-<span class="token keyword">from</span> fastapi <span class="token keyword">import</span> FastAPI
-<span class="token keyword">from</span> fastapi<span class="token punctuation">.</span>encoders <span class="token keyword">import</span> jsonable_encoder
-<span class="token keyword">from</span> pydantic <span class="token keyword">import</span> BaseModel
+<h2 id="使用Patch部分更新"><a href="#使用Patch部分更新" class="headerlink" title="使用Patch部分更新"></a>使用Patch部分更新</h2><div class="code-wrapper"><pre class=" language-hljs python"><code class="language-hljs python">
+<span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span>  List
+<span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> FastAPI
+<span class="hljs-keyword">from</span> fastapi.encoders <span class="hljs-keyword">import</span> jsonable_encoder
+<span class="hljs-keyword">from</span> pydantic <span class="hljs-keyword">import</span> BaseModel
 
-app <span class="token operator">=</span> FastAPI<span class="token punctuation">(</span><span class="token punctuation">)</span>
-
-
-<span class="token comment" spellcheck="true"># 创建模型类</span>
-<span class="token keyword">class</span> <span class="token class-name">Item</span><span class="token punctuation">(</span>BaseModel<span class="token punctuation">)</span><span class="token punctuation">:</span>
-    name<span class="token punctuation">:</span> str <span class="token operator">=</span> None
-    desction<span class="token punctuation">:</span> str <span class="token operator">=</span> None
-    price<span class="token punctuation">:</span> float <span class="token operator">=</span> None
-    tax <span class="token punctuation">:</span> float <span class="token operator">=</span> None
-    tags<span class="token punctuation">:</span> List<span class="token punctuation">[</span>str<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+app = FastAPI()
 
 
-
-
-<span class="token comment" spellcheck="true"># 模拟传入的数据</span>
-items <span class="token operator">=</span> <span class="token punctuation">{</span>
-    <span class="token string">"foo"</span><span class="token punctuation">:</span> <span class="token punctuation">{</span><span class="token string">"name"</span><span class="token punctuation">:</span> <span class="token string">"Foo"</span><span class="token punctuation">,</span> <span class="token string">"price"</span><span class="token punctuation">:</span> <span class="token number">50.2</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
-    <span class="token string">"bar"</span><span class="token punctuation">:</span> <span class="token punctuation">{</span><span class="token string">"name"</span><span class="token punctuation">:</span> <span class="token string">"Bar"</span><span class="token punctuation">,</span> <span class="token string">"description"</span><span class="token punctuation">:</span> <span class="token string">"The bartenders"</span><span class="token punctuation">,</span> <span class="token string">"price"</span><span class="token punctuation">:</span> <span class="token number">62</span><span class="token punctuation">,</span> <span class="token string">"tax"</span><span class="token punctuation">:</span> <span class="token number">20.2</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
-    <span class="token string">"baz"</span><span class="token punctuation">:</span> <span class="token punctuation">{</span><span class="token string">"name"</span><span class="token punctuation">:</span> <span class="token string">"Baz"</span><span class="token punctuation">,</span> <span class="token string">"description"</span><span class="token punctuation">:</span> None<span class="token punctuation">,</span> <span class="token string">"price"</span><span class="token punctuation">:</span> <span class="token number">50.2</span><span class="token punctuation">,</span> <span class="token string">"tax"</span><span class="token punctuation">:</span> <span class="token number">10.5</span><span class="token punctuation">,</span> <span class="token string">"tags"</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
-<span class="token punctuation">}</span>
-
-
-<span class="token comment" spellcheck="true"># 传入参数</span>
-@app<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">"/"</span><span class="token punctuation">)</span>
-<span class="token keyword">async</span> <span class="token keyword">def</span> <span class="token function">root</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
-    <span class="token keyword">return</span> <span class="token punctuation">{</span><span class="token string">"desc"</span><span class="token punctuation">:</span><span class="token string">"hello world"</span><span class="token punctuation">}</span>
+<span class="hljs-comment"># 创建模型类</span>
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Item</span>(<span class="hljs-params">BaseModel</span>):</span>
+    name: <span class="hljs-built_in">str</span> = <span class="hljs-literal">None</span>
+    desction: <span class="hljs-built_in">str</span> = <span class="hljs-literal">None</span>
+    price: <span class="hljs-built_in">float</span> = <span class="hljs-literal">None</span>
+    tax : <span class="hljs-built_in">float</span> = <span class="hljs-literal">None</span>
+    tags: List[<span class="hljs-built_in">str</span>] = []
 
 
 
 
-<span class="token comment" spellcheck="true"># 获取参数</span>
-@app<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">"/items/{item_id}"</span><span class="token punctuation">,</span>response_model<span class="token operator">=</span>Item<span class="token punctuation">)</span>
-<span class="token keyword">async</span> <span class="token keyword">def</span> <span class="token function">read_item</span><span class="token punctuation">(</span>item_id<span class="token punctuation">:</span> str<span class="token punctuation">)</span><span class="token punctuation">:</span>
-    <span class="token keyword">return</span>  items<span class="token punctuation">[</span>item_id<span class="token punctuation">]</span>
-
-<span class="token comment" spellcheck="true"># @ 更新部分内容</span>
-@app<span class="token punctuation">.</span>patch<span class="token punctuation">(</span><span class="token string">"/items/{item_id}"</span><span class="token punctuation">,</span>response_model<span class="token operator">=</span>Item<span class="token punctuation">)</span>
-<span class="token keyword">async</span>  <span class="token keyword">def</span> <span class="token function">update_item</span><span class="token punctuation">(</span>item_id<span class="token punctuation">:</span> str<span class="token punctuation">,</span>item<span class="token punctuation">:</span> Item<span class="token punctuation">)</span><span class="token punctuation">:</span>
-    <span class="token comment" spellcheck="true"># 从数据库中拿出要修改的数据</span>
-    store_data <span class="token operator">=</span> items<span class="token punctuation">[</span>item_id<span class="token punctuation">]</span>
-    <span class="token keyword">print</span><span class="token punctuation">(</span>store_data<span class="token punctuation">)</span>
-    <span class="token comment" spellcheck="true"># 返回一个Item的对象</span>
-    store_model <span class="token operator">=</span> Item<span class="token punctuation">(</span><span class="token operator">**</span>store_data<span class="token punctuation">)</span>
-    <span class="token keyword">print</span><span class="token punctuation">(</span>store_model<span class="token punctuation">)</span>
-    <span class="token keyword">print</span><span class="token punctuation">(</span>type<span class="token punctuation">(</span>store_model<span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="hljs-comment"># 模拟传入的数据</span>
+items = {
+    <span class="hljs-string">"foo"</span>: {<span class="hljs-string">"name"</span>: <span class="hljs-string">"Foo"</span>, <span class="hljs-string">"price"</span>: <span class="hljs-number">50.2</span>},
+    <span class="hljs-string">"bar"</span>: {<span class="hljs-string">"name"</span>: <span class="hljs-string">"Bar"</span>, <span class="hljs-string">"description"</span>: <span class="hljs-string">"The bartenders"</span>, <span class="hljs-string">"price"</span>: <span class="hljs-number">62</span>, <span class="hljs-string">"tax"</span>: <span class="hljs-number">20.2</span>},
+    <span class="hljs-string">"baz"</span>: {<span class="hljs-string">"name"</span>: <span class="hljs-string">"Baz"</span>, <span class="hljs-string">"description"</span>: <span class="hljs-literal">None</span>, <span class="hljs-string">"price"</span>: <span class="hljs-number">50.2</span>, <span class="hljs-string">"tax"</span>: <span class="hljs-number">10.5</span>, <span class="hljs-string">"tags"</span>: []},
+}
 
 
-    <span class="token comment" spellcheck="true"># 生成新的字典并返回</span>
-    update_data <span class="token operator">=</span> item<span class="token punctuation">.</span>dict<span class="token punctuation">(</span>exclude_unset<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">)</span>
-    <span class="token keyword">print</span><span class="token punctuation">(</span>update_data<span class="token punctuation">)</span>
-    <span class="token comment" spellcheck="true">## 更新部分数据</span>
-    updated_item <span class="token operator">=</span> store_model<span class="token punctuation">.</span>copy<span class="token punctuation">(</span>update<span class="token operator">=</span>update_data<span class="token punctuation">)</span>
-    items<span class="token punctuation">[</span>item_id<span class="token punctuation">]</span> <span class="token operator">=</span> jsonable_encoder<span class="token punctuation">(</span>updated_item<span class="token punctuation">)</span>
-    <span class="token keyword">return</span> items<span class="token punctuation">[</span>item_id<span class="token punctuation">]</span>
+<span class="hljs-comment"># 传入参数</span>
+<span class="hljs-meta">@app.get("/")</span>
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">root</span>():</span>
+    <span class="hljs-keyword">return</span> {<span class="hljs-string">"desc"</span>:<span class="hljs-string">"hello world"</span>}
 
 
-</code></pre>
 
+
+<span class="hljs-comment"># 获取参数</span>
+<span class="hljs-meta">@app.get("/items/{item_id}",response_model=Item)</span>
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">read_item</span>(<span class="hljs-params">item_id: <span class="hljs-built_in">str</span></span>):</span>
+    <span class="hljs-keyword">return</span>  items[item_id]
+
+<span class="hljs-comment"># @ 更新部分内容</span>
+<span class="hljs-meta">@app.patch("/items/{item_id}",response_model=Item)</span>
+<span class="hljs-keyword">async</span>  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">update_item</span>(<span class="hljs-params">item_id: <span class="hljs-built_in">str</span>,item: Item</span>):</span>
+    <span class="hljs-comment"># 从数据库中拿出要修改的数据</span>
+    store_data = items[item_id]
+    print(store_data)
+    <span class="hljs-comment"># 返回一个Item的对象</span>
+    store_model = Item(**store_data)
+    print(store_model)
+    print(<span class="hljs-built_in">type</span>(store_model))
+
+
+    <span class="hljs-comment"># 生成新的字典并返回</span>
+    update_data = item.<span class="hljs-built_in">dict</span>(exclude_unset=<span class="hljs-literal">True</span>)
+    print(update_data)
+    <span class="hljs-comment">## 更新部分数据</span>
+    updated_item = store_model.copy(update=update_data)
+    items[item_id] = jsonable_encoder(updated_item)
+    <span class="hljs-keyword">return</span> items[item_id]
+
+
+</code></pre></div>
             </div>
             <hr>
             <div>
@@ -450,7 +450,7 @@ items <span class="token operator">=</span> <span class="token punctuation">{</s
 
   <footer class="text-center mt-5 py-3">
   <div class="footer-content">
-     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+     <a rel="nofollow noopener"><span>Hzjsea</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
   </div>
   
 

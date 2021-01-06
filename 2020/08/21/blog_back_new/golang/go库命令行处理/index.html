@@ -67,7 +67,7 @@
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
-       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
+       href="/">&nbsp;<strong>hzjsea</strong>&nbsp;</a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
             data-target="#navbarSupportedContent"
@@ -184,7 +184,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      957 字
+      938 字
     </span>
   
 
@@ -194,7 +194,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      15
+      14
        分钟
     </span>
   
@@ -250,155 +250,161 @@
 <li>不带参数标签直接接上参数值 使用os包解决</li>
 <li>带有标签的参数解析 使用flag包解决</li>
 </ul>
-<h2 id="os库"><a href="#os库" class="headerlink" title="os库"></a>os库</h2><pre class=" language-go"><code class="language-go"><span class="token keyword">package</span> main
+<h2 id="os库"><a href="#os库" class="headerlink" title="os库"></a>os库</h2><div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">package</span> main
 
-<span class="token keyword">import</span> <span class="token punctuation">(</span>
-    <span class="token string">"fmt"</span>
-    <span class="token string">"os"</span>
-<span class="token punctuation">)</span>
+<span class="hljs-keyword">import</span> (
+	<span class="hljs-string">"fmt"</span>
+	<span class="hljs-string">"os"</span>
+)
 
-<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    args <span class="token operator">:=</span> os<span class="token punctuation">.</span>Args
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>args<span class="token punctuation">)</span>
-    argsUserful <span class="token operator">:=</span> os<span class="token punctuation">.</span>Args<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">:</span><span class="token punctuation">]</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>argsUserful<span class="token punctuation">)</span>
-<span class="token punctuation">}</span></code></pre>
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+	args := os.Args
+	fmt.Println(args)
+	argsUserful := os.Args[<span class="hljs-number">1</span>:]
+	fmt.Println(argsUserful)
+}</code></pre></div>
 <p>运行<code>go run qq.go</code> 返回 <code>[/var/folders/1s/j9mtgsg14jv_xdqhrt1j42l80000gn/T/go-build977927048/b001/exe/qq] []</code><br>运行<code>go run qq.go ls</code> 返回 <code>[/var/folders/1s/j9mtgsg14jv_xdqhrt1j42l80000gn/T/go-build977927048/b001/exe/qq] [ls]</code></p>
 <h2 id="flag库"><a href="#flag库" class="headerlink" title="flag库"></a>flag库</h2><p>flag库主要是一个命令行参数的库</p>
-<h3 id="example"><a href="#example" class="headerlink" title="example"></a>example</h3><pre class=" language-go"><code class="language-go"><span class="token keyword">package</span> main
+<h3 id="example"><a href="#example" class="headerlink" title="example"></a>example</h3><div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">package</span> main
 
-<span class="token keyword">import</span> <span class="token punctuation">(</span>
-    <span class="token string">"flag"</span>
-    <span class="token string">"fmt"</span>
-    <span class="token string">"os"</span>
-<span class="token punctuation">)</span>
+<span class="hljs-keyword">import</span> (
+	<span class="hljs-string">"flag"</span>
+	<span class="hljs-string">"fmt"</span>
+	<span class="hljs-string">"os"</span>
+)
 
-<span class="token comment" spellcheck="true">// 创建变量</span>
-<span class="token keyword">var</span> <span class="token punctuation">(</span>
-    h <span class="token builtin">bool</span>
+<span class="hljs-comment">// 创建变量</span>
+<span class="hljs-keyword">var</span> (
+	h <span class="hljs-keyword">bool</span>
 
-    v<span class="token punctuation">,</span> V <span class="token builtin">bool</span>
-    t<span class="token punctuation">,</span> T <span class="token builtin">bool</span>
-    q    <span class="token operator">*</span><span class="token builtin">bool</span>
+	v, V <span class="hljs-keyword">bool</span>
+	t, T <span class="hljs-keyword">bool</span>
+	q    *<span class="hljs-keyword">bool</span>
 
-    s <span class="token builtin">string</span>
-    p <span class="token builtin">string</span>
-    c <span class="token builtin">string</span>
-    g <span class="token builtin">string</span>
-<span class="token punctuation">)</span>
+	s <span class="hljs-keyword">string</span>
+	p <span class="hljs-keyword">string</span>
+	c <span class="hljs-keyword">string</span>
+	g <span class="hljs-keyword">string</span>
+)
 
 
-<span class="token comment" spellcheck="true">// 初始化内容</span>
-<span class="token keyword">func</span> <span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    flag<span class="token punctuation">.</span><span class="token function">BoolVar</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>h<span class="token punctuation">,</span> <span class="token string">"h"</span><span class="token punctuation">,</span> <span class="token boolean">false</span><span class="token punctuation">,</span> <span class="token string">"this help"</span><span class="token punctuation">)</span>
+<span class="hljs-comment">// 初始化内容</span>
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">init</span><span class="hljs-params">()</span></span> {
+	flag.BoolVar(&h, <span class="hljs-string">"h"</span>, <span class="hljs-literal">false</span>, <span class="hljs-string">"this help"</span>)
 
-    flag<span class="token punctuation">.</span><span class="token function">BoolVar</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>v<span class="token punctuation">,</span> <span class="token string">"v"</span><span class="token punctuation">,</span> <span class="token boolean">false</span><span class="token punctuation">,</span> <span class="token string">"show version and exit"</span><span class="token punctuation">)</span>
-    flag<span class="token punctuation">.</span><span class="token function">BoolVar</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>V<span class="token punctuation">,</span> <span class="token string">"V"</span><span class="token punctuation">,</span> <span class="token boolean">false</span><span class="token punctuation">,</span> <span class="token string">"show version and configure options then exit"</span><span class="token punctuation">)</span>
+	flag.BoolVar(&v, <span class="hljs-string">"v"</span>, <span class="hljs-literal">false</span>, <span class="hljs-string">"show version and exit"</span>)
+	flag.BoolVar(&V, <span class="hljs-string">"V"</span>, <span class="hljs-literal">false</span>, <span class="hljs-string">"show version and configure options then exit"</span>)
 
-    flag<span class="token punctuation">.</span><span class="token function">BoolVar</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>t<span class="token punctuation">,</span> <span class="token string">"t"</span><span class="token punctuation">,</span> <span class="token boolean">false</span><span class="token punctuation">,</span> <span class="token string">"test configuration and exit"</span><span class="token punctuation">)</span>
-    flag<span class="token punctuation">.</span><span class="token function">BoolVar</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>T<span class="token punctuation">,</span> <span class="token string">"T"</span><span class="token punctuation">,</span> <span class="token boolean">false</span><span class="token punctuation">,</span> <span class="token string">"test configuration, dump it and exit"</span><span class="token punctuation">)</span>
+	flag.BoolVar(&t, <span class="hljs-string">"t"</span>, <span class="hljs-literal">false</span>, <span class="hljs-string">"test configuration and exit"</span>)
+	flag.BoolVar(&T, <span class="hljs-string">"T"</span>, <span class="hljs-literal">false</span>, <span class="hljs-string">"test configuration, dump it and exit"</span>)
 
-    <span class="token comment" spellcheck="true">// 另一种绑定方式</span>
-    q <span class="token operator">=</span> flag<span class="token punctuation">.</span><span class="token function">Bool</span><span class="token punctuation">(</span><span class="token string">"q"</span><span class="token punctuation">,</span> <span class="token boolean">false</span><span class="token punctuation">,</span> <span class="token string">"suppress non-error messages during configuration testing"</span><span class="token punctuation">)</span>
+	<span class="hljs-comment">// 另一种绑定方式</span>
+	q = flag.Bool(<span class="hljs-string">"q"</span>, <span class="hljs-literal">false</span>, <span class="hljs-string">"suppress non-error messages during configuration testing"</span>)
 
-    <span class="token comment" spellcheck="true">// 注意 `signal`。默认是 -s string，有了 `signal` 之后，变为 -s signal</span>
-    flag<span class="token punctuation">.</span><span class="token function">StringVar</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>s<span class="token punctuation">,</span> <span class="token string">"s"</span><span class="token punctuation">,</span> <span class="token string">""</span><span class="token punctuation">,</span> <span class="token string">"send `signal` to a master process: stop, quit, reopen, reload"</span><span class="token punctuation">)</span>
-    flag<span class="token punctuation">.</span><span class="token function">StringVar</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>p<span class="token punctuation">,</span> <span class="token string">"p"</span><span class="token punctuation">,</span> <span class="token string">"/usr/local/nginx/"</span><span class="token punctuation">,</span> <span class="token string">"set `prefix` path"</span><span class="token punctuation">)</span>
-    flag<span class="token punctuation">.</span><span class="token function">StringVar</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>c<span class="token punctuation">,</span> <span class="token string">"c"</span><span class="token punctuation">,</span> <span class="token string">"conf/nginx.conf"</span><span class="token punctuation">,</span> <span class="token string">"set configuration `file`"</span><span class="token punctuation">)</span>
-    flag<span class="token punctuation">.</span><span class="token function">StringVar</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>g<span class="token punctuation">,</span> <span class="token string">"g"</span><span class="token punctuation">,</span> <span class="token string">"conf/nginx.conf"</span><span class="token punctuation">,</span> <span class="token string">"set global `directives` out of configuration file"</span><span class="token punctuation">)</span>
+	<span class="hljs-comment">// 注意 `signal`。默认是 -s string，有了 `signal` 之后，变为 -s signal</span>
+	flag.StringVar(&s, <span class="hljs-string">"s"</span>, <span class="hljs-string">""</span>, <span class="hljs-string">"send `signal` to a master process: stop, quit, reopen, reload"</span>)
+	flag.StringVar(&p, <span class="hljs-string">"p"</span>, <span class="hljs-string">"/usr/local/nginx/"</span>, <span class="hljs-string">"set `prefix` path"</span>)
+	flag.StringVar(&c, <span class="hljs-string">"c"</span>, <span class="hljs-string">"conf/nginx.conf"</span>, <span class="hljs-string">"set configuration `file`"</span>)
+	flag.StringVar(&g, <span class="hljs-string">"g"</span>, <span class="hljs-string">"conf/nginx.conf"</span>, <span class="hljs-string">"set global `directives` out of configuration file"</span>)
 
-    <span class="token comment" spellcheck="true">// 改变默认的 Usage，flag包中的Usage 其实是一个函数类型。这里是覆盖默认函数实现，具体见后面Usage部分的分析</span>
-    flag<span class="token punctuation">.</span>Usage <span class="token operator">=</span> usage
-<span class="token punctuation">}</span>
+	<span class="hljs-comment">// 改变默认的 Usage，flag包中的Usage 其实是一个函数类型。这里是覆盖默认函数实现，具体见后面Usage部分的分析</span>
+	flag.Usage = usage
+}
 
-<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    flag<span class="token punctuation">.</span><span class="token function">Parse</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+	flag.Parse()
+	
+	<span class="hljs-keyword">if</span> h {
+		flag.Usage()
+	}
+}
 
-    <span class="token keyword">if</span> h <span class="token punctuation">{</span>
-        flag<span class="token punctuation">.</span><span class="token function">Usage</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-    <span class="token punctuation">}</span>
-<span class="token punctuation">}</span>
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">usage</span><span class="hljs-params">()</span></span>{
+	fmt.Println(os.Stderr,<span class="hljs-string">`nginx version: nginx/1.10.0</span>
+<span class="hljs-string">Usage: nginx [-hvVtTq] [-s signal] [-c filename] [-p prefix] [-g directives]</span>
+<span class="hljs-string"></span>
+<span class="hljs-string">Options:`</span>)
+	flag.PrintDefaults()
+}</code></pre></div>
 
-<span class="token keyword">func</span> <span class="token function">usage</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>os<span class="token punctuation">.</span>Stderr<span class="token punctuation">,</span><span class="token string">`nginx version: nginx/1.10.0
-Usage: nginx [-hvVtTq] [-s signal] [-c filename] [-p prefix] [-g directives]
 
-Options:`</span><span class="token punctuation">)</span>
-    flag<span class="token punctuation">.</span><span class="token function">PrintDefaults</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-<span class="token punctuation">}</span></code></pre>
 <p>一个一个来看</p>
-<pre class=" language-go"><code class="language-go"><span class="token comment" spellcheck="true">// 创建变量</span>
-<span class="token keyword">var</span> <span class="token punctuation">(</span>
-    h <span class="token builtin">bool</span>
+<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-comment"><code class="language-hljs go"><span class="hljs-comment">// 创建变量</span>
+<span class="hljs-keyword">var</span> (
+	h <span class="hljs-keyword">bool</span>
 
-    v<span class="token punctuation">,</span> V <span class="token builtin">bool</span>
-    t<span class="token punctuation">,</span> T <span class="token builtin">bool</span>
-    q    <span class="token operator">*</span><span class="token builtin">bool</span>
+	v, V <span class="hljs-keyword">bool</span>
+	t, T <span class="hljs-keyword">bool</span>
+	q    *<span class="hljs-keyword">bool</span>
 
-    s <span class="token builtin">string</span>
-    p <span class="token builtin">string</span>
-    c <span class="token builtin">string</span>
-    g <span class="token builtin">string</span>
-<span class="token punctuation">)</span></code></pre>
+	s <span class="hljs-keyword">string</span>
+	p <span class="hljs-keyword">string</span>
+	c <span class="hljs-keyword">string</span>
+	g <span class="hljs-keyword">string</span>
+)</code></pre></div>
 <p>首先这一段是创建多个零值变量，是后面用来识别命令行参数的必要内容</p>
-<pre class=" language-go"><code class="language-go">
-<span class="token comment" spellcheck="true">// 初始化内容</span>
-<span class="token keyword">func</span> <span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    flag<span class="token punctuation">.</span><span class="token function">BoolVar</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>h<span class="token punctuation">,</span> <span class="token string">"h"</span><span class="token punctuation">,</span> <span class="token boolean">false</span><span class="token punctuation">,</span> <span class="token string">"this help"</span><span class="token punctuation">)</span>
+<div class="code-wrapper"><pre class=" language-hljs go"><code class="language-hljs go">
+<span class="hljs-comment">// 初始化内容</span>
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">init</span><span class="hljs-params">()</span></span> {
+	flag.BoolVar(&h, <span class="hljs-string">"h"</span>, <span class="hljs-literal">false</span>, <span class="hljs-string">"this help"</span>)
 
-    flag<span class="token punctuation">.</span><span class="token function">BoolVar</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>v<span class="token punctuation">,</span> <span class="token string">"v"</span><span class="token punctuation">,</span> <span class="token boolean">false</span><span class="token punctuation">,</span> <span class="token string">"show version and exit"</span><span class="token punctuation">)</span>
-    flag<span class="token punctuation">.</span><span class="token function">BoolVar</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>V<span class="token punctuation">,</span> <span class="token string">"V"</span><span class="token punctuation">,</span> <span class="token boolean">false</span><span class="token punctuation">,</span> <span class="token string">"show version and configure options then exit"</span><span class="token punctuation">)</span>
+	flag.BoolVar(&v, <span class="hljs-string">"v"</span>, <span class="hljs-literal">false</span>, <span class="hljs-string">"show version and exit"</span>)
+	flag.BoolVar(&V, <span class="hljs-string">"V"</span>, <span class="hljs-literal">false</span>, <span class="hljs-string">"show version and configure options then exit"</span>)
 
-    flag<span class="token punctuation">.</span><span class="token function">BoolVar</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>t<span class="token punctuation">,</span> <span class="token string">"t"</span><span class="token punctuation">,</span> <span class="token boolean">false</span><span class="token punctuation">,</span> <span class="token string">"test configuration and exit"</span><span class="token punctuation">)</span>
-    flag<span class="token punctuation">.</span><span class="token function">BoolVar</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>T<span class="token punctuation">,</span> <span class="token string">"T"</span><span class="token punctuation">,</span> <span class="token boolean">false</span><span class="token punctuation">,</span> <span class="token string">"test configuration, dump it and exit"</span><span class="token punctuation">)</span>
+	flag.BoolVar(&t, <span class="hljs-string">"t"</span>, <span class="hljs-literal">false</span>, <span class="hljs-string">"test configuration and exit"</span>)
+	flag.BoolVar(&T, <span class="hljs-string">"T"</span>, <span class="hljs-literal">false</span>, <span class="hljs-string">"test configuration, dump it and exit"</span>)
 
-    <span class="token comment" spellcheck="true">// 另一种绑定方式</span>
-    q <span class="token operator">=</span> flag<span class="token punctuation">.</span><span class="token function">Bool</span><span class="token punctuation">(</span><span class="token string">"q"</span><span class="token punctuation">,</span> <span class="token boolean">false</span><span class="token punctuation">,</span> <span class="token string">"suppress non-error messages during configuration testing"</span><span class="token punctuation">)</span>
+	<span class="hljs-comment">// 另一种绑定方式</span>
+	q = flag.Bool(<span class="hljs-string">"q"</span>, <span class="hljs-literal">false</span>, <span class="hljs-string">"suppress non-error messages during configuration testing"</span>)
 
-    <span class="token comment" spellcheck="true">// 注意 `signal`。默认是 -s string，有了 `signal` 之后，变为 -s signal</span>
-    flag<span class="token punctuation">.</span><span class="token function">StringVar</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>s<span class="token punctuation">,</span> <span class="token string">"s"</span><span class="token punctuation">,</span> <span class="token string">""</span><span class="token punctuation">,</span> <span class="token string">"send `signal` to a master process: stop, quit, reopen, reload"</span><span class="token punctuation">)</span>
-    flag<span class="token punctuation">.</span><span class="token function">StringVar</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>p<span class="token punctuation">,</span> <span class="token string">"p"</span><span class="token punctuation">,</span> <span class="token string">"/usr/local/nginx/"</span><span class="token punctuation">,</span> <span class="token string">"set `prefix` path"</span><span class="token punctuation">)</span>
-    flag<span class="token punctuation">.</span><span class="token function">StringVar</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>c<span class="token punctuation">,</span> <span class="token string">"c"</span><span class="token punctuation">,</span> <span class="token string">"conf/nginx.conf"</span><span class="token punctuation">,</span> <span class="token string">"set configuration `file`"</span><span class="token punctuation">)</span>
-    flag<span class="token punctuation">.</span><span class="token function">StringVar</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>g<span class="token punctuation">,</span> <span class="token string">"g"</span><span class="token punctuation">,</span> <span class="token string">"conf/nginx.conf"</span><span class="token punctuation">,</span> <span class="token string">"set global `directives` out of configuration file"</span><span class="token punctuation">)</span>
+	<span class="hljs-comment">// 注意 `signal`。默认是 -s string，有了 `signal` 之后，变为 -s signal</span>
+	flag.StringVar(&s, <span class="hljs-string">"s"</span>, <span class="hljs-string">""</span>, <span class="hljs-string">"send `signal` to a master process: stop, quit, reopen, reload"</span>)
+	flag.StringVar(&p, <span class="hljs-string">"p"</span>, <span class="hljs-string">"/usr/local/nginx/"</span>, <span class="hljs-string">"set `prefix` path"</span>)
+	flag.StringVar(&c, <span class="hljs-string">"c"</span>, <span class="hljs-string">"conf/nginx.conf"</span>, <span class="hljs-string">"set configuration `file`"</span>)
+	flag.StringVar(&g, <span class="hljs-string">"g"</span>, <span class="hljs-string">"conf/nginx.conf"</span>, <span class="hljs-string">"set global `directives` out of configuration file"</span>)
 
-    <span class="token comment" spellcheck="true">// 改变默认的 Usage，flag包中的Usage 其实是一个函数类型。这里是覆盖默认函数实现，具体见后面Usage部分的分析</span>
-    flag<span class="token punctuation">.</span>Usage <span class="token operator">=</span> usage
-<span class="token punctuation">}</span></code></pre>
+	<span class="hljs-comment">// 改变默认的 Usage，flag包中的Usage 其实是一个函数类型。这里是覆盖默认函数实现，具体见后面Usage部分的分析</span>
+	flag.Usage = usage
+}</code></pre></div>
+
 <p>这一段是固定命令行参数中的内容。init() 在main() 之前执行。<br>固定参数的形式有如下两种</p>
 <ul>
-<li>使用BoolVar 或者StringVar这种格式<br>先来看看他们的源码<pre class=" language-go"><code class="language-go"><span class="token comment" spellcheck="true">// BoolVar defines a bool flag with specified name, default value, and usage string.</span>
-<span class="token comment" spellcheck="true">// The argument p points to a bool variable in which to store the value of the flag.</span>
-<span class="token keyword">func</span> <span class="token function">BoolVar</span><span class="token punctuation">(</span>p <span class="token operator">*</span><span class="token builtin">bool</span><span class="token punctuation">,</span> name <span class="token builtin">string</span><span class="token punctuation">,</span> value <span class="token builtin">bool</span><span class="token punctuation">,</span> usage <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  CommandLine<span class="token punctuation">.</span><span class="token function">Var</span><span class="token punctuation">(</span><span class="token function">newBoolValue</span><span class="token punctuation">(</span>value<span class="token punctuation">,</span> p<span class="token punctuation">)</span><span class="token punctuation">,</span> name<span class="token punctuation">,</span> usage<span class="token punctuation">)</span>
-<span class="token punctuation">}</span>
-</code></pre>
-</li>
+<li>使用BoolVar 或者StringVar这种格式<br>先来看看他们的源码<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-comment"><code class="language-hljs go"><span class="hljs-comment">// BoolVar defines a bool flag with specified name, default value, and usage string.</span>
+<span class="hljs-comment">// The argument p points to a bool variable in which to store the value of the flag.</span>
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">BoolVar</span><span class="hljs-params">(p *<span class="hljs-keyword">bool</span>, name <span class="hljs-keyword">string</span>, value <span class="hljs-keyword">bool</span>, usage <span class="hljs-keyword">string</span>)</span></span> {
+	CommandLine.Var(newBoolValue(value, p), name, usage)
+}
+
+<span class="hljs-comment">// StringVar defines a string flag with specified name, default value, and usage string.</span>
+<span class="hljs-comment">// The argument p points to a string variable in which to store the value of the flag.</span>
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">StringVar</span><span class="hljs-params">(p *<span class="hljs-keyword">string</span>, name <span class="hljs-keyword">string</span>, value <span class="hljs-keyword">string</span>, usage <span class="hljs-keyword">string</span>)</span></span> {
+	CommandLine.Var(newStringValue(value, p), name, usage)
+}
+</code></pre></div>
+接收一个bool或者String类型的函数,关键字为name ,值为value，提示为usage</li>
 </ul>
-<p>// StringVar defines a string flag with specified name, default value, and usage string.<br>// The argument p points to a string variable in which to store the value of the flag.<br>func StringVar(p *string, name string, value string, usage string) {<br>    CommandLine.Var(newStringValue(value, p), name, usage)<br>}</p>
-<pre><code>接收一个bool或者String类型的函数,关键字为name ,值为value，提示为usage
+<div class="code-wrapper"><pre class=" language-hljs go">	<span class="hljs-comment"><code class="language-hljs go">	<span class="hljs-comment">// 改变默认的 Usage，flag包中的Usage 其实是一个函数类型。这里是覆盖默认函数实现，具体见后面Usage部分的分析</span>
+	flag.Usage = usage
+}
 
-```go
-    // 改变默认的 Usage，flag包中的Usage 其实是一个函数类型。这里是覆盖默认函数实现，具体见后面Usage部分的分析
-    flag.Usage = usage
-&#125;
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+	flag.Parse()
+	
+	<span class="hljs-keyword">if</span> h {
+		flag.Usage()
+	}
+}
 
-func main() &#123;
-    flag.Parse()
-
-    if h &#123;
-        flag.Usage()
-    &#125;
-&#125;
-
-func usage()&#123;
-    fmt.Println(os.Stderr,`nginx version: nginx/1.10.0Usage: nginx [-hvVtTq] [-s signal] [-c filename] [-p prefix] [-g directives] Options:`)    
-    flag.PrintDefaults()
-&#125;</code></pre>
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">usage</span><span class="hljs-params">()</span></span>{
+	fmt.Println(os.Stderr,<span class="hljs-string">`nginx version: nginx/1.10.0Usage: nginx [-hvVtTq] [-s signal] [-c filename] [-p prefix] [-g directives] Options:`</span>)	
+	flag.PrintDefaults()
+}</code></pre></div>
 <p><code>flag.Usage</code>修改默认Usage，默认usage如下</p>
-<pre class=" language-go"><code class="language-go">Usage of <span class="token operator">/</span><span class="token keyword">var</span><span class="token operator">/</span>folders<span class="token operator">/</span>1s<span class="token operator">/</span>j9mtgsg14jv_xdqhrt1j42l80000gn<span class="token operator">/</span>T<span class="token operator">/</span><span class="token keyword">go</span><span class="token operator">-</span>build913932346<span class="token operator">/</span>b001<span class="token operator">/</span>exe<span class="token operator">/</span>flagdemo2<span class="token punctuation">:</span></code></pre>
+<div class="code-wrapper"><pre class=" language-hljs go">Usage of /<span class="hljs-keyword">var</span>/folders/<span class="hljs-number">1</span>s/j9mtgsg14jv_xdqhrt1j42l80000gn/T/<span class="hljs-keyword"><code class="language-hljs go">Usage of /<span class="hljs-keyword">var</span>/folders/<span class="hljs-number">1</span>s/j9mtgsg14jv_xdqhrt1j42l80000gn/T/<span class="hljs-keyword">go</span>-build913932346/b001/exe/flagdemo2:</code></pre></div>
 <p>修改后的usage 如下</p>
-<pre class=" language-go"><code class="language-go">Usage<span class="token punctuation">:</span> nginx <span class="token punctuation">[</span><span class="token operator">-</span>hvVtTq<span class="token punctuation">]</span> <span class="token punctuation">[</span><span class="token operator">-</span>s signal<span class="token punctuation">]</span> <span class="token punctuation">[</span><span class="token operator">-</span>c filename<span class="token punctuation">]</span> <span class="token punctuation">[</span><span class="token operator">-</span>p prefix<span class="token punctuation">]</span> <span class="token punctuation">[</span><span class="token operator">-</span>g directives<span class="token punctuation">]</span>
-Options<span class="token punctuation">:</span></code></pre>
+<div class="code-wrapper"><pre class=" language-hljs go"><code class="language-hljs go">Usage: nginx [-hvVtTq] [-s signal] [-c filename] [-p prefix] [-g directives]
+Options:</code></pre></div>
+
 <p><code>flag.Usage</code>用来解析上面初始化的内容</p>
 
             </div>
@@ -508,7 +514,7 @@ Options<span class="token punctuation">:</span></code></pre>
 
   <footer class="text-center mt-5 py-3">
   <div class="footer-content">
-     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+     <a rel="nofollow noopener"><span>Hzjsea</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
   </div>
   
 
