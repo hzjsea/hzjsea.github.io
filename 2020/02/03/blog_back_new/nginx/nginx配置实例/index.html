@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html lang="cn" data-default-color-scheme=&#34;auto&#34;>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
 
 
 
@@ -61,7 +61,7 @@
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
 
 <body>
@@ -88,7 +88,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/">
                 <i class="iconfont icon-home-fill"></i>
-                Startseite
+                首页
               </a>
             </li>
           
@@ -100,7 +100,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/archives/">
                 <i class="iconfont icon-archive-fill"></i>
-                Archiv
+                归档
               </a>
             </li>
           
@@ -112,7 +112,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/categories/">
                 <i class="iconfont icon-category-fill"></i>
-                Kategorie
+                分类
               </a>
             </li>
           
@@ -124,7 +124,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/tags/">
                 <i class="iconfont icon-tags-fill"></i>
-                Etiketten
+                标签
               </a>
             </li>
           
@@ -136,7 +136,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/about/">
                 <i class="iconfont icon-user-fill"></i>
-                Über mich
+                关于
               </a>
             </li>
           
@@ -175,7 +175,7 @@
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
       <time datetime="2020-02-03 14:03" pubdate>
-        February 3, 2020 pm
+        2020年2月3日 下午
       </time>
     </span>
   
@@ -196,7 +196,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      18
+      19
        分钟
     </span>
   
@@ -255,10 +255,10 @@
 
 
 <h1 id="nginx配置实例"><a href="#nginx配置实例" class="headerlink" title="nginx配置实例"></a>nginx配置实例</h1><h2 id="nginx配置实例–反向代理1"><a href="#nginx配置实例–反向代理1" class="headerlink" title="nginx配置实例–反向代理1"></a>nginx配置实例–反向代理1</h2><p>配置内容<br>1台Nginx代理服务器(10.0.5.233)、一个网页<br>效果: 客户机在浏览器中输入<a target="_blank" rel="noopener" href="http://www.123.com/">www.123.com</a> 由nginx代理进行转发到我们自己的网页上</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 首先 在客户机端做域名与ip的映射</span>
-<span class="hljs-built_in">echo</span> <span class="hljs-string">"10.0.5.255 www.123.com"</span> >> /etc/hosts
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 首先 在客户机端做域名与ip的映射</span>
+<span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;10.0.5.255 www.123.com&quot;</span> &gt;&gt; /etc/hosts
 <span class="hljs-comment"># 配置nginx文件 /etc/nginx/nginx.conf</span>
-server {
+server &#123;
         listen       80;
         server_name  10.0.5.233;
         root         /usr/share/nginx/html;
@@ -266,20 +266,20 @@ server {
         <span class="hljs-comment"># Load configuration files for the default server block.</span>
         include /etc/nginx/default.d/*.conf;
 
-        location / {
+        location / &#123;
            root html;
            proxy_pass http://127.0.0.1:8001;
            index index.html index.htm;
-        }
-    } 
+        &#125;
+    &#125; 
 <span class="hljs-comment"># 上面是nginx服务器的配置，表示的是监听10.0.5.233:80 将收到的请求转发到 http://127.0.0.1:8001本地端口</span>
-<span class="hljs-comment"># 当我们在浏览器输入www.123.com:80 --> 10.0.5.233:80 --> server127.0.0.1:8001</span></code></pre></div>
+<span class="hljs-comment"># 当我们在浏览器输入www.123.com:80 --&gt; 10.0.5.233:80 --&gt; server127.0.0.1:8001</span></code></pre></div>
 <h2 id="nginx配置–反向代理2"><a href="#nginx配置–反向代理2" class="headerlink" title="nginx配置–反向代理2"></a>nginx配置–反向代理2</h2><p>配置内容<br>1台Nginx代理服务器(10.0.5.233)、2个网页<br>效果: 客户机在浏览器中输入<a target="_blank" rel="noopener" href="http://www.123.com/web1/">www.123.com/web1/</a> 跳转到第一个web页面 ; 输入<a target="_blank" rel="noopener" href="http://www.123.com/web2/">www.123.com/web2/</a> 跳转到第二个web页面</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># web页面自行配置,分别是</span>
-<span class="hljs-comment"># 127.0.0.1:8080/web1/ -> web1</span>
-<span class="hljs-comment"># 127.0.0.1:8081/web2/ -> web2</span>
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># web页面自行配置,分别是</span>
+<span class="hljs-comment"># 127.0.0.1:8080/web1/ -&gt; web1</span>
+<span class="hljs-comment"># 127.0.0.1:8081/web2/ -&gt; web2</span>
 <span class="hljs-comment"># 配置nginx文件 /etc/nginx/nginx.conf</span>
-server {
+server &#123;
         listen       80;
         server_name  10.0.5.233;
         root         /usr/share/nginx/html;
@@ -288,21 +288,21 @@ server {
         include /etc/nginx/default.d/*.conf;
 
         <span class="hljs-comment"># ～ 表示后面的为正则表达式</span>
-        location ~ /web1/ {
+        location ~ /web1/ &#123;
            proxy_pass http://127.0.0.1:8080;
-        } 
-        location ~ /web2/ {
+        &#125; 
+        location ~ /web2/ &#123;
             proxy_pass http://127.0.0.1:8081;
-        }
-    }</code></pre></div>
+        &#125;
+    &#125;</code></pre></div>
 
 
 <h2 id="nginx配置–负载均衡"><a href="#nginx配置–负载均衡" class="headerlink" title="nginx配置–负载均衡"></a>nginx配置–负载均衡</h2><p>配置内容<br>1台Nginx代理服务器(10.0.5.233) 2个web服务器</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">upstream myserver {
+<div class="code-wrapper"><pre><code class="hljs bash">upstream myserver &#123;
     server 10.0.5.197:8001;
     server 10.0.5.198:8001;
-} 
-server {
+&#125; 
+server &#123;
         listen       80;
         server_name  10.0.5.233;
         root         /usr/share/nginx/html;
@@ -311,26 +311,26 @@ server {
         include /etc/nginx/default.d/*.conf;
 
         <span class="hljs-comment"># ～ 表示后面的为正则表达式</span>
-        location  / {
+        location  / &#123;
            proxy_pass http://myserver;
-        } 
-    }</code></pre></div>
+        &#125; 
+    &#125;</code></pre></div>
 <h3 id="策略："><a href="#策略：" class="headerlink" title="策略："></a>策略：</h3><ol>
 <li>默认策略为轮询<br>每个请求按时间顺序逐一分配到后端服务器，如果后端服务器down掉，能自动剔除</li>
-<li>权重策略<br>weight代表权重，权重默认为1，权重越高被分配的用户越多<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">upstream myserver {
+<li>权重策略<br>weight代表权重，权重默认为1，权重越高被分配的用户越多<div class="code-wrapper"><pre><code class="hljs bash">upstream myserver &#123;
     server 10.0.5.197:8001 weight=10;
     server 10.0.5.198:8001 weight=20;
-}</code></pre></div></li>
-<li>ip_hash策略<br>每个请求按照按访问ip的hash结果分配，每个访客固定访问一个后端服务器，可以解决session的问题<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">upstream myserver {
+&#125;</code></pre></div></li>
+<li>ip_hash策略<br>每个请求按照按访问ip的hash结果分配，每个访客固定访问一个后端服务器，可以解决session的问题<div class="code-wrapper"><pre><code class="hljs bash">upstream myserver &#123;
     ip_hash;
     server 10.0.5.197:8001;
     server 10.0.5.198:8001;
-}</code></pre></div></li>
-<li>fair策略<br>科举服务器响应时间来分配，响应的越快则优先分配<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">upstream myserver {
+&#125;</code></pre></div></li>
+<li>fair策略<br>科举服务器响应时间来分配，响应的越快则优先分配<div class="code-wrapper"><pre><code class="hljs bash">upstream myserver &#123;
     server 10.0.5.197:8001;
     server 10.0.5.198:8001;
     fair;
-}</code></pre></div>
+&#125;</code></pre></div>
 
 </li>
 </ol>
@@ -339,7 +339,7 @@ server {
 <li>静态文件放在静态资源管理服务器上，动态资源放在另外的服务器上，有Nginx做转发</li>
 <li>静态文件和动态资源一起发布在同一个服务器上，由nginx做分离</li>
 </ul>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">server {
+<div class="code-wrapper"><pre><code class="hljs bash">server &#123;
         listen       80;
         server_name  10.0.5.233;
         root         /usr/share/nginx/html;
@@ -347,19 +347,19 @@ server {
         <span class="hljs-comment"># Load configuration files for the default server block.</span>
         include /etc/nginx/default.d/*.conf;
 
-        location /image/ {
+        location /image/ &#123;
            root /image/;  <span class="hljs-comment"># 静态文件路径</span>
            index index.html index.htm;
-        }
-        location /data/ {
+        &#125;
+        location /data/ &#123;
             root /data/;  <span class="hljs-comment"># 静态文件路径</span>
             autoindex on; <span class="hljs-comment"># 自动列出目录</span>
-        }
-    }</code></pre></div>
+        &#125;
+    &#125;</code></pre></div>
 
 <h2 id="nginx配置实例–高可用集群"><a href="#nginx配置实例–高可用集群" class="headerlink" title="nginx配置实例–高可用集群"></a>nginx配置实例–高可用集群</h2><p>keepalived+nginx<br>配置需求：<br>master机器(main nginx) slave机器(backup nginx)  两台web服务器做轮询负载均衡 、 一个虚拟IP+4个机器IP</p>
 <p>nginx活性检测脚本</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-meta"><code class="language-hljs bash"><span class="hljs-meta">#!/bin/bash</span>
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-meta">#!/bin/bash</span>
 <span class="hljs-comment"># 检测nginx进程数量</span>
 status=`ps -C nginx --no-header | wc -l`
 <span class="hljs-comment"># 如果没有进程，则重启之后再次检测nginx数量,如果依旧没有则杀掉所有keepalived的进程</span>
@@ -372,17 +372,17 @@ status=`ps -C nginx --no-header | wc -l`
 <span class="hljs-keyword">fi</span></code></pre></div>
 
 <p>keepalived配置,根据主机与从机的不通，只需要修改几个参数即可<br>router_id 、 state 、interface 、 virtual_router_id 、priority</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 安装keepalived</span>
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 安装keepalived</span>
 yum install keepalived
 <span class="hljs-comment"># 修改配置文件</span>
 ! Configuration File <span class="hljs-keyword">for</span> keepalived
 
-global_defs {
-   notification_email {
+global_defs &#123;
+   notification_email &#123;
      acassen@firewall.loc
      failover@firewall.loc
      sysadmin@firewall.loc
-   }
+   &#125;
    notification_email_from Alexandre.Cassen@firewall.loc
    smtp_server 192.168.200.1
    smtp_connect_timeout 30
@@ -391,38 +391,38 @@ global_defs {
    vrrp_strict
    vrrp_garp_interval 0
    vrrp_gna_interval 0
-}
+&#125;
 
 <span class="hljs-comment"># nginx活性检测</span>
-vrrp_script chk_http_port{
-    script <span class="hljs-string">"/usr/local/src/nginx_check.sh"</span>
+vrrp_script chk_http_port&#123;
+    script <span class="hljs-string">&quot;/usr/local/src/nginx_check.sh&quot;</span>
 
     interval 2 <span class="hljs-comment"># 检测脚本执行的间隔</span>
 
     weight 2 <span class="hljs-comment"># 权重</span>
-}
+&#125;
 
-vrrp_instance VI_1 {
+vrrp_instance VI_1 &#123;
     state BACKUP   <span class="hljs-comment"># DS-backup机器 BACKUP MASTER</span>
     interface eno1 
     virtual_router_id 51
     priority 10  <span class="hljs-comment"># 优先级别</span>
     advert_int 1
-    authentication {
+    authentication &#123;
         auth_type PASS
         auth_pass 1111
-    }
-    virtual_ipaddress {
+    &#125;
+    virtual_ipaddress &#123;
         10.0.5.196/20
-    }
-}</code></pre></div>
+    &#125;
+&#125;</code></pre></div>
 
 <p>nginx配置</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">upstream myserver {
+<div class="code-wrapper"><pre><code class="hljs bash">upstream myserver &#123;
     server 10.0.5.197:8001;
     server 10.0.5.198:8001;
-} 
-server {
+&#125; 
+server &#123;
         listen       80;
         server_name  10.0.5.196;
         root         /usr/share/nginx/html;
@@ -431,10 +431,10 @@ server {
         include /etc/nginx/default.d/*.conf;
 
         <span class="hljs-comment"># ～ 表示后面的为正则表达式</span>
-        location  / {
+        location  / &#123;
            proxy_pass http://myserver;
-        } 
-    }</code></pre></div>
+        &#125; 
+    &#125;</code></pre></div>
 <p><img src="http://img.noback.top/2020-02-04-15-41-24.png" srcset="/img/loading.gif" alt="2020-02-04-15-41-24"><br>当用户访问10.0.5.196:80端口的时候，由于196是vip 此时正在master主机上面，因此他会读取master主机上面的nginx配置文件，后续因为nginx的负载均衡(轮询的配置)，当你不断的访问10.0.5.196时，页面会在10.0.5.197:8001 与10.0.5.198:8001直接来回的跳动</p>
 <h2 id="nginx原理"><a href="#nginx原理" class="headerlink" title="nginx原理"></a>nginx原理</h2><p><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/av68136734?p=17">https://www.bilibili.com/video/av68136734?p=17</a><br><a target="_blank" rel="noopener" href="https://www.cnblogs.com/dongye95/p/11096785.html#_label0_0">https://www.cnblogs.com/dongye95/p/11096785.html#_label0_0</a></p>
 
@@ -470,7 +470,7 @@ server {
                       <a href="/2020/02/03/blog_back_new/nginx/nginx%E5%9F%BA%E7%A1%80/">
                         <i class="iconfont icon-arrowleft"></i>
                         <span class="hidden-mobile">nginx基础</span>
-                        <span class="visible-mobile">Vorheriger</span>
+                        <span class="visible-mobile">上一篇</span>
                       </a>
                     
                   </article>
@@ -479,7 +479,7 @@ server {
                     
                       <a href="/2020/01/29/blog_back_new/shell/linux%E6%96%87%E6%9C%AC%E7%BC%96%E8%BE%91%E4%B8%89%E5%89%91%E5%AE%A2/">
                         <span class="hidden-mobile">linux文本编辑三剑客</span>
-                        <span class="visible-mobile">Nächster</span>
+                        <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
                     
@@ -496,7 +496,7 @@ server {
     
       <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
         <div id="toc">
-  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
   <div class="toc-body" id="toc-body"></div>
 </div>
 
@@ -522,7 +522,7 @@ server {
   <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">Suchen</h4>
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
         <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -531,7 +531,7 @@ server {
         <div class="md-form mb-5">
           <input type="text" id="local-search-input" class="form-control validate">
           <label data-error="x" data-success="v"
-                 for="local-search-input">Stichwort</label>
+                 for="local-search-input">关键词</label>
         </div>
         <div class="list-group" id="local-search-result"></div>
       </div>

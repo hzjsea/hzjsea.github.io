@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html lang="cn" data-default-color-scheme=&#34;auto&#34;>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
 
 
 
@@ -61,7 +61,7 @@
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
 
 <body>
@@ -88,7 +88,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/">
                 <i class="iconfont icon-home-fill"></i>
-                Startseite
+                首页
               </a>
             </li>
           
@@ -100,7 +100,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/archives/">
                 <i class="iconfont icon-archive-fill"></i>
-                Archiv
+                归档
               </a>
             </li>
           
@@ -112,7 +112,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/categories/">
                 <i class="iconfont icon-category-fill"></i>
-                Kategorie
+                分类
               </a>
             </li>
           
@@ -124,7 +124,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/tags/">
                 <i class="iconfont icon-tags-fill"></i>
-                Etiketten
+                标签
               </a>
             </li>
           
@@ -136,7 +136,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/about/">
                 <i class="iconfont icon-user-fill"></i>
-                Über mich
+                关于
               </a>
             </li>
           
@@ -175,7 +175,7 @@
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
       <time datetime="2020-02-07 15:38" pubdate>
-        February 7, 2020 pm
+        2020年2月7日 下午
       </time>
     </span>
   
@@ -196,7 +196,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      23
+      24
        分钟
     </span>
   
@@ -247,7 +247,7 @@
 
 <h1 id="docker-swarm"><a href="#docker-swarm" class="headerlink" title="docker-swarm"></a>docker-swarm</h1><p><img src="http://img.noback.top/2020-02-07-16-06-40.png" srcset="/img/loading.gif" alt="2020-02-07-16-06-40"></p>
 <p>准备机器 三台centos7 IP分别为10.0.5.233 10.0.5.196 10.0.6.5<br>其中一台作为manager管理机，其他作为work随从机</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 声明管理机</span>
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 声明管理机</span>
 [root@dev ~]<span class="hljs-comment"># docker swarm init --advertise-addr=10.0.6.55</span>
 Swarm initialized: current node (yi6s9lbwc402zvv8384wiras7) is now a manager.
 
@@ -257,13 +257,13 @@ To add a worker to this swarm, run the following <span class="hljs-built_in">com
 
 To add a manager to this swarm, run <span class="hljs-string">&#x27;docker swarm join-token manager&#x27;</span> and follow the instructions.</code></pre></div>
 <p>会给出一段信息，其中node节点的token值，以及声明node节点的方法</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 声明node机</span>
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 声明node机</span>
 [root@196 hzj]<span class="hljs-comment"># docker swarm join --token SWMTKN-1-4tnasb86t2w9bppugns4v8f9vjuf635kkhfkt341lnd18sqf4c-9m7jfe2u493h3wpr24z7audiy 10.0.6.55:2377</span>
 This node joined a swarm as a worker.
 [root:~]<span class="hljs-comment">#  docker swarm join --token SWMTKN-1-4tnasb86t2w9bppugns4v8f9vjuf635kkhfkt341lnd18sqf4c-9m7jfe2u493h3wpr24z7audiy 10.0.6.55:2377</span>
 This node joined a swarm as a worker.</code></pre></div>
 <p>可以在manager上查看node节点</p>
-<div class="code-wrapper"><pre class=" language-hljs bash">[root@manager55 ~]<span class="hljs-comment"><code class="language-hljs bash">[root@manager55 ~]<span class="hljs-comment"># docker node ls</span>
+<div class="code-wrapper"><pre><code class="hljs bash">[root@manager55 ~]<span class="hljs-comment"># docker node ls</span>
 ID                            HOSTNAME            STATUS              AVAILABILITY        MANAGER STATUS      ENGINE VERSION
 yi6s9lbwc402zvv8384wiras7 *   manager55           Ready               Active              Leader              19.03.5
 wxq2hk8ozhv1x6fdm7wplra8t     work196             Ready               Active                                  19.03.5
@@ -271,8 +271,8 @@ zq7zgn8o9ozyqipw5rofub6m5     work233             Ready               Active    
 
 
 <h2 id="docker-swarm使用"><a href="#docker-swarm使用" class="headerlink" title="docker-swarm使用"></a>docker-swarm使用</h2><p>可以把docker-swarm开成一个集群的搭建，首先是建立一个service的集群，在service创建多个work进行工作<br><img src="http://img.noback.top/2020-02-09-16-32-24.png" srcset="/img/loading.gif" alt="2020-02-09-16-32-24"></p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 创建服务 manager</span>
-docker service create --name demo busybox sh -c <span class="hljs-string">"while true;do sleep 3600;done"</span>
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 创建服务 manager</span>
+docker service create --name demo busybox sh -c <span class="hljs-string">&quot;while true;do sleep 3600;done&quot;</span>
 <span class="hljs-comment"># 服务查看</span>
 [root@manager55 ~]<span class="hljs-comment"># docker service  ls</span>
 ID                  NAME                MODE                REPLICAS            IMAGE               PORTS
@@ -284,18 +284,18 @@ ID                  NAME                IMAGE               NODE                
 rbl6tfetw25m        demo.1              busybox:latest      manager55        Running             Running 3 hours ago</code></pre></div>
 
 <h2 id="水平扩展"><a href="#水平扩展" class="headerlink" title="水平扩展"></a>水平扩展</h2><p>docker-swarm可以水平扩展容器</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment">#水平扩展5个 </span>
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment">#水平扩展5个 </span>
 [root@manager55 ~]<span class="hljs-comment"># docker service scale demo=5</span>
 demo scaled to 5
 overall progress: 5 out of 5 tasks
-1/5: running   [==================================================>]
-2/5: running   [==================================================>]
-3/5: running   [==================================================>]
-4/5: running   [==================================================>]
-5/5: running   [==================================================>]
+1/5: running   [==================================================&gt;]
+2/5: running   [==================================================&gt;]
+3/5: running   [==================================================&gt;]
+4/5: running   [==================================================&gt;]
+5/5: running   [==================================================&gt;]
 verify: Waiting 4 seconds to verify that tasks are stable...</code></pre></div>
 <p>将5个service同配置部署到其他机器上面，分配的方式为平均分配</p>
-<div class="code-wrapper"><pre class=" language-hljs bash">[root@manager55 ~]<span class="hljs-comment"><code class="language-hljs bash">[root@manager55 ~]<span class="hljs-comment"># docker service ps demo</span>
+<div class="code-wrapper"><pre><code class="hljs bash">[root@manager55 ~]<span class="hljs-comment"># docker service ps demo</span>
 ID                  NAME                IMAGE               NODE                DESIRED STATE       CURRENT STATE                 ERROR
                       PORTS
 rbl6tfetw25m        demo.1              busybox:latest      manager55           Running             Running 3 hours ago
@@ -304,28 +304,28 @@ uc3tn3coc8q3        demo.2              busybox:latest      work233             
 
 dy1tza747g3w        demo.3              busybox:latest      work233             Running             Running 56 seconds ago
 
-mqbt0myozide         \_ demo.3          busybox:latest      work196             Shutdown            Rejected about a minute ago   <span class="hljs-string">"No such imag</span>
-<span class="hljs-string">e: busybox:latest…"</span>
-mtb3x9mabokn         \_ demo.3          busybox:latest      work196             Shutdown            Rejected about a minute ago   <span class="hljs-string">"No such image: busybox:latest…"</span>
+mqbt0myozide         \_ demo.3          busybox:latest      work196             Shutdown            Rejected about a minute ago   <span class="hljs-string">&quot;No such imag</span>
+<span class="hljs-string">e: busybox:latest…&quot;</span>
+mtb3x9mabokn         \_ demo.3          busybox:latest      work196             Shutdown            Rejected about a minute ago   <span class="hljs-string">&quot;No such image: busybox:latest…&quot;</span>
 yyq86fjpf0i4        demo.4              busybox:latest      manager55           Running             Running 50 seconds ago
-mo12k2g7gx1s         \_ demo.4          busybox:latest      work196             Shutdown            Rejected about a minute ago   <span class="hljs-string">"No such image: busybox:latest…"</span>
-cqpsqtvfeo9y         \_ demo.4          busybox:latest      work196             Shutdown            Rejected about a minute ago   <span class="hljs-string">"No such image: busybox:latest…"</span>
-t8z0vqc0kow7         \_ demo.4          busybox:latest      work196             Shutdown            Rejected about a minute ago   <span class="hljs-string">"No such image: busybox:latest…"</span>
+mo12k2g7gx1s         \_ demo.4          busybox:latest      work196             Shutdown            Rejected about a minute ago   <span class="hljs-string">&quot;No such image: busybox:latest…&quot;</span>
+cqpsqtvfeo9y         \_ demo.4          busybox:latest      work196             Shutdown            Rejected about a minute ago   <span class="hljs-string">&quot;No such image: busybox:latest…&quot;</span>
+t8z0vqc0kow7         \_ demo.4          busybox:latest      work196             Shutdown            Rejected about a minute ago   <span class="hljs-string">&quot;No such image: busybox:latest…&quot;</span>
 fojfst6j5pa2        demo.5              busybox:latest      manager55           Running             Running about a minute ago</code></pre></div>
 <p>这里在部署的过程中发生了一个错误，work196的机器因为没有配置好DNS，导致无法从网上拉去busybox的镜像文件，于是发生了这样的情况<br>首先work196收到请求去拉去busybox创建容器，但是没有DNS拉去不了，报错。根据自动分配的设置，将任务追加分配给其他work或者manage机器部署</p>
 <p>部署之后，我们可以在work233的机器上查看起来的容器</p>
-<div class="code-wrapper"><pre class=" language-hljs bash">[root@work233]:~<span class="hljs-comment"><code class="language-hljs bash">[root@work233]:~<span class="hljs-comment"># docker ps</span>
+<div class="code-wrapper"><pre><code class="hljs bash">[root@work233]:~<span class="hljs-comment"># docker ps</span>
 CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS               NAMES
-837720ea43f8        busybox:latest      <span class="hljs-string">"sh -c &#x27;while true;d…"</span>   17 minutes ago      Up 17 minutes                           demo.3.dy1tza747g3whbv2zuasgc6s5
-69d08591e255        busybox:latest      <span class="hljs-string">"sh -c &#x27;while true;d…"</span>   17 minutes ago      Up 17 minutes                           demo.2.uc3tn3coc8q39izu3to58z9or</code></pre></div>
+837720ea43f8        busybox:latest      <span class="hljs-string">&quot;sh -c &#x27;while true;d…&quot;</span>   17 minutes ago      Up 17 minutes                           demo.3.dy1tza747g3whbv2zuasgc6s5
+69d08591e255        busybox:latest      <span class="hljs-string">&quot;sh -c &#x27;while true;d…&quot;</span>   17 minutes ago      Up 17 minutes                           demo.2.uc3tn3coc8q39izu3to58z9or</code></pre></div>
 
 <p><font color='red'>manager机器查看work机器工作状态</font></p>
-<div class="code-wrapper"><pre class=" language-hljs bash">[root@manager55 ~]<span class="hljs-comment"><code class="language-hljs bash">[root@manager55 ~]<span class="hljs-comment"># docker service  ls</span>
+<div class="code-wrapper"><pre><code class="hljs bash">[root@manager55 ~]<span class="hljs-comment"># docker service  ls</span>
 ID                  NAME                MODE                REPLICAS            IMAGE               PORTS
 ob8p30vdkhnn        demo                replicated          5/5                 busybox:latest</code></pre></div>
 <p>其中REPLICAS 5/5 前者表示当前一共运行多少了容器，后者表示一共复制了多少了容器</p>
 <p>尝试关闭work233机器上的一台容器，查看工作状态</p>
-<div class="code-wrapper"><pre class=" language-hljs bash">[root@work233 ~]:~<span class="hljs-comment"><code class="language-hljs bash">[root@work233 ~]:~<span class="hljs-comment"># docker rm -f 837720ea43f8</span>
+<div class="code-wrapper"><pre><code class="hljs bash">[root@work233 ~]:~<span class="hljs-comment"># docker rm -f 837720ea43f8</span>
 837720ea43f8 
 [root@manager55 ~]<span class="hljs-comment"># docker service ls</span>
 ID                  NAME                MODE                REPLICAS            IMAGE               PORTS
@@ -336,24 +336,24 @@ ID                  NAME                MODE                REPLICAS            
 ob8p30vdkhnn        demo                replicated          5/5                 busybox:latest</code></pre></div>
 <p>在manger55上面发现运行机器已经被done了一台，但是一段时间后(不久，相当于重开一台机器的时间)会刷新成5/5 因为scale会检测并重新部署一台新的上去</p>
 <h2 id="水平扩展后容器的网络问题"><a href="#水平扩展后容器的网络问题" class="headerlink" title="水平扩展后容器的网络问题"></a>水平扩展后容器的网络问题</h2><p>之前的docker容器全部都是运行在本地的，于是容器与容器之间是可以通过使用名叫docker0的bridge进行互相通信，但是使用docker swarm之后，容器已经分布式的部署在了多台ip的机器上面，他们的网络是否互相通信呢</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 查看work233 上的 ip</span>
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 查看work233 上的 ip</span>
 [work233]:~<span class="hljs-comment"># docker exec 69d08591e255  ip a</span>
-1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue qlen 1000
+1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue qlen 1000
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
     inet 127.0.0.1/8 scope host lo
        valid_lft forever preferred_lft forever
-266: eth0@if267: <BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN> mtu 1500 qdisc noqueue
+266: eth0@if267: &lt;BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN&gt; mtu 1500 qdisc noqueue
     link/ether 02:42:ac:11:00:02 brd ff:ff:ff:ff:ff:ff
     inet 172.17.0.2/16 brd 172.17.255.255 scope global eth0
        valid_lft forever preferred_lft forever
 
 <span class="hljs-comment"># 查看manager 其中一个容器的ip</span>
 [root@manager55 ~]<span class="hljs-comment"># docker exec 0c154e8873c7 ip a</span>
-1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue qlen 1000
+1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue qlen 1000
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
     inet 127.0.0.1/8 scope host lo
        valid_lft forever preferred_lft forever
-17: eth0@if18: <BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN> mtu 1500 qdisc noqueue
+17: eth0@if18: &lt;BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN&gt; mtu 1500 qdisc noqueue
     link/ether 02:42:ac:11:00:04 brd ff:ff:ff:ff:ff:ff
     inet 172.17.0.4/16 brd 172.17.255.255 scope global eth0
        valid_lft forever preferred_lft forever
@@ -369,7 +369,7 @@ ping: bad address <span class="hljs-string">&#x27;69d08591e255&#x27;</span>
 </code></pre></div>
 <p><font color='red'>Q: 如果解决ping容器名不可达的问题</font><br>这是因为在service启动和部署的过程中没有做link，在之后可以部署的过程中指定自己的网桥new-bridge,达到互相通信的效果<br>具体可以看<br><a target="_blank" rel="noopener" href="https://blog.noback.top/posts/20783356/#linux%E7%9A%84%E7%BD%91%E7%BB%9C%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4namesapce">https://blog.noback.top/posts/20783356/#linux%E7%9A%84%E7%BD%91%E7%BB%9C%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4namesapce</a></p>
 <h2 id="关于服务查看"><a href="#关于服务查看" class="headerlink" title="关于服务查看"></a>关于服务查看</h2><p>只能在manager上进行查看，不能在node机上查看，会报错</p>
-<div class="code-wrapper"><pre class=" language-hljs bash">[root@work196]<span class="hljs-comment"><code class="language-hljs bash">[root@work196]<span class="hljs-comment"># docker service ls</span>
+<div class="code-wrapper"><pre><code class="hljs bash">[root@work196]<span class="hljs-comment"># docker service ls</span>
 Error response from daemon: This node is not a swarm manager. Worker nodes can<span class="hljs-string">&#x27;t be used to view or modify cluster state. Please run this comma</span>
 <span class="hljs-string">nd on a manager node or promote the current node to a manager. </span></code></pre></div>
             </div>
@@ -404,7 +404,7 @@ Error response from daemon: This node is not a swarm manager. Worker nodes can<s
                       <a href="/2020/02/09/blog_back_new/docker/docker-swarm-wordpress/">
                         <i class="iconfont icon-arrowleft"></i>
                         <span class="hidden-mobile">docker-swarm-wordpress</span>
-                        <span class="visible-mobile">Vorheriger</span>
+                        <span class="visible-mobile">上一篇</span>
                       </a>
                     
                   </article>
@@ -413,7 +413,7 @@ Error response from daemon: This node is not a swarm manager. Worker nodes can<s
                     
                       <a href="/2020/02/07/blog_back_new/docker/docker-compose/">
                         <span class="hidden-mobile">docker-compose</span>
-                        <span class="visible-mobile">Nächster</span>
+                        <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
                     
@@ -430,7 +430,7 @@ Error response from daemon: This node is not a swarm manager. Worker nodes can<s
     
       <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
         <div id="toc">
-  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
   <div class="toc-body" id="toc-body"></div>
 </div>
 
@@ -456,7 +456,7 @@ Error response from daemon: This node is not a swarm manager. Worker nodes can<s
   <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">Suchen</h4>
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
         <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -465,7 +465,7 @@ Error response from daemon: This node is not a swarm manager. Worker nodes can<s
         <div class="md-form mb-5">
           <input type="text" id="local-search-input" class="form-control validate">
           <label data-error="x" data-success="v"
-                 for="local-search-input">Stichwort</label>
+                 for="local-search-input">关键词</label>
         </div>
         <div class="list-group" id="local-search-result"></div>
       </div>

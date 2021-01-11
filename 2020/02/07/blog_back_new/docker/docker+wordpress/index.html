@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html lang="cn" data-default-color-scheme=&#34;auto&#34;>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
 
 
 
@@ -61,7 +61,7 @@
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
 
 <body>
@@ -88,7 +88,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/">
                 <i class="iconfont icon-home-fill"></i>
-                Startseite
+                首页
               </a>
             </li>
           
@@ -100,7 +100,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/archives/">
                 <i class="iconfont icon-archive-fill"></i>
-                Archiv
+                归档
               </a>
             </li>
           
@@ -112,7 +112,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/categories/">
                 <i class="iconfont icon-category-fill"></i>
-                Kategorie
+                分类
               </a>
             </li>
           
@@ -124,7 +124,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/tags/">
                 <i class="iconfont icon-tags-fill"></i>
-                Etiketten
+                标签
               </a>
             </li>
           
@@ -136,7 +136,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/about/">
                 <i class="iconfont icon-user-fill"></i>
-                Über mich
+                关于
               </a>
             </li>
           
@@ -175,7 +175,7 @@
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
       <time datetime="2020-02-07 13:26" pubdate>
-        February 7, 2020 pm
+        2020年2月7日 下午
       </time>
     </span>
   
@@ -186,7 +186,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      197 字
+      200 字
     </span>
   
 
@@ -243,14 +243,14 @@
 <a id="more"></a>
 
 <h1 id="docker搭建wordpress"><a href="#docker搭建wordpress" class="headerlink" title="docker搭建wordpress"></a>docker搭建wordpress</h1><ol>
-<li>安装mysql、wordpress镜像<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">docker pull mysql
+<li>安装mysql、wordpress镜像<div class="code-wrapper"><pre><code class="hljs bash">docker pull mysql
 docker pyll wordpress</code></pre></div></li>
-<li>创建mysql<br>需要做一些初始化的配置，建议在dockerhub上查看<br><a target="_blank" rel="noopener" href="https://hub.docker.com/_/mysql">https://hub.docker.com/_/mysql</a><div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">docker run -it -d --name mysql \
+<li>创建mysql<br>需要做一些初始化的配置，建议在dockerhub上查看<br><a target="_blank" rel="noopener" href="https://hub.docker.com/_/mysql">https://hub.docker.com/_/mysql</a><div class="code-wrapper"><pre><code class="hljs bash">docker run -it -d --name mysql \
 -v db_data:/var/lib/mysql \
 -e MYSQL_ROOT_PASSWORD=root \
 -e MYSQL_DATABASE=wordpress \
 mysql:8.0</code></pre></div></li>
-<li>创建wordpress<br>需要连接数据库与暴露端口转换<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">docker run -d -e WORDPRESS_DB_HOST=mysql:3306 \
+<li>创建wordpress<br>需要连接数据库与暴露端口转换<div class="code-wrapper"><pre><code class="hljs bash">docker run -d -e WORDPRESS_DB_HOST=mysql:3306 \
 --name wordpress \
 --link mysql  \
 -e WORDPRESS_DB_USER=root \
@@ -259,7 +259,7 @@ mysql:8.0</code></pre></div></li>
 wordpress</code></pre></div>
 <font color='red'>未成功，一直提醒数据库错误，不知道为什么? 是因为mysql没有加–default-auth=mysql_native_password这个嘛</font></li>
 </ol>
-<h2 id="使用docker-compose搭建wordpress"><a href="#使用docker-compose搭建wordpress" class="headerlink" title="使用docker-compose搭建wordpress"></a>使用docker-compose搭建wordpress</h2><div class="code-wrapper"><pre class=" language-hljs bash">version: <span class="hljs-string"><code class="language-hljs bash">version: <span class="hljs-string">"3"</span>
+<h2 id="使用docker-compose搭建wordpress"><a href="#使用docker-compose搭建wordpress" class="headerlink" title="使用docker-compose搭建wordpress"></a>使用docker-compose搭建wordpress</h2><div class="code-wrapper"><pre><code class="hljs bash">version: <span class="hljs-string">&quot;3&quot;</span>
 services:
 
    db:
@@ -282,7 +282,7 @@ services:
        - db
      image: wordpress:latest
      ports:
-       - <span class="hljs-string">"8000:80"</span>
+       - <span class="hljs-string">&quot;8000:80&quot;</span>
      restart: always
      environment:
        WORDPRESS_DB_HOST: db:3306
@@ -322,7 +322,7 @@ volumes:
                       <a href="/2020/02/07/blog_back_new/docker/docker-compose/">
                         <i class="iconfont icon-arrowleft"></i>
                         <span class="hidden-mobile">docker-compose</span>
-                        <span class="visible-mobile">Vorheriger</span>
+                        <span class="visible-mobile">上一篇</span>
                       </a>
                     
                   </article>
@@ -331,7 +331,7 @@ volumes:
                     
                       <a href="/2020/02/06/blog_back_new/docker/docker%E7%BD%91%E7%BB%9C/">
                         <span class="hidden-mobile">docker网络</span>
-                        <span class="visible-mobile">Nächster</span>
+                        <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
                     
@@ -348,7 +348,7 @@ volumes:
     
       <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
         <div id="toc">
-  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
   <div class="toc-body" id="toc-body"></div>
 </div>
 
@@ -374,7 +374,7 @@ volumes:
   <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">Suchen</h4>
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
         <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -383,7 +383,7 @@ volumes:
         <div class="md-form mb-5">
           <input type="text" id="local-search-input" class="form-control validate">
           <label data-error="x" data-success="v"
-                 for="local-search-input">Stichwort</label>
+                 for="local-search-input">关键词</label>
         </div>
         <div class="list-group" id="local-search-result"></div>
       </div>

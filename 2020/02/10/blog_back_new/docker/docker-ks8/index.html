@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html lang="cn" data-default-color-scheme=&#34;auto&#34;>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
 
 
 
@@ -61,7 +61,7 @@
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
 
 <body>
@@ -88,7 +88,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/">
                 <i class="iconfont icon-home-fill"></i>
-                Startseite
+                首页
               </a>
             </li>
           
@@ -100,7 +100,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/archives/">
                 <i class="iconfont icon-archive-fill"></i>
-                Archiv
+                归档
               </a>
             </li>
           
@@ -112,7 +112,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/categories/">
                 <i class="iconfont icon-category-fill"></i>
-                Kategorie
+                分类
               </a>
             </li>
           
@@ -124,7 +124,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/tags/">
                 <i class="iconfont icon-tags-fill"></i>
-                Etiketten
+                标签
               </a>
             </li>
           
@@ -136,7 +136,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/about/">
                 <i class="iconfont icon-user-fill"></i>
-                Über mich
+                关于
               </a>
             </li>
           
@@ -175,7 +175,7 @@
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
       <time datetime="2020-02-10 03:55" pubdate>
-        February 10, 2020 am
+        2020年2月10日 凌晨
       </time>
     </span>
   
@@ -186,7 +186,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      1.1k 字
+      2.4k 字
     </span>
   
 
@@ -196,7 +196,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      18
+      43
        分钟
     </span>
   
@@ -251,17 +251,17 @@
 
 <h1 id="docker-k8s"><a href="#docker-k8s" class="headerlink" title="docker-k8s"></a>docker-k8s</h1><h2 id="安装k8s及其管理工具"><a href="#安装k8s及其管理工具" class="headerlink" title="安装k8s及其管理工具"></a>安装k8s及其管理工具</h2><p>一些需要准备的环境</p>
 <ul>
-<li>关闭防火墙<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">systemctl stop firewalld
+<li>关闭防火墙<div class="code-wrapper"><pre><code class="hljs bash">systemctl stop firewalld
 systemctl <span class="hljs-built_in">disable</span> firewalld</code></pre></div></li>
-<li>禁用selinux<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">setenforce 0
+<li>禁用selinux<div class="code-wrapper"><pre><code class="hljs bash">setenforce 0
 sed -i <span class="hljs-string">&#x27;s/SELINUX=permissive/SELINUX=disabled/&#x27;</span> /etc/sysconfig/selinux</code></pre></div></li>
-<li>关闭swap<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">swapoff -a
-<span class="hljs-built_in">echo</span> <span class="hljs-string">"vm.swappiness = 0"</span>>> /etc/sysctl.conf</code></pre></div>
-安装k8s <div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">
+<li>关闭swap<div class="code-wrapper"><pre><code class="hljs bash">swapoff -a
+<span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;vm.swappiness = 0&quot;</span>&gt;&gt; /etc/sysctl.conf</code></pre></div>
+安装k8s <div class="code-wrapper"><pre><code class="hljs bash">
 
 <span class="hljs-comment"># 国外镜像</span>
 <span class="hljs-comment"># 这里的eof会被屏蔽掉所以我在这里加了注释。让他能够完整的显示</span>
-<span class="hljs-comment"># cat << EOF > /etc/yum.repos.d/kubernetes.repo</span>
+<span class="hljs-comment"># cat &lt;&lt; EOF &gt; /etc/yum.repos.d/kubernetes.repo</span>
 [kubernetes]
 name=Kubernetes
 baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
@@ -273,7 +273,7 @@ gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg
 EOF
 
 <span class="hljs-comment"># 国内镜像</span>
-<span class="hljs-comment"># cat <<EOF > /etc/yum.repos.d/kubernetes.repo</span>
+<span class="hljs-comment"># cat &lt;&lt;EOF &gt; /etc/yum.repos.d/kubernetes.repo</span>
 [kubernetes]
 name=Kubernetes
 baseurl=https://mirrors.aliyun.com/kubernetes/yum/repos/kubernetes-el7-x86_64/
@@ -293,20 +293,20 @@ yum install -y kubelet kubeadm kubectl</code></pre></div>
 </li>
 </ul>
 <h2 id="k8s单节点环境-minikube"><a href="#k8s单节点环境-minikube" class="headerlink" title="k8s单节点环境 minikube"></a>k8s单节点环境 minikube</h2><ol>
-<li>检查Linux是否支持虚拟化<div class="code-wrapper"><pre class=" language-hljs bash">grep -E --color <span class="hljs-string"><code class="language-hljs bash">grep -E --color <span class="hljs-string">&#x27;vmx|svm&#x27;</span> /proc/cpuinfo
+<li>检查Linux是否支持虚拟化<div class="code-wrapper"><pre><code class="hljs bash">grep -E --color <span class="hljs-string">&#x27;vmx|svm&#x27;</span> /proc/cpuinfo
 
 <span class="hljs-comment"># 有两种情况</span>
 <span class="hljs-comment"># 如果不支持虚拟化则显示为空</span>
 <span class="hljs-comment"># 如果支持虚拟化则会显示具体内容，如下</span>
 [root@work196 ~]<span class="hljs-comment"># grep -E --color &#x27;vmx|svm&#x27; /proc/cpuinfo</span>
 flags           : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc arch_perfmo
-n pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf eagerfpu pni pclmulqdq dtes64 monitor ds_cpl  ------> here   ----->  vmx <------- smx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc
+n pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf eagerfpu pni pclmulqdq dtes64 monitor ds_cpl  ------&gt; here   -----&gt;  vmx &lt;------- smx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc
 _deadline_timer aes xsave avx f16c rdrand lahf_lm abm epb invpcid_single ssbd ibrs ibpb stibp tpr_shadow vnmi flexpriority ept vpid fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid xsaveo
 pt dtherm ida arat pln pts md_clear spec_ctrl intel_stibp flush_l1d
 </code></pre></div></li>
-<li>在linux上直接安装minikube<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 \
-  && chmod +x minikube</code></pre></div></li>
-<li>启动minikube创建一个k8s单节点集群<div class="code-wrapper"><pre class=" language-hljs bash">minikube start <span class="hljs-comment"><code class="language-hljs bash">minikube start <span class="hljs-comment"># 这里可能会出现一个问题， 没有指定虚拟机，</span>
+<li>在linux上直接安装minikube<div class="code-wrapper"><pre><code class="hljs bash">curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 \
+  &amp;&amp; chmod +x minikube</code></pre></div></li>
+<li>启动minikube创建一个k8s单节点集群<div class="code-wrapper"><pre><code class="hljs bash">minikube start <span class="hljs-comment"># 这里可能会出现一个问题， 没有指定虚拟机，</span>
 [root@ops ~]<span class="hljs-comment"># minikube start</span>
 😄  minikube v1.7.3 on Centos 7.2.1511
 💣  Unable to determine a default driver to use. Try specifying --vm-driver, or see https://minikube.sigs.k8s.io/docs/st
@@ -330,26 +330,26 @@ minikube start --vm-driver=none
 
 </li>
 </ol>
-<h3 id="可能会出现的错误"><a href="#可能会出现的错误" class="headerlink" title="可能会出现的错误"></a>可能会出现的错误</h3><div class="code-wrapper"><pre class=" language-hljs bash">[root@ops ~]<span class="hljs-comment"><code class="language-hljs bash">[root@ops ~]<span class="hljs-comment"># minikube start --vm-driver=none</span>
+<h3 id="可能会出现的错误"><a href="#可能会出现的错误" class="headerlink" title="可能会出现的错误"></a>可能会出现的错误</h3><div class="code-wrapper"><pre><code class="hljs bash">[root@ops ~]<span class="hljs-comment"># minikube start --vm-driver=none</span>
 😄  minikube v1.7.3 on Centos 7.2.1511
 ✨  Using the none driver based on user configuration
 ⌛  Reconfiguring existing host ...
-🔄  Starting existing none VM <span class="hljs-keyword">for</span> <span class="hljs-string">"minikube"</span> ...
+🔄  Starting existing none VM <span class="hljs-keyword">for</span> <span class="hljs-string">&quot;minikube&quot;</span> ...
 ℹ️   OS release is CentOS Linux 7 (Core)
 🐳  Preparing Kubernetes v1.17.3 on Docker 19.03.6 ...
 🚀  Launching Kubernetes ...
 
-💣  Error starting cluster: init failed. output: <span class="hljs-string">"-- stdout --\n[init] Using Kubernetes version: v1.17.3\n[preflight] Running pre-flight checks\n\n-- /stdout --\n** stderr ** \nW0225 12:50:34</span>
+💣  Error starting cluster: init failed. output: <span class="hljs-string">&quot;-- stdout --\n[init] Using Kubernetes version: v1.17.3\n[preflight] Running pre-flight checks\n\n-- /stdout --\n** stderr ** \nW0225 12:50:34</span>
 <span class="hljs-string">.116477   31929 validation.go:28] Cannot validate kube-proxy config - no validator is available\nW0225 12:50:34.116548   31929 validation.go:28] Cannot validate kubelet config - no validator</span>
-<span class="hljs-string">is available\n\t[WARNING Service-Docker]: docker service is not enabled, please run &#x27;systemctl enable docker.service&#x27;\n\t[WARNING IsDockerSystemdCheck]: detected \"cgroupfs\" as the Docker cg</span>
-<span class="hljs-string">roup driver. The recommended driver is \"systemd\". Please follow the guide at https://kubernetes.io/docs/setup/cri/\n\t[WARNING Hostname]: hostname \"ops.novalocal\" could not be reached\n\t</span>
-<span class="hljs-string">[WARNING Hostname]: hostname \"ops.novalocal\": lookup ops.novalocal on 114.114.114.114:53: no such host\n\t[WARNING Service-Kubelet]: kubelet service is not enabled, please run &#x27;systemctl en</span>
+<span class="hljs-string">is available\n\t[WARNING Service-Docker]: docker service is not enabled, please run &#x27;systemctl enable docker.service&#x27;\n\t[WARNING IsDockerSystemdCheck]: detected \&quot;cgroupfs\&quot; as the Docker cg</span>
+<span class="hljs-string">roup driver. The recommended driver is \&quot;systemd\&quot;. Please follow the guide at https://kubernetes.io/docs/setup/cri/\n\t[WARNING Hostname]: hostname \&quot;ops.novalocal\&quot; could not be reached\n\t</span>
+<span class="hljs-string">[WARNING Hostname]: hostname \&quot;ops.novalocal\&quot;: lookup ops.novalocal on 114.114.114.114:53: no such host\n\t[WARNING Service-Kubelet]: kubelet service is not enabled, please run &#x27;systemctl en</span>
 <span class="hljs-string">able kubelet.service&#x27;\nerror execution phase preflight: [preflight] Some fatal errors occurred:\n\t[ERROR FileContent--proc-sys-net-bridge-bridge-nf-call-iptables]: /proc/sys/net/bridge/bridg</span>
 <span class="hljs-string">e-nf-call-iptables contents are not set to 1\n[preflight] If you know what you are doing, you can make a check non-fatal with `--ignore-preflight-errors=...`\nTo see the stack trace of this e</span>
-<span class="hljs-string">rror execute with --v=5 or higher\n\n** /stderr **"</span>: /bin/bash -c <span class="hljs-string">"sudo env PATH=/var/lib/minikube/binaries/v1.17.3:<span class="hljs-variable">$PATH</span> kubeadm init --config /var/tmp/minikube/kubeadm.yaml  --ignore-prefli</span>
+<span class="hljs-string">rror execute with --v=5 or higher\n\n** /stderr **&quot;</span>: /bin/bash -c <span class="hljs-string">&quot;sudo env PATH=/var/lib/minikube/binaries/v1.17.3:<span class="hljs-variable">$PATH</span> kubeadm init --config /var/tmp/minikube/kubeadm.yaml  --ignore-prefli</span>
 <span class="hljs-string">ght-errors=DirAvailable--etc-kubernetes-manifests,DirAvailable--var-lib-minikube,DirAvailable--var-lib-minikube-etcd,FileAvailable--etc-kubernetes-manifests-kube-scheduler.yaml,FileAvailable-</span>
 <span class="hljs-string">-etc-kubernetes-manifests-kube-apiserver.yaml,FileAvailable--etc-kubernetes-manifests-kube-controller-manager.yaml,FileAvailable--etc-kubernetes-manifests-etcd.yaml,Port-10250,Swap,SystemVeri</span>
-<span class="hljs-string">fication"</span>: <span class="hljs-built_in">exit</span> status 1
+<span class="hljs-string">fication&quot;</span>: <span class="hljs-built_in">exit</span> status 1
 stdout:
 [init] Using Kubernetes version: v1.17.3
 [preflight] Running pre-flight checks
@@ -358,9 +358,9 @@ stderr:
 W0225 12:50:34.116477   31929 validation.go:28] Cannot validate kube-proxy config - no validator is available
 W0225 12:50:34.116548   31929 validation.go:28] Cannot validate kubelet config - no validator is available
         [WARNING Service-Docker]: docker service is not enabled, please run <span class="hljs-string">&#x27;systemctl enable docker.service&#x27;</span>
-        [WARNING IsDockerSystemdCheck]: detected <span class="hljs-string">"cgroupfs"</span> as the Docker cgroup driver. The recommended driver is <span class="hljs-string">"systemd"</span>. Please follow the guide at https://kubernetes.io/docs/setup/cri/
-        [WARNING Hostname]: hostname <span class="hljs-string">"ops.novalocal"</span> could not be reached
-        [WARNING Hostname]: hostname <span class="hljs-string">"ops.novalocal"</span>: lookup ops.novalocal on 114.114.114.114:53: no such host
+        [WARNING IsDockerSystemdCheck]: detected <span class="hljs-string">&quot;cgroupfs&quot;</span> as the Docker cgroup driver. The recommended driver is <span class="hljs-string">&quot;systemd&quot;</span>. Please follow the guide at https://kubernetes.io/docs/setup/cri/
+        [WARNING Hostname]: hostname <span class="hljs-string">&quot;ops.novalocal&quot;</span> could not be reached
+        [WARNING Hostname]: hostname <span class="hljs-string">&quot;ops.novalocal&quot;</span>: lookup ops.novalocal on 114.114.114.114:53: no such host
         [WARNING Service-Kubelet]: kubelet service is not enabled, please run <span class="hljs-string">&#x27;systemctl enable kubelet.service&#x27;</span>
 error execution phase preflight: [preflight] Some fatal errors occurred:
         [ERROR FileContent--proc-sys-net-bridge-bridge-nf-call-iptables]: /proc/sys/net/bridge/bridge-nf-call-iptables contents are not <span class="hljs-built_in">set</span> to 1
@@ -371,15 +371,15 @@ To see the stack trace of this error execute with --v=5 or higher
 😿  minikube is exiting due to an error. If the above message is not useful, open an issue:
 👉  https://github.com/kubernetes/minikube/issues/new/choose</code></pre></div>
 <p>这里报错说是/proc/sys/net/bridge/bridge-nf-call-iptables没有设置1<br>解决方法</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-built_in">echo</span> <span class="hljs-string"><code class="language-hljs bash"><span class="hljs-built_in">echo</span> <span class="hljs-string">"1"</span> > /proc/sys/net/bridge/bridge-nf-call-iptables</code></pre></div>
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;1&quot;</span> &gt; /proc/sys/net/bridge/bridge-nf-call-iptables</code></pre></div>
 
 <p><font color='red'>minikube搭建的单节点的过程中会需要一些时间，可能就卡着不动了</font></p>
 <p>安装完成</p>
-<div class="code-wrapper"><pre class=" language-hljs bash">[root@ops ~]<span class="hljs-comment"><code class="language-hljs bash">[root@ops ~]<span class="hljs-comment"># minikube start --vm-driver=none</span>
+<div class="code-wrapper"><pre><code class="hljs bash">[root@ops ~]<span class="hljs-comment"># minikube start --vm-driver=none</span>
 😄  minikube v1.7.3 on Centos 7.2.1511
 ✨  Using the none driver based on user configuration
 ⌛  Reconfiguring existing host ...
-🏃  Using the running none <span class="hljs-string">"minikube"</span> VM ...
+🏃  Using the running none <span class="hljs-string">&quot;minikube&quot;</span> VM ...
 ℹ️   OS release is CentOS Linux 7 (Core)
 🐳  Preparing Kubernetes v1.17.3 on Docker 19.03.6 ...
 🚀  Launching Kubernetes ...
@@ -398,12 +398,12 @@ To see the stack trace of this error execute with --v=5 or higher
     ▪ sudo chown -R <span class="hljs-variable">$USER</span> <span class="hljs-variable">$HOME</span>/.kube <span class="hljs-variable">$HOME</span>/.minikube
 
 💡  This can also be <span class="hljs-keyword">done</span> automatically by setting the env var CHANGE_MINIKUBE_NONE_USER=<span class="hljs-literal">true</span>
-🏄  Done! kubectl is now configured to use <span class="hljs-string">"minikube"</span></code></pre></div>
+🏄  Done! kubectl is now configured to use <span class="hljs-string">&quot;minikube&quot;</span></code></pre></div>
 
 <p><font color='red'>使用minikub ssh 进入容器，如果你是在Linux机器上的还，是无法使用minikub ssh 登陆的，因为你已经在minikue节点上了</font></p>
 <h2 id="使用k8s搭建多节点集群"><a href="#使用k8s搭建多节点集群" class="headerlink" title="使用k8s搭建多节点集群"></a>使用k8s搭建多节点集群</h2><p>机器分配<br>10.0.6.55 master<br>10.0.5.233 node1<br>10.0.5.196 node2</p>
 <p>kubeadm init on master node</p>
-<div class="code-wrapper"><pre class=" language-hljs bash">sudo kubeadm init --pod-network-cidr 172.100.0.0/16 --apiserver-advertise-address 192.168.205.120  <span class="hljs-comment"><code class="language-hljs bash">sudo kubeadm init --pod-network-cidr 172.100.0.0/16 --apiserver-advertise-address 192.168.205.120  <span class="hljs-comment"># 192.168.205.120 is master node ip</span>
+<div class="code-wrapper"><pre><code class="hljs bash">sudo kubeadm init --pod-network-cidr 172.100.0.0/16 --apiserver-advertise-address 192.168.205.120  <span class="hljs-comment"># 192.168.205.120 is master node ip</span>
 
 <span class="hljs-comment"># result</span>
 [addons] Applied essential addon: CoreDNS
@@ -418,7 +418,7 @@ To start using your cluster, you need to run the following as a regular user:
   sudo chown $(id -u):$(id -g) <span class="hljs-variable">$HOME</span>/.kube/config
 
 You should now deploy a pod network to the cluster.
-Run <span class="hljs-string">"kubectl apply -f [podnetwork].yaml"</span> with one of the options listed at:
+Run <span class="hljs-string">&quot;kubectl apply -f [podnetwork].yaml&quot;</span> with one of the options listed at:
   https://kubernetes.io/docs/concepts/cluster-administration/addons/
 
 Then you can join any number of worker nodes by running the following on each as root:
@@ -426,11 +426,11 @@ Then you can join any number of worker nodes by running the following on each as
 kubeadm join 10.0.6.55:6443 --token dbw4qc.ey3dpkozmv8yb15t \
     --discovery-token-ca-cert-hash sha256:b1c47bc371709d90c6c381e6f3c7c9c034a7dcbfc585b18260016d480aab24a8</code></pre></div>
 <p>继续运行</p>
-<div class="code-wrapper"><pre class=" language-hljs bash">mkdir -p <span class="hljs-variable"><code class="language-hljs bash">mkdir -p <span class="hljs-variable">$HOME</span>/.kube
+<div class="code-wrapper"><pre><code class="hljs bash">mkdir -p <span class="hljs-variable">$HOME</span>/.kube
   sudo cp -i /etc/kubernetes/admin.conf <span class="hljs-variable">$HOME</span>/.kube/config
   sudo chown $(id -u):$(id -g) <span class="hljs-variable">$HOME</span>/.kube/config</code></pre></div>
 <p>检查pod </p>
-<div class="code-wrapper"><pre class=" language-hljs bash">[root@manager55 ~]<span class="hljs-comment"><code class="language-hljs bash">[root@manager55 ~]<span class="hljs-comment"># kubectl get pod --all-namespaces</span>
+<div class="code-wrapper"><pre><code class="hljs bash">[root@manager55 ~]<span class="hljs-comment"># kubectl get pod --all-namespaces</span>
 NAMESPACE     NAME                                READY   STATUS    RESTARTS   AGE
 kube-system   coredns-6955765f44-2d7b4            0/1     Pending   0          7m34s   <span class="hljs-comment"># 这两个是网络插件后面安装</span>
 kube-system   coredns-6955765f44-hmg9g            0/1     Pending   0          7m34s
@@ -440,9 +440,9 @@ kube-system   kube-controller-manager-manager55   1/1     Running   0          7
 kube-system   kube-proxy-v8dxm                    1/1     Running   0          7m34s
 kube-system   kube-scheduler-manager55            1/1     Running   0          7m49s</code></pre></div>
 <p>安装网络插件</p>
-<div class="code-wrapper"><pre class=" language-hljs bash">kubectl apply -f <span class="hljs-string">&quot;https://cloud.weave.works/k8s/net?k8s-version=<span class="hljs-subst"><code class="language-hljs bash">kubectl apply -f <span class="hljs-string">&quot;https://cloud.weave.works/k8s/net?k8s-version=<span class="hljs-subst">$(kubectl version | base64 | tr -d &#x27;\n&#x27;)</span>"</span></code></pre></div>
+<div class="code-wrapper"><pre><code class="hljs bash">kubectl apply -f <span class="hljs-string">&quot;https://cloud.weave.works/k8s/net?k8s-version=<span class="hljs-subst">$(kubectl version | base64 | tr -d &#x27;\n&#x27;)</span>&quot;</span></code></pre></div>
 <p>检查网络插件</p>
-<div class="code-wrapper"><pre class=" language-hljs bash">[root@manager55 ~]<span class="hljs-comment"><code class="language-hljs bash">[root@manager55 ~]<span class="hljs-comment"># kubectl get pod --all-namespaces</span>
+<div class="code-wrapper"><pre><code class="hljs bash">[root@manager55 ~]<span class="hljs-comment"># kubectl get pod --all-namespaces</span>
 NAMESPACE     NAME                                READY   STATUS    RESTARTS   AGE
 kube-system   coredns-6955765f44-2d7b4            1/1     Running   0          9m1s
 kube-system   coredns-6955765f44-hmg9g            1/1     Running   0          9m1s
@@ -454,10 +454,10 @@ kube-system   kube-scheduler-manager55            1/1     Running   0          9
 kube-system   weave-net-bf5jp                     2/2     Running   0          42s</code></pre></div>
 
 <p>将其他node机器加入到master主机群下面</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">kubeadm join 10.0.6.55:6443 --token dbw4qc.ey3dpkozmv8yb15t \
+<div class="code-wrapper"><pre><code class="hljs bash">kubeadm join 10.0.6.55:6443 --token dbw4qc.ey3dpkozmv8yb15t \
     --discovery-token-ca-cert-hash sha256:b1c47bc371709d90c6c381e6f3c7c9c034a7dcbfc585b18260016d480aab24a8</code></pre></div>
 <p>在master主机上查看node节点加入情况</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 加入node 前</span>
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 加入node 前</span>
 [root@manager55 ~]<span class="hljs-comment"># kubectl get nodes</span>
 NAME        STATUS   ROLES    AGE   VERSION
 manager55   Ready    master   11m   v1.17.2 
@@ -465,12 +465,12 @@ manager55   Ready    master   11m   v1.17.2
 [root@manager55 ~]<span class="hljs-comment"># kubectl get nodes</span>
 NAME        STATUS   ROLES    AGE   VERSION
 manager55   Ready    master   60m   v1.17.2
-work196     Ready    <none>   34m   v1.17.2
-work233     Ready    <none>   15m   v1.17.2</code></pre></div>
+work196     Ready    &lt;none&gt;   34m   v1.17.2
+work233     Ready    &lt;none&gt;   15m   v1.17.2</code></pre></div>
 
 
 <h2 id="构建docker-k8s系统环境脚本"><a href="#构建docker-k8s系统环境脚本" class="headerlink" title="构建docker+k8s系统环境脚本"></a>构建docker+k8s系统环境脚本</h2><p><font color='red'>centos7版本</font></p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment">#/bin/sh</span>
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment">#/bin/sh</span>
 
 <span class="hljs-comment"># install some tools</span>
 sudo yum install -y vim telnet bind-utils wget
@@ -484,7 +484,7 @@ sh get-docker.sh
 <span class="hljs-keyword">then</span>·
     sudo groupadd docker;
 <span class="hljs-keyword">else</span>
-    <span class="hljs-built_in">echo</span> <span class="hljs-string">"docker user group already exists"</span>
+    <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;docker user group already exists&quot;</span>
 <span class="hljs-keyword">fi</span>
 
 sudo gpasswd -a <span class="hljs-variable">$USER</span> docker
@@ -496,7 +496,7 @@ rm -rf get-docker.sh
 sudo sed -i <span class="hljs-string">&#x27;s/PasswordAuthentication no/PasswordAuthentication yes/g&#x27;</span> /etc/ssh/sshd_config
 sudo systemctl restart sshd
 
-sudo bash -c <span class="hljs-string">&#x27;cat <<EOF > /etc/yum.repos.d/kubernetes.repo</span>
+sudo bash -c <span class="hljs-string">&#x27;cat &lt;&lt;EOF &gt; /etc/yum.repos.d/kubernetes.repo</span>
 <span class="hljs-string">[kubernetes]</span>
 <span class="hljs-string">name=Kubernetes</span>
 <span class="hljs-string">baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64</span>
@@ -513,7 +513,7 @@ sudo setenforce 0
 <span class="hljs-comment"># install kubeadm, kubectl, and kubelet.</span>
 sudo yum install -y kubelet kubeadm kubectl
 
-sudo bash -c <span class="hljs-string">&#x27;cat <<EOF >  /etc/sysctl.d/k8s.conf</span>
+sudo bash -c <span class="hljs-string">&#x27;cat &lt;&lt;EOF &gt;  /etc/sysctl.d/k8s.conf</span>
 <span class="hljs-string">net.bridge.bridge-nf-call-ip6tables = 1</span>
 <span class="hljs-string">net.bridge.bridge-nf-call-iptables = 1</span>
 <span class="hljs-string">net.ipv4.ip_forward=1</span>
@@ -530,10 +530,10 @@ systemctl <span class="hljs-built_in">enable</span> kubelet.service</code></pre>
 
 
 <h2 id="使用kubectl"><a href="#使用kubectl" class="headerlink" title="使用kubectl"></a>使用kubectl</h2><p>在linux下面使用</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 查看补足帮助，里面会给出一些各个环境的补足帮助</span>
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 查看补足帮助，里面会给出一些各个环境的补足帮助</span>
 kubectl  completion  -h
 <span class="hljs-comment"># linux下的补足</span>
-<span class="hljs-built_in">source</span> <(kubectl completion bash)</code></pre></div>
+<span class="hljs-built_in">source</span> &lt;(kubectl completion bash)</code></pre></div>
             </div>
             <hr>
             <div>
@@ -566,7 +566,7 @@ kubectl  completion  -h
                       <a href="/2020/02/10/blog_back_new/docker/k8s%E5%B8%B8%E8%A7%81%E9%94%99%E8%AF%AF/">
                         <i class="iconfont icon-arrowleft"></i>
                         <span class="hidden-mobile">k8s常见错误</span>
-                        <span class="visible-mobile">Vorheriger</span>
+                        <span class="visible-mobile">上一篇</span>
                       </a>
                     
                   </article>
@@ -575,7 +575,7 @@ kubectl  completion  -h
                     
                       <a href="/2020/02/09/blog_back_new/docker/docker-swarm-wordpress/">
                         <span class="hidden-mobile">docker-swarm-wordpress</span>
-                        <span class="visible-mobile">Nächster</span>
+                        <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
                     
@@ -592,7 +592,7 @@ kubectl  completion  -h
     
       <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
         <div id="toc">
-  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
   <div class="toc-body" id="toc-body"></div>
 </div>
 
@@ -618,7 +618,7 @@ kubectl  completion  -h
   <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">Suchen</h4>
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
         <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -627,7 +627,7 @@ kubectl  completion  -h
         <div class="md-form mb-5">
           <input type="text" id="local-search-input" class="form-control validate">
           <label data-error="x" data-success="v"
-                 for="local-search-input">Stichwort</label>
+                 for="local-search-input">关键词</label>
         </div>
         <div class="list-group" id="local-search-result"></div>
       </div>

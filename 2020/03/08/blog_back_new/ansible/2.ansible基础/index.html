@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html lang="cn" data-default-color-scheme=&#34;auto&#34;>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
 
 
 
@@ -61,7 +61,7 @@
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
 
 <body>
@@ -88,7 +88,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/">
                 <i class="iconfont icon-home-fill"></i>
-                Startseite
+                首页
               </a>
             </li>
           
@@ -100,7 +100,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/archives/">
                 <i class="iconfont icon-archive-fill"></i>
-                Archiv
+                归档
               </a>
             </li>
           
@@ -112,7 +112,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/categories/">
                 <i class="iconfont icon-category-fill"></i>
-                Kategorie
+                分类
               </a>
             </li>
           
@@ -124,7 +124,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/tags/">
                 <i class="iconfont icon-tags-fill"></i>
-                Etiketten
+                标签
               </a>
             </li>
           
@@ -136,7 +136,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/about/">
                 <i class="iconfont icon-user-fill"></i>
-                Über mich
+                关于
               </a>
             </li>
           
@@ -175,7 +175,7 @@
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
       <time datetime="2020-03-08 19:46" pubdate>
-        March 8, 2020 pm
+        2020年3月8日 晚上
       </time>
     </span>
   
@@ -186,7 +186,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      2.7k 字
+      2.9k 字
     </span>
   
 
@@ -196,7 +196,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      38
+      41
        分钟
     </span>
   
@@ -244,22 +244,22 @@
 </ol>
 <h2 id="ansible的两种形式"><a href="#ansible的两种形式" class="headerlink" title="ansible的两种形式"></a>ansible的两种形式</h2><p>ansible面对不同的使用场景，有不同的形式<br>一种是ad-hoc command的形式<br>另一种是ansible-playbook的形式</p>
 <h2 id="使用ad-hoc-command"><a href="#使用ad-hoc-command" class="headerlink" title="使用ad-hoc command"></a>使用ad-hoc command</h2><p>常用的两种形式<br>直接在命令行中指定ip,-m 指定模块</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">ansible 192.168.20.1 -m ping 
+<div class="code-wrapper"><pre><code class="hljs bash">ansible 192.168.20.1 -m ping 
 ansible 192.168.20.1,192.168.20.2 -m ping</code></pre></div>
 <p>使用自定义清单的形式</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-built_in">echo</span> <span class="hljs-string"><code class="language-hljs bash"><span class="hljs-built_in">echo</span> <span class="hljs-string">"192.168.20.1 ansible_ssh_pass=upyun123 ansible_ssh_user=root"</span>  >> xx
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;192.168.20.1 ansible_ssh_pass=upyun123 ansible_ssh_user=root&quot;</span>  &gt;&gt; xx
 ansible -i xx all -m ping -k</code></pre></div>
 
-<h2 id="发送秘钥到指定机器"><a href="#发送秘钥到指定机器" class="headerlink" title="发送秘钥到指定机器"></a>发送秘钥到指定机器</h2><div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">ssh-copy-id -i /root/.ssh/id_rsa.pub root@10.0.5.233</code></pre></div>
+<h2 id="发送秘钥到指定机器"><a href="#发送秘钥到指定机器" class="headerlink" title="发送秘钥到指定机器"></a>发送秘钥到指定机器</h2><div class="code-wrapper"><pre><code class="hljs bash">ssh-copy-id -i /root/.ssh/id_rsa.pub root@10.0.5.233</code></pre></div>
 <p>他这里会把迷钥发到对端机器上的known_hosts上面</p>
 <h2 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h2><p>安装完成ansible后，在/etc/ansible 下面会有如下几个文件</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">total 24
+<div class="code-wrapper"><pre><code class="hljs bash">total 24
 -rw-r--r--. 1 root root 19179 Jan 30  2018 ansible.cfg
 -rw-r--r--. 1 root root  1016 Jan 30  2018 hosts
 drwxr-xr-x. 2 root root     6 Jan 30  2018 roles</code></pre></div>
 
 <ul>
-<li><code>/etc/ansible/ansible.cfg</code> 配置文件<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">local_tmp是本地的执行指令
+<li><code>/etc/ansible/ansible.cfg</code> 配置文件<div class="code-wrapper"><pre><code class="hljs bash">local_tmp是本地的执行指令
 remote_tmp是远程的执行指令
 当用户使用ansible控制被控端执行指令的时候，他会先将内容放在local_tmp文件中，然后上传到被控端并生成remote_tmp上执行。执行完成之后会删除这两个tmp文件
 library = /usr/share/my_modules/ 库存放地址
@@ -268,12 +268,12 @@ sudo_user = root 默认sudo 用户
 ask_sudo_pass = True  每次执行ansible是否询问ssh密码
 ask_pass = True
 remote_port = 22
-host_key_checking = False 检查对应服务器的host_key ----->建议取消注释</code></pre></div></li>
+host_key_checking = False 检查对应服务器的host_key -----&gt;建议取消注释</code></pre></div></li>
 <li><code>/etc/ansible/roles</code> 存放角色的地方，跟ansible-playbook有关</li>
 <li><code>/etc/ansible/hosts</code> 主机清单，也可以自定义文件，用<code>-i</code> 指定就行了</li>
 </ul>
 <h2 id="主机清单-1"><a href="#主机清单-1" class="headerlink" title="主机清单"></a>主机清单</h2><p>同上所讲，主机清单可以使用ansible自带的，也可以使用自己创建，在命令行中使用-i指定<br>主机清单写法</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 单台机器</span>
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 单台机器</span>
 mail.example.com
 <span class="hljs-comment"># 声明端口</span>
 mail.example1.com:5506
@@ -288,7 +288,7 @@ two.example.com
 three.example.com
 
 <span class="hljs-comment"># 声明用户 密码 连接方式 指定秘药 别名 </span>
-mail.example3.com ansible_ssh_user=root ansible_ssh_pass=passwd ansible_connection=ssh ansible_ssh_private_key_file=<span class="hljs-string">"~/.ssh/id_rsa"</span>
+mail.example3.com ansible_ssh_user=root ansible_ssh_pass=passwd ansible_connection=ssh ansible_ssh_private_key_file=<span class="hljs-string">&quot;~/.ssh/id_rsa&quot;</span>
 
 <span class="hljs-comment"># 把一个组作为另外一个组的成员</span>
 [atlanta]
@@ -312,7 +312,7 @@ southwest
 northwest</code></pre></div>
 
 <h2 id="命令"><a href="#命令" class="headerlink" title="命令"></a>命令</h2><h3 id="ansible-doc-说明文档"><a href="#ansible-doc-说明文档" class="headerlink" title="ansible-doc 说明文档"></a>ansible-doc 说明文档</h3><p>ansible-doc [options] [module..]<br>-a 显示所有模块的文档 参数尽量放在单引号里面<br>-l –list 列出可用模块<br>-s –snippet xxx 显示xxx模块的playbook片段</p>
-<h3 id="ansible命令"><a href="#ansible命令" class="headerlink" title="ansible命令"></a>ansible命令</h3><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 列出指定组别的host列表</span>
+<h3 id="ansible命令"><a href="#ansible命令" class="headerlink" title="ansible命令"></a>ansible命令</h3><div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 列出指定组别的host列表</span>
 ansible appsevr --list-hosts
 <span class="hljs-comment"># 列出所有列表的host</span>
 ansible -i xx  all --list-hosts
@@ -324,11 +324,11 @@ ansible 192.168.0.1,192.168.0.2 -m ping
 <span class="hljs-comment"># 多组别批量执行(逻辑或关系,合并，A和B所有)</span>
 ansible websevr:appsevr -m ping      
 (逻辑与关系,区分,在A中,也在B中)
-<span class="hljs-comment"># ansible "websevr:&appsevr" -m ping</span>
+<span class="hljs-comment"># ansible &quot;websevr:&amp;appsevr&quot; -m ping</span>
 (逻辑非,在A中不在B中,此处必须要用单引号)
 <span class="hljs-comment"># ansible &#x27;websevr:!appsevr&#x27; -m ping </span>
 
-ansible <host-pattern> [-m module_name] [-a args]
+ansible &lt;host-pattern&gt; [-m module_name] [-a args]
 --version 显示版本
 -m module 指定模板,默认为<span class="hljs-built_in">command</span>
 -v 详细过程 -vv -vvv更详细
@@ -344,7 +344,7 @@ ansible <host-pattern> [-m module_name] [-a args]
 
 
 <h2 id="模块"><a href="#模块" class="headerlink" title="模块"></a>模块</h2><p>由于Ansible的模块过多，将近有1378个模块数量,但是每个模块的介绍以及使用方法都存放在/usr/bin/ansible-doc当中</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 查看当前ansible模块</span>
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 查看当前ansible模块</span>
 ansible-doc -l 
 <span class="hljs-comment"># ansible-doc的使用方法</span>
 ansible-doc [options] [module..]
@@ -356,7 +356,7 @@ ansible -m <span class="hljs-built_in">command</span> <span class="hljs-comment"
 ansible-doc -s git</code></pre></div>
 
 <h3 id="command"><a href="#command" class="headerlink" title="command"></a>command</h3><p>在command中,我们可以创建文件，但是对于文件的操作,有一个专门的file模块</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 创建一个文件</span>
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 创建一个文件</span>
 ansible -m <span class="hljs-built_in">command</span> -a <span class="hljs-string">&#x27;mkdir \data&#x27;</span>
 <span class="hljs-comment"># 查看文件是否创建成功</span>
 ansible -m <span class="hljs-built_in">command</span> -a <span class="hljs-string">&#x27;ls -al \data&#x27;</span>
@@ -364,23 +364,23 @@ ansible -m <span class="hljs-built_in">command</span> -a <span class="hljs-strin
 ansible-doc <span class="hljs-built_in">command</span></code></pre></div>
 
 <h3 id="shell"><a href="#shell" class="headerlink" title="shell"></a>shell</h3><p>如果-a 后带的参数中出现 $ &lt; &gt; | ;  &amp; 等字符，command是不支持的，需要用到shell 模块</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 输出主机名字</span>
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 输出主机名字</span>
 ansible 192.168.1.3 -m shell -a <span class="hljs-string">&#x27;echo $HOSTNAME&#x27;</span></code></pre></div>
 
 <h3 id="script"><a href="#script" class="headerlink" title="script"></a>script</h3><p>既然ansible可以对多台主机进行批量的操作，那往往我们会遇到一个场景，即需要我们在多台主机上执行一个脚本，这个场景下我们有两个方法:<br>1.将脚本文件复制到多台主机上后,调用ansible使用<br>2.使用script模块，仅在控制端存在脚本文件即可</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 方法一,先将文件发到对应控制端主机</span>
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 方法一,先将文件发到对应控制端主机</span>
 ansible 192.168.1.3 -m <span class="hljs-built_in">command</span> -a <span class="hljs-string">&#x27;/root/ansible_test.sh&#x27;</span>
 <span class="hljs-comment"># 方法二</span>
 root@DESKTOP-GT1K5L0:~<span class="hljs-comment"># ansible 192.168.1.3 -m script -a &#x27;/root/ansible_test.sh&#x27;</span>
-192.168.1.3 | SUCCESS => {
-    <span class="hljs-string">"changed"</span>: <span class="hljs-literal">true</span>,
-    <span class="hljs-string">"rc"</span>: 0,
-    <span class="hljs-string">"stderr"</span>: <span class="hljs-string">"Shared connection to 192.168.1.3 closed"</span>,
-    <span class="hljs-string">"stdout"</span>: <span class="hljs-string">"to do it,ansible"</span>,
-    <span class="hljs-string">"stdout_lines"</span>: [
-        <span class="hljs-string">"to do it,ansible"</span>
+192.168.1.3 | SUCCESS =&gt; &#123;
+    <span class="hljs-string">&quot;changed&quot;</span>: <span class="hljs-literal">true</span>,
+    <span class="hljs-string">&quot;rc&quot;</span>: 0,
+    <span class="hljs-string">&quot;stderr&quot;</span>: <span class="hljs-string">&quot;Shared connection to 192.168.1.3 closed&quot;</span>,
+    <span class="hljs-string">&quot;stdout&quot;</span>: <span class="hljs-string">&quot;to do it,ansible&quot;</span>,
+    <span class="hljs-string">&quot;stdout_lines&quot;</span>: [
+        <span class="hljs-string">&quot;to do it,ansible&quot;</span>
     ]
-}</code></pre></div>
+&#125;</code></pre></div>
 
 
 <h3 id="Copy"><a href="#Copy" class="headerlink" title="Copy"></a>Copy</h3><ul>
@@ -389,18 +389,18 @@ root@DESKTOP-GT1K5L0:~<span class="hljs-comment"># ansible 192.168.1.3 -m script
 </ul>
 <h4 id="参数列表"><a href="#参数列表" class="headerlink" title="参数列表"></a>参数列表</h4><p>在上面我们提到了从控制端传输文件到被控端,既然是批量的操作,那么在ansible中同样存在一个copy的模块,可以用来传输文件<br>场景: 关闭多台主机的selinux<br>流程: 复制控制端selinux的配置文件，修改后发送到被控制端</p>
 <p>注意:这里的ho表示的是一个主机群 在/etc/ansible/hosts中已经添加了</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 查看控制端selinux状态</span>
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 查看控制端selinux状态</span>
 getenforce
 
 <span class="hljs-comment"># 查看被控端selinux状态</span>
 [root@localhost ~]<span class="hljs-comment"># ansible ho -m command -a &#x27;getenforce&#x27;</span>
-192.168.1.6 | SUCCESS | rc=0 >>
+192.168.1.6 | SUCCESS | rc=0 &gt;&gt;
 Enforcing
-192.168.1.7 | SUCCESS | rc=0 >>
+192.168.1.7 | SUCCESS | rc=0 &gt;&gt;
 Enforcing
-192.168.1.5 | SUCCESS | rc=0 >>
+192.168.1.5 | SUCCESS | rc=0 &gt;&gt;
 Enforcing
-192.168.1.4 | SUCCESS | rc=0 >>
+192.168.1.4 | SUCCESS | rc=0 &gt;&gt;
 Enforcing
 
 <span class="hljs-comment"># 复制selinux配置文件，并修改配置</span>
@@ -418,21 +418,21 @@ ansible ho -m <span class="hljs-built_in">command</span> -a <span class="hljs-st
 <span class="hljs-comment"># 查看被控端selinux是否修改完成</span>
 ansible ho -m <span class="hljs-built_in">command</span> -a <span class="hljs-string">&#x27;getenforce&#x27;</span>
 [root@localhost hzj]<span class="hljs-comment"># ansible ho -m command -a &#x27;getenforce&#x27;</span>
-192.168.1.7 | SUCCESS | rc=0 >>
+192.168.1.7 | SUCCESS | rc=0 &gt;&gt;
 Disabled
-192.168.1.4 | SUCCESS | rc=0 >>
+192.168.1.4 | SUCCESS | rc=0 &gt;&gt;
 Disabled
-192.168.1.5 | SUCCESS | rc=0 >>
+192.168.1.5 | SUCCESS | rc=0 &gt;&gt;
 Disabled
-192.168.1.6 | SUCCESS | rc=0 >>
+192.168.1.6 | SUCCESS | rc=0 &gt;&gt;
 Disabled</code></pre></div>
 
 <h3 id="fetch"><a href="#fetch" class="headerlink" title="fetch"></a>fetch</h3><p>ansible支持从被控端抓取文件到控制端,抓取后的格式为\example.com\dest<br>src表示抓取路径<br>dest表示存放路径</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 复制所有主机的日志到控制端</span>
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 复制所有主机的日志到控制端</span>
 ansible ho -m fetch -a <span class="hljs-string">&#x27;src=/var/log/messages dest=/root/data&#x27;</span></code></pre></div>
 <p>但是fetch仅支持单个文件的抓取，当我们想要抓取多个日志文件时，可以先进行打包</p>
 <h3 id="file"><a href="#file" class="headerlink" title="file"></a>file</h3><p>创建文件</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 创建文件</span>
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 创建文件</span>
 ansible ho -m file -a <span class="hljs-string">&#x27;name=/data/f3 state=touch&#x27;</span>
 <span class="hljs-comment"># 删除文件</span>
 ansible ho -m file -a <span class="hljs-string">&#x27;name=/data/f3 state=absent&#x27;</span>
@@ -446,82 +446,82 @@ ansible ho -m file -a <span class="hljs-string">&#x27;src=/root/test name=/data/
 <span class="hljs-comment"># 但是需要注意的是如果你创建了文件f3 当你创建文件夹f3的时候会出现错误</span></code></pre></div>
 
 <h3 id="hostname"><a href="#hostname" class="headerlink" title="hostname"></a>hostname</h3><p>修改主机名</p>
-<div class="code-wrapper"><pre class=" language-hljs bash">ansible ho -m hostname -a <span class="hljs-string"><code class="language-hljs bash">ansible ho -m hostname -a <span class="hljs-string">&#x27;name=node&#x27;</span>
+<div class="code-wrapper"><pre><code class="hljs bash">ansible ho -m hostname -a <span class="hljs-string">&#x27;name=node&#x27;</span>
 <span class="hljs-comment"># 重启后生效</span></code></pre></div>
 
-<h3 id="cron"><a href="#cron" class="headerlink" title="cron"></a>cron</h3><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 给每台主机添加任务,name为注释</span>
-ansible ho -m cron -a <span class="hljs-string">&#x27;minute=* weekday=1,3,5,7 job="usr/bin/wall message"  name=test&#x27;</span>
+<h3 id="cron"><a href="#cron" class="headerlink" title="cron"></a>cron</h3><div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 给每台主机添加任务,name为注释</span>
+ansible ho -m cron -a <span class="hljs-string">&#x27;minute=* weekday=1,3,5,7 job=&quot;usr/bin/wall message&quot;  name=test&#x27;</span>
 <span class="hljs-comment"># 取消任务</span>
-ansible ho -m cron -a <span class="hljs-string">&#x27;disabled=true job="usr/bin/wall message" name=test&#x27;</span>
+ansible ho -m cron -a <span class="hljs-string">&#x27;disabled=true job=&quot;usr/bin/wall message&quot; name=test&#x27;</span>
 <span class="hljs-comment"># 重新启用</span>
-ansible ho -m cron -a <span class="hljs-string">&#x27;disabled=no job="usr/bin/wall message" name=test&#x27;</span>
+ansible ho -m cron -a <span class="hljs-string">&#x27;disabled=no job=&quot;usr/bin/wall message&quot; name=test&#x27;</span>
 <span class="hljs-comment"># 删除某条任务</span>
-ansible ho -m corn -a <span class="hljs-string">&#x27;jon="usr/bin/wall message" state=absent&#x27;</span></code></pre></div>
+ansible ho -m corn -a <span class="hljs-string">&#x27;jon=&quot;usr/bin/wall message&quot; state=absent&#x27;</span></code></pre></div>
 
-<h3 id="yum"><a href="#yum" class="headerlink" title="yum"></a>yum</h3><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># name指定包  state指定状态</span>
+<h3 id="yum"><a href="#yum" class="headerlink" title="yum"></a>yum</h3><div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># name指定包  state指定状态</span>
 ansible ho -m yum -a <span class="hljs-string">&#x27;name=httpd state=latest&#x27;</span> 安装
 ansible ho -m yum -a <span class="hljs-string">&#x27;name=httpd state=absent&#x27;</span> 删除</code></pre></div>
 
-<h3 id="Service"><a href="#Service" class="headerlink" title="Service"></a>Service</h3><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 关闭服务  name指定服务名称  state指定状态</span>
+<h3 id="Service"><a href="#Service" class="headerlink" title="Service"></a>Service</h3><div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 关闭服务  name指定服务名称  state指定状态</span>
 ansible ho -m service -a <span class="hljs-string">&#x27;name=httpd state=stopped&#x27;</span>
 ansible ho -m service -a <span class="hljs-string">&#x27;name=httpd state=started&#x27;</span>
 ansible ho -m service -a<span class="hljs-string">&#x27;name=httpd state=reloaded&#x27;</span>
 ansible ho -m service -a<span class="hljs-string">&#x27;name=httpd state=restarted&#x27;</span></code></pre></div>
 
-<h3 id="User"><a href="#User" class="headerlink" title="User"></a>User</h3><div class="code-wrapper"><pre class=" language-hljs bash">ansible ho -m user -a <span class="hljs-string"><code class="language-hljs bash">ansible ho -m user -a <span class="hljs-string">&#x27;name=user comment="test user" uid=2048 home=/app/user group=root&#x27;</span>
+<h3 id="User"><a href="#User" class="headerlink" title="User"></a>User</h3><div class="code-wrapper"><pre><code class="hljs bash">ansible ho -m user -a <span class="hljs-string">&#x27;name=user comment=&quot;test user&quot; uid=2048 home=/app/user group=root&#x27;</span>
 ansible ho -m user -a <span class="hljs-string">&#x27;name=sysuser system=yes home=/app/syseser1&#x27;</span>
 ansible ho -m user -a <span class="hljs-string">&#x27;name=user state=absent remove=yes&#x27;</span> 删除用户以及家目录等数据</code></pre></div>
 
 <h3 id="setup"><a href="#setup" class="headerlink" title="setup"></a>setup</h3><p>获取ansible信息，ansible执行完成后,会将结果接到ansible_facts 这个变量当中去，而setup可以输出这个变量</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">➜  /tmp ansible -i hosts all -m setup
+<div class="code-wrapper"><pre><code class="hljs bash">➜  /tmp ansible -i hosts all -m setup
 [WARNING]: Unable to parse the plugin filter file /etc/ansible/plugin_filters.yml as module_blacklist is not a list. Skipping.
 
-10.0.28.58 | SUCCESS => {
-    <span class="hljs-string">"ansible_facts"</span>: {
-        <span class="hljs-string">"ansible_all_ipv4_addresses"</span>: [
-            <span class="hljs-string">"10.0.28.58"</span>
+10.0.28.58 | SUCCESS =&gt; &#123;
+    <span class="hljs-string">&quot;ansible_facts&quot;</span>: &#123;
+        <span class="hljs-string">&quot;ansible_all_ipv4_addresses&quot;</span>: [
+            <span class="hljs-string">&quot;10.0.28.58&quot;</span>
         ],
-        <span class="hljs-string">"ansible_all_ipv6_addresses"</span>: [
-            <span class="hljs-string">"fe80::b116:4b55:85a6:c563"</span>
+        <span class="hljs-string">&quot;ansible_all_ipv6_addresses&quot;</span>: [
+            <span class="hljs-string">&quot;fe80::b116:4b55:85a6:c563&quot;</span>
         ],
-        <span class="hljs-string">"ansible_apparmor"</span>: {
-            <span class="hljs-string">"status"</span>: <span class="hljs-string">"disabled"</span>
-        },
-        <span class="hljs-string">"ansible_architecture"</span>: <span class="hljs-string">"x86_64"</span>,
-        <span class="hljs-string">"ansible_bios_date"</span>: <span class="hljs-string">"05/14/2015"</span>,
-        <span class="hljs-string">"ansible_bios_version"</span>: <span class="hljs-string">"0504"</span>,
-        <span class="hljs-string">"ansible_cmdline"</span>: {
-            <span class="hljs-string">"BOOT_IMAGE"</span>: <span class="hljs-string">"/vmlinuz-3.10.0-1062.12.1.el7.x86_64"</span>,
-            <span class="hljs-string">"LANG"</span>: <span class="hljs-string">"zh_CN.UTF-8"</span>,
-            <span class="hljs-string">"crashkernel"</span>: <span class="hljs-string">"auto"</span>,
-            <span class="hljs-string">"quiet"</span>: <span class="hljs-literal">true</span>,
-            <span class="hljs-string">"rd.lvm.lv"</span>: <span class="hljs-string">"centos/swap"</span>,
-            <span class="hljs-string">"rhgb"</span>: <span class="hljs-literal">true</span>,
-            <span class="hljs-string">"ro"</span>: <span class="hljs-literal">true</span>,
-            <span class="hljs-string">"root"</span>: <span class="hljs-string">"/dev/mapper/centos-root"</span>
-        },</code></pre></div>
+        <span class="hljs-string">&quot;ansible_apparmor&quot;</span>: &#123;
+            <span class="hljs-string">&quot;status&quot;</span>: <span class="hljs-string">&quot;disabled&quot;</span>
+        &#125;,
+        <span class="hljs-string">&quot;ansible_architecture&quot;</span>: <span class="hljs-string">&quot;x86_64&quot;</span>,
+        <span class="hljs-string">&quot;ansible_bios_date&quot;</span>: <span class="hljs-string">&quot;05/14/2015&quot;</span>,
+        <span class="hljs-string">&quot;ansible_bios_version&quot;</span>: <span class="hljs-string">&quot;0504&quot;</span>,
+        <span class="hljs-string">&quot;ansible_cmdline&quot;</span>: &#123;
+            <span class="hljs-string">&quot;BOOT_IMAGE&quot;</span>: <span class="hljs-string">&quot;/vmlinuz-3.10.0-1062.12.1.el7.x86_64&quot;</span>,
+            <span class="hljs-string">&quot;LANG&quot;</span>: <span class="hljs-string">&quot;zh_CN.UTF-8&quot;</span>,
+            <span class="hljs-string">&quot;crashkernel&quot;</span>: <span class="hljs-string">&quot;auto&quot;</span>,
+            <span class="hljs-string">&quot;quiet&quot;</span>: <span class="hljs-literal">true</span>,
+            <span class="hljs-string">&quot;rd.lvm.lv&quot;</span>: <span class="hljs-string">&quot;centos/swap&quot;</span>,
+            <span class="hljs-string">&quot;rhgb&quot;</span>: <span class="hljs-literal">true</span>,
+            <span class="hljs-string">&quot;ro&quot;</span>: <span class="hljs-literal">true</span>,
+            <span class="hljs-string">&quot;root&quot;</span>: <span class="hljs-string">&quot;/dev/mapper/centos-root&quot;</span>
+        &#125;,</code></pre></div>
 <p>setup模块返回的是ansible中的一些信息，包括修改后更换的结果，使用filter可以来过滤出我们需要的信息</p>
-<div class="code-wrapper"><pre class=" language-hljs bash">➜  /tmp ansible all -m setup -a <span class="hljs-string"><code class="language-hljs bash">➜  /tmp ansible all -m setup -a <span class="hljs-string">&#x27;filter=ansible_hostname&#x27;</span>
+<div class="code-wrapper"><pre><code class="hljs bash">➜  /tmp ansible all -m setup -a <span class="hljs-string">&#x27;filter=ansible_hostname&#x27;</span>
 
-10.0.28.58 | SUCCESS => {
-    <span class="hljs-string">"ansible_facts"</span>: {
-        <span class="hljs-string">"ansible_hostname"</span>: <span class="hljs-string">"node"</span>
-    },
-    <span class="hljs-string">"changed"</span>: <span class="hljs-literal">false</span>
-}</code></pre></div>
+10.0.28.58 | SUCCESS =&gt; &#123;
+    <span class="hljs-string">&quot;ansible_facts&quot;</span>: &#123;
+        <span class="hljs-string">&quot;ansible_hostname&quot;</span>: <span class="hljs-string">&quot;node&quot;</span>
+    &#125;,
+    <span class="hljs-string">&quot;changed&quot;</span>: <span class="hljs-literal">false</span>
+&#125;</code></pre></div>
 <p>并且支持通配符匹配<br>比如我们要过滤出所有包含hostname的字段</p>
-<div class="code-wrapper"><pre class=" language-hljs bash">ansible all -m setup -a <span class="hljs-string"><code class="language-hljs bash">ansible all -m setup -a <span class="hljs-string">&#x27;filter=*address*&#x27;</span>
-10.0.28.58 | SUCCESS => {
-    <span class="hljs-string">"ansible_facts"</span>: {
-        <span class="hljs-string">"ansible_all_ipv4_addresses"</span>: [
-            <span class="hljs-string">"10.0.28.58"</span>
+<div class="code-wrapper"><pre><code class="hljs bash">ansible all -m setup -a <span class="hljs-string">&#x27;filter=*address*&#x27;</span>
+10.0.28.58 | SUCCESS =&gt; &#123;
+    <span class="hljs-string">&quot;ansible_facts&quot;</span>: &#123;
+        <span class="hljs-string">&quot;ansible_all_ipv4_addresses&quot;</span>: [
+            <span class="hljs-string">&quot;10.0.28.58&quot;</span>
         ],
-        <span class="hljs-string">"ansible_all_ipv6_addresses"</span>: [
-            <span class="hljs-string">"fe80::b116:4b55:85a6:c563"</span>
+        <span class="hljs-string">&quot;ansible_all_ipv6_addresses&quot;</span>: [
+            <span class="hljs-string">&quot;fe80::b116:4b55:85a6:c563&quot;</span>
         ]
-    },
-    <span class="hljs-string">"changed"</span>: <span class="hljs-literal">false</span>
-}</code></pre></div>
+    &#125;,
+    <span class="hljs-string">&quot;changed&quot;</span>: <span class="hljs-literal">false</span>
+&#125;</code></pre></div>
 
 <h1 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h1><ul>
 <li><p>模块<br><a target="_blank" rel="noopener" href="https://www.cnblogs.com/f-ck-need-u/p/7550603.html">https://www.cnblogs.com/f-ck-need-u/p/7550603.html</a><br><a target="_blank" rel="noopener" href="https://docs.ansible.com/ansible/2.6/modules/list_of_all_modules.html">https://docs.ansible.com/ansible/2.6/modules/list_of_all_modules.html</a></p>
@@ -562,7 +562,7 @@ ansible ho -m user -a <span class="hljs-string">&#x27;name=user state=absent rem
                       <a href="/2020/03/10/blog_back_new/ansible/3.yaml%E6%96%87%E4%BB%B6/">
                         <i class="iconfont icon-arrowleft"></i>
                         <span class="hidden-mobile">yaml格式入门</span>
-                        <span class="visible-mobile">Vorheriger</span>
+                        <span class="visible-mobile">上一篇</span>
                       </a>
                     
                   </article>
@@ -571,7 +571,7 @@ ansible ho -m user -a <span class="hljs-string">&#x27;name=user state=absent rem
                     
                       <a href="/2020/03/08/blog_back_new/backup/fastapi%E5%93%8D%E5%BA%94%E4%BD%93/">
                         <span class="hidden-mobile">fastapi响应体</span>
-                        <span class="visible-mobile">Nächster</span>
+                        <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
                     
@@ -588,7 +588,7 @@ ansible ho -m user -a <span class="hljs-string">&#x27;name=user state=absent rem
     
       <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
         <div id="toc">
-  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
   <div class="toc-body" id="toc-body"></div>
 </div>
 
@@ -614,7 +614,7 @@ ansible ho -m user -a <span class="hljs-string">&#x27;name=user state=absent rem
   <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">Suchen</h4>
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
         <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -623,7 +623,7 @@ ansible ho -m user -a <span class="hljs-string">&#x27;name=user state=absent rem
         <div class="md-form mb-5">
           <input type="text" id="local-search-input" class="form-control validate">
           <label data-error="x" data-success="v"
-                 for="local-search-input">Stichwort</label>
+                 for="local-search-input">关键词</label>
         </div>
         <div class="list-group" id="local-search-result"></div>
       </div>

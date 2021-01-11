@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html lang="cn" data-default-color-scheme=&#34;auto&#34;>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
 
 
 
@@ -61,7 +61,7 @@
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
 
 <body>
@@ -88,7 +88,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/">
                 <i class="iconfont icon-home-fill"></i>
-                Startseite
+                首页
               </a>
             </li>
           
@@ -100,7 +100,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/archives/">
                 <i class="iconfont icon-archive-fill"></i>
-                Archiv
+                归档
               </a>
             </li>
           
@@ -112,7 +112,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/categories/">
                 <i class="iconfont icon-category-fill"></i>
-                Kategorie
+                分类
               </a>
             </li>
           
@@ -124,7 +124,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/tags/">
                 <i class="iconfont icon-tags-fill"></i>
-                Etiketten
+                标签
               </a>
             </li>
           
@@ -136,7 +136,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/about/">
                 <i class="iconfont icon-user-fill"></i>
-                Über mich
+                关于
               </a>
             </li>
           
@@ -175,7 +175,7 @@
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
       <time datetime="2020-02-06 22:11" pubdate>
-        February 6, 2020 pm
+        2020年2月6日 晚上
       </time>
     </span>
   
@@ -186,7 +186,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      136 字
+      3.7k 字
     </span>
   
 
@@ -196,7 +196,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      1
+      67
        分钟
     </span>
   
@@ -256,42 +256,42 @@
 
 <h1 id="docker网络"><a href="#docker网络" class="headerlink" title="docker网络"></a>docker网络</h1><p>docker网络的几种模式<br><img src="http://img.noback.top/2020-02-06-22-12-35.png" srcset="/img/loading.gif" alt="2020-02-06-22-12-35"></p>
 <p><font color='red'>网路地址转换NAT</font><br>内网转外网<br><img src="http://img.noback.top/2020-02-06-22-21-07.png" srcset="/img/loading.gif" alt="2020-02-06-22-21-07"></p>
-<h2 id="linux的网络命名空间namesapce"><a href="#linux的网络命名空间namesapce" class="headerlink" title="linux的网络命名空间namesapce"></a>linux的网络命名空间namesapce</h2><div class="code-wrapper"><pre class=" language-hljs bash">root:~<span class="hljs-comment"><code class="language-hljs bash">root:~<span class="hljs-comment"># sudo ip a | tail -6</span>
-8: docker0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue state DOWN group default
+<h2 id="linux的网络命名空间namesapce"><a href="#linux的网络命名空间namesapce" class="headerlink" title="linux的网络命名空间namesapce"></a>linux的网络命名空间namesapce</h2><div class="code-wrapper"><pre><code class="hljs bash">root:~<span class="hljs-comment"># sudo ip a | tail -6</span>
+8: docker0: &lt;NO-CARRIER,BROADCAST,MULTICAST,UP&gt; mtu 1500 qdisc noqueue state DOWN group default
     link/ether 02:42:4f:aa:73:10 brd ff:ff:ff:ff:ff:ff
-    inet 172.17.0.1/16 scope global docker0                  <-------------看这里
+    inet 172.17.0.1/16 scope global docker0                  &lt;-------------看这里
        valid_lft forever preferred_lft forever
     inet6 fe80::42:4fff:feaa:7310/64 scope link    
        valid_lft forever preferred_lft forever 
-root:~<span class="hljs-comment"># docker run -it -d  --name b1 busybox  /bin/sh -c "while true; do sleep 3600;done"</span>
+root:~<span class="hljs-comment"># docker run -it -d  --name b1 busybox  /bin/sh -c &quot;while true; do sleep 3600;done&quot;</span>
 890e3e47feea65be2d11122e01739247d41cf45e9ff8a2b88157482ee02a3b6f
-root:~<span class="hljs-comment"># docker run -it -d  --name b2 busybox  /bin/sh -c "while true; do sleep 3600;done"</span>
+root:~<span class="hljs-comment"># docker run -it -d  --name b2 busybox  /bin/sh -c &quot;while true; do sleep 3600;done&quot;</span>
 db45d33d512104ec2d799bd45ba47095ffb5c1c8253ede8becb808c47b902f7b
 root:~<span class="hljs-comment"># dokcer exec -it b1 /bin/sh</span>
 / <span class="hljs-comment"># ls</span>
 bin   dev   etc   home  proc  root  sys   tmp   usr   var
 / <span class="hljs-comment"># ip a</span>
-1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue qlen 1000
+1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue qlen 1000
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
     inet 127.0.0.1/8 scope host lo
        valid_lft forever preferred_lft forever
-167: eth0@if168: <BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN> mtu 1500 qdisc noqueue
+167: eth0@if168: &lt;BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN&gt; mtu 1500 qdisc noqueue
     link/ether 02:42:ac:11:00:02 brd ff:ff:ff:ff:ff:ff
-    inet 172.17.0.2/16 brd 172.17.255.255 scope global eth0         <-------------看这里
+    inet 172.17.0.2/16 brd 172.17.255.255 scope global eth0         &lt;-------------看这里
        valid_lft forever preferred_lft forever
 root:~<span class="hljs-comment"># docker exec -it b2 /bin/sh</span>
 / <span class="hljs-comment"># ip a</span>
-1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue qlen 1000
+1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue qlen 1000
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
     inet 127.0.0.1/8 scope host lo
        valid_lft forever preferred_lft forever
-169: eth0@if170: <BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN> mtu 1500 qdisc noqueue
+169: eth0@if170: &lt;BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN&gt; mtu 1500 qdisc noqueue
     link/ether 02:42:ac:11:00:03 brd ff:ff:ff:ff:ff:ff
-    inet 172.17.0.3/16 brd 172.17.255.255 scope global eth0           <-------------看这里
+    inet 172.17.0.3/16 brd 172.17.255.255 scope global eth0           &lt;-------------看这里
        valid_lft forever preferred_lft forever</code></pre></div>
 <p><font color='red'>可以发现实体机专门给docker机器独立了一个内网ip给docker，并且docker容器之间是可以相互ping同的</font></p>
 <h3 id="network-namespace管理工具"><a href="#network-namespace管理工具" class="headerlink" title="network namespace管理工具"></a>network namespace管理工具</h3><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/bakari/p/10443484.html">https://www.cnblogs.com/bakari/p/10443484.html</a></p>
-<div class="code-wrapper"><pre class=" language-hljs bash">root:~<span class="hljs-comment"><code class="language-hljs bash">root:~<span class="hljs-comment"># sudo ip netns help</span>
+<div class="code-wrapper"><pre><code class="hljs bash">root:~<span class="hljs-comment"># sudo ip netns help</span>
 Usage: ip netns list
        ip netns add NAME
        ip netns <span class="hljs-built_in">set</span> NAME NETNSID
@@ -302,100 +302,100 @@ Usage: ip netns list
        ip netns monitor
        ip netns list-id</code></pre></div>
 <p>在docker中，我们安装了两个容器 b1 与 b2 同样的我们也可以用这个管理工具创建两个空间b1 b2 然后进入查看ip</p>
-<div class="code-wrapper"><pre class=" language-hljs bash">root:~<span class="hljs-comment"><code class="language-hljs bash">root:~<span class="hljs-comment"># sudo ip netns add b1</span>
+<div class="code-wrapper"><pre><code class="hljs bash">root:~<span class="hljs-comment"># sudo ip netns add b1</span>
 root:~<span class="hljs-comment"># sudo ip netns add b2</span>
 root:~<span class="hljs-comment"># sudo ip netns exec b1 ip a</span>
-1: lo: <LOOPBACK> mtu 65536 qdisc noop state DOWN group default qlen 1000
+1: lo: &lt;LOOPBACK&gt; mtu 65536 qdisc noop state DOWN group default qlen 1000
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
 root:~<span class="hljs-comment"># sudo ip netns exec b2 ip a</span>
-1: lo: <LOOPBACK> mtu 65536 qdisc noop state DOWN group default qlen 1000
+1: lo: &lt;LOOPBACK&gt; mtu 65536 qdisc noop state DOWN group default qlen 1000
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00</code></pre></div>
 <p>可以看到在b1 b2两个空间中都有一张网卡，使用link将它开启</p>
-<div class="code-wrapper"><pre class=" language-hljs bash">root:~<span class="hljs-comment"><code class="language-hljs bash">root:~<span class="hljs-comment"># sudo ip netns exec b1 ip link set dev lo up</span>
+<div class="code-wrapper"><pre><code class="hljs bash">root:~<span class="hljs-comment"># sudo ip netns exec b1 ip link set dev lo up</span>
 root:~<span class="hljs-comment"># sudo ip netns exec b2 ip link set dev lo up</span>
 root:~<span class="hljs-comment"># sudo ip netns exec b1 ip a</span>
-1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
     inet 127.0.0.1/8 scope host lo
        valid_lft forever preferred_lft forever
     inet6 ::1/128 scope host
        valid_lft forever preferred_lft forever
 root:~<span class="hljs-comment"># sudo ip netns exec b2 ip a</span>
-1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
     inet 127.0.0.1/8 scope host lo
        valid_lft forever preferred_lft forever
     inet6 ::1/128 scope host
        valid_lft forever preferred_lft forever</code></pre></div>
 <p>现在只有本地的回环口,添加一队veth</p>
-<div class="code-wrapper"><pre class=" language-hljs bash">root:~<span class="hljs-comment"><code class="language-hljs bash">root:~<span class="hljs-comment"># sudo ip link add veth-test1 type veth peer name veth-test2</span>
+<div class="code-wrapper"><pre><code class="hljs bash">root:~<span class="hljs-comment"># sudo ip link add veth-test1 type veth peer name veth-test2</span>
 root:~<span class="hljs-comment"># sudo ip link</span>
-1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
+1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-7: enp1s0f1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP mode DEFAULT group default qlen 1000
+7: enp1s0f1: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc mq state UP mode DEFAULT group default qlen 1000
     link/ether 00:1b:21:bf:0d:9e brd ff:ff:ff:ff:ff:ff
-8: docker0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP mode DEFAULT group default
+8: docker0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc noqueue state UP mode DEFAULT group default
     link/ether 02:42:4f:aa:73:10 brd ff:ff:ff:ff:ff:ff
-168: veth5b2efd9@if167: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master docker0 state UP mode DEFAULT group default
+168: veth5b2efd9@if167: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc noqueue master docker0 state UP mode DEFAULT group default
     link/ether c6:64:94:8a:43:0a brd ff:ff:ff:ff:ff:ff link-netnsid 0
-170: veth6d83aa9@if169: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master docker0 state UP mode DEFAULT group default
+170: veth6d83aa9@if169: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc noqueue master docker0 state UP mode DEFAULT group default
     link/ether 36:a5:3e:2a:69:f7 brd ff:ff:ff:ff:ff:ff link-netnsid 1
-171: veth-test2@veth-test1: <BROADCAST,MULTICAST,M-DOWN> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+171: veth-test2@veth-test1: &lt;BROADCAST,MULTICAST,M-DOWN&gt; mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
     link/ether 56:0d:bc:10:fa:c0 brd ff:ff:ff:ff:ff:ff
-172: veth-test1@veth-test2: <BROADCAST,MULTICAST,M-DOWN> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+172: veth-test1@veth-test2: &lt;BROADCAST,MULTICAST,M-DOWN&gt; mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
     link/ether be:37:b1:1c:09:55 brd ff:ff:ff:ff:ff:ff</code></pre></div>
 <p>添加到建立的namespace中去</p>
-<div class="code-wrapper"><pre class=" language-hljs bash">root:~<span class="hljs-comment"><code class="language-hljs bash">root:~<span class="hljs-comment"># sudo ip link set veth-test1 netns b1</span>
+<div class="code-wrapper"><pre><code class="hljs bash">root:~<span class="hljs-comment"># sudo ip link set veth-test1 netns b1</span>
 root:~<span class="hljs-comment"># sudo ip link set veth-test2 netns b2</span>
 root:~<span class="hljs-comment"># sudo ip netns exec b1 ip link</span>
-1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
+1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-172: veth-test1@if171: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+172: veth-test1@if171: &lt;BROADCAST,MULTICAST&gt; mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
     link/ether be:37:b1:1c:09:55 brd ff:ff:ff:ff:ff:ff link-netnsid 1
 root:~<span class="hljs-comment"># sudo ip netns exec b2 ip link</span>
-1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
+1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-171: veth-test2@if172: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+171: veth-test2@if172: &lt;BROADCAST,MULTICAST&gt; mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
     link/ether 56:0d:bc:10:fa:c0 brd ff:ff:ff:ff:ff:ff link-netnsid 0</code></pre></div>
 <p>分配ip</p>
-<div class="code-wrapper"><pre class=" language-hljs bash">root:~<span class="hljs-comment"><code class="language-hljs bash">root:~<span class="hljs-comment"># sudo ip netns exec b1 ip addr add 192.168.20.1/24 dev veth-test1</span>
+<div class="code-wrapper"><pre><code class="hljs bash">root:~<span class="hljs-comment"># sudo ip netns exec b1 ip addr add 192.168.20.1/24 dev veth-test1</span>
 root:~<span class="hljs-comment"># sudo ip netns exec b2 ip addr add 192.168.20.2/24 dev veth-test2</span>
 root:~<span class="hljs-comment"># sudo ip netns exec b1 ip link set dev veth-test1 up</span>
 root:~<span class="hljs-comment"># sudo ip netns exec b2 ip link set dev veth-test2 up</span>
 root:~<span class="hljs-comment"># sudo ip netns exec b1 ip a</span>
-1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
     inet 127.0.0.1/8 scope host lo
        valid_lft forever preferred_lft forever
     inet6 ::1/128 scope host
        valid_lft forever preferred_lft forever
-172: veth-test1@if171: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default qlen 1000
+172: veth-test1@if171: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc noqueue state UP group default qlen 1000
     link/ether be:37:b1:1c:09:55 brd ff:ff:ff:ff:ff:ff link-netnsid 1
     inet 192.168.20.1/24 scope global veth-test1
        valid_lft forever preferred_lft forever
     inet6 fe80::bc37:b1ff:fe1c:955/64 scope link
        valid_lft forever preferred_lft forever
 root:~<span class="hljs-comment"># sudo ip netns exec b2 ip a</span>
-1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
     inet 127.0.0.1/8 scope host lo
        valid_lft forever preferred_lft forever
     inet6 ::1/128 scope host
        valid_lft forever preferred_lft forever
-171: veth-test2@if172: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default qlen 1000
+171: veth-test2@if172: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc noqueue state UP group default qlen 1000
     link/ether 56:0d:bc:10:fa:c0 brd ff:ff:ff:ff:ff:ff link-netnsid 0
     inet 192.168.20.2/24 scope global veth-test2
        valid_lft forever preferred_lft forever
     inet6 fe80::540d:bcff:fe10:fac0/64 scope link
        valid_lft forever preferred_lft forever</code></pre></div>
 <p>测试是否连通</p>
-<div class="code-wrapper"><pre class=" language-hljs bash">root:~<span class="hljs-comment"><code class="language-hljs bash">root:~<span class="hljs-comment"># sudo ip netns exec b2 ping 192.168.20.1</span>
+<div class="code-wrapper"><pre><code class="hljs bash">root:~<span class="hljs-comment"># sudo ip netns exec b2 ping 192.168.20.1</span>
 PING 192.168.20.1 (192.168.20.1) 56(84) bytes of data.
 64 bytes from 192.168.20.1: icmp_seq=1 ttl=64 time=0.045 ms
 64 bytes from 192.168.20.1: icmp_seq=2 ttl=64 time=0.035 ms
 64 bytes from 192.168.20.1: icmp_seq=3 ttl=64 time=0.045 ms</code></pre></div>
 <p><img src="http://img.noback.top/2020-02-06-23-14-30.png" srcset="/img/loading.gif" alt="2020-02-06-23-14-30"></p>
-<h2 id="docker网络管理工具"><a href="#docker网络管理工具" class="headerlink" title="docker网络管理工具"></a>docker网络管理工具</h2><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 查看dokcer状态</span>
+<h2 id="docker网络管理工具"><a href="#docker网络管理工具" class="headerlink" title="docker网络管理工具"></a>docker网络管理工具</h2><div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 查看dokcer状态</span>
 root:~<span class="hljs-comment"># docker network ls</span>
 NETWORK ID          NAME                DRIVER              SCOPE
 dcb97917d7b9        bridge              bridge              <span class="hljs-built_in">local</span>  <span class="hljs-comment"># 网桥连接</span>
@@ -403,82 +403,82 @@ fd363f5c42dc        host                host                <span class="hljs-bu
 2e0f440a1b7b        none                null                <span class="hljs-built_in">local</span></code></pre></div>
 
 <p>安装bridge-utils，这个是一种网桥状态查看工具</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">yum install bridge-utils -y
+<div class="code-wrapper"><pre><code class="hljs bash">yum install bridge-utils -y
 
 root:~<span class="hljs-comment"># sudo brctl</span>
 Usage: brctl [commands]
 commands:
-        addbr           <bridge>                add bridge
-        delbr           <bridge>                delete bridge
-        addif           <bridge> <device>       add interface to bridge
-        delif           <bridge> <device>       delete interface from bridge
-        hairpin         <bridge> <port> {on|off}        turn hairpin on/off
-        setageing       <bridge> <time>         <span class="hljs-built_in">set</span> ageing time
-        setbridgeprio   <bridge> <prio>         <span class="hljs-built_in">set</span> bridge priority
-        setfd           <bridge> <time>         <span class="hljs-built_in">set</span> bridge forward delay
-        sethello        <bridge> <time>         <span class="hljs-built_in">set</span> hello time
-        setmaxage       <bridge> <time>         <span class="hljs-built_in">set</span> max message age
-        setpathcost     <bridge> <port> <cost>  <span class="hljs-built_in">set</span> path cost
-        setportprio     <bridge> <port> <prio>  <span class="hljs-built_in">set</span> port priority
-        show            [ <bridge> ]            show a list of bridges
-        showmacs        <bridge>                show a list of mac addrs
-        showstp         <bridge>                show bridge stp info
-        stp             <bridge> {on|off}       turn stp on/off</code></pre></div>
+        addbr           &lt;bridge&gt;                add bridge
+        delbr           &lt;bridge&gt;                delete bridge
+        addif           &lt;bridge&gt; &lt;device&gt;       add interface to bridge
+        delif           &lt;bridge&gt; &lt;device&gt;       delete interface from bridge
+        hairpin         &lt;bridge&gt; &lt;port&gt; &#123;on|off&#125;        turn hairpin on/off
+        setageing       &lt;bridge&gt; &lt;time&gt;         <span class="hljs-built_in">set</span> ageing time
+        setbridgeprio   &lt;bridge&gt; &lt;prio&gt;         <span class="hljs-built_in">set</span> bridge priority
+        setfd           &lt;bridge&gt; &lt;time&gt;         <span class="hljs-built_in">set</span> bridge forward delay
+        sethello        &lt;bridge&gt; &lt;time&gt;         <span class="hljs-built_in">set</span> hello time
+        setmaxage       &lt;bridge&gt; &lt;time&gt;         <span class="hljs-built_in">set</span> max message age
+        setpathcost     &lt;bridge&gt; &lt;port&gt; &lt;cost&gt;  <span class="hljs-built_in">set</span> path cost
+        setportprio     &lt;bridge&gt; &lt;port&gt; &lt;prio&gt;  <span class="hljs-built_in">set</span> port priority
+        show            [ &lt;bridge&gt; ]            show a list of bridges
+        showmacs        &lt;bridge&gt;                show a list of mac addrs
+        showstp         &lt;bridge&gt;                show bridge stp info
+        stp             &lt;bridge&gt; &#123;on|off&#125;       turn stp on/off</code></pre></div>
 
 <h2 id="容器与容器之间如何互联"><a href="#容器与容器之间如何互联" class="headerlink" title="容器与容器之间如何互联"></a>容器与容器之间如何互联</h2><p>之前做的network namespace是通过veth来形成对，达到两个namespace的空间进行ip通信，在docker中则是使用docker0(bridge)进行ip通信的 </p>
 <p>开启两个docker容器</p>
-<div class="code-wrapper"><pre class=" language-hljs bash">root:~<span class="hljs-comment"><code class="language-hljs bash">root:~<span class="hljs-comment"># docker run -it -d  --name b1 busybox  /bin/sh -c "while true; do sleep 3600;done"</span>
+<div class="code-wrapper"><pre><code class="hljs bash">root:~<span class="hljs-comment"># docker run -it -d  --name b1 busybox  /bin/sh -c &quot;while true; do sleep 3600;done&quot;</span>
 890e3e47feea65be2d11122e01739247d41cf45e9ff8a2b88157482ee02a3b6f
-root:~<span class="hljs-comment"># docker run -it -d  --name b2 busybox  /bin/sh -c "while true; do sleep 3600;done"</span>
+root:~<span class="hljs-comment"># docker run -it -d  --name b2 busybox  /bin/sh -c &quot;while true; do sleep 3600;done&quot;</span>
 db45d33d512104ec2d799bd45ba47095ffb5c1c8253ede8becb808c47b902f7b
 root:~<span class="hljs-comment"># docker ps</span>
 CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS               NAMES
-db45d33d5121        busybox             <span class="hljs-string">"/bin/sh -c &#x27;while t…"</span>   About an hour ago   Up About an hour                        b2
-890e3e47feea        busybox             <span class="hljs-string">"/bin/sh -c &#x27;while t…"</span>   About an hour ago   Up About an hour                        b1</code></pre></div>
+db45d33d5121        busybox             <span class="hljs-string">&quot;/bin/sh -c &#x27;while t…&quot;</span>   About an hour ago   Up About an hour                        b2
+890e3e47feea        busybox             <span class="hljs-string">&quot;/bin/sh -c &#x27;while t…&quot;</span>   About an hour ago   Up About an hour                        b1</code></pre></div>
 <p>查看本机网卡状态</p>
-<div class="code-wrapper"><pre class=" language-hljs bash">root:~<span class="hljs-comment"><code class="language-hljs bash">root:~<span class="hljs-comment"># sudo ip link | tail -6</span>
-8: docker0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP mode DEFAULT group default
+<div class="code-wrapper"><pre><code class="hljs bash">root:~<span class="hljs-comment"># sudo ip link | tail -6</span>
+8: docker0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc noqueue state UP mode DEFAULT group default
     link/ether 02:42:4f:aa:73:10 brd ff:ff:ff:ff:ff:ff
-168: veth5b2efd9@if167: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master docker0 state UP mode DEFAULT group default
+168: veth5b2efd9@if167: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc noqueue master docker0 state UP mode DEFAULT group default
     link/ether c6:64:94:8a:43:0a brd ff:ff:ff:ff:ff:ff link-netnsid 0
-170: veth6d83aa9@if169: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master docker0 state UP mode DEFAULT group default
+170: veth6d83aa9@if169: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc noqueue master docker0 state UP mode DEFAULT group default
     link/ether 36:a5:3e:2a:69:f7 brd ff:ff:ff:ff:ff:ff link-netnsid 1</code></pre></div>
 <p>查看网桥状态</p>
-<div class="code-wrapper"><pre class=" language-hljs bash">root:~<span class="hljs-comment"><code class="language-hljs bash">root:~<span class="hljs-comment"># sudo brctl show</span>
+<div class="code-wrapper"><pre><code class="hljs bash">root:~<span class="hljs-comment"># sudo brctl show</span>
 bridge name     bridge id               STP enabled     interfaces
 docker0         8000.02424faa7310       no              veth5b2efd9
                                                         veth6d83aa9</code></pre></div>
 <p>我们会法相两个interface正好对应网卡中的dev,其实这是容器连接外部host主机的两个接口<br>查看两个容器内部的接口</p>
-<div class="code-wrapper"><pre class=" language-hljs bash">root:~<span class="hljs-comment"><code class="language-hljs bash">root:~<span class="hljs-comment"># docker exec -it b1 ip a</span>
-1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue qlen 1000
+<div class="code-wrapper"><pre><code class="hljs bash">root:~<span class="hljs-comment"># docker exec -it b1 ip a</span>
+1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue qlen 1000
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
     inet 127.0.0.1/8 scope host lo
        valid_lft forever preferred_lft forever
-167: eth0@if168: <BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN> mtu 1500 qdisc noqueue
+167: eth0@if168: &lt;BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN&gt; mtu 1500 qdisc noqueue
     link/ether 02:42:ac:11:00:02 brd ff:ff:ff:ff:ff:ff
     inet 172.17.0.2/16 brd 172.17.255.255 scope global eth0
        valid_lft forever preferred_lft forever
 root:~<span class="hljs-comment"># docker exec -it b2 ip a</span>
-1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue qlen 1000
+1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue qlen 1000
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
     inet 127.0.0.1/8 scope host lo
        valid_lft forever preferred_lft forever
-169: eth0@if170: <BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN> mtu 1500 qdisc noqueue
+169: eth0@if170: &lt;BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN&gt; mtu 1500 qdisc noqueue
     link/ether 02:42:ac:11:00:03 brd ff:ff:ff:ff:ff:ff
     inet 172.17.0.3/16 brd 172.17.255.255 scope global eth0
        valid_lft forever preferred_lft forever</code></pre></div>
 <p>内部通过eth0连接docker0 </p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">docker network inspect bridge</code></pre></div>
+<div class="code-wrapper"><pre><code class="hljs bash">docker network inspect bridge</code></pre></div>
 <p><img src="http://img.noback.top/2020-02-07-00-01-42.png" srcset="/img/loading.gif" alt="2020-02-07-00-01-42"></p>
 <h2 id="容器与外界互联"><a href="#容器与外界互联" class="headerlink" title="容器与外界互联"></a>容器与外界互联</h2><p>主要是做nat内外网地址转发<br><img src="http://img.noback.top/2020-02-07-00-03-58.png" srcset="/img/loading.gif" alt="2020-02-07-00-03-58"></p>
 <h2 id="docker容器之间的link"><a href="#docker容器之间的link" class="headerlink" title="docker容器之间的link"></a>docker容器之间的link</h2><p>可以直接通过ping name的形式ping ip<br>创建一个容器</p>
-<div class="code-wrapper"><pre class=" language-hljs bash">root:~<span class="hljs-comment"><code class="language-hljs bash">root:~<span class="hljs-comment"># docker run -it -d  --name b1 busybox  /bin/sh -c "while true; do sleep 3600;done"</span>
+<div class="code-wrapper"><pre><code class="hljs bash">root:~<span class="hljs-comment"># docker run -it -d  --name b1 busybox  /bin/sh -c &quot;while true; do sleep 3600;done&quot;</span>
 890e3e47feea65be2d11122e01739247d41cf45e9ff8a2b88157482ee02a3b6f
 root:~<span class="hljs-comment"># docker ps</span>
 CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS               NAMES
-db45d33d5121        busybox             <span class="hljs-string">"/bin/sh -c &#x27;while t…"</span>   About an hour ago   Up About an hour                        b2</code></pre></div>
+db45d33d5121        busybox             <span class="hljs-string">&quot;/bin/sh -c &#x27;while t…&quot;</span>   About an hour ago   Up About an hour                        b2</code></pre></div>
 <p>创建第二个容器，在创建的过程中，通过–link连接到b1</p>
-<div class="code-wrapper"><pre class=" language-hljs bash">root:~<span class="hljs-comment"><code class="language-hljs bash">root:~<span class="hljs-comment"># docker run -it --link b1 busybox</span>
+<div class="code-wrapper"><pre><code class="hljs bash">root:~<span class="hljs-comment"># docker run -it --link b1 busybox</span>
 / <span class="hljs-comment"># ping b1</span>
 PING b1 (172.17.0.2): 56 data bytes
 64 bytes from 172.17.0.2: seq=0 ttl=64 time=0.248 ms
@@ -486,9 +486,9 @@ PING b1 (172.17.0.2): 56 data bytes
 <p><font color='red'>link只是单向的连接，并不是双向连接</font></p>
 <p><font color='blue'>有一个例外，由于docker0的bridge是系统默认已经创建好的，上面的容器是没有link的，但是我们创建了自己的bridge  new-bridge，上面的容器默认是已经互相link的</font></p>
 <h2 id="自建docker网络桥接"><a href="#自建docker网络桥接" class="headerlink" title="自建docker网络桥接"></a>自建docker网络桥接</h2><p>docker默认有三种形式的连接</p>
-<div class="code-wrapper"><pre class=" language-hljs bash">root:~<span class="hljs-comment"><code class="language-hljs bash">root:~<span class="hljs-comment"># docker network ls</span>
+<div class="code-wrapper"><pre><code class="hljs bash">root:~<span class="hljs-comment"># docker network ls</span>
 NETWORK ID          NAME                DRIVER              SCOPE
-dcb97917d7b9        bridge              bridge              <span class="hljs-built_in">local</span>   <----叫做docker0
+dcb97917d7b9        bridge              bridge              <span class="hljs-built_in">local</span>   &lt;----叫做docker0
 fd363f5c42dc        host                host                <span class="hljs-built_in">local</span>
 2e0f440a1b7b        none                null                <span class="hljs-built_in">local</span> 
 root:~<span class="hljs-comment"># sudo brctl show</span>
@@ -496,13 +496,13 @@ bridge name     bridge id               STP enabled     interfaces
 docker0         8000.02424faa7310       no              veth5b2efd9
                                                         veth74e040d</code></pre></div>
 <p>其中容器之间使用bridge进行连接的，但我们也可以自己创建</p>
-<div class="code-wrapper"><pre class=" language-hljs bash">root:~<span class="hljs-comment"><code class="language-hljs bash">root:~<span class="hljs-comment"># docker network create -d bridge new-bridge</span>
+<div class="code-wrapper"><pre><code class="hljs bash">root:~<span class="hljs-comment"># docker network create -d bridge new-bridge</span>
 a52b83252b814bbe2299142fb25551e6734b311fce3d749d12b7d1b2defd0d41
 root:~<span class="hljs-comment"># docker network ls</span>
 NETWORK ID          NAME                DRIVER              SCOPE
-dcb97917d7b9        bridge              bridge              <span class="hljs-built_in">local</span>   <----叫做docker0
+dcb97917d7b9        bridge              bridge              <span class="hljs-built_in">local</span>   &lt;----叫做docker0
 fd363f5c42dc        host                host                <span class="hljs-built_in">local</span>
-a52b83252b81        new-bridge          bridge              <span class="hljs-built_in">local</span>   <----叫做br-a52b83252b81
+a52b83252b81        new-bridge          bridge              <span class="hljs-built_in">local</span>   &lt;----叫做br-a52b83252b81
 2e0f440a1b7b        none                null                <span class="hljs-built_in">local</span> 
 root:~<span class="hljs-comment"># sudo brctl show</span>
 bridge name     bridge id               STP enabled     interfaces
@@ -510,7 +510,7 @@ br-a52b83252b81         8000.02429efea748       no
 docker0         8000.02424faa7310       no              veth5b2efd9
                                                         veth74e040d</code></pre></div>
 <p>创建新容器的时候指定bridge</p>
-<div class="code-wrapper"><pre class=" language-hljs bash">root:~<span class="hljs-comment"><code class="language-hljs bash">root:~<span class="hljs-comment"># docker run -it -d  --name b4 --network new-bridge  busybox  /bin/sh -c "while true; do sleep 3600;done"</span>
+<div class="code-wrapper"><pre><code class="hljs bash">root:~<span class="hljs-comment"># docker run -it -d  --name b4 --network new-bridge  busybox  /bin/sh -c &quot;while true; do sleep 3600;done&quot;</span>
 a60bdef872f7c16305b32920d60e4d973bcd5329a912eaff32b476debf3e6aaa
 root:~<span class="hljs-comment"># sudo brctl show</span>
 bridge name     bridge id               STP enabled     interfaces
@@ -518,24 +518,24 @@ br-a52b83252b81         8000.02429efea748       no              veth8b0f5f0
 docker0         8000.02424faa7310       no              veth5b2efd9
                                                         veth74e040d</code></pre></div>
 
-<h3 id="修改旧容器到指定bridge"><a href="#修改旧容器到指定bridge" class="headerlink" title="修改旧容器到指定bridge"></a>修改旧容器到指定bridge</h3><div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">docker network connect new-bridge b1
+<h3 id="修改旧容器到指定bridge"><a href="#修改旧容器到指定bridge" class="headerlink" title="修改旧容器到指定bridge"></a>修改旧容器到指定bridge</h3><div class="code-wrapper"><pre><code class="hljs bash">docker network connect new-bridge b1
 docker network connect new-bridge b2</code></pre></div>
 <p>这时候其实是我们又给容器新添了一张网卡</p>
-<div class="code-wrapper"><pre class=" language-hljs bash">root:~<span class="hljs-comment"><code class="language-hljs bash">root:~<span class="hljs-comment"># docker exec b2 ip a</span>
-1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue qlen 1000
+<div class="code-wrapper"><pre><code class="hljs bash">root:~<span class="hljs-comment"># docker exec b2 ip a</span>
+1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue qlen 1000
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
     inet 127.0.0.1/8 scope host lo
        valid_lft forever preferred_lft forever
-179: eth0@if180: <BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN> mtu 1500 qdisc noqueue
+179: eth0@if180: &lt;BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN&gt; mtu 1500 qdisc noqueue
     link/ether 02:42:ac:11:00:03 brd ff:ff:ff:ff:ff:ff
     inet 172.17.0.3/16 brd 172.17.255.255 scope global eth0
        valid_lft forever preferred_lft forever
-190: eth1@if191: <BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN> mtu 1500 qdisc noqueue
+190: eth1@if191: &lt;BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN&gt; mtu 1500 qdisc noqueue
     link/ether 02:42:ac:12:00:04 brd ff:ff:ff:ff:ff:ff
     inet 172.18.0.4/16 brd 172.18.255.255 scope global eth1
        valid_lft forever preferred_lft forever</code></pre></div>
 <p>查看bridge</p>
-<div class="code-wrapper"><pre class=" language-hljs bash">root:~<span class="hljs-comment"><code class="language-hljs bash">root:~<span class="hljs-comment"># sudo brctl show</span>
+<div class="code-wrapper"><pre><code class="hljs bash">root:~<span class="hljs-comment"># sudo brctl show</span>
 bridge name     bridge id               STP enabled     interfaces
 br-a52b83252b81         8000.02429efea748       no              veth1ce8b2f
                                                         veth7001337
@@ -543,79 +543,79 @@ br-a52b83252b81         8000.02429efea748       no              veth1ce8b2f
 docker0         8000.02424faa7310       no              veth5b2efd9
                                                         veth74e040d</code></pre></div>
 <p>查看bridge详情</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># docker0的网卡</span>
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># docker0的网卡</span>
 docker network inspect bridge
-<span class="hljs-string">"Containers"</span>: {
-            <span class="hljs-string">"890e3e47feea65be2d11122e01739247d41cf45e9ff8a2b88157482ee02a3b6f"</span>: {
-                <span class="hljs-string">"Name"</span>: <span class="hljs-string">"b1"</span>,
-                <span class="hljs-string">"EndpointID"</span>: <span class="hljs-string">"13c791d9040e3cb9521e53ef0e56b6f87b9564d9ad3e6af4ee38bd2d8fdc53b5"</span>,
-                <span class="hljs-string">"MacAddress"</span>: <span class="hljs-string">"02:42:ac:11:00:02"</span>,
-                <span class="hljs-string">"IPv4Address"</span>: <span class="hljs-string">"172.17.0.2/16"</span>,
-                <span class="hljs-string">"IPv6Address"</span>: <span class="hljs-string">""</span>
-            },
-            <span class="hljs-string">"db45d33d512104ec2d799bd45ba47095ffb5c1c8253ede8becb808c47b902f7b"</span>: {
-                <span class="hljs-string">"Name"</span>: <span class="hljs-string">"b2"</span>,
-                <span class="hljs-string">"EndpointID"</span>: <span class="hljs-string">"d155a2a32b4db93753084739ee81710c83c397c8fdf7aa2d799ccad123fa71c9"</span>,
-                <span class="hljs-string">"MacAddress"</span>: <span class="hljs-string">"02:42:ac:11:00:03"</span>,
-                <span class="hljs-string">"IPv4Address"</span>: <span class="hljs-string">"172.17.0.3/16"</span>,
-                <span class="hljs-string">"IPv6Address"</span>: <span class="hljs-string">""</span>
-            }
-        },
+<span class="hljs-string">&quot;Containers&quot;</span>: &#123;
+            <span class="hljs-string">&quot;890e3e47feea65be2d11122e01739247d41cf45e9ff8a2b88157482ee02a3b6f&quot;</span>: &#123;
+                <span class="hljs-string">&quot;Name&quot;</span>: <span class="hljs-string">&quot;b1&quot;</span>,
+                <span class="hljs-string">&quot;EndpointID&quot;</span>: <span class="hljs-string">&quot;13c791d9040e3cb9521e53ef0e56b6f87b9564d9ad3e6af4ee38bd2d8fdc53b5&quot;</span>,
+                <span class="hljs-string">&quot;MacAddress&quot;</span>: <span class="hljs-string">&quot;02:42:ac:11:00:02&quot;</span>,
+                <span class="hljs-string">&quot;IPv4Address&quot;</span>: <span class="hljs-string">&quot;172.17.0.2/16&quot;</span>,
+                <span class="hljs-string">&quot;IPv6Address&quot;</span>: <span class="hljs-string">&quot;&quot;</span>
+            &#125;,
+            <span class="hljs-string">&quot;db45d33d512104ec2d799bd45ba47095ffb5c1c8253ede8becb808c47b902f7b&quot;</span>: &#123;
+                <span class="hljs-string">&quot;Name&quot;</span>: <span class="hljs-string">&quot;b2&quot;</span>,
+                <span class="hljs-string">&quot;EndpointID&quot;</span>: <span class="hljs-string">&quot;d155a2a32b4db93753084739ee81710c83c397c8fdf7aa2d799ccad123fa71c9&quot;</span>,
+                <span class="hljs-string">&quot;MacAddress&quot;</span>: <span class="hljs-string">&quot;02:42:ac:11:00:03&quot;</span>,
+                <span class="hljs-string">&quot;IPv4Address&quot;</span>: <span class="hljs-string">&quot;172.17.0.3/16&quot;</span>,
+                <span class="hljs-string">&quot;IPv6Address&quot;</span>: <span class="hljs-string">&quot;&quot;</span>
+            &#125;
+        &#125;,
 <span class="hljs-comment"># new-bridge的网卡</span>
 docker network inspect new-bridge
- <span class="hljs-string">"Containers"</span>: {
-            <span class="hljs-string">"890e3e47feea65be2d11122e01739247d41cf45e9ff8a2b88157482ee02a3b6f"</span>: {
-                <span class="hljs-string">"Name"</span>: <span class="hljs-string">"b1"</span>,
-                <span class="hljs-string">"EndpointID"</span>: <span class="hljs-string">"8cd4ff8ff0b032fb72cdfaa3b02b16b9e564c75f2d8844e5cad680b02e76387a"</span>,
-                <span class="hljs-string">"MacAddress"</span>: <span class="hljs-string">"02:42:ac:12:00:03"</span>,
-                <span class="hljs-string">"IPv4Address"</span>: <span class="hljs-string">"172.18.0.3/16"</span>,
-                <span class="hljs-string">"IPv6Address"</span>: <span class="hljs-string">""</span>
-            },
-            <span class="hljs-string">"a60bdef872f7c16305b32920d60e4d973bcd5329a912eaff32b476debf3e6aaa"</span>: {
-                <span class="hljs-string">"Name"</span>: <span class="hljs-string">"b4"</span>,
-                <span class="hljs-string">"EndpointID"</span>: <span class="hljs-string">"e41fb0b3e878af1596e80f2752fcc1dff2ac68a00d53163aded9aea31ead893d"</span>,
-                <span class="hljs-string">"MacAddress"</span>: <span class="hljs-string">"02:42:ac:12:00:02"</span>,
-                <span class="hljs-string">"IPv4Address"</span>: <span class="hljs-string">"172.18.0.2/16"</span>,
-                <span class="hljs-string">"IPv6Address"</span>: <span class="hljs-string">""</span>
-            },
-            <span class="hljs-string">"db45d33d512104ec2d799bd45ba47095ffb5c1c8253ede8becb808c47b902f7b"</span>: {
-                <span class="hljs-string">"Name"</span>: <span class="hljs-string">"b2"</span>,
-                <span class="hljs-string">"EndpointID"</span>: <span class="hljs-string">"e77bf7b9ae54e3f652fa4e053c683f85ec3c4308c50ca8225d8722ddbae2e474"</span>,
-                <span class="hljs-string">"MacAddress"</span>: <span class="hljs-string">"02:42:ac:12:00:04"</span>,
-                <span class="hljs-string">"IPv4Address"</span>: <span class="hljs-string">"172.18.0.4/16"</span>,
-                <span class="hljs-string">"IPv6Address"</span>: <span class="hljs-string">""</span>
-            }
-        },</code></pre></div>
+ <span class="hljs-string">&quot;Containers&quot;</span>: &#123;
+            <span class="hljs-string">&quot;890e3e47feea65be2d11122e01739247d41cf45e9ff8a2b88157482ee02a3b6f&quot;</span>: &#123;
+                <span class="hljs-string">&quot;Name&quot;</span>: <span class="hljs-string">&quot;b1&quot;</span>,
+                <span class="hljs-string">&quot;EndpointID&quot;</span>: <span class="hljs-string">&quot;8cd4ff8ff0b032fb72cdfaa3b02b16b9e564c75f2d8844e5cad680b02e76387a&quot;</span>,
+                <span class="hljs-string">&quot;MacAddress&quot;</span>: <span class="hljs-string">&quot;02:42:ac:12:00:03&quot;</span>,
+                <span class="hljs-string">&quot;IPv4Address&quot;</span>: <span class="hljs-string">&quot;172.18.0.3/16&quot;</span>,
+                <span class="hljs-string">&quot;IPv6Address&quot;</span>: <span class="hljs-string">&quot;&quot;</span>
+            &#125;,
+            <span class="hljs-string">&quot;a60bdef872f7c16305b32920d60e4d973bcd5329a912eaff32b476debf3e6aaa&quot;</span>: &#123;
+                <span class="hljs-string">&quot;Name&quot;</span>: <span class="hljs-string">&quot;b4&quot;</span>,
+                <span class="hljs-string">&quot;EndpointID&quot;</span>: <span class="hljs-string">&quot;e41fb0b3e878af1596e80f2752fcc1dff2ac68a00d53163aded9aea31ead893d&quot;</span>,
+                <span class="hljs-string">&quot;MacAddress&quot;</span>: <span class="hljs-string">&quot;02:42:ac:12:00:02&quot;</span>,
+                <span class="hljs-string">&quot;IPv4Address&quot;</span>: <span class="hljs-string">&quot;172.18.0.2/16&quot;</span>,
+                <span class="hljs-string">&quot;IPv6Address&quot;</span>: <span class="hljs-string">&quot;&quot;</span>
+            &#125;,
+            <span class="hljs-string">&quot;db45d33d512104ec2d799bd45ba47095ffb5c1c8253ede8becb808c47b902f7b&quot;</span>: &#123;
+                <span class="hljs-string">&quot;Name&quot;</span>: <span class="hljs-string">&quot;b2&quot;</span>,
+                <span class="hljs-string">&quot;EndpointID&quot;</span>: <span class="hljs-string">&quot;e77bf7b9ae54e3f652fa4e053c683f85ec3c4308c50ca8225d8722ddbae2e474&quot;</span>,
+                <span class="hljs-string">&quot;MacAddress&quot;</span>: <span class="hljs-string">&quot;02:42:ac:12:00:04&quot;</span>,
+                <span class="hljs-string">&quot;IPv4Address&quot;</span>: <span class="hljs-string">&quot;172.18.0.4/16&quot;</span>,
+                <span class="hljs-string">&quot;IPv6Address&quot;</span>: <span class="hljs-string">&quot;&quot;</span>
+            &#125;
+        &#125;,</code></pre></div>
 
 <h2 id="none与host"><a href="#none与host" class="headerlink" title="none与host"></a>none与host</h2><p>创建一个只有本地回环的容器</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">docker run -it -d --name b5 --network none busybox /bin/sh 
+<div class="code-wrapper"><pre><code class="hljs bash">docker run -it -d --name b5 --network none busybox /bin/sh 
 root:~<span class="hljs-comment"># docker exec b5 ip a</span>
-1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue qlen 1000
+1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue qlen 1000
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
     inet 127.0.0.1/8 scope host lo
        valid_lft forever preferred_lft forever</code></pre></div>
 
 <p><font color='red'>创建一台网卡配置与主机相同容器</font></p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">docker run -it -d --name b6 --network host busybox /bin/sh
+<div class="code-wrapper"><pre><code class="hljs bash">docker run -it -d --name b6 --network host busybox /bin/sh
 root:~<span class="hljs-comment"># docker exec b6 ip a</span>
 root:~<span class="hljs-comment"># docker exec b6 ip a</span>
-1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue qlen 1000
+1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue qlen 1000
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
     inet 127.0.0.1/8 scope host lo
        valid_lft forever preferred_lft forever
     inet6 ::1/128 scope host
        valid_lft forever preferred_lft forever
-2: enp3s0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq qlen 1000
+2: enp3s0: &lt;NO-CARRIER,BROADCAST,MULTICAST,UP&gt; mtu 1500 qdisc mq qlen 1000
     link/ether 00:8c:fa:59:e9:ac brd ff:ff:ff:ff:ff:ff
-3: enp4s0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq qlen 1000
+3: enp4s0: &lt;NO-CARRIER,BROADCAST,MULTICAST,UP&gt; mtu 1500 qdisc mq qlen 1000
     link/ether 00:8c:fa:59:e9:ad brd ff:ff:ff:ff:ff:ff
-4: enp9s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq qlen 1000
+4: enp9s0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc mq qlen 1000
     link/ether 00:8c:fa:59:e9:ae brd ff:ff:ff:ff:ff:ff
     inet 10.0.5.233/20 brd 10.0.15.255 scope global enp9s0
        valid_lft forever preferred_lft forever
     inet6 fe80::748:8e4c:c635:1963/64 scope link
        valid_lft forever preferred_lft forever
-5: enp10s0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq qlen 1000
+5: enp10s0: &lt;NO-CARRIER,BROADCAST,MULTICAST,UP&gt; mtu 1500 qdisc mq qlen 1000
     link/ether 00:8c:fa:59:e9:af brd ff:ff:ff:ff:ff:ff
 ...
 </code></pre></div>
@@ -654,7 +654,7 @@ root:~<span class="hljs-comment"># docker exec b6 ip a</span>
                       <a href="/2020/02/07/blog_back_new/docker/docker+wordpress/">
                         <i class="iconfont icon-arrowleft"></i>
                         <span class="hidden-mobile">docker搭建wordpress</span>
-                        <span class="visible-mobile">Vorheriger</span>
+                        <span class="visible-mobile">上一篇</span>
                       </a>
                     
                   </article>
@@ -663,7 +663,7 @@ root:~<span class="hljs-comment"># docker exec b6 ip a</span>
                     
                       <a href="/2020/02/06/blog_back_new/docker/docker%E5%AE%B9%E5%99%A8%E7%9A%84%E8%B5%84%E6%BA%90%E9%99%90%E5%88%B6/">
                         <span class="hidden-mobile">docker容器的资源限制</span>
-                        <span class="visible-mobile">Nächster</span>
+                        <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
                     
@@ -680,7 +680,7 @@ root:~<span class="hljs-comment"># docker exec b6 ip a</span>
     
       <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
         <div id="toc">
-  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
   <div class="toc-body" id="toc-body"></div>
 </div>
 
@@ -706,7 +706,7 @@ root:~<span class="hljs-comment"># docker exec b6 ip a</span>
   <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">Suchen</h4>
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
         <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -715,7 +715,7 @@ root:~<span class="hljs-comment"># docker exec b6 ip a</span>
         <div class="md-form mb-5">
           <input type="text" id="local-search-input" class="form-control validate">
           <label data-error="x" data-success="v"
-                 for="local-search-input">Stichwort</label>
+                 for="local-search-input">关键词</label>
         </div>
         <div class="list-group" id="local-search-result"></div>
       </div>

@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html lang="cn" data-default-color-scheme=&#34;auto&#34;>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
 
 
 
@@ -61,7 +61,7 @@
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
 
 <body>
@@ -88,7 +88,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/">
                 <i class="iconfont icon-home-fill"></i>
-                Startseite
+                首页
               </a>
             </li>
           
@@ -100,7 +100,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/archives/">
                 <i class="iconfont icon-archive-fill"></i>
-                Archiv
+                归档
               </a>
             </li>
           
@@ -112,7 +112,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/categories/">
                 <i class="iconfont icon-category-fill"></i>
-                Kategorie
+                分类
               </a>
             </li>
           
@@ -124,7 +124,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/tags/">
                 <i class="iconfont icon-tags-fill"></i>
-                Etiketten
+                标签
               </a>
             </li>
           
@@ -136,7 +136,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/about/">
                 <i class="iconfont icon-user-fill"></i>
-                Über mich
+                关于
               </a>
             </li>
           
@@ -175,7 +175,7 @@
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
       <time datetime="2020-02-07 14:18" pubdate>
-        February 7, 2020 pm
+        2020年2月7日 下午
       </time>
     </span>
   
@@ -186,7 +186,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      396 字
+      378 字
     </span>
   
 
@@ -254,12 +254,12 @@
 <li>services</li>
 </ul>
 <p>一个service代表了一个container 这个container可以从dockerhub的image创建，或者从本地的dockerfile build出来的image创建</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># compose部分</span>
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># compose部分</span>
 services:
   db:
     images: mysql:8.0
     volumes:
-      - <span class="hljs-string">"db-data:/var/lib/mysql"</span>
+      - <span class="hljs-string">&quot;db-data:/var/lib/mysql&quot;</span>
     networks:
       - back-tier
 <span class="hljs-comment"># 类似于COMMAND命令</span>
@@ -280,13 +280,13 @@ services:
 <li>volumes</li>
 </ul>
 <h2 id="docker-compose安装"><a href="#docker-compose安装" class="headerlink" title="docker-compose安装"></a>docker-compose安装</h2><p><a target="_blank" rel="noopener" href="https://docs.docker.com/compose/install/">https://docs.docker.com/compose/install/</a></p>
-<div class="code-wrapper"><pre class=" language-hljs bash">sudo curl -L <span class="hljs-string">&quot;https://github.com/docker/compose/releases/download/1.25.3/docker-compose-<span class="hljs-subst">$(uname -s)</span>-<span class="hljs-subst">$(uname -m)</span>&quot;</span> -o /usr/<span class="hljs-built_in"><code class="language-hljs bash">sudo curl -L <span class="hljs-string">&quot;https://github.com/docker/compose/releases/download/1.25.3/docker-compose-<span class="hljs-subst">$(uname -s)</span>-<span class="hljs-subst">$(uname -m)</span>&quot;</span> -o /usr/<span class="hljs-built_in">local</span>/bin/docker-compose 
+<div class="code-wrapper"><pre><code class="hljs bash">sudo curl -L <span class="hljs-string">&quot;https://github.com/docker/compose/releases/download/1.25.3/docker-compose-<span class="hljs-subst">$(uname -s)</span>-<span class="hljs-subst">$(uname -m)</span>&quot;</span> -o /usr/<span class="hljs-built_in">local</span>/bin/docker-compose 
 sudo chmod +x /usr/<span class="hljs-built_in">local</span>/bin/docker-compose
 sudo ln -s /usr/<span class="hljs-built_in">local</span>/bin/docker-compose /usr/bin/docker-compose
 <span class="hljs-comment"># 查看版本</span>
 docker-compose --version</code></pre></div>
 
-<h2 id="使用docker-compose搭建wordpress"><a href="#使用docker-compose搭建wordpress" class="headerlink" title="使用docker-compose搭建wordpress"></a>使用docker-compose搭建wordpress</h2><div class="code-wrapper"><pre class=" language-hljs bash">version: <span class="hljs-string"><code class="language-hljs bash">version: <span class="hljs-string">"3"</span>
+<h2 id="使用docker-compose搭建wordpress"><a href="#使用docker-compose搭建wordpress" class="headerlink" title="使用docker-compose搭建wordpress"></a>使用docker-compose搭建wordpress</h2><div class="code-wrapper"><pre><code class="hljs bash">version: <span class="hljs-string">&quot;3&quot;</span>
 services:
 
    db:
@@ -309,7 +309,7 @@ services:
        - db
      image: wordpress:latest
      ports:
-       - <span class="hljs-string">"8000:80"</span>
+       - <span class="hljs-string">&quot;8000:80&quot;</span>
      restart: always
      environment:
        WORDPRESS_DB_HOST: db:3306
@@ -318,7 +318,7 @@ services:
 volumes:
   db_data:</code></pre></div>
 
-<h2 id="docker-compose命令"><a href="#docker-compose命令" class="headerlink" title="docker-compose命令"></a>docker-compose命令</h2><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 根据docker-compose.yml文件运行</span>
+<h2 id="docker-compose命令"><a href="#docker-compose命令" class="headerlink" title="docker-compose命令"></a>docker-compose命令</h2><div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 根据docker-compose.yml文件运行</span>
 docker-compose -f docker-compose.yml up
 <span class="hljs-comment"># 后台运行</span>
 docker-compose up -d
@@ -372,7 +372,7 @@ docekr-compose <span class="hljs-built_in">exec</span> IMAGE COMMAND
                       <a href="/2020/02/07/blog_back_new/docker/docker-swarm/">
                         <i class="iconfont icon-arrowleft"></i>
                         <span class="hidden-mobile">docker-swarm</span>
-                        <span class="visible-mobile">Vorheriger</span>
+                        <span class="visible-mobile">上一篇</span>
                       </a>
                     
                   </article>
@@ -381,7 +381,7 @@ docekr-compose <span class="hljs-built_in">exec</span> IMAGE COMMAND
                     
                       <a href="/2020/02/07/blog_back_new/docker/docker+wordpress/">
                         <span class="hidden-mobile">docker搭建wordpress</span>
-                        <span class="visible-mobile">Nächster</span>
+                        <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
                     
@@ -398,7 +398,7 @@ docekr-compose <span class="hljs-built_in">exec</span> IMAGE COMMAND
     
       <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
         <div id="toc">
-  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
   <div class="toc-body" id="toc-body"></div>
 </div>
 
@@ -424,7 +424,7 @@ docekr-compose <span class="hljs-built_in">exec</span> IMAGE COMMAND
   <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">Suchen</h4>
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
         <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -433,7 +433,7 @@ docekr-compose <span class="hljs-built_in">exec</span> IMAGE COMMAND
         <div class="md-form mb-5">
           <input type="text" id="local-search-input" class="form-control validate">
           <label data-error="x" data-success="v"
-                 for="local-search-input">Stichwort</label>
+                 for="local-search-input">关键词</label>
         </div>
         <div class="list-group" id="local-search-result"></div>
       </div>

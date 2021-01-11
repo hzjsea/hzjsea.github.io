@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html lang="cn" data-default-color-scheme=&#34;auto&#34;>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
 
 
 
@@ -61,7 +61,7 @@
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
 
 <body>
@@ -88,7 +88,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/">
                 <i class="iconfont icon-home-fill"></i>
-                Startseite
+                首页
               </a>
             </li>
           
@@ -100,7 +100,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/archives/">
                 <i class="iconfont icon-archive-fill"></i>
-                Archiv
+                归档
               </a>
             </li>
           
@@ -112,7 +112,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/categories/">
                 <i class="iconfont icon-category-fill"></i>
-                Kategorie
+                分类
               </a>
             </li>
           
@@ -124,7 +124,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/tags/">
                 <i class="iconfont icon-tags-fill"></i>
-                Etiketten
+                标签
               </a>
             </li>
           
@@ -136,7 +136,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/about/">
                 <i class="iconfont icon-user-fill"></i>
-                Über mich
+                关于
               </a>
             </li>
           
@@ -175,7 +175,7 @@
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
       <time datetime="2020-09-07 14:13" pubdate>
-        September 7, 2020 pm
+        2020年9月7日 下午
       </time>
     </span>
   
@@ -234,113 +234,113 @@
 
 
 <h1 id="golang标准库io"><a href="#golang标准库io" class="headerlink" title="golang标准库io"></a>golang标准库io</h1><p>io标准库地址 <a target="_blank" rel="noopener" href="https://golang.org/pkg/io/">https://golang.org/pkg/io/</a><br>io包为<code>I/O</code>原语提供了基本的接口。它主要包装了这些原语的已有实现。<br>在io包中最重要的是两个接口:<code>Reader</code>和<code>Writer</code>接口</p>
-<h2 id="Reader接口"><a href="#Reader接口" class="headerlink" title="Reader接口"></a>Reader接口</h2><div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword">type</span> Reader <span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">type</span> Reader <span class="hljs-keyword">interface</span> {
+<h2 id="Reader接口"><a href="#Reader接口" class="headerlink" title="Reader接口"></a>Reader接口</h2><div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">type</span> Reader <span class="hljs-keyword">interface</span> &#123;
     Read(p []<span class="hljs-keyword">byte</span>) (n <span class="hljs-keyword">int</span>, err error)
-}</code></pre></div>
+&#125;</code></pre></div>
 <p>接受一个byte数组 返回n字节以及err ,没有错误时，err为nil</p>
 <p>::: tip<br>Read 将 len(p) 个字节读取到 p 中。它返回读取的字节数 n（0 &lt;= n &lt;= len(p)） 以及任何遇到的错误。即使 Read 返回的 n &lt; len(p)，它也会在调用过程中占用 len(p) 个字节作为暂存空间。若可读取的数据不到 len(p) 个字节，Read 会返回可用数据，而不是等待更多数据。<br>当 Read 在成功读取 n &gt; 0 个字节后遇到一个错误或 EOF (end-of-file)，它会返回读取的字节数。它可能会同时在本次的调用中返回一个non-nil错误,或在下一次的调用中返回这个错误（且 n 为 0）。 一般情况下, Reader会返回一个非0字节数n, 若 n = len(p) 个字节从输入源的结尾处由 Read 返回，Read可能返回 err == EOF 或者 err == nil。并且之后的 Read() 都应该返回 (n:0, err:EOF)。<br>调用者在考虑错误之前应当首先处理返回的数据。这样做可以正确地处理在读取一些字节后产生的 I/O 错误，同时允许EOF的出现。<br>::: </p>
 <p>根据 Go 语言中关于接口和满足了接口的类型的定义(Interface_types)，我们知道 Reader 接口的方法集(Method_sets)只包含一个 Read 方法，因此，所有实现了 <code>Read</code> 方法的类型都满足 <code>io.Reader</code> 接口，也就是说，在所有需要<code>io.Reader</code>的地方，可以传递实现了<code>Read()</code>方法的类型的实例</p>
 <h2 id="ReadFrom方法"><a href="#ReadFrom方法" class="headerlink" title="ReadFrom方法"></a>ReadFrom方法</h2><p><a target="_blank" rel="noopener" href="https://golang.org/pkg/io/">https://golang.org/pkg/io/</a><br>ReadFrom函数将 <code>io.Reader</code> 作为参数，也就是说，<code>ReadFrom</code> 可以从任意的地方读取数据，只要来源实现了 <code>io.Reader</code> 接口。比如，我们可以从标准输入、文件、字符串等读取数据，示例代码如下</p>
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">ReadFrom</span><span class="hljs-params">(reader io.Reader, num <span class="hljs-keyword">int</span>)</span> <span class="hljs-params">([]<span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">ReadFrom</span><span class="hljs-params">(reader io.Reader, num <span class="hljs-keyword">int</span>)</span> <span class="hljs-params">([]<span class="hljs-keyword">byte</span>, error)</span></span> {
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">ReadFrom</span><span class="hljs-params">(reader io.Reader, num <span class="hljs-keyword">int</span>)</span> <span class="hljs-params">([]<span class="hljs-keyword">byte</span>, error)</span></span> &#123;
     p := <span class="hljs-built_in">make</span>([]<span class="hljs-keyword">byte</span>, num)
     n, err := reader.Read(p)
-    <span class="hljs-keyword">if</span> n > <span class="hljs-number">0</span> {
+    <span class="hljs-keyword">if</span> n &gt; <span class="hljs-number">0</span> &#123;
         <span class="hljs-keyword">return</span> p[:n], <span class="hljs-literal">nil</span>
-    }
+    &#125;
     <span class="hljs-keyword">return</span> p, err
-}</code></pre></div>
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-comment"><code class="language-hljs go"><span class="hljs-comment">// 从标准输入中读取</span>
+&#125;</code></pre></div>
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-comment">// 从标准输入中读取</span>
 data,err := ReadFrom(os.Stdin, <span class="hljs-number">11</span>)
 <span class="hljs-comment">// 从文件中读取</span>
 data,err := ReadFrom(file,<span class="hljs-number">9</span>)
 <span class="hljs-comment">// 从字符串中读取</span>
-data,err := ReadFrom(strings.NewReader(<span class="hljs-string">"from string"</span>), <span class="hljs-number">12</span>)</code></pre></div>
+data,err := ReadFrom(strings.NewReader(<span class="hljs-string">&quot;from string&quot;</span>), <span class="hljs-number">12</span>)</code></pre></div>
 
-<h2 id="Writer-接口"><a href="#Writer-接口" class="headerlink" title="Writer 接口"></a>Writer 接口</h2><div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword">type</span> Writer <span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">type</span> Writer <span class="hljs-keyword">interface</span> {
+<h2 id="Writer-接口"><a href="#Writer-接口" class="headerlink" title="Writer 接口"></a>Writer 接口</h2><div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">type</span> Writer <span class="hljs-keyword">interface</span> &#123;
     Write(p []<span class="hljs-keyword">byte</span>) (n <span class="hljs-keyword">int</span>, err error)
-}</code></pre></div>
+&#125;</code></pre></div>
 <p>获取byte数组，返回n个字节和err=nil<br>::: tip<br>Write 将 <code>len(p)</code> 个字节从 p 中写入到基本数据流中。它返回从 p 中被写入的字节数 <code>n(0 &lt;= n &lt;= len(p))</code>以及任何遇到的引起写入提前停止的错误。若 Write 返回的 <code>n &lt; len(p)</code>，它就必须返回一个 <code>非nil</code> 的错误。<br>:::</p>
 <h2 id="Fprintln方法"><a href="#Fprintln方法" class="headerlink" title="Fprintln方法"></a>Fprintln方法</h2><p>我们常用的<code>fmt.println</code>的方法如下</p>
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">Println</span><span class="hljs-params">(a ...<span class="hljs-keyword">interface</span>&#123;&#125;)</span> <span class="hljs-params">(n <span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">Println</span><span class="hljs-params">(a ...<span class="hljs-keyword">interface</span>&#123;&#125;)</span> <span class="hljs-params">(n <span class="hljs-keyword">int</span>, err error)</span></span> {
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">Println</span><span class="hljs-params">(a ...<span class="hljs-keyword">interface</span>&#123;&#125;)</span> <span class="hljs-params">(n <span class="hljs-keyword">int</span>, err error)</span></span> &#123;
     <span class="hljs-keyword">return</span> Fprintln(os.Stdout, a...)
-}</code></pre></div>
+&#125;</code></pre></div>
 <p>其中Fprintln的实现如下</p>
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">Fprintln</span><span class="hljs-params">(w io.Writer, a ...<span class="hljs-keyword">interface</span>&#123;&#125;)</span> <span class="hljs-params">(n <span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">Fprintln</span><span class="hljs-params">(w io.Writer, a ...<span class="hljs-keyword">interface</span>&#123;&#125;)</span> <span class="hljs-params">(n <span class="hljs-keyword">int</span>, err error)</span></span> {
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">Fprintln</span><span class="hljs-params">(w io.Writer, a ...<span class="hljs-keyword">interface</span>&#123;&#125;)</span> <span class="hljs-params">(n <span class="hljs-keyword">int</span>, err error)</span></span> &#123;
 	p := newPrinter()
 	p.doPrintln(a)
 	n, err = w.Write(p.buf) <span class="hljs-comment">// 实现了Writer接口的唯一方法 Write 也就是实现了io.Writer接口</span>
 	p.free()
 	<span class="hljs-keyword">return</span>
-}</code></pre></div>
+&#125;</code></pre></div>
 <p>这里可以看出Fprintln是实现了<code>io.Writer</code>接口的 ,并且他接收多个参数，返回n个字节以及一个error</p>
 <h2 id="标准输入输出错误"><a href="#标准输入输出错误" class="headerlink" title="标准输入输出错误"></a>标准输入输出错误</h2><p>在golang源码中 os包里面有这么一段变量定义</p>
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">var</span> (
-	Stdin  = NewFile(<span class="hljs-keyword">uintptr</span>(syscall.Stdin), <span class="hljs-string">"/dev/stdin"</span>)
-	Stdout = NewFile(<span class="hljs-keyword">uintptr</span>(syscall.Stdout), <span class="hljs-string">"/dev/stdout"</span>)
-	Stderr = NewFile(<span class="hljs-keyword">uintptr</span>(syscall.Stderr), <span class="hljs-string">"/dev/stderr"</span>)
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">var</span> (
+	Stdin  = NewFile(<span class="hljs-keyword">uintptr</span>(syscall.Stdin), <span class="hljs-string">&quot;/dev/stdin&quot;</span>)
+	Stdout = NewFile(<span class="hljs-keyword">uintptr</span>(syscall.Stdout), <span class="hljs-string">&quot;/dev/stdout&quot;</span>)
+	Stderr = NewFile(<span class="hljs-keyword">uintptr</span>(syscall.Stderr), <span class="hljs-string">&quot;/dev/stderr&quot;</span>)
 )</code></pre></div>
 <p>这一段定义说明了golang中的标准输入输出错误，也就是<code>os.stdin</code>,<code>os.stdout</code>,<code>os.stderr</code>都是以文件的形式出现的，<code>os.File</code>是实现了<code>io.Writer</code>和<code>io.Reader</code>接口的<br>所以stdin stdout stderr都是实现了写入写出的</p>
 <h2 id="ReaderAt-和-WriterAt-接口"><a href="#ReaderAt-和-WriterAt-接口" class="headerlink" title="ReaderAt 和 WriterAt 接口"></a>ReaderAt 和 WriterAt 接口</h2><p>来看下他的源码</p>
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-comment"><code class="language-hljs go"><span class="hljs-comment">// ReaderAt</span>
-<span class="hljs-keyword">type</span> ReaderAt <span class="hljs-keyword">interface</span> {
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-comment">// ReaderAt</span>
+<span class="hljs-keyword">type</span> ReaderAt <span class="hljs-keyword">interface</span> &#123;
     ReadAt(p []<span class="hljs-keyword">byte</span>, off <span class="hljs-keyword">int64</span>) (n <span class="hljs-keyword">int</span>, err error)
-}
+&#125;
 
 <span class="hljs-comment">// WriterAt</span>
-<span class="hljs-keyword">type</span> WriterAt <span class="hljs-keyword">interface</span> {
+<span class="hljs-keyword">type</span> WriterAt <span class="hljs-keyword">interface</span> &#123;
     WriteAt(p []<span class="hljs-keyword">byte</span>, off <span class="hljs-keyword">int64</span>) (n <span class="hljs-keyword">int</span>, err error)
-}</code></pre></div>
+&#125;</code></pre></div>
 <p>他们比之前的就多了一个off  而这个off就是偏移量,主要作用是将<code>ReadAt</code>从<code>基本输入源</code>的偏移量 <code>off</code> 处开始，将 <code>len(p)</code> 个字节读取到 p 中。</p>
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">package</span> main
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main
 
 <span class="hljs-keyword">import</span> (
-	<span class="hljs-string">"fmt"</span>
-	<span class="hljs-string">"strings"</span>
+	<span class="hljs-string">&quot;fmt&quot;</span>
+	<span class="hljs-string">&quot;strings&quot;</span>
 )
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
 	<span class="hljs-comment">// 创建一个输入源</span>
-	<span class="hljs-keyword">var</span> qq = strings.NewReader(<span class="hljs-string">"helloworld"</span>)
+	<span class="hljs-keyword">var</span> qq = strings.NewReader(<span class="hljs-string">&quot;helloworld&quot;</span>)
 	<span class="hljs-comment">// 创建一个输入源</span>
 	<span class="hljs-keyword">var</span> list = <span class="hljs-built_in">make</span>([]<span class="hljs-keyword">byte</span>,<span class="hljs-number">20</span>)
 	n,err := qq.ReadAt(list, <span class="hljs-number">2</span>)
-	<span class="hljs-keyword">if</span> err == <span class="hljs-literal">nil</span>{
+	<span class="hljs-keyword">if</span> err == <span class="hljs-literal">nil</span>&#123;
 		fmt.Println(n)
-	}
-	fmt.Printf(<span class="hljs-string">"%s, %d\n"</span>, list, n)
-}
+	&#125;
+	fmt.Printf(<span class="hljs-string">&quot;%s, %d\n&quot;</span>, list, n)
+&#125;
 
 <span class="hljs-comment">// result </span>
 <span class="hljs-comment">// lloworld, 8</span></code></pre></div>
 <p><code>WriteAt</code> 从 <code>p</code> 中将 <code>len(p)</code> 个字节写入到<code>偏移量</code> off 处的<code>基本输出源</code>中</p>
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">package</span> main
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main
 
 <span class="hljs-keyword">import</span> (
-	<span class="hljs-string">"fmt"</span>
-	<span class="hljs-string">"os"</span>
-	<span class="hljs-string">"strings"</span>
+	<span class="hljs-string">&quot;fmt&quot;</span>
+	<span class="hljs-string">&quot;os&quot;</span>
+	<span class="hljs-string">&quot;strings&quot;</span>
 )
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
 	<span class="hljs-comment">// 创建一个本文</span>
-	file,err := os.Create(<span class="hljs-string">"writeAt.txt"</span>)
-	<span class="hljs-keyword">if</span> err !=<span class="hljs-literal">nil</span>{
+	file,err := os.Create(<span class="hljs-string">&quot;writeAt.txt&quot;</span>)
+	<span class="hljs-keyword">if</span> err !=<span class="hljs-literal">nil</span>&#123;
 		<span class="hljs-built_in">panic</span>(err)
-	}
+	&#125;
 	<span class="hljs-keyword">defer</span> file.Close()
-	file.WriteString(<span class="hljs-string">"Golang中文社区——这里是多余"</span>)
-	n, err = file.WriteAt([]<span class="hljs-keyword">byte</span>(<span class="hljs-string">"Go语言中文网"</span>), <span class="hljs-number">24</span>)
-	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> {
+	file.WriteString(<span class="hljs-string">&quot;Golang中文社区——这里是多余&quot;</span>)
+	n, err = file.WriteAt([]<span class="hljs-keyword">byte</span>(<span class="hljs-string">&quot;Go语言中文网&quot;</span>), <span class="hljs-number">24</span>)
+	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;
 		<span class="hljs-built_in">panic</span>(err)
-	}
+	&#125;
 	fmt.Println(n)
-}</code></pre></div>
+&#125;</code></pre></div>
 
 
 <h2 id="ReaderFrom-和-WriterTo-接口"><a href="#ReaderFrom-和-WriterTo-接口" class="headerlink" title="ReaderFrom 和 WriterTo 接口"></a>ReaderFrom 和 WriterTo 接口</h2><p>先看下源码</p>
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword">type</span> ReaderFrom <span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">type</span> ReaderFrom <span class="hljs-keyword">interface</span> {
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">type</span> ReaderFrom <span class="hljs-keyword">interface</span> &#123;
     ReadFrom(r Reader) (n <span class="hljs-keyword">int64</span>, err error)
-}</code></pre></div>
+&#125;</code></pre></div>
 <p>接口说明<br>ReadFrom 从 <code>r</code> 中读取数据，直到 <code>EOF</code> 或<code>发生错误</code>。其返回值n为读取的字节数。除<code>io.EOF</code>之外，在读取过程中遇到的任何错误也将被返回。<br>如果ReaderFrom可用Copy函数就会使用它。</p>
 
             </div>
@@ -375,7 +375,7 @@ data,err := ReadFrom(strings.NewReader(<span class="hljs-string">"from string"</
                       <a href="/2020/09/07/blog_back_new/golang/StringsBytesRunesCharacters/">
                         <i class="iconfont icon-arrowleft"></i>
                         <span class="hidden-mobile">Strings, bytes, runes and characters in Go</span>
-                        <span class="visible-mobile">Vorheriger</span>
+                        <span class="visible-mobile">上一篇</span>
                       </a>
                     
                   </article>
@@ -384,7 +384,7 @@ data,err := ReadFrom(strings.NewReader(<span class="hljs-string">"from string"</
                     
                       <a href="/2020/09/07/blog_back_new/golang/golang%E6%A0%87%E5%87%86%E5%BA%93strings/">
                         <span class="hidden-mobile">golang标准库strings</span>
-                        <span class="visible-mobile">Nächster</span>
+                        <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
                     
@@ -401,7 +401,7 @@ data,err := ReadFrom(strings.NewReader(<span class="hljs-string">"from string"</
     
       <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
         <div id="toc">
-  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
   <div class="toc-body" id="toc-body"></div>
 </div>
 
@@ -427,7 +427,7 @@ data,err := ReadFrom(strings.NewReader(<span class="hljs-string">"from string"</
   <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">Suchen</h4>
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
         <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -436,7 +436,7 @@ data,err := ReadFrom(strings.NewReader(<span class="hljs-string">"from string"</
         <div class="md-form mb-5">
           <input type="text" id="local-search-input" class="form-control validate">
           <label data-error="x" data-success="v"
-                 for="local-search-input">Stichwort</label>
+                 for="local-search-input">关键词</label>
         </div>
         <div class="list-group" id="local-search-result"></div>
       </div>

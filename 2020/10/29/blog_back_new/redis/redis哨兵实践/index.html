@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html lang="cn" data-default-color-scheme=&#34;auto&#34;>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
 
 
 
@@ -61,7 +61,7 @@
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
 
 <body>
@@ -88,7 +88,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/">
                 <i class="iconfont icon-home-fill"></i>
-                Startseite
+                首页
               </a>
             </li>
           
@@ -100,7 +100,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/archives/">
                 <i class="iconfont icon-archive-fill"></i>
-                Archiv
+                归档
               </a>
             </li>
           
@@ -112,7 +112,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/categories/">
                 <i class="iconfont icon-category-fill"></i>
-                Kategorie
+                分类
               </a>
             </li>
           
@@ -124,7 +124,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/tags/">
                 <i class="iconfont icon-tags-fill"></i>
-                Etiketten
+                标签
               </a>
             </li>
           
@@ -136,7 +136,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/about/">
                 <i class="iconfont icon-user-fill"></i>
-                Über mich
+                关于
               </a>
             </li>
           
@@ -175,7 +175,7 @@
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
       <time datetime="2020-10-29 16:11" pubdate>
-        October 29, 2020 pm
+        2020年10月29日 下午
       </time>
     </span>
   
@@ -186,7 +186,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      4k 字
+      4.2k 字
     </span>
   
 
@@ -196,7 +196,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      51
+      55
        分钟
     </span>
   
@@ -265,29 +265,29 @@
 <p><font color='red'>Sentinel节点是独立的Redis节点，他们不存储数据，只支持部分命令</font></p>
 <h3 id="Redis-Sentinel实践"><a href="#Redis-Sentinel实践" class="headerlink" title="Redis-Sentinel实践"></a>Redis-Sentinel实践</h3><p>这里用的单机做实验，但事实上应该是放在一个集群里面的，如果所有的架构都放在一台服务器下面的话，高可用性就不存在了。单机挂了，这个集群就挂了，同时存储量也上不去。</p>
 <p>主节点配置</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">redis-6379.conf
+<div class="code-wrapper"><pre><code class="hljs bash">redis-6379.conf
 port 6379  
 daemonize yes  
-logfile <span class="hljs-string">"6379.log"</span>
-dbfilename <span class="hljs-string">"dump-6379.rdb"</span>  
-dir <span class="hljs-string">"/opt/soft/redis/data/"</span></code></pre></div>
+logfile <span class="hljs-string">&quot;6379.log&quot;</span>
+dbfilename <span class="hljs-string">&quot;dump-6379.rdb&quot;</span>  
+dir <span class="hljs-string">&quot;/opt/soft/redis/data/&quot;</span></code></pre></div>
 
 <p>从节点配置</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">redis-6380.conf
+<div class="code-wrapper"><pre><code class="hljs bash">redis-6380.conf
 port 6380
 daemonize yes  
-logfile <span class="hljs-string">"6380.log"</span>
-dbfilename <span class="hljs-string">"dump-6380.rdb"</span>  
-dir <span class="hljs-string">"/opt/soft/redis/data/"</span>
+logfile <span class="hljs-string">&quot;6380.log&quot;</span>
+dbfilename <span class="hljs-string">&quot;dump-6380.rdb&quot;</span>  
+dir <span class="hljs-string">&quot;/opt/soft/redis/data/&quot;</span>
 slaveof 127.0.0.1 6380</code></pre></div>
 
 <p>哨兵节点配置</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">redis-sentinel-26379.conf
+<div class="code-wrapper"><pre><code class="hljs bash">redis-sentinel-26379.conf
 port 26379 
 <span class="hljs-comment"># 是否后台运行</span>
 daemonize yes
 <span class="hljs-comment"># 日志存储地点</span>
-logfile <span class="hljs-string">"26379.log"</span>  
+logfile <span class="hljs-string">&quot;26379.log&quot;</span>  
 <span class="hljs-comment"># 节点工作地点</span>
 dir /opt/soft/redis/data 
 <span class="hljs-comment"># 监控名字叫master的主机，地址为127.0.0.1 端口为6379 至少2个哨兵节点同时检测不到才会被判断为故障</span>
@@ -299,27 +299,27 @@ sentinel parallel-syncs master 1
 sentinel failover-timeout master 180000  
 
 <span class="hljs-comment"># 如果Sentinel监控的主节点配置了密码，sentinel auth-pass配置通过添加主节点的密码，防止Sentinel节点对主节点无法监控</span>
-<span class="hljs-comment"># sentinel auth-pass <master-name> <password></span>
+<span class="hljs-comment"># sentinel auth-pass &lt;master-name&gt; &lt;password&gt;</span>
 
 <span class="hljs-comment"># sentinel notification-script的作用是在故障转移期间，当一些警告级别的Sentinel事件发生（指重要事件，例如-sdown：客观下线、-odown：主观下线）时，会触发对应路径的脚本，并向脚本发送相应的事件参数</span>
 <span class="hljs-comment"># sentinel notification-script</span></code></pre></div>
 
 
 <p>启动节点</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">redis-server redis-6379.conf
+<div class="code-wrapper"><pre><code class="hljs bash">redis-server redis-6379.conf
 <span class="hljs-comment"># 判断节点是否启动成功</span>
 redis-cli -h 127.0.0.1 -p 6379 ping 
 <span class="hljs-comment"># Pong</span></code></pre></div>
 
 <p>启动哨兵节点</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 方法1</span>
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 方法1</span>
 redis-server redis-sentinel-26379.conf --sentinel
 <span class="hljs-comment"># 方法2</span>
 redis-sentinel redis-sentinel-26379.conf
 </code></pre></div>
 
 <p>确认主从关系</p>
-<div class="code-wrapper"><pre class=" language-hljs bash">[root@dev workspace]<span class="hljs-comment"><code class="language-hljs bash">[root@dev workspace]<span class="hljs-comment"># ./redis-cli -h 127.0.0.1 -p 6379 info replication</span>
+<div class="code-wrapper"><pre><code class="hljs bash">[root@dev workspace]<span class="hljs-comment"># ./redis-cli -h 127.0.0.1 -p 6379 info replication</span>
 <span class="hljs-comment"># Replication</span>
 role:master    <span class="hljs-comment"># 主机名字</span>
 connected_slaves:2  <span class="hljs-comment"># 连接了2个从机</span>
@@ -364,13 +364,13 @@ master0:name=master,status=ok,address=127.0.0.1:6379,slaves=2,sentinels=3</code>
 
 
 <h3 id="哨兵节点配置优化"><a href="#哨兵节点配置优化" class="headerlink" title="哨兵节点配置优化"></a>哨兵节点配置优化</h3><p>在整个架构开启之前，redis-sentinel的配置内容如下</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">redis-sentinel-26379.conf
+<div class="code-wrapper"><pre><code class="hljs bash">redis-sentinel-26379.conf
 port 26379 
 daemonize yes
-logfile <span class="hljs-string">"26379.log"</span>  
+logfile <span class="hljs-string">&quot;26379.log&quot;</span>  
 dir /opt/soft/redis/data 
 sentinel monitor master 127.0.0.1 6379 2  
-<span class="hljs-comment"># 判断节点不可达的时间，虽然是以<master-name>为参数，但实际上对Sentinel节点，主节点，从节点同时有效</span>
+<span class="hljs-comment"># 判断节点不可达的时间，虽然是以&lt;master-name&gt;为参数，但实际上对Sentinel节点，主节点，从节点同时有效</span>
 sentinel down-after-milliseconds master 30000 
 <span class="hljs-comment"># 当主节点出现判定的时候，Sentinel会执行故障转移操作</span>
 <span class="hljs-comment"># 转移操作中复制操作可以做多个同时进行复制，如果是3 则是3个同步复制，会出现阻塞或加大磁盘IO开销</span>
@@ -378,7 +378,7 @@ sentinel parallel-syncs master 1
 <span class="hljs-comment"># 故障转移超时时间</span>
 sentinel failover-timeout master 180000</code></pre></div>
 <p>上面只写了master的配置，但事实上，sentinel节点还会监控其他的slave节点，这是动态更新在配置文件中的，如下</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">sentinel myid 7385f91ceab39c12e000af580d9a67624abb8387
+<div class="code-wrapper"><pre><code class="hljs bash">sentinel myid 7385f91ceab39c12e000af580d9a67624abb8387
 sentinel deny-scripts-reconfig yes
 sentinel monitor master 127.0.0.1 6379 2
 sentinel config-epoch master 0
@@ -391,7 +391,7 @@ sentinel known-sentinel master 127.0.0.1 26381 050e3625a856a0fe34750b62ded4751cc
 sentinel current-epoch 0</code></pre></div>
 
 <h3 id="选举条件"><a href="#选举条件" class="headerlink" title="选举条件"></a>选举条件</h3><p>Sentinel的选举条件</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">sentinel monitor master 127.0.0.1 6379 2(quorum)</code></pre></div>
+<div class="code-wrapper"><pre><code class="hljs bash">sentinel monitor master 127.0.0.1 6379 2(quorum)</code></pre></div>
 <p>一般设置为<code>(主节点数量/2)+1</code><br>选举条件 至少要有 (quorum,num(sentinel)/2+1) 个Sentinel节点参与选举，才能选出领导者Sentinel</p>
 <h3 id="故障转移操作那个"><a href="#故障转移操作那个" class="headerlink" title="故障转移操作那个"></a>故障转移操作那个</h3><ol>
 <li>选出合适的从节点</li>
@@ -406,7 +406,7 @@ sentinel current-epoch 0</code></pre></div>
 <li>如果3）阶段执行时间超过了failover-timeout（不包含复制时间），则故障转移失败。注意即使超过了这个时间，Sentinel节点也会最终配置从节点去同步最新的主节点。</li>
 </ul>
 <h3 id="监控多个主节点"><a href="#监控多个主节点" class="headerlink" title="监控多个主节点"></a>监控多个主节点</h3><p>master节点与slave节点配置不变<br>sentinel节点配置如下</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">sentinel monitor master-business-1 10.10.xx.1 6379 2 
+<div class="code-wrapper"><pre><code class="hljs bash">sentinel monitor master-business-1 10.10.xx.1 6379 2 
 sentinel down-after-milliseconds master-business-1 60000 
 sentinel failover-timeout master-business-1 180000 
 sentinel parallel-syncs master-business-1 1
@@ -416,7 +416,7 @@ sentinel failover-timeout master-business-2 180000
 sentinel parallel-syncs master-business-2 1</code></pre></div>
 
 <p><img src="http://img.noback.top/2020-10-30-15-09-12.png" srcset="/img/loading.gif" alt="2020-10-30-15-09-12"></p>
-<h3 id="动态设置配置参数"><a href="#动态设置配置参数" class="headerlink" title="动态设置配置参数"></a>动态设置配置参数</h3><div class="code-wrapper"><pre class=" language-hljs bash">sentinel <span class="hljs-built_in"><code class="language-hljs bash">sentinel <span class="hljs-built_in">set</span> master quorum 2
+<h3 id="动态设置配置参数"><a href="#动态设置配置参数" class="headerlink" title="动态设置配置参数"></a>动态设置配置参数</h3><div class="code-wrapper"><pre><code class="hljs bash">sentinel <span class="hljs-built_in">set</span> master quorum 2
 <span class="hljs-comment"># 设置故障判断时间</span>
 sentinel <span class="hljs-built_in">set</span> master down-after-milliseconds 30000
 <span class="hljs-comment"># 设置故障转移超时时间</span>
@@ -432,28 +432,28 @@ sentinel <span class="hljs-built_in">set</span> master auth-parallel password</c
 <li>哨兵节点不应该部署在同一个物理机上面， 应该是一个Redis+一个哨兵节点 一个用于存储 一个用于监控</li>
 <li>至少三个且奇数个数的Sentinel节点，提高准确性</li>
 </ul>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 登录Sentinel</span>
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 登录Sentinel</span>
 ./redis-cli  -h 127.0.0.1 -p 26379
 <span class="hljs-comment"># 查看masters数量</span>
 sentinel masters
 <span class="hljs-comment"># 查看主节点信息</span>
-sentinel master <master-name>
+sentinel master &lt;master-name&gt;
 <span class="hljs-comment"># 查看特定主节点下面的从节点信息</span>
-sentinel slaves <master-name>
+sentinel slaves &lt;master-name&gt;
 <span class="hljs-comment"># 查看哨兵节点信息</span>
-sentinel sentinels <master-name>
+sentinel sentinels &lt;master-name&gt;
 <span class="hljs-comment"># 返回主节点的IP地址和端口</span>
-sentinel get-master-addr-by-name <master-name>
+sentinel get-master-addr-by-name &lt;master-name&gt;
 <span class="hljs-comment"># 重置哨兵节点，清除相关状态，比如故障转移记录</span>
-sentinel reset <master-name>
+sentinel reset &lt;master-name&gt;
 <span class="hljs-comment"># 对主节点进行强制故障</span>
-sentinel failover <master-name>
+sentinel failover &lt;master-name&gt;
 <span class="hljs-comment"># 检查当前可达哨兵节点数量为几个 比如quorum=3 命令的结果是2  则无法故障转移</span>
-sentinel ckquorum <master-name>
+sentinel ckquorum &lt;master-name&gt;
 <span class="hljs-comment"># 将Sentinel节点的配置强制刷到磁盘上</span>
 sentinel flushconfig
 <span class="hljs-comment"># 取消当前Sentinel对主节点的监控</span>
-sentinel remove<master-name>
+sentinel remove&lt;master-name&gt;
 <span class="hljs-comment"># 设置Sentinel对主节点的监控</span>
 sentinel monitor master</code></pre></div>
 
@@ -467,7 +467,7 @@ sentinel monitor master</code></pre></div>
 </ol>
 <p>java连接 redis实例</p>
 <p>python连接 redis实例</p>
-<div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-keyword"><code class="language-hljs py"><span class="hljs-keyword">import</span> redis
+<div class="code-wrapper"><pre><code class="hljs py"><span class="hljs-keyword">import</span> redis
 <span class="hljs-keyword">from</span> redis.sentinel <span class="hljs-keyword">import</span>  Sentinel
 
 
@@ -499,104 +499,104 @@ print(sen.sentinels)</code></pre></div>
 <p>客观下线<br>当Sentinel主观下线的节点是主节点时，该Sentinel节点会通过sentinel is-master-down-by-addr命令向其他Sentinel节点询问对主节点的判断，当超过<code>quorum</code>个数，Sentinel节点认为主节点确实有问题，这时该Sentinel节点会做出客观下线的决定，这样客观下线的含义是比较明显了，也就是大部分Sentinel节点都对主节点的下线做了同意的判定，那么这个判定就是客观的</p>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><h3 id="高可用读写分离架构"><a href="#高可用读写分离架构" class="headerlink" title="高可用读写分离架构"></a>高可用读写分离架构</h3><p><img src="http://img.noback.top/2020-11-02-14-47-16.png" srcset="/img/loading.gif" alt="2020-11-02-14-47-16"><br>写数据从master中进去， slave 复制master中的数据<br>当主节点出现问题的时候，从节点顶上去</p>
 <h3 id="哨兵构建脚本"><a href="#哨兵构建脚本" class="headerlink" title="哨兵构建脚本"></a>哨兵构建脚本</h3><p>master部署</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-meta"><code class="language-hljs bash"><span class="hljs-meta">#!/bin/bash</span>
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-meta">#!/bin/bash</span>
 
-<span class="hljs-keyword">if</span> <span class="hljs-built_in">test</span> -z <span class="hljs-string">"<span class="hljs-variable">$1</span>"</span>
+<span class="hljs-keyword">if</span> <span class="hljs-built_in">test</span> -z <span class="hljs-string">&quot;<span class="hljs-variable">$1</span>&quot;</span>
 <span class="hljs-keyword">then</span> 
-  <span class="hljs-built_in">echo</span> <span class="hljs-string">"no set config name"</span>
+  <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;no set config name&quot;</span>
   <span class="hljs-built_in">exit</span> 1
 <span class="hljs-keyword">else</span> 
-  <span class="hljs-built_in">echo</span> <span class="hljs-string">"config the redis-<span class="hljs-variable">$1</span>.conf now"</span>
-  Port=<span class="hljs-string">"<span class="hljs-variable">$1</span>"</span>
+  <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;config the redis-<span class="hljs-variable">$1</span>.conf now&quot;</span>
+  Port=<span class="hljs-string">&quot;<span class="hljs-variable">$1</span>&quot;</span>
 <span class="hljs-keyword">fi</span> 
 
 
-<span class="hljs-keyword">if</span> <span class="hljs-built_in">test</span> -f <span class="hljs-string">"./redis-<span class="hljs-variable">$1</span>.conf"</span>
+<span class="hljs-keyword">if</span> <span class="hljs-built_in">test</span> -f <span class="hljs-string">&quot;./redis-<span class="hljs-variable">$1</span>.conf&quot;</span>
 <span class="hljs-keyword">then</span>
-  <span class="hljs-built_in">echo</span> <span class="hljs-string">"file exit"</span>
+  <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;file exit&quot;</span>
 <span class="hljs-keyword">else</span>
-  <span class="hljs-built_in">echo</span> <span class="hljs-string">"copy ./redis.conf >> ./redis-<span class="hljs-variable">$1</span>.conf"</span> 
+  <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;copy ./redis.conf &gt;&gt; ./redis-<span class="hljs-variable">$1</span>.conf&quot;</span> 
   `cp ./redis.conf ./redis-<span class="hljs-variable">$1</span>.conf` 
 <span class="hljs-keyword">fi</span>
 
-sed -i -e  <span class="hljs-string">"/^port/s/.*/port <span class="hljs-variable">${Port}</span>/"</span>  \
-    -e <span class="hljs-string">"/^daemonize/s/no/yes/"</span>   \
-    -e <span class="hljs-string">"/^logfile/s/.*/logfile \"<span class="hljs-variable">${Port}</span>.log\"/"</span> \
-    -e <span class="hljs-string">"/^dbfilename/s/.*/dbfilename \"dump-<span class="hljs-variable">${Port}</span>.rdb\"/"</span>   \
-    -e <span class="hljs-string">"/^dir/s@.*@dir /opt/soft/redis/data/@"</span> \
-    -e <span class="hljs-string">&#x27;s/^bind/#&/&#x27;</span> \
-    -e <span class="hljs-string">"/^protected-mode/s/yes/no/"</span> \
-    redis-<span class="hljs-variable">${Port}</span>.conf
+sed -i -e  <span class="hljs-string">&quot;/^port/s/.*/port <span class="hljs-variable">$&#123;Port&#125;</span>/&quot;</span>  \
+    -e <span class="hljs-string">&quot;/^daemonize/s/no/yes/&quot;</span>   \
+    -e <span class="hljs-string">&quot;/^logfile/s/.*/logfile \&quot;<span class="hljs-variable">$&#123;Port&#125;</span>.log\&quot;/&quot;</span> \
+    -e <span class="hljs-string">&quot;/^dbfilename/s/.*/dbfilename \&quot;dump-<span class="hljs-variable">$&#123;Port&#125;</span>.rdb\&quot;/&quot;</span>   \
+    -e <span class="hljs-string">&quot;/^dir/s@.*@dir /opt/soft/redis/data/@&quot;</span> \
+    -e <span class="hljs-string">&#x27;s/^bind/#&amp;/&#x27;</span> \
+    -e <span class="hljs-string">&quot;/^protected-mode/s/yes/no/&quot;</span> \
+    redis-<span class="hljs-variable">$&#123;Port&#125;</span>.conf
 
-<span class="hljs-built_in">echo</span> <span class="hljs-string">"success"</span></code></pre></div>
+<span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;success&quot;</span></code></pre></div>
 
 <p>从机部署</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-meta"><code class="language-hljs bash"><span class="hljs-meta">#!/bin/bash</span>
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-meta">#!/bin/bash</span>
 
-<span class="hljs-keyword">if</span> <span class="hljs-built_in">test</span> -z <span class="hljs-string">"<span class="hljs-variable">$1</span>"</span>
+<span class="hljs-keyword">if</span> <span class="hljs-built_in">test</span> -z <span class="hljs-string">&quot;<span class="hljs-variable">$1</span>&quot;</span>
 <span class="hljs-keyword">then</span> 
-  <span class="hljs-built_in">echo</span> <span class="hljs-string">"no set config name"</span>
+  <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;no set config name&quot;</span>
   <span class="hljs-built_in">exit</span> 1
 <span class="hljs-keyword">else</span> 
-  <span class="hljs-built_in">echo</span> <span class="hljs-string">"config the redis-<span class="hljs-variable">$1</span>.conf now>>>>>>>"</span>
-  Port=<span class="hljs-string">"<span class="hljs-variable">$1</span>"</span>
+  <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;config the redis-<span class="hljs-variable">$1</span>.conf now&gt;&gt;&gt;&gt;&gt;&gt;&gt;&quot;</span>
+  Port=<span class="hljs-string">&quot;<span class="hljs-variable">$1</span>&quot;</span>
 <span class="hljs-keyword">fi</span> 
 
 
-<span class="hljs-keyword">if</span> <span class="hljs-built_in">test</span> -f <span class="hljs-string">"./redis-<span class="hljs-variable">$1</span>.conf"</span>
+<span class="hljs-keyword">if</span> <span class="hljs-built_in">test</span> -f <span class="hljs-string">&quot;./redis-<span class="hljs-variable">$1</span>.conf&quot;</span>
 <span class="hljs-keyword">then</span>
-  <span class="hljs-built_in">echo</span> <span class="hljs-string">"file exit"</span>
+  <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;file exit&quot;</span>
 <span class="hljs-keyword">else</span>
-  <span class="hljs-built_in">echo</span> <span class="hljs-string">"copy ./redis.conf >> ./redis-<span class="hljs-variable">$1</span>.conf"</span> 
+  <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;copy ./redis.conf &gt;&gt; ./redis-<span class="hljs-variable">$1</span>.conf&quot;</span> 
   `cp ./redis.conf ./redis-<span class="hljs-variable">$1</span>.conf` 
 <span class="hljs-keyword">fi</span>
 
-sed -i -e  <span class="hljs-string">"/^port/s/.*/port <span class="hljs-variable">${Port}</span>/"</span>  \
-    -e <span class="hljs-string">"/^daemonize/s/no/yes/"</span>   \
-    -e <span class="hljs-string">"/^logfile/s/.*/logfile \"<span class="hljs-variable">${Port}</span>.log\"/"</span> \
-    -e <span class="hljs-string">"/^dbfilename/s/.*/dbfilename \"dump-<span class="hljs-variable">${Port}</span>.rdb\"/"</span>   \
-    -e <span class="hljs-string">"/^dir/s@.*@dir /opt/soft/redis/data/@"</span> \
+sed -i -e  <span class="hljs-string">&quot;/^port/s/.*/port <span class="hljs-variable">$&#123;Port&#125;</span>/&quot;</span>  \
+    -e <span class="hljs-string">&quot;/^daemonize/s/no/yes/&quot;</span>   \
+    -e <span class="hljs-string">&quot;/^logfile/s/.*/logfile \&quot;<span class="hljs-variable">$&#123;Port&#125;</span>.log\&quot;/&quot;</span> \
+    -e <span class="hljs-string">&quot;/^dbfilename/s/.*/dbfilename \&quot;dump-<span class="hljs-variable">$&#123;Port&#125;</span>.rdb\&quot;/&quot;</span>   \
+    -e <span class="hljs-string">&quot;/^dir/s@.*@dir /opt/soft/redis/data/@&quot;</span> \
     -e <span class="hljs-string">&#x27;$a slaveof 127.0.0.1 6379&#x27;</span> \
-    -e <span class="hljs-string">&#x27;s/^bind/#&/&#x27;</span> \
-    -e <span class="hljs-string">"/^protected-mode/s/yes/no/"</span> \
-    redis-<span class="hljs-variable">${Port}</span>.conf
+    -e <span class="hljs-string">&#x27;s/^bind/#&amp;/&#x27;</span> \
+    -e <span class="hljs-string">&quot;/^protected-mode/s/yes/no/&quot;</span> \
+    redis-<span class="hljs-variable">$&#123;Port&#125;</span>.conf
 
-<span class="hljs-built_in">echo</span> <span class="hljs-string">"success"</span></code></pre></div>
+<span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;success&quot;</span></code></pre></div>
 
 <p>哨兵部署</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-meta"><code class="language-hljs bash"><span class="hljs-meta">#!/bin/bash</span>
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-meta">#!/bin/bash</span>
 
-<span class="hljs-keyword">if</span> <span class="hljs-built_in">test</span> -z <span class="hljs-string">"<span class="hljs-variable">$1</span>"</span>
+<span class="hljs-keyword">if</span> <span class="hljs-built_in">test</span> -z <span class="hljs-string">&quot;<span class="hljs-variable">$1</span>&quot;</span>
 <span class="hljs-keyword">then</span> 
-  <span class="hljs-built_in">echo</span> <span class="hljs-string">"no set config name"</span>
+  <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;no set config name&quot;</span>
   <span class="hljs-built_in">exit</span> 1
 <span class="hljs-keyword">else</span> 
-  <span class="hljs-built_in">echo</span> <span class="hljs-string">"config the redis-<span class="hljs-variable">$1</span>.conf now>>>>>>>"</span>
-  Port=<span class="hljs-string">"<span class="hljs-variable">$1</span>"</span>
+  <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;config the redis-<span class="hljs-variable">$1</span>.conf now&gt;&gt;&gt;&gt;&gt;&gt;&gt;&quot;</span>
+  Port=<span class="hljs-string">&quot;<span class="hljs-variable">$1</span>&quot;</span>
 <span class="hljs-keyword">fi</span> 
 
 
-<span class="hljs-keyword">if</span> <span class="hljs-built_in">test</span> -f <span class="hljs-string">"./redis-<span class="hljs-variable">$1</span>.conf"</span>
+<span class="hljs-keyword">if</span> <span class="hljs-built_in">test</span> -f <span class="hljs-string">&quot;./redis-<span class="hljs-variable">$1</span>.conf&quot;</span>
 <span class="hljs-keyword">then</span>
-  <span class="hljs-built_in">echo</span> <span class="hljs-string">"file exit"</span>
+  <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;file exit&quot;</span>
 <span class="hljs-keyword">else</span>
-  <span class="hljs-built_in">echo</span> <span class="hljs-string">"copy ./redis.conf >> ./redis-<span class="hljs-variable">$1</span>.conf"</span> 
+  <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;copy ./redis.conf &gt;&gt; ./redis-<span class="hljs-variable">$1</span>.conf&quot;</span> 
   `cp ./redis.conf ./redis-<span class="hljs-variable">$1</span>.conf` 
 <span class="hljs-keyword">fi</span>
 
-sed -i -e  <span class="hljs-string">"/^port/s/.*/port <span class="hljs-variable">${Port}</span>/"</span>  \
-    -e <span class="hljs-string">"/^daemonize/s/no/yes/"</span>   \
-    -e <span class="hljs-string">"/^logfile/s/.*/logfile \"<span class="hljs-variable">${Port}</span>.log\"/"</span> \
-    -e <span class="hljs-string">"/^dir/s@.*@dir /opt/soft/redis/data/@"</span> \
-    -e <span class="hljs-string">&#x27;s/^bind/#&/&#x27;</span> \
-    -e <span class="hljs-string">"/^protected-mode/s/yes/no/"</span> \
+sed -i -e  <span class="hljs-string">&quot;/^port/s/.*/port <span class="hljs-variable">$&#123;Port&#125;</span>/&quot;</span>  \
+    -e <span class="hljs-string">&quot;/^daemonize/s/no/yes/&quot;</span>   \
+    -e <span class="hljs-string">&quot;/^logfile/s/.*/logfile \&quot;<span class="hljs-variable">$&#123;Port&#125;</span>.log\&quot;/&quot;</span> \
+    -e <span class="hljs-string">&quot;/^dir/s@.*@dir /opt/soft/redis/data/@&quot;</span> \
+    -e <span class="hljs-string">&#x27;s/^bind/#&amp;/&#x27;</span> \
+    -e <span class="hljs-string">&quot;/^protected-mode/s/yes/no/&quot;</span> \
     -e <span class="hljs-string">&#x27;$a sentinel monitor mymaster 127.0.0.1 6379 2&#x27;</span>  \
     -e <span class="hljs-string">&#x27;$a sentinel down-after-milliseconds mymaster 30000 &#x27;</span> \
     -e <span class="hljs-string">&#x27;$a sentinel parallel-syncs mymaster 1  &#x27;</span> \
     -e <span class="hljs-string">&#x27;$a sentinel failover-timeout mymaster 180000&#x27;</span>  \
-    redis-<span class="hljs-variable">${Port}</span>.conf
+    redis-<span class="hljs-variable">$&#123;Port&#125;</span>.conf
 
-<span class="hljs-built_in">echo</span> <span class="hljs-string">"success"</span></code></pre></div>
+<span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;success&quot;</span></code></pre></div>
 
 
 <p>bash</p>
@@ -633,7 +633,7 @@ sed -i -e  <span class="hljs-string">"/^port/s/.*/port <span class="hljs-variabl
                       <a href="/2020/10/30/blog_back_new/redis/redis%E9%9B%86%E7%BE%A4%E5%AE%9E%E8%B7%B5/">
                         <i class="iconfont icon-arrowleft"></i>
                         <span class="hidden-mobile">redis集群实践</span>
-                        <span class="visible-mobile">Vorheriger</span>
+                        <span class="visible-mobile">上一篇</span>
                       </a>
                     
                   </article>
@@ -642,7 +642,7 @@ sed -i -e  <span class="hljs-string">"/^port/s/.*/port <span class="hljs-variabl
                     
                       <a href="/2020/10/27/blog_back_new/golang/go%E7%AC%AC%E4%B8%89%E6%96%B9%E5%BA%93homedir/">
                         <span class="hidden-mobile">go第三方库homedir</span>
-                        <span class="visible-mobile">Nächster</span>
+                        <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
                     
@@ -659,7 +659,7 @@ sed -i -e  <span class="hljs-string">"/^port/s/.*/port <span class="hljs-variabl
     
       <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
         <div id="toc">
-  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
   <div class="toc-body" id="toc-body"></div>
 </div>
 
@@ -685,7 +685,7 @@ sed -i -e  <span class="hljs-string">"/^port/s/.*/port <span class="hljs-variabl
   <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">Suchen</h4>
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
         <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -694,7 +694,7 @@ sed -i -e  <span class="hljs-string">"/^port/s/.*/port <span class="hljs-variabl
         <div class="md-form mb-5">
           <input type="text" id="local-search-input" class="form-control validate">
           <label data-error="x" data-success="v"
-                 for="local-search-input">Stichwort</label>
+                 for="local-search-input">关键词</label>
         </div>
         <div class="list-group" id="local-search-result"></div>
       </div>

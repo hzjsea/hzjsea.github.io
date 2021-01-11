@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html lang="cn" data-default-color-scheme=&#34;auto&#34;>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
 
 
 
@@ -61,7 +61,7 @@
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
 
 <body>
@@ -88,7 +88,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/">
                 <i class="iconfont icon-home-fill"></i>
-                Startseite
+                首页
               </a>
             </li>
           
@@ -100,7 +100,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/archives/">
                 <i class="iconfont icon-archive-fill"></i>
-                Archiv
+                归档
               </a>
             </li>
           
@@ -112,7 +112,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/categories/">
                 <i class="iconfont icon-category-fill"></i>
-                Kategorie
+                分类
               </a>
             </li>
           
@@ -124,7 +124,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/tags/">
                 <i class="iconfont icon-tags-fill"></i>
-                Etiketten
+                标签
               </a>
             </li>
           
@@ -136,7 +136,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/about/">
                 <i class="iconfont icon-user-fill"></i>
-                Über mich
+                关于
               </a>
             </li>
           
@@ -175,7 +175,7 @@
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
       <time datetime="2019-12-29 13:07" pubdate>
-        December 29, 2019 pm
+        2019年12月29日 下午
       </time>
     </span>
   
@@ -186,7 +186,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      494 字
+      731 字
     </span>
   
 
@@ -196,7 +196,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      5
+      8
        分钟
     </span>
   
@@ -251,32 +251,32 @@
 <h2 id="二分查找"><a href="#二分查找" class="headerlink" title="二分查找"></a>二分查找</h2><p>其实二分法在我们生活中已经出现过了很多次，比如玩一个猜价格游戏，规定价格在500-1000之内，如果我们一个一个的去猜，则需要猜1000-500-2次，但是使用二分法猜测价格时，即每次对半猜测价格，那么每次都可以减去一半的错误价格，就像一张白纸对半折一样，最后的区域则会越来越小。而使用的次数则是log2n步。<br>同样的例子也存在于字典中，查字典的手法同样也可以使用二分法。</p>
 <p><strong>概念:最多需要猜测的次数与列表长度相同，这被称为线性时间</strong></p>
 <h3 id="例子1"><a href="#例子1" class="headerlink" title="例子1"></a>例子1</h3><p>创建一个函数，接受一个有序数组和一个元素，如果指定的元素出现在数组中，则返回其位置</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">def filter_number(list,keywords):
+<div class="code-wrapper"><pre><code class="hljs bash">def filter_number(list,keywords):
     <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(len(list)):
         <span class="hljs-keyword">if</span> list[i] == keywords:
             <span class="hljs-built_in">print</span>(i)
-<span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">"__main__"</span>:
+<span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:
     list = [1,2,4,5,343,67,86,656]    
     keywords = 343
     filter_number(list,keywords)</code></pre></div>
 <p>如上所示是普通的遍历方法，遍历5次后得到343这个参数。但如果匹配的数字是656，则需要匹配7次，如果数组的长度是1000,匹配的结果是最后一个，则需要匹配1000次，这样就增加了负担</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 二分查找匹配</span>
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 二分查找匹配</span>
 def filter_number(list,keywords):
     first = 0
     end = len(list) - 1
 	
-    <span class="hljs-keyword">while</span> first <= end:
+    <span class="hljs-keyword">while</span> first &lt;= end:
         mid = int((first+end) / 2)
         guess = list[mid]
         <span class="hljs-keyword">if</span> guess == keywords:
             <span class="hljs-built_in">return</span> mid
-        <span class="hljs-keyword">elif</span> guess < keywords:
+        <span class="hljs-keyword">elif</span> guess &lt; keywords:
             first = mid + 1
-        <span class="hljs-keyword">elif</span> guess > keywords:
+        <span class="hljs-keyword">elif</span> guess &gt; keywords:
             end = mid - 1
     <span class="hljs-built_in">return</span> None 
 
-<span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">"__main__"</span>:
+<span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:
     list = [1,2,4,5,6,8,9,10,11]    
     keywords = 8
     index = filter_number(list,keywords)
@@ -316,7 +316,7 @@ def filter_number(list,keywords):
                       <a href="/2019/12/29/blog_back_new/%E9%94%99%E8%AF%AF%E6%80%BB%E7%BB%93/%E8%BD%AF%E4%BB%B6%E9%85%8D%E7%BD%AE/">
                         <i class="iconfont icon-arrowleft"></i>
                         <span class="hidden-mobile">软件配置</span>
-                        <span class="visible-mobile">Vorheriger</span>
+                        <span class="visible-mobile">上一篇</span>
                       </a>
                     
                   </article>
@@ -325,7 +325,7 @@ def filter_number(list,keywords):
                     
                       <a href="/2019/12/27/blog_back_new/Python/python%E5%B8%B8%E7%94%A8%E6%96%B9%E6%B3%951/">
                         <span class="hidden-mobile">Python Book</span>
-                        <span class="visible-mobile">Nächster</span>
+                        <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
                     
@@ -342,7 +342,7 @@ def filter_number(list,keywords):
     
       <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
         <div id="toc">
-  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
   <div class="toc-body" id="toc-body"></div>
 </div>
 
@@ -368,7 +368,7 @@ def filter_number(list,keywords):
   <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">Suchen</h4>
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
         <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -377,7 +377,7 @@ def filter_number(list,keywords):
         <div class="md-form mb-5">
           <input type="text" id="local-search-input" class="form-control validate">
           <label data-error="x" data-success="v"
-                 for="local-search-input">Stichwort</label>
+                 for="local-search-input">关键词</label>
         </div>
         <div class="list-group" id="local-search-result"></div>
       </div>

@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html lang="cn" data-default-color-scheme=&#34;auto&#34;>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
 
 
 
@@ -61,7 +61,7 @@
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
 
 <body>
@@ -88,7 +88,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/">
                 <i class="iconfont icon-home-fill"></i>
-                Startseite
+                首页
               </a>
             </li>
           
@@ -100,7 +100,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/archives/">
                 <i class="iconfont icon-archive-fill"></i>
-                Archiv
+                归档
               </a>
             </li>
           
@@ -112,7 +112,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/categories/">
                 <i class="iconfont icon-category-fill"></i>
-                Kategorie
+                分类
               </a>
             </li>
           
@@ -124,7 +124,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/tags/">
                 <i class="iconfont icon-tags-fill"></i>
-                Etiketten
+                标签
               </a>
             </li>
           
@@ -136,7 +136,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/about/">
                 <i class="iconfont icon-user-fill"></i>
-                Über mich
+                关于
               </a>
             </li>
           
@@ -175,7 +175,7 @@
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
       <time datetime="2020-01-04 10:22" pubdate>
-        January 4, 2020 am
+        2020年1月4日 上午
       </time>
     </span>
   
@@ -257,7 +257,7 @@
 <h1 id="网络部署需求分析"><a href="#网络部署需求分析" class="headerlink" title="网络部署需求分析"></a>网络部署需求分析</h1><h2 id="基础配置"><a href="#基础配置" class="headerlink" title="基础配置"></a>基础配置</h2><blockquote>
 <p>内网的交换机不需要配置acl2000</p>
 </blockquote>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">int LoopBack 3
+<div class="code-wrapper"><pre><code class="hljs bash">int LoopBack 3
 description jump
 
 sysname user-setting
@@ -492,7 +492,7 @@ quit
 
 sysname success</code></pre></div>
 
-<h2 id="取消Telnet-授权登录"><a href="#取消Telnet-授权登录" class="headerlink" title="取消Telnet 授权登录"></a>取消Telnet 授权登录</h2><div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">system-view
+<h2 id="取消Telnet-授权登录"><a href="#取消Telnet-授权登录" class="headerlink" title="取消Telnet 授权登录"></a>取消Telnet 授权登录</h2><div class="code-wrapper"><pre><code class="hljs bash">system-view
 ssh server <span class="hljs-built_in">enable</span>
 undo telnet server <span class="hljs-built_in">enable</span>
 local-user root class manage
@@ -504,17 +504,17 @@ undo service-type  telnet
 quit
 save force</code></pre></div>
 
-<h2 id="6520需要开启的配置"><a href="#6520需要开启的配置" class="headerlink" title="6520需要开启的配置"></a>6520需要开启的配置</h2><div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">max-ecmp-num 64
+<h2 id="6520需要开启的配置"><a href="#6520需要开启的配置" class="headerlink" title="6520需要开启的配置"></a>6520需要开启的配置</h2><div class="code-wrapper"><pre><code class="hljs bash">max-ecmp-num 64
 ecmp mode enhanced
 save force
 quit 
 reboot</code></pre></div>
 
-<h2 id="5820系列的交换机需要在本地生成sshkey"><a href="#5820系列的交换机需要在本地生成sshkey" class="headerlink" title="5820系列的交换机需要在本地生成sshkey"></a>5820系列的交换机需要在本地生成sshkey</h2><div class="code-wrapper"><pre class=" language-hljs bash">public-key <span class="hljs-built_in"><code class="language-hljs bash">public-key <span class="hljs-built_in">local</span> create rsa 
+<h2 id="5820系列的交换机需要在本地生成sshkey"><a href="#5820系列的交换机需要在本地生成sshkey" class="headerlink" title="5820系列的交换机需要在本地生成sshkey"></a>5820系列的交换机需要在本地生成sshkey</h2><div class="code-wrapper"><pre><code class="hljs bash">public-key <span class="hljs-built_in">local</span> create rsa 
 <span class="hljs-comment"># 不断回车就行了</span></code></pre></div>
 
 <h2 id="二层环路检测配置"><a href="#二层环路检测配置" class="headerlink" title="***二层环路检测配置"></a>***二层环路检测配置</h2><p>h3c 5130配置</p>
-<div class="code-wrapper"><pre class=" language-hljs bash">loopback-detection global <span class="hljs-built_in"><code class="language-hljs bash">loopback-detection global <span class="hljs-built_in">enable</span> vlan all
+<div class="code-wrapper"><pre><code class="hljs bash">loopback-detection global <span class="hljs-built_in">enable</span> vlan all
 <span class="hljs-comment"># 端口定时器</span>
 shutdown-interval 120 
 <span class="hljs-comment"># 环路检测报文发送周期  </span>
@@ -526,7 +526,7 @@ loopback-detection action shutdown
 loopback-detection <span class="hljs-built_in">enable</span> vlan all</code></pre></div>
 
 <p>h3c 5120配置\ 6300配置</p>
-<div class="code-wrapper"><pre class=" language-hljs bash">loopback-detection multi-port-mode <span class="hljs-built_in"><code class="language-hljs bash">loopback-detection multi-port-mode <span class="hljs-built_in">enable</span>
+<div class="code-wrapper"><pre><code class="hljs bash">loopback-detection multi-port-mode <span class="hljs-built_in">enable</span>
 loopback-detection <span class="hljs-built_in">enable</span>
 <span class="hljs-comment"># 端口定时器</span>
 shutdown-interval 120 
@@ -539,7 +539,7 @@ loopback-detection action shutdown
 loopback-detection <span class="hljs-built_in">enable</span> vlan all</code></pre></div>
 
 <p>h3c 5820配置/6800配置</p>
-<div class="code-wrapper"><pre class=" language-hljs bash">loopback-detection global <span class="hljs-built_in"><code class="language-hljs bash">loopback-detection global <span class="hljs-built_in">enable</span> vlan all
+<div class="code-wrapper"><pre><code class="hljs bash">loopback-detection global <span class="hljs-built_in">enable</span> vlan all
 <span class="hljs-comment"># 端口定时器</span>
 shutdown-interval 120 
 <span class="hljs-comment"># 环路检测报文发送周期</span>
@@ -553,18 +553,18 @@ loopback-detection global <span class="hljs-built_in">enable</span> vlan all</co
 
 
 
-<h2 id="自动生成汇聚端口配置脚本"><a href="#自动生成汇聚端口配置脚本" class="headerlink" title="自动生成汇聚端口配置脚本"></a>自动生成汇聚端口配置脚本</h2><div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-keyword"><code class="language-hljs py"><span class="hljs-keyword">import</span> os
+<h2 id="自动生成汇聚端口配置脚本"><a href="#自动生成汇聚端口配置脚本" class="headerlink" title="自动生成汇聚端口配置脚本"></a>自动生成汇聚端口配置脚本</h2><div class="code-wrapper"><pre><code class="hljs py"><span class="hljs-keyword">import</span> os
 <span class="hljs-keyword">import</span> json
 
 <span class="hljs-comment"># 指定端口类型  有些做过堆叠的交换机 MemberID是不同的</span>
-port_type = <span class="hljs-string">"1"</span>
+port_type = <span class="hljs-string">&quot;1&quot;</span>
 
 <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>,<span class="hljs-number">16</span>):
-    print(<span class="hljs-string">"interface bridge-aggregation %s"</span>%i)
-    print(<span class="hljs-string">"interface GigabitEthernet%s/0/%s"</span>%(port_type,<span class="hljs-built_in">int</span>(i*<span class="hljs-number">2</span><span class="hljs-number">-1</span>)))
-    print(<span class="hljs-string">"port link-aggregation group %s"</span>%i)
-    print(<span class="hljs-string">"interface GigabitEthernet%s/0/%s"</span>%(port_type,<span class="hljs-built_in">int</span>(i*<span class="hljs-number">2</span>)))
-    print(<span class="hljs-string">"port link-aggregation group %s"</span>%i)
+    print(<span class="hljs-string">&quot;interface bridge-aggregation %s&quot;</span>%i)
+    print(<span class="hljs-string">&quot;interface GigabitEthernet%s/0/%s&quot;</span>%(port_type,<span class="hljs-built_in">int</span>(i*<span class="hljs-number">2</span><span class="hljs-number">-1</span>)))
+    print(<span class="hljs-string">&quot;port link-aggregation group %s&quot;</span>%i)
+    print(<span class="hljs-string">&quot;interface GigabitEthernet%s/0/%s&quot;</span>%(port_type,<span class="hljs-built_in">int</span>(i*<span class="hljs-number">2</span>)))
+    print(<span class="hljs-string">&quot;port link-aggregation group %s&quot;</span>%i)
 
 
 <span class="hljs-comment">## REANME.md</span>
@@ -574,7 +574,7 @@ port_type = <span class="hljs-string">"1"</span>
 
 <h2 id="ipv6配置"><a href="#ipv6配置" class="headerlink" title="ipv6配置"></a>ipv6配置</h2><h3 id="西安光通高防-ipv6配置"><a href="#西安光通高防-ipv6配置" class="headerlink" title="西安光通高防 ipv6配置"></a>西安光通高防 ipv6配置</h3><hr>
 <p>要求<br>西安光通高防<br>业务ipv6  240e:bf:b800:1900::/64<br>互联 对端:240e:bf:b800:19ff::100/127 公司:240e:bf:b800:19ff::101/127</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 先配置互联地址，看和机房是否互通，默认vlan1为业务vlan ,其他vlan为互联vlan</span>
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 先配置互联地址，看和机房是否互通，默认vlan1为业务vlan ,其他vlan为互联vlan</span>
 [CTN-SN-XIY-S01]dis int brief
 Brief information on interfaces <span class="hljs-keyword">in</span> route mode:
 Link: ADM - administratively down; Stby - standby
@@ -604,7 +604,7 @@ ipv6 route-static :: 0 240e:bf:b800:19ff::100</code></pre></div>
 <hr>
 <h3 id="四川成华移动机房"><a href="#四川成华移动机房" class="headerlink" title="四川成华移动机房"></a>四川成华移动机房</h3><hr>
 <p>要求<br>四川成华移动机房（自有节点）<br>IPV6资源：2409:8C62:410:6::/64，<br>互联： 对端2409:8062:3000:0201:: C/127 公司2409:8062:3000:0201:: D/127<br>      对端2409:8062:3000:0202:: 6/127 公司2409:8062:3000:0202:: 7/127</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash"><CMN-SC-CTU4-S01>dis int brief
+<div class="code-wrapper"><pre><code class="hljs bash">&lt;CMN-SC-CTU4-S01&gt;dis int brief
 Brief information on interfaces <span class="hljs-keyword">in</span> route mode:
 Link: ADM - administratively down; Stby - standby
 Protocol: (s) - spoofing
@@ -637,10 +637,10 @@ interface Vlan-interface1
  ipv6 route-static :: 0 2409:8062:3000:202::6
 
 <span class="hljs-comment"># 测试路由</span>
-<CMN-SC-CTU4-S01>tracert ipv6 2409:8062:3000:201::C
+&lt;CMN-SC-CTU4-S01&gt;tracert ipv6 2409:8062:3000:201::C
 traceroute to 2409:8062:3000:201::C (2409:8062:3000:201::C), 30 hops at most, 60 byte packets, press CTRL_C to <span class="hljs-built_in">break</span>
  1  2409:8062:3000:201::C  2.934 ms  2.345 ms  2.336 ms
-<CMN-SC-CTU4-S01>tracert ipv6 2409:8062:3000:202::6
+&lt;CMN-SC-CTU4-S01&gt;tracert ipv6 2409:8062:3000:202::6
 traceroute to 2409:8062:3000:202::6 (2409:8062:3000:202::6), 30 hops at most, 60 byte packets, press CTRL_C to <span class="hljs-built_in">break</span>
  1  2409:8062:3000::202  3.957 ms  3.125 ms  3.879 ms
 
@@ -689,7 +689,7 @@ traceroute to 2409:8062:3000:202::6 (2409:8062:3000:202::6), 30 hops at most, 60
                       <a href="/2020/01/04/blog_back_new/Python/python%E5%9F%BA%E7%A1%80/">
                         <i class="iconfont icon-arrowleft"></i>
                         <span class="hidden-mobile">python 基础</span>
-                        <span class="visible-mobile">Vorheriger</span>
+                        <span class="visible-mobile">上一篇</span>
                       </a>
                     
                   </article>
@@ -698,7 +698,7 @@ traceroute to 2409:8062:3000:202::6 (2409:8062:3000:202::6), 30 hops at most, 60
                     
                       <a href="/2019/12/29/blog_back_new/mysql/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%86%85%E5%AE%B9%E6%80%BB%E7%BB%93/">
                         <span class="hidden-mobile">数据库总结</span>
-                        <span class="visible-mobile">Nächster</span>
+                        <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
                     
@@ -715,7 +715,7 @@ traceroute to 2409:8062:3000:202::6 (2409:8062:3000:202::6), 30 hops at most, 60
     
       <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
         <div id="toc">
-  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
   <div class="toc-body" id="toc-body"></div>
 </div>
 
@@ -741,7 +741,7 @@ traceroute to 2409:8062:3000:202::6 (2409:8062:3000:202::6), 30 hops at most, 60
   <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">Suchen</h4>
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
         <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -750,7 +750,7 @@ traceroute to 2409:8062:3000:202::6 (2409:8062:3000:202::6), 30 hops at most, 60
         <div class="md-form mb-5">
           <input type="text" id="local-search-input" class="form-control validate">
           <label data-error="x" data-success="v"
-                 for="local-search-input">Stichwort</label>
+                 for="local-search-input">关键词</label>
         </div>
         <div class="list-group" id="local-search-result"></div>
       </div>

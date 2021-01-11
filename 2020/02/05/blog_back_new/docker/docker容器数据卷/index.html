@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html lang="cn" data-default-color-scheme=&#34;auto&#34;>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
 
 
 
@@ -61,7 +61,7 @@
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
 
 <body>
@@ -88,7 +88,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/">
                 <i class="iconfont icon-home-fill"></i>
-                Startseite
+                首页
               </a>
             </li>
           
@@ -100,7 +100,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/archives/">
                 <i class="iconfont icon-archive-fill"></i>
-                Archiv
+                归档
               </a>
             </li>
           
@@ -112,7 +112,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/categories/">
                 <i class="iconfont icon-category-fill"></i>
-                Kategorie
+                分类
               </a>
             </li>
           
@@ -124,7 +124,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/tags/">
                 <i class="iconfont icon-tags-fill"></i>
-                Etiketten
+                标签
               </a>
             </li>
           
@@ -136,7 +136,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/about/">
                 <i class="iconfont icon-user-fill"></i>
-                Über mich
+                关于
               </a>
             </li>
           
@@ -175,7 +175,7 @@
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
       <time datetime="2020-02-05 12:35" pubdate>
-        February 5, 2020 pm
+        2020年2月5日 下午
       </time>
     </span>
   
@@ -254,7 +254,7 @@
 <li>对数据卷的更新，不会影响镜像</li>
 <li>卷会一直存在 直到没有容器使用</li>
 </ul>
-<h3 id="创建数据卷"><a href="#创建数据卷" class="headerlink" title="创建数据卷"></a>创建数据卷</h3><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 查看数据卷</span>
+<h3 id="创建数据卷"><a href="#创建数据卷" class="headerlink" title="创建数据卷"></a>创建数据卷</h3><div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 查看数据卷</span>
 root:~<span class="hljs-comment"># docker volume ls</span>
 DRIVER              VOLUME NAME
 <span class="hljs-built_in">local</span>               1c4c829dcedf5c071d6a14dea5cf9a40e5459a6d81d2a009ecef6c392156121c
@@ -278,18 +278,18 @@ doker run -it -v /宿主机绝对目录:/容器内目录:权限 镜像名
 <span class="hljs-comment"># 只读 ro - read-only</span>
 docker run -it -d -v /tmp/data/:/tmp/:ro --name test1 --privileged=<span class="hljs-literal">true</span>  centos</code></pre></div>
 
-<h3 id="查看是否挂载成功"><a href="#查看是否挂载成功" class="headerlink" title="查看是否挂载成功"></a>查看是否挂载成功</h3><div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">docker inspect test1</code></pre></div>
+<h3 id="查看是否挂载成功"><a href="#查看是否挂载成功" class="headerlink" title="查看是否挂载成功"></a>查看是否挂载成功</h3><div class="code-wrapper"><pre><code class="hljs bash">docker inspect test1</code></pre></div>
 <p><img src="http://img.noback.top/2020-02-05-13-13-45.png" srcset="/img/loading.gif" alt="2020-02-05-13-13-45"></p>
 <p>inspect会按照json的形式输出配置，其中mount表明了数据卷的挂载情况<br>RW:true表示可读写</p>
 <h3 id="容器间数据共享传递"><a href="#容器间数据共享传递" class="headerlink" title="容器间数据共享传递"></a>容器间数据共享传递</h3><p>从上面我们可以直到容器与本机之间的传递我们是有的是-v 或者dockerfile中的VOLUME进行挂载<br>在容器与容器之间，使用的是–volumes-from来进行文件之间的挂载,并且只要容器存在，容器数量上的减少和增加都不会使得挂载文件的消失</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">docker -it --name doc2 --volumes-from doc1 hzj/centos2</code></pre></div>
+<div class="code-wrapper"><pre><code class="hljs bash">docker -it --name doc2 --volumes-from doc1 hzj/centos2</code></pre></div>
 <p><img src="http://img.noback.top/2020-02-05-15-49-18.png" srcset="/img/loading.gif" alt="2020-02-05-15-49-18"><br><img src="http://img.noback.top/2020-02-05-15-53-27.png" srcset="/img/loading.gif" alt="2020-02-05-15-53-27"></p>
 <h2 id="报错"><a href="#报错" class="headerlink" title="报错"></a>报错</h2><ol>
 <li>问题1<br>ls: cannot open directory ‘tmp/‘: Permission denied<br>无法访问目录，权限拒绝。该问题通常在centos7下出现。或者一个容器启动成功后，里面的服务无法成功访问，这是因为centos7中的安全模块selinux把权限禁掉了，一般的解决方案有以下两种：</li>
 </ol>
 <ul>
-<li>临时关闭selinux<br>直接在centos服务器上执行以下命令即可。执行完成以后建议重新docker run。<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">setenforce 0</code></pre></div></li>
-<li>给容器加权限<br>在docker run时给该容器加权限，加上以下参数即可<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># --privileged=true</span>
+<li>临时关闭selinux<br>直接在centos服务器上执行以下命令即可。执行完成以后建议重新docker run。<div class="code-wrapper"><pre><code class="hljs bash">setenforce 0</code></pre></div></li>
+<li>给容器加权限<br>在docker run时给该容器加权限，加上以下参数即可<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># --privileged=true</span>
 docker run -it -d -v /tmp/data/:/tmp/ --name test1 --privileged=<span class="hljs-literal">true</span>  centos</code></pre></div>
 
 
@@ -332,7 +332,7 @@ docker run -it -d -v /tmp/data/:/tmp/ --name test1 --privileged=<span class="hlj
                       <a href="/2020/02/05/blog_back_new/docker/docker-file/">
                         <i class="iconfont icon-arrowleft"></i>
                         <span class="hidden-mobile">docker-DokcerFile</span>
-                        <span class="visible-mobile">Vorheriger</span>
+                        <span class="visible-mobile">上一篇</span>
                       </a>
                     
                   </article>
@@ -341,7 +341,7 @@ docker run -it -d -v /tmp/data/:/tmp/ --name test1 --privileged=<span class="hlj
                     
                       <a href="/2020/02/05/blog_back_new/docker/docker%E9%95%9C%E5%83%8F%E5%88%86%E5%B1%82%E5%8E%9F%E7%90%86/">
                         <span class="hidden-mobile">docker镜像分层原理</span>
-                        <span class="visible-mobile">Nächster</span>
+                        <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
                     
@@ -358,7 +358,7 @@ docker run -it -d -v /tmp/data/:/tmp/ --name test1 --privileged=<span class="hlj
     
       <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
         <div id="toc">
-  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
   <div class="toc-body" id="toc-body"></div>
 </div>
 
@@ -384,7 +384,7 @@ docker run -it -d -v /tmp/data/:/tmp/ --name test1 --privileged=<span class="hlj
   <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">Suchen</h4>
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
         <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -393,7 +393,7 @@ docker run -it -d -v /tmp/data/:/tmp/ --name test1 --privileged=<span class="hlj
         <div class="md-form mb-5">
           <input type="text" id="local-search-input" class="form-control validate">
           <label data-error="x" data-success="v"
-                 for="local-search-input">Stichwort</label>
+                 for="local-search-input">关键词</label>
         </div>
         <div class="list-group" id="local-search-result"></div>
       </div>

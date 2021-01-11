@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html lang="cn" data-default-color-scheme=&#34;auto&#34;>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
 
 
 
@@ -61,7 +61,7 @@
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
 
 <body>
@@ -88,7 +88,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/">
                 <i class="iconfont icon-home-fill"></i>
-                Startseite
+                首页
               </a>
             </li>
           
@@ -100,7 +100,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/archives/">
                 <i class="iconfont icon-archive-fill"></i>
-                Archiv
+                归档
               </a>
             </li>
           
@@ -112,7 +112,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/categories/">
                 <i class="iconfont icon-category-fill"></i>
-                Kategorie
+                分类
               </a>
             </li>
           
@@ -124,7 +124,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/tags/">
                 <i class="iconfont icon-tags-fill"></i>
-                Etiketten
+                标签
               </a>
             </li>
           
@@ -136,7 +136,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/about/">
                 <i class="iconfont icon-user-fill"></i>
-                Über mich
+                关于
               </a>
             </li>
           
@@ -175,7 +175,7 @@
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
       <time datetime="2020-06-03 10:25" pubdate>
-        June 3, 2020 am
+        2020年6月3日 上午
       </time>
     </span>
   
@@ -186,7 +186,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      945 字
+      1.4k 字
     </span>
   
 
@@ -196,7 +196,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      16
+      24
        分钟
     </span>
   
@@ -240,7 +240,7 @@
 <a id="more"></a>
 
 <h1 id="vue中内嵌echart图方案"><a href="#vue中内嵌echart图方案" class="headerlink" title="vue中内嵌echart图方案"></a>vue中内嵌echart图方案</h1><p>前面的步骤就过滤了，主要来看内嵌echart图的解决方案<br>首先安装eharts</p>
-<div class="code-wrapper"><pre class=" language-hljs js"><span class="hljs-comment"><code class="language-hljs js"><span class="hljs-comment">// main.js</span>
+<div class="code-wrapper"><pre><code class="hljs js"><span class="hljs-comment">// main.js</span>
 
 <span class="hljs-comment">// 下载</span>
 npm install echarts 
@@ -253,28 +253,28 @@ Vue.prototype.$echarts = echarts
 
 <span class="hljs-comment">// router/index.js</span>
 <span class="hljs-comment">// 登陆路由</span>
-<span class="hljs-keyword">import</span> echarts <span class="hljs-keyword">from</span> <span class="hljs-string">"../components/charts/Charts"</span>
-<span class="hljs-keyword">import</span> echarts2 <span class="hljs-keyword">from</span> <span class="hljs-string">"../components/charts/Charts2"</span>
+<span class="hljs-keyword">import</span> echarts <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;../components/charts/Charts&quot;</span>
+<span class="hljs-keyword">import</span> echarts2 <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;../components/charts/Charts2&quot;</span>
 <span class="hljs-keyword">const</span> routes = [
-  { <span class="hljs-attr">path</span>: <span class="hljs-string">&#x27;/&#x27;</span> , <span class="hljs-attr">redirect</span>: <span class="hljs-string">&#x27;/login&#x27;</span>},
-  { <span class="hljs-attr">path</span>: <span class="hljs-string">&#x27;/login&#x27;</span> ,<span class="hljs-attr">component</span>: Login },
+  &#123; <span class="hljs-attr">path</span>: <span class="hljs-string">&#x27;/&#x27;</span> , <span class="hljs-attr">redirect</span>: <span class="hljs-string">&#x27;/login&#x27;</span>&#125;,
+  &#123; <span class="hljs-attr">path</span>: <span class="hljs-string">&#x27;/login&#x27;</span> ,<span class="hljs-attr">component</span>: Login &#125;,
   <span class="hljs-comment">//访问/home目录 重定向到欢迎页面</span>
-  {
+  &#123;
     path: <span class="hljs-string">&#x27;/home&#x27;</span>,
     component: Home,
     children:[
-      {<span class="hljs-attr">path</span>: <span class="hljs-string">&#x27;/home/users/authen&#x27;</span>,<span class="hljs-attr">component</span>: users},
-      {<span class="hljs-attr">path</span>: <span class="hljs-string">&#x27;/home/rights&#x27;</span>,<span class="hljs-attr">component</span>: rights},
-      {<span class="hljs-attr">path</span>: <span class="hljs-string">&#x27;/home/switchs/action&#x27;</span>,<span class="hljs-attr">component</span>: showconfig },
-      <span class="hljs-comment">// {path: &#x27;/home/charts&#x27;,component: echarts}</span>
-      {<span class="hljs-attr">path</span>: <span class="hljs-string">&#x27;/home/echarts&#x27;</span>,<span class="hljs-attr">component</span>: echarts},
-      {<span class="hljs-attr">path</span>: <span class="hljs-string">&#x27;/home/echarts2&#x27;</span>,<span class="hljs-attr">component</span>: echarts2}
+      &#123;<span class="hljs-attr">path</span>: <span class="hljs-string">&#x27;/home/users/authen&#x27;</span>,<span class="hljs-attr">component</span>: users&#125;,
+      &#123;<span class="hljs-attr">path</span>: <span class="hljs-string">&#x27;/home/rights&#x27;</span>,<span class="hljs-attr">component</span>: rights&#125;,
+      &#123;<span class="hljs-attr">path</span>: <span class="hljs-string">&#x27;/home/switchs/action&#x27;</span>,<span class="hljs-attr">component</span>: showconfig &#125;,
+      <span class="hljs-comment">// &#123;path: &#x27;/home/charts&#x27;,component: echarts&#125;</span>
+      &#123;<span class="hljs-attr">path</span>: <span class="hljs-string">&#x27;/home/echarts&#x27;</span>,<span class="hljs-attr">component</span>: echarts&#125;,
+      &#123;<span class="hljs-attr">path</span>: <span class="hljs-string">&#x27;/home/echarts2&#x27;</span>,<span class="hljs-attr">component</span>: echarts2&#125;
     ]
-  },
-  {
+  &#125;,
+  &#123;
     path: <span class="hljs-string">&#x27;/windows/&#x27;</span>,
     component: windowsTerminal,
-  },
+  &#125;,
 ]
 
 
@@ -282,42 +282,42 @@ Vue.prototype.$echarts = echarts
 <span class="hljs-comment">// -------------------------------------------</span>
 
 
-<template>
-  <div <span class="hljs-class"><span class="hljs-keyword">class</span></span>=<span class="hljs-string">"left_inner"</span>
-       style=<span class="hljs-string">"width: 100%;height: 100%"</span>>
-    <!-- <span class="xml"><span class="hljs-tag"><<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"line"</span>></span><span class="hljs-tag"></<span class="hljs-name">div</span>></span></span> -->
-    <div id=<span class="hljs-string">"yhtj"</span>
-         style=<span class="hljs-string">"width: 100%;height: 100%"</span>>
-    </div>
-  </div>
-</template>
+&lt;template&gt;
+  &lt;div <span class="hljs-class"><span class="hljs-keyword">class</span></span>=<span class="hljs-string">&quot;left_inner&quot;</span>
+       style=<span class="hljs-string">&quot;width: 100%;height: 100%&quot;</span>&gt;
+    &lt;!-- <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;line&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span> --&gt;
+    &lt;div id=<span class="hljs-string">&quot;yhtj&quot;</span>
+         style=<span class="hljs-string">&quot;width: 100%;height: 100%&quot;</span>&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/template&gt;
 
-<script>
-<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> {
-  props: [<span class="hljs-string">"msg"</span>],
-  <span class="hljs-function"><span class="hljs-title">data</span>(<span class="hljs-params"></span>)</span> {
-    <span class="hljs-keyword">return</span> {
+&lt;script&gt;
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> &#123;
+  props: [<span class="hljs-string">&quot;msg&quot;</span>],
+  <span class="hljs-function"><span class="hljs-title">data</span>(<span class="hljs-params"></span>)</span> &#123;
+    <span class="hljs-keyword">return</span> &#123;
       snmp_data: [],
       links: [],
       data: [],
-      option: {
-        <span class="hljs-comment">// xAxis: {</span>
+      option: &#123;
+        <span class="hljs-comment">// xAxis: &#123;</span>
         <span class="hljs-comment">//   show: true,</span>
-        <span class="hljs-comment">//   type: "value"</span>
-        <span class="hljs-comment">// },</span>
-        <span class="hljs-comment">// yAxis: {</span>
+        <span class="hljs-comment">//   type: &quot;value&quot;</span>
+        <span class="hljs-comment">// &#125;,</span>
+        <span class="hljs-comment">// yAxis: &#123;</span>
         <span class="hljs-comment">//   show: true,</span>
-        <span class="hljs-comment">//   type: "value"</span>
-        <span class="hljs-comment">// },</span>
-        title: {
+        <span class="hljs-comment">//   type: &quot;value&quot;</span>
+        <span class="hljs-comment">// &#125;,</span>
+        title: &#123;
           <span class="hljs-comment">// 图表名字</span>
-          text: <span class="hljs-string">"数据来自于交换机"</span>,
-          subtext: <span class="hljs-string">"城域内部交换机流量图"</span>,
-          left: <span class="hljs-string">"left"</span>,
+          text: <span class="hljs-string">&quot;数据来自于交换机&quot;</span>,
+          subtext: <span class="hljs-string">&quot;城域内部交换机流量图&quot;</span>,
+          left: <span class="hljs-string">&quot;left&quot;</span>,
           show: <span class="hljs-literal">true</span>
-        },
+        &#125;,
         series: [
-          {
+          &#123;
             <span class="hljs-comment">// 定义charts在容器中的位置</span>
             <span class="hljs-comment">// left: 20.0,</span>
             <span class="hljs-comment">// top: 20.0,</span>
@@ -325,68 +325,68 @@ Vue.prototype.$echarts = echarts
             <span class="hljs-comment">// bottom: 25.0,</span>
             width:<span class="hljs-number">500</span>,
             zoom: <span class="hljs-number">1.5</span>, <span class="hljs-comment">// 定义地图大小 区域图大小 关系到节点与节点之间的紧凑程度</span>
-            type: <span class="hljs-string">"graph"</span>, <span class="hljs-comment">// 定义charts图形为桑基图</span>
-            layout: <span class="hljs-string">"none"</span>,
-            <span class="hljs-comment">// layout: "force",</span>
-            edgeSymbol: [<span class="hljs-string">"circle"</span>, <span class="hljs-string">"arrow"</span>], <span class="hljs-comment">// 开启箭头  这里用两种形式的结合体 分别是圆和箭头</span>
+            type: <span class="hljs-string">&quot;graph&quot;</span>, <span class="hljs-comment">// 定义charts图形为桑基图</span>
+            layout: <span class="hljs-string">&quot;none&quot;</span>,
+            <span class="hljs-comment">// layout: &quot;force&quot;,</span>
+            edgeSymbol: [<span class="hljs-string">&quot;circle&quot;</span>, <span class="hljs-string">&quot;arrow&quot;</span>], <span class="hljs-comment">// 开启箭头  这里用两种形式的结合体 分别是圆和箭头</span>
             edgeSymbolSize: [<span class="hljs-number">0</span>, <span class="hljs-number">5</span>], <span class="hljs-comment">//箭头大小  // 这里对上面两种形式都做了大小处理</span>
-            <span class="hljs-comment">//     edgeLabel: {                     // 线上面的注释</span>
-            <span class="hljs-comment">//     normal: {</span>
+            <span class="hljs-comment">//     edgeLabel: &#123;                     // 线上面的注释</span>
+            <span class="hljs-comment">//     normal: &#123;</span>
             <span class="hljs-comment">//         show: true,</span>
-            <span class="hljs-comment">//         position: "middle",</span>
-            <span class="hljs-comment">//         textStyle: {</span>
+            <span class="hljs-comment">//         position: &quot;middle&quot;,</span>
+            <span class="hljs-comment">//         textStyle: &#123;</span>
             <span class="hljs-comment">//             fontSize: 14</span>
-            <span class="hljs-comment">//         },</span>
-            <span class="hljs-comment">//         formatter: "{c}次"</span>
-            <span class="hljs-comment">//     }</span>
-            <span class="hljs-comment">// },</span>
-            <span class="hljs-comment">// edgeLabel: {</span>
-            <span class="hljs-comment">//   normal: {</span>
+            <span class="hljs-comment">//         &#125;,</span>
+            <span class="hljs-comment">//         formatter: &quot;&#123;c&#125;次&quot;</span>
+            <span class="hljs-comment">//     &#125;</span>
+            <span class="hljs-comment">// &#125;,</span>
+            <span class="hljs-comment">// edgeLabel: &#123;</span>
+            <span class="hljs-comment">//   normal: &#123;</span>
             <span class="hljs-comment">//     show: true,</span>
-            <span class="hljs-comment">//     postion: "middle",</span>
-            <span class="hljs-comment">//     formatter: "{c}"</span>
-            <span class="hljs-comment">//   }</span>
-            <span class="hljs-comment">// },</span>
+            <span class="hljs-comment">//     postion: &quot;middle&quot;,</span>
+            <span class="hljs-comment">//     formatter: &quot;&#123;c&#125;&quot;</span>
+            <span class="hljs-comment">//   &#125;</span>
+            <span class="hljs-comment">// &#125;,</span>
             focusNodeAdjacency: <span class="hljs-literal">true</span>, <span class="hljs-comment">// 指定的节点以及其所有邻接节点高亮</span>
-            nodeAlign: <span class="hljs-string">"right"</span>, <span class="hljs-comment">// 定义节点位置</span>
+            nodeAlign: <span class="hljs-string">&quot;right&quot;</span>, <span class="hljs-comment">// 定义节点位置</span>
             roam: <span class="hljs-literal">true</span>, <span class="hljs-comment">// 是否可拖拽</span>
 
-            lineStyle: {
+            lineStyle: &#123;
               <span class="hljs-comment">// 定义连接线样式</span>
-              normal: {
+              normal: &#123;
                 width: <span class="hljs-number">2</span>,
-                shadowColor: <span class="hljs-string">"none"</span>,
-                color: <span class="hljs-string">"#142F54"</span>,
+                shadowColor: <span class="hljs-string">&quot;none&quot;</span>,
+                color: <span class="hljs-string">&quot;#142F54&quot;</span>,
                 curveness: <span class="hljs-number">0.02</span>,
-                type: <span class="hljs-string">"solid"</span> <span class="hljs-comment">// 线的样式</span>
-              }
-            },
+                type: <span class="hljs-string">&quot;solid&quot;</span> <span class="hljs-comment">// 线的样式</span>
+              &#125;
+            &#125;,
 
             <span class="hljs-comment">// 定义节点样式</span>
             symbolSize: <span class="hljs-number">20</span>,
-            symbol: <span class="hljs-string">"rect"</span>,
+            symbol: <span class="hljs-string">&quot;rect&quot;</span>,
             <span class="hljs-comment">// 节点样式</span>
-            itemStyle: {
-              normal: {
-                color: <span class="hljs-string">"#D7DBDD"</span>,
-                <span class="hljs-comment">// borderColor: "red",</span>
+            itemStyle: &#123;
+              normal: &#123;
+                color: <span class="hljs-string">&quot;#D7DBDD&quot;</span>,
+                <span class="hljs-comment">// borderColor: &quot;red&quot;,</span>
                 borderWidth: <span class="hljs-number">2</span>,
-                shadowColor: <span class="hljs-string">"rgba(225,225,225,0.4)"</span>,
+                shadowColor: <span class="hljs-string">&quot;rgba(225,225,225,0.4)&quot;</span>,
                 shadowBlur: <span class="hljs-number">10</span>,
                 shadowOffsetX: <span class="hljs-number">10</span>,
                 shadowOffsetY: <span class="hljs-number">10</span>
-              }
-            },
+              &#125;
+            &#125;,
             data: [],
             links: []
-          }
+          &#125;
         ]
-      }
-    };
-  },
-  methods: {
-    <span class="hljs-function"><span class="hljs-title">loading_GraphChart</span>(<span class="hljs-params"></span>)</span> {
-      <span class="hljs-keyword">let</span> myChart = <span class="hljs-built_in">this</span>.$echarts.init(<span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">"yhtj"</span>));
+      &#125;
+    &#125;;
+  &#125;,
+  methods: &#123;
+    <span class="hljs-function"><span class="hljs-title">loading_GraphChart</span>(<span class="hljs-params"></span>)</span> &#123;
+      <span class="hljs-keyword">let</span> myChart = <span class="hljs-built_in">this</span>.$echarts.init(<span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">&quot;yhtj&quot;</span>));
       <span class="hljs-comment">//   this.loading_data()</span>
       <span class="hljs-comment">//   this.option.series[0].data  = this.data</span>
 
@@ -395,106 +395,106 @@ Vue.prototype.$echarts = echarts
       myChart.showLoading();
 
       <span class="hljs-built_in">this</span>.$http
-        .get(<span class="hljs-string">"echart/get/uplink"</span>)
-        .then(<span class="hljs-function"><span class="hljs-params">res</span> =></span> {
-          <span class="hljs-built_in">setTimeout</span>(<span class="hljs-function">() =></span> {
+        .get(<span class="hljs-string">&quot;echart/get/uplink&quot;</span>)
+        .then(<span class="hljs-function"><span class="hljs-params">res</span> =&gt;</span> &#123;
+          <span class="hljs-built_in">setTimeout</span>(<span class="hljs-function">() =&gt;</span> &#123;
             <span class="hljs-comment">// 获取到数据后隐藏加载动画</span>
             myChart.hideLoading();
-            <span class="hljs-keyword">if</span> (res.data.meta.code != <span class="hljs-number">0</span>) {
-              <span class="hljs-built_in">this</span>.$message.error(<span class="hljs-string">"获取数据失败"</span>);
-            }
-            <span class="hljs-built_in">this</span>.$message.success(<span class="hljs-string">"获取数据成功"</span>);
+            <span class="hljs-keyword">if</span> (res.data.meta.code != <span class="hljs-number">0</span>) &#123;
+              <span class="hljs-built_in">this</span>.$message.error(<span class="hljs-string">&quot;获取数据失败&quot;</span>);
+            &#125;
+            <span class="hljs-built_in">this</span>.$message.success(<span class="hljs-string">&quot;获取数据成功&quot;</span>);
             <span class="hljs-built_in">this</span>.snmp_data = res.data.data;
-            <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i < <span class="hljs-built_in">this</span>.snmp_data.length; i++) {
-              <span class="hljs-keyword">var</span> dict = {};
-              <span class="hljs-keyword">var</span> dict_links = {};
-              dict[<span class="hljs-string">"name"</span>] = <span class="hljs-built_in">this</span>.snmp_data[i].name;
-              dict[<span class="hljs-string">"x"</span>] = <span class="hljs-built_in">parseInt</span>(<span class="hljs-built_in">this</span>.snmp_data[i].coordinates[<span class="hljs-number">0</span>]);
-              dict[<span class="hljs-string">"y"</span>] = <span class="hljs-built_in">parseInt</span>(<span class="hljs-built_in">this</span>.snmp_data[i].coordinates[<span class="hljs-number">1</span>]);
+            <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-built_in">this</span>.snmp_data.length; i++) &#123;
+              <span class="hljs-keyword">var</span> dict = &#123;&#125;;
+              <span class="hljs-keyword">var</span> dict_links = &#123;&#125;;
+              dict[<span class="hljs-string">&quot;name&quot;</span>] = <span class="hljs-built_in">this</span>.snmp_data[i].name;
+              dict[<span class="hljs-string">&quot;x&quot;</span>] = <span class="hljs-built_in">parseInt</span>(<span class="hljs-built_in">this</span>.snmp_data[i].coordinates[<span class="hljs-number">0</span>]);
+              dict[<span class="hljs-string">&quot;y&quot;</span>] = <span class="hljs-built_in">parseInt</span>(<span class="hljs-built_in">this</span>.snmp_data[i].coordinates[<span class="hljs-number">1</span>]);
               <span class="hljs-built_in">this</span>.data.push(dict);
-              dict_links[<span class="hljs-string">"source"</span>] = <span class="hljs-built_in">this</span>.snmp_data[i].name;
-              dict_links[<span class="hljs-string">"target"</span>] = <span class="hljs-built_in">this</span>.snmp_data[i].targeTo;
-              dict_links[<span class="hljs-string">"value"</span>] = <span class="hljs-built_in">this</span>.snmp_data[i].diff_result;
+              dict_links[<span class="hljs-string">&quot;source&quot;</span>] = <span class="hljs-built_in">this</span>.snmp_data[i].name;
+              dict_links[<span class="hljs-string">&quot;target&quot;</span>] = <span class="hljs-built_in">this</span>.snmp_data[i].targeTo;
+              dict_links[<span class="hljs-string">&quot;value&quot;</span>] = <span class="hljs-built_in">this</span>.snmp_data[i].diff_result;
               <span class="hljs-built_in">this</span>.links.push(dict_links);
-            }
-            <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i < <span class="hljs-built_in">this</span>.data.length; i++) {
-              <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> j = <span class="hljs-number">0</span>; j < <span class="hljs-built_in">this</span>.data.length; j++) {
-                <span class="hljs-keyword">if</span> (<span class="hljs-built_in">this</span>.data[i][<span class="hljs-string">"name"</span>] == <span class="hljs-built_in">this</span>.data[j][<span class="hljs-string">"name"</span>]) {
+            &#125;
+            <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-built_in">this</span>.data.length; i++) &#123;
+              <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> j = <span class="hljs-number">0</span>; j &lt; <span class="hljs-built_in">this</span>.data.length; j++) &#123;
+                <span class="hljs-keyword">if</span> (<span class="hljs-built_in">this</span>.data[i][<span class="hljs-string">&quot;name&quot;</span>] == <span class="hljs-built_in">this</span>.data[j][<span class="hljs-string">&quot;name&quot;</span>]) &#123;
                   <span class="hljs-built_in">this</span>.data.splice(i, <span class="hljs-number">1</span>);
-                }
-              }
-            }
-            myChart.setOption({
+                &#125;
+              &#125;
+            &#125;
+            myChart.setOption(&#123;
               <span class="hljs-comment">// center: [115.97, 29.71],</span>
               series: [
-                {
+                &#123;
                   data: [
-                    { <span class="hljs-attr">name</span>: <span class="hljs-string">"POP-ZJ-KCH-PE1"</span>, <span class="hljs-attr">x</span>: <span class="hljs-number">800</span>, <span class="hljs-attr">y</span>: <span class="hljs-number">0</span> },
-                    { <span class="hljs-attr">name</span>: <span class="hljs-string">"POP-ZJ-XIH-PE1"</span>, <span class="hljs-attr">x</span>: <span class="hljs-number">750</span>, <span class="hljs-attr">y</span>:<span class="hljs-number">800</span>},
-                    { <span class="hljs-attr">name</span>: <span class="hljs-string">"POP-ZJ-FUD-PE1"</span>, <span class="hljs-attr">x</span>: -<span class="hljs-number">500</span>, <span class="hljs-attr">y</span>: <span class="hljs-number">800</span> },
-                    { <span class="hljs-attr">name</span>: <span class="hljs-string">"POP-ZJ-SAD-S01"</span>, <span class="hljs-attr">x</span>: -<span class="hljs-number">500</span>, <span class="hljs-attr">y</span>: <span class="hljs-number">0</span> },
-                    { <span class="hljs-attr">name</span>: <span class="hljs-string">"POP-ZJ-HGH-PE1"</span>, <span class="hljs-attr">x</span>: <span class="hljs-number">200</span>, <span class="hljs-attr">y</span>: -<span class="hljs-number">400</span> }
+                    &#123; <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;POP-ZJ-KCH-PE1&quot;</span>, <span class="hljs-attr">x</span>: <span class="hljs-number">800</span>, <span class="hljs-attr">y</span>: <span class="hljs-number">0</span> &#125;,
+                    &#123; <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;POP-ZJ-XIH-PE1&quot;</span>, <span class="hljs-attr">x</span>: <span class="hljs-number">750</span>, <span class="hljs-attr">y</span>:<span class="hljs-number">800</span>&#125;,
+                    &#123; <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;POP-ZJ-FUD-PE1&quot;</span>, <span class="hljs-attr">x</span>: -<span class="hljs-number">500</span>, <span class="hljs-attr">y</span>: <span class="hljs-number">800</span> &#125;,
+                    &#123; <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;POP-ZJ-SAD-S01&quot;</span>, <span class="hljs-attr">x</span>: -<span class="hljs-number">500</span>, <span class="hljs-attr">y</span>: <span class="hljs-number">0</span> &#125;,
+                    &#123; <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;POP-ZJ-HGH-PE1&quot;</span>, <span class="hljs-attr">x</span>: <span class="hljs-number">200</span>, <span class="hljs-attr">y</span>: -<span class="hljs-number">400</span> &#125;
                   ],
                   <span class="hljs-comment">//  data2: [</span>
-                  <span class="hljs-comment">//   { name: "POP-ZJ-KCH-PE1", x: 800, y: 0 },</span>
-                  <span class="hljs-comment">//   { name: "POP-ZJ-XIH-PE1", x: 800, y:800},</span>
-                  <span class="hljs-comment">//   { name: "POP-ZJ-FUD-PE1", x: 0, y: 800 },</span>
-                  <span class="hljs-comment">//   { name: "POP-ZJ-SAD-S01", x: 0, y: 0 },</span>
-                  <span class="hljs-comment">//   { name: "POP-ZJ-HGH-PE1", x: 200, y: -400 }</span>
+                  <span class="hljs-comment">//   &#123; name: &quot;POP-ZJ-KCH-PE1&quot;, x: 800, y: 0 &#125;,</span>
+                  <span class="hljs-comment">//   &#123; name: &quot;POP-ZJ-XIH-PE1&quot;, x: 800, y:800&#125;,</span>
+                  <span class="hljs-comment">//   &#123; name: &quot;POP-ZJ-FUD-PE1&quot;, x: 0, y: 800 &#125;,</span>
+                  <span class="hljs-comment">//   &#123; name: &quot;POP-ZJ-SAD-S01&quot;, x: 0, y: 0 &#125;,</span>
+                  <span class="hljs-comment">//   &#123; name: &quot;POP-ZJ-HGH-PE1&quot;, x: 200, y: -400 &#125;</span>
                   <span class="hljs-comment">// ],</span>
                   links: <span class="hljs-built_in">this</span>.links
-                }
+                &#125;
               ]
-            });
-          }, <span class="hljs-number">500</span>); <span class="hljs-comment">//加载动画时长为0.5秒</span>
-        })
-        .catch(<span class="hljs-function"><span class="hljs-params">err</span> =></span> {
+            &#125;);
+          &#125;, <span class="hljs-number">500</span>); <span class="hljs-comment">//加载动画时长为0.5秒</span>
+        &#125;)
+        .catch(<span class="hljs-function"><span class="hljs-params">err</span> =&gt;</span> &#123;
           <span class="hljs-built_in">console</span>.log(err);
-        });
-    }
-  },
-  <span class="hljs-function"><span class="hljs-title">mounted</span>(<span class="hljs-params"></span>)</span> {
+        &#125;);
+    &#125;
+  &#125;,
+  <span class="hljs-function"><span class="hljs-title">mounted</span>(<span class="hljs-params"></span>)</span> &#123;
     <span class="hljs-built_in">this</span>.loading_GraphChart();
-  }
-};
-</script>
+  &#125;
+&#125;;
+&lt;/script&gt;
 
-<style>
-</style></code></pre></div>
+&lt;style&gt;
+&lt;/style&gt;</code></pre></div>
 
 <p>vue文件中的大致结构</p>
-<div class="code-wrapper"><pre class=" language-hljs js"><code class="language-hljs js"><template>
-  <div <span class="hljs-class"><span class="hljs-keyword">class</span></span>=<span class="hljs-string">"left_inner"</span>
-       style=<span class="hljs-string">"width: 100%;height: 100%"</span>>
-    <!-- <span class="xml"><span class="hljs-tag"><<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"line"</span>></span><span class="hljs-tag"></<span class="hljs-name">div</span>></span></span> -->
-    <div id=<span class="hljs-string">"yhtj"</span>
-         style=<span class="hljs-string">"width: 100%;height: 100%"</span>>
-    </div>
-  </div>
-</template>
+<div class="code-wrapper"><pre><code class="hljs js">&lt;template&gt;
+  &lt;div <span class="hljs-class"><span class="hljs-keyword">class</span></span>=<span class="hljs-string">&quot;left_inner&quot;</span>
+       style=<span class="hljs-string">&quot;width: 100%;height: 100%&quot;</span>&gt;
+    &lt;!-- <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;line&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span> --&gt;
+    &lt;div id=<span class="hljs-string">&quot;yhtj&quot;</span>
+         style=<span class="hljs-string">&quot;width: 100%;height: 100%&quot;</span>&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/template&gt;
 
-<script>
-<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> {
-  props: [<span class="hljs-string">"msg"</span>],
-  <span class="hljs-function"><span class="hljs-title">data</span>(<span class="hljs-params"></span>)</span> {
-    <span class="hljs-keyword">return</span> {
+&lt;script&gt;
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> &#123;
+  props: [<span class="hljs-string">&quot;msg&quot;</span>],
+  <span class="hljs-function"><span class="hljs-title">data</span>(<span class="hljs-params"></span>)</span> &#123;
+    <span class="hljs-keyword">return</span> &#123;
       snmp_data: [],
       links: [],
       data: [],
-      option: {
-        },
-        series: [{
-          {},
+      option: &#123;
+        &#125;,
+        series: [&#123;
+          &#123;&#125;,
             data: [],
             links: []
-          }
+          &#125;
         ]
-      }
-    };
-  },
-  methods: {
-    <span class="hljs-function"><span class="hljs-title">loading_GraphChart</span>(<span class="hljs-params"></span>)</span> {
-      <span class="hljs-keyword">let</span> myChart = <span class="hljs-built_in">this</span>.$echarts.init(<span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">"yhtj"</span>));
+      &#125;
+    &#125;;
+  &#125;,
+  methods: &#123;
+    <span class="hljs-function"><span class="hljs-title">loading_GraphChart</span>(<span class="hljs-params"></span>)</span> &#123;
+      <span class="hljs-keyword">let</span> myChart = <span class="hljs-built_in">this</span>.$echarts.init(<span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">&quot;yhtj&quot;</span>));
       <span class="hljs-comment">//   this.loading_data()</span>
       <span class="hljs-comment">//   this.option.series[0].data  = this.data</span>
 
@@ -503,49 +503,49 @@ Vue.prototype.$echarts = echarts
       myChart.showLoading();
 
       <span class="hljs-built_in">this</span>.$http
-        .get(<span class="hljs-string">"echart/get/uplink"</span>)
-        .then(<span class="hljs-function"><span class="hljs-params">res</span> =></span> {
-          <span class="hljs-built_in">setTimeout</span>(<span class="hljs-function">() =></span> {
+        .get(<span class="hljs-string">&quot;echart/get/uplink&quot;</span>)
+        .then(<span class="hljs-function"><span class="hljs-params">res</span> =&gt;</span> &#123;
+          <span class="hljs-built_in">setTimeout</span>(<span class="hljs-function">() =&gt;</span> &#123;
             <span class="hljs-comment">// 获取到数据后隐藏加载动画</span>
             myChart.hideLoading();
-            }
-            myChart.setOption({
+            &#125;
+            myChart.setOption(&#123;
               <span class="hljs-comment">// center: [115.97, 29.71],</span>
               series: [
-                {
+                &#123;
                   data: [
-                    { <span class="hljs-attr">name</span>: <span class="hljs-string">"POP-ZJ-KCH-PE1"</span>, <span class="hljs-attr">x</span>: <span class="hljs-number">800</span>, <span class="hljs-attr">y</span>: <span class="hljs-number">0</span> },
-                    { <span class="hljs-attr">name</span>: <span class="hljs-string">"POP-ZJ-XIH-PE1"</span>, <span class="hljs-attr">x</span>: <span class="hljs-number">750</span>, <span class="hljs-attr">y</span>:<span class="hljs-number">800</span>},
-                    { <span class="hljs-attr">name</span>: <span class="hljs-string">"POP-ZJ-FUD-PE1"</span>, <span class="hljs-attr">x</span>: -<span class="hljs-number">500</span>, <span class="hljs-attr">y</span>: <span class="hljs-number">800</span> },
-                    { <span class="hljs-attr">name</span>: <span class="hljs-string">"POP-ZJ-SAD-S01"</span>, <span class="hljs-attr">x</span>: -<span class="hljs-number">500</span>, <span class="hljs-attr">y</span>: <span class="hljs-number">0</span> },
-                    { <span class="hljs-attr">name</span>: <span class="hljs-string">"POP-ZJ-HGH-PE1"</span>, <span class="hljs-attr">x</span>: <span class="hljs-number">200</span>, <span class="hljs-attr">y</span>: -<span class="hljs-number">400</span> }
+                    &#123; <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;POP-ZJ-KCH-PE1&quot;</span>, <span class="hljs-attr">x</span>: <span class="hljs-number">800</span>, <span class="hljs-attr">y</span>: <span class="hljs-number">0</span> &#125;,
+                    &#123; <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;POP-ZJ-XIH-PE1&quot;</span>, <span class="hljs-attr">x</span>: <span class="hljs-number">750</span>, <span class="hljs-attr">y</span>:<span class="hljs-number">800</span>&#125;,
+                    &#123; <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;POP-ZJ-FUD-PE1&quot;</span>, <span class="hljs-attr">x</span>: -<span class="hljs-number">500</span>, <span class="hljs-attr">y</span>: <span class="hljs-number">800</span> &#125;,
+                    &#123; <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;POP-ZJ-SAD-S01&quot;</span>, <span class="hljs-attr">x</span>: -<span class="hljs-number">500</span>, <span class="hljs-attr">y</span>: <span class="hljs-number">0</span> &#125;,
+                    &#123; <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;POP-ZJ-HGH-PE1&quot;</span>, <span class="hljs-attr">x</span>: <span class="hljs-number">200</span>, <span class="hljs-attr">y</span>: -<span class="hljs-number">400</span> &#125;
                   ],
                   <span class="hljs-comment">//  data2: [</span>
-                  <span class="hljs-comment">//   { name: "POP-ZJ-KCH-PE1", x: 800, y: 0 },</span>
-                  <span class="hljs-comment">//   { name: "POP-ZJ-XIH-PE1", x: 800, y:800},</span>
-                  <span class="hljs-comment">//   { name: "POP-ZJ-FUD-PE1", x: 0, y: 800 },</span>
-                  <span class="hljs-comment">//   { name: "POP-ZJ-SAD-S01", x: 0, y: 0 },</span>
-                  <span class="hljs-comment">//   { name: "POP-ZJ-HGH-PE1", x: 200, y: -400 }</span>
+                  <span class="hljs-comment">//   &#123; name: &quot;POP-ZJ-KCH-PE1&quot;, x: 800, y: 0 &#125;,</span>
+                  <span class="hljs-comment">//   &#123; name: &quot;POP-ZJ-XIH-PE1&quot;, x: 800, y:800&#125;,</span>
+                  <span class="hljs-comment">//   &#123; name: &quot;POP-ZJ-FUD-PE1&quot;, x: 0, y: 800 &#125;,</span>
+                  <span class="hljs-comment">//   &#123; name: &quot;POP-ZJ-SAD-S01&quot;, x: 0, y: 0 &#125;,</span>
+                  <span class="hljs-comment">//   &#123; name: &quot;POP-ZJ-HGH-PE1&quot;, x: 200, y: -400 &#125;</span>
                   <span class="hljs-comment">// ],</span>
                   links: <span class="hljs-built_in">this</span>.links
-                }
+                &#125;
               ]
-            });
-          }, <span class="hljs-number">500</span>); <span class="hljs-comment">//加载动画时长为0.5秒</span>
-        })
-        .catch(<span class="hljs-function"><span class="hljs-params">err</span> =></span> {
+            &#125;);
+          &#125;, <span class="hljs-number">500</span>); <span class="hljs-comment">//加载动画时长为0.5秒</span>
+        &#125;)
+        .catch(<span class="hljs-function"><span class="hljs-params">err</span> =&gt;</span> &#123;
           <span class="hljs-built_in">console</span>.log(err);
-        });
-    }
-  },
-  <span class="hljs-function"><span class="hljs-title">mounted</span>(<span class="hljs-params"></span>)</span> {
+        &#125;);
+    &#125;
+  &#125;,
+  <span class="hljs-function"><span class="hljs-title">mounted</span>(<span class="hljs-params"></span>)</span> &#123;
     <span class="hljs-built_in">this</span>.loading_GraphChart();
-  }
-};
-</script>
+  &#125;
+&#125;;
+&lt;/script&gt;
 
-<style>
-</style></code></pre></div>
+&lt;style&gt;
+&lt;/style&gt;</code></pre></div>
 
             </div>
             <hr>
@@ -581,7 +581,7 @@ Vue.prototype.$echarts = echarts
                       <a href="/2020/06/03/blog_back_new/fastapi/%E4%B8%9A%E5%8A%A1%E8%BF%81%E7%A7%BB%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/">
                         <i class="iconfont icon-arrowleft"></i>
                         <span class="hidden-mobile">业务迁移解决方案</span>
-                        <span class="visible-mobile">Vorheriger</span>
+                        <span class="visible-mobile">上一篇</span>
                       </a>
                     
                   </article>
@@ -590,7 +590,7 @@ Vue.prototype.$echarts = echarts
                     
                       <a href="/2020/06/01/blog_back_new/redis/pyredis/">
                         <span class="hidden-mobile">pyredis使用</span>
-                        <span class="visible-mobile">Nächster</span>
+                        <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
                     
@@ -607,7 +607,7 @@ Vue.prototype.$echarts = echarts
     
       <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
         <div id="toc">
-  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
   <div class="toc-body" id="toc-body"></div>
 </div>
 
@@ -633,7 +633,7 @@ Vue.prototype.$echarts = echarts
   <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">Suchen</h4>
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
         <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -642,7 +642,7 @@ Vue.prototype.$echarts = echarts
         <div class="md-form mb-5">
           <input type="text" id="local-search-input" class="form-control validate">
           <label data-error="x" data-success="v"
-                 for="local-search-input">Stichwort</label>
+                 for="local-search-input">关键词</label>
         </div>
         <div class="list-group" id="local-search-result"></div>
       </div>

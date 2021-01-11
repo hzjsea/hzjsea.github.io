@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html lang="cn" data-default-color-scheme=&#34;auto&#34;>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
 
 
 
@@ -61,7 +61,7 @@
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
 
 <body>
@@ -88,7 +88,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/">
                 <i class="iconfont icon-home-fill"></i>
-                Startseite
+                首页
               </a>
             </li>
           
@@ -100,7 +100,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/archives/">
                 <i class="iconfont icon-archive-fill"></i>
-                Archiv
+                归档
               </a>
             </li>
           
@@ -112,7 +112,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/categories/">
                 <i class="iconfont icon-category-fill"></i>
-                Kategorie
+                分类
               </a>
             </li>
           
@@ -124,7 +124,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/tags/">
                 <i class="iconfont icon-tags-fill"></i>
-                Etiketten
+                标签
               </a>
             </li>
           
@@ -136,7 +136,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/about/">
                 <i class="iconfont icon-user-fill"></i>
-                Über mich
+                关于
               </a>
             </li>
           
@@ -175,7 +175,7 @@
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
       <time datetime="2020-05-18 11:13" pubdate>
-        May 18, 2020 am
+        2020年5月18日 上午
       </time>
     </span>
   
@@ -233,11 +233,11 @@
 <a id="more"></a>
 
 <h1 id="redis使用"><a href="#redis使用" class="headerlink" title="redis使用"></a>redis使用</h1><p>Redis是开源的(BSD许可)内存数据结构存储,用作数据库,缓存和消息代理.它支持数据结构<br>Redis不是简单的键值存储，它实际上是一个数据结构服务器，支持不同类型的值。这意味着在传统键值存储中，您将字符串键与字符串值相关联，而在Redis中，该值不仅限于简单的字符串，还可以保存更复杂的数据结构</p>
-<h2 id="redis安装"><a href="#redis安装" class="headerlink" title="redis安装"></a>redis安装</h2><h3 id="redis本地安装"><a href="#redis本地安装" class="headerlink" title="redis本地安装"></a>redis本地安装</h3><div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">mkdir /root/package
+<h2 id="redis安装"><a href="#redis安装" class="headerlink" title="redis安装"></a>redis安装</h2><h3 id="redis本地安装"><a href="#redis本地安装" class="headerlink" title="redis本地安装"></a>redis本地安装</h3><div class="code-wrapper"><pre><code class="hljs bash">mkdir /root/package
 yum install wget  epel-release -y
 wget http://download.redis.io/releases/redis-5.0.8.tar.gz -O /root/package/redis-5.0.8.tar.gz 
 tar zxvf /root/package/redis-5.0.8.tar.gz -C /usr/<span class="hljs-built_in">local</span>/
-<span class="hljs-built_in">cd</span> /usr/lcoal/redis-5.0.8/src && make distclean && make && make install
+<span class="hljs-built_in">cd</span> /usr/lcoal/redis-5.0.8/src &amp;&amp; make distclean &amp;&amp; make &amp;&amp; make install
 
 <span class="hljs-comment"># 运行redis </span>
 ./usr/<span class="hljs-built_in">local</span>/redis-5.0.8/src/redis-server
@@ -247,47 +247,47 @@ ln -s /usr/<span class="hljs-built_in">local</span>/redis-5.0.8/src/redis-cli /u
 ln -s /usr/<span class="hljs-built_in">local</span>/redis-5.0.8/src/redis-sentinel /usr/lcoal/bin/redis-sentinel</code></pre></div>
 
 <p>编译到其他目录</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-built_in"><code class="language-hljs bash"><span class="hljs-built_in">cd</span> /root/package/redis-5.0.8.tar.gz
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-built_in">cd</span> /root/package/redis-5.0.8.tar.gz
 make PREFIX=/package/root/ install</code></pre></div>
 
 <p><img src="http://img.noback.top/2020-05-21-10-32-37.png" srcset="/img/loading.gif" alt="2020-05-21-10-32-37"></p>
 <h3 id="redis后台运行"><a href="#redis后台运行" class="headerlink" title="redis后台运行"></a>redis后台运行</h3><p>redis后台运行有两种方法，一种是直接跑，另外一种是挂起式<br>直接跑的形式</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">nohup ./src/redis-server &</code></pre></div>
+<div class="code-wrapper"><pre><code class="hljs bash">nohup ./src/redis-server &amp;</code></pre></div>
 <p>另外一种是通过修改redis.conf，运行的时候需要指定redis.conf</p>
-<div class="code-wrapper"><pre class=" language-hljs bash">sed -i <span class="hljs-string">&quot;/^daemonize/s/no/yes/&quot;</span> /usr/<span class="hljs-built_in"><code class="language-hljs bash">sed -i <span class="hljs-string">&quot;/^daemonize/s/no/yes/&quot;</span> /usr/<span class="hljs-built_in">local</span>/redis-5.0.8/redis.conf
+<div class="code-wrapper"><pre><code class="hljs bash">sed -i <span class="hljs-string">&quot;/^daemonize/s/no/yes/&quot;</span> /usr/<span class="hljs-built_in">local</span>/redis-5.0.8/redis.conf
 ./src/redis-server redis.conf
 <span class="hljs-comment"># 查看后台进程</span>
 lsof -i :6379
 <span class="hljs-comment"># 杀死后台进程</span>
-lsof -i :6379 | cut -d <span class="hljs-string">" "</span> -f 2 | xargs -I {} <span class="hljs-built_in">kill</span> -9 {}</code></pre></div>
+lsof -i :6379 | cut -d <span class="hljs-string">&quot; &quot;</span> -f 2 | xargs -I &#123;&#125; <span class="hljs-built_in">kill</span> -9 &#123;&#125;</code></pre></div>
 <h3 id="redis-远程登录"><a href="#redis-远程登录" class="headerlink" title="redis 远程登录"></a>redis 远程登录</h3><p>需要修改redis.conf文件</p>
-<div class="code-wrapper"><pre class=" language-hljs bash">sed -i <span class="hljs-string">&#x27;s/^bind/#&amp;/&#x27;</span> /usr/<span class="hljs-built_in"><code class="language-hljs bash">sed -i <span class="hljs-string">&#x27;s/^bind/#&amp;/&#x27;</span> /usr/<span class="hljs-built_in">local</span>/redis-5.0.8/redis.conf
-sed -i <span class="hljs-string">"/^protected-mode/s/yes/no/"</span> /usr/lcoal/redis-5.0.8/redis.conf</code></pre></div>
+<div class="code-wrapper"><pre><code class="hljs bash">sed -i <span class="hljs-string">&#x27;s/^bind/#&amp;/&#x27;</span> /usr/<span class="hljs-built_in">local</span>/redis-5.0.8/redis.conf
+sed -i <span class="hljs-string">&quot;/^protected-mode/s/yes/no/&quot;</span> /usr/lcoal/redis-5.0.8/redis.conf</code></pre></div>
 <p>protected-mode：您确定希望其他主机的客户端连接到Redis，即使未配置身份验证，也不配置特定的接口集</p>
-<h3 id="设置密码"><a href="#设置密码" class="headerlink" title="设置密码"></a>设置密码</h3><div class="code-wrapper"><pre class=" language-hljs bash">sed -n <span class="hljs-string">&quot;/^#/s/# requirepass/requirepass 123456/p&quot;</span>  /usr/<span class="hljs-built_in"><code class="language-hljs bash">sed -n <span class="hljs-string">&quot;/^#/s/# requirepass/requirepass 123456/p&quot;</span>  /usr/<span class="hljs-built_in">local</span>/redis-5.0.8/redis.conf</code></pre></div>
+<h3 id="设置密码"><a href="#设置密码" class="headerlink" title="设置密码"></a>设置密码</h3><div class="code-wrapper"><pre><code class="hljs bash">sed -n <span class="hljs-string">&quot;/^#/s/# requirepass/requirepass 123456/p&quot;</span>  /usr/<span class="hljs-built_in">local</span>/redis-5.0.8/redis.conf</code></pre></div>
 <p>如果是以服务方式启动，设置密码后还需要修改脚本/etc/init.d/reds_6379，否则会报错无权限</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">REDISPORT=6379
+<div class="code-wrapper"><pre><code class="hljs bash">REDISPORT=6379
 EXEC=/usr/<span class="hljs-built_in">local</span>/bin/redis-server
 CLIEXEC=/usr/<span class="hljs-built_in">local</span>/bin/redis-cli
 <span class="hljs-comment"># 新增下面一行</span>
 PASSWORD=123456</code></pre></div>
 <p>修改shutdown命令</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># CLIEXEC -p $REDISPORT shutdown</span>
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># CLIEXEC -p $REDISPORT shutdown</span>
 CLIEXEC -a <span class="hljs-variable">$PASSWORD</span> -p <span class="hljs-variable">$REDISPORT</span> shutdown</code></pre></div>
 
 <h3 id="设置为服务"><a href="#设置为服务" class="headerlink" title="设置为服务"></a>设置为服务</h3><p>有两种方法，一种是自己手动去设置，另外一种是使用redis自带去设置</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">mkdir /etc/redis
+<div class="code-wrapper"><pre><code class="hljs bash">mkdir /etc/redis
 cp /usr/<span class="hljs-built_in">local</span>/redis-5.0.8/redis.conf /etc/redis/6379.conf
 cp /usr/<span class="hljs-built_in">local</span>/redis-5.0.8/utils/redis_init_script /etc/init.d/redis_6379</code></pre></div>
 <p>启动和关闭redis</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">systemctl start redis_6379.service
+<div class="code-wrapper"><pre><code class="hljs bash">systemctl start redis_6379.service
 systemctl stop redis_6379.service</code></pre></div>
 <p>设置开机启动</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">chkconfig redis_6379 on
+<div class="code-wrapper"><pre><code class="hljs bash">chkconfig redis_6379 on
 chkconfig --list</code></pre></div>
 
 <p>自带的redis去设置</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">shell> utils/install_server.sh 
+<div class="code-wrapper"><pre><code class="hljs bash">shell&gt; utils/install_server.sh 
 Welcome to the redis service installer
 This script will <span class="hljs-built_in">help</span> you easily <span class="hljs-built_in">set</span> up a running redis server
 
@@ -308,7 +308,7 @@ Data dir       : /var/lib/redis/6379
 Executable     : /usr/<span class="hljs-built_in">local</span>/bin/redis-server
 Cli Executable : /usr/<span class="hljs-built_in">local</span>/bin/redis-cli
 Is this ok? Then press ENTER to go on or Ctrl-C to abort.
-Copied /tmp/6379.conf => /etc/init.d/redis_6379
+Copied /tmp/6379.conf =&gt; /etc/init.d/redis_6379
 Installing service...
 Successfully added to chkconfig!
 Successfully added to runlevels 345!
@@ -317,7 +317,7 @@ Installation successful!</code></pre></div>
 
 
 
-<h3 id="redis-docker安装"><a href="#redis-docker安装" class="headerlink" title="redis docker安装"></a>redis docker安装</h3><div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">docker pull redis
+<h3 id="redis-docker安装"><a href="#redis-docker安装" class="headerlink" title="redis docker安装"></a>redis docker安装</h3><div class="code-wrapper"><pre><code class="hljs bash">docker pull redis
 docker run -p 6379:6379 --name myredis -d redis redis-server --appendonly yes
 
 <span class="hljs-comment"># --name 是启动后容器对应的名称</span>
@@ -330,7 +330,7 @@ docker run -p 6379:6379 --name myredis -d redis redis-server --appendonly yes
 docker <span class="hljs-built_in">exec</span> -it dockerRedis redis-cli</code></pre></div>
 
 <h2 id="redis工具"><a href="#redis工具" class="headerlink" title="redis工具"></a>redis工具</h2><p>自从用了mycli以后，就喜欢上这个交互式命令工具了，这个工具有智能提示，对于一开始学习记不住命令有很大帮助<br>github地址<br><a target="_blank" rel="noopener" href="https://github.com/laixintao/iredis/">https://github.com/laixintao/iredis/</a><br>安装流程</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 开启虚拟环境</span>
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 开启虚拟环境</span>
 pipenv shell
 <span class="hljs-comment"># 安装工具</span>
 pip install iredis
@@ -340,13 +340,13 @@ iredis -h 10.0.43.106 -p 6379</code></pre></div>
 <li>medis<br><a target="_blank" rel="noopener" href="https://github.com/luin/medis">https://github.com/luin/medis</a></li>
 <li>tableplus<br><a target="_blank" rel="noopener" href="https://tableplus.com/">https://tableplus.com/</a></li>
 </ul>
-<h2 id="报错内容附录"><a href="#报错内容附录" class="headerlink" title="报错内容附录"></a>报错内容附录</h2><h3 id="gcc没有安装"><a href="#gcc没有安装" class="headerlink" title="gcc没有安装"></a>gcc没有安装</h3><div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">make cc Command not found</code></pre></div>
+<h2 id="报错内容附录"><a href="#报错内容附录" class="headerlink" title="报错内容附录"></a>报错内容附录</h2><h3 id="gcc没有安装"><a href="#gcc没有安装" class="headerlink" title="gcc没有安装"></a>gcc没有安装</h3><div class="code-wrapper"><pre><code class="hljs bash">make cc Command not found</code></pre></div>
 <p>这是因为系统中没有安装gcc的问题，解决方法是安装gcc目录</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">yum install gcc -y</code></pre></div>
+<div class="code-wrapper"><pre><code class="hljs bash">yum install gcc -y</code></pre></div>
 
-<h3 id="编译缓存没有清理"><a href="#编译缓存没有清理" class="headerlink" title="编译缓存没有清理"></a>编译缓存没有清理</h3><div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">jemalloc/jemalloc.h: No such file or directory。</code></pre></div>
+<h3 id="编译缓存没有清理"><a href="#编译缓存没有清理" class="headerlink" title="编译缓存没有清理"></a>编译缓存没有清理</h3><div class="code-wrapper"><pre><code class="hljs bash">jemalloc/jemalloc.h: No such file or directory。</code></pre></div>
 <p>这是因为之前编译的时候，编译出错了，缓存包就停留在目标文件当中，这时候二次编译的时候就会出现错误了<br>解决方法 清理缓存包</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">make distclean  && make && make install</code></pre></div>
+<div class="code-wrapper"><pre><code class="hljs bash">make distclean  &amp;&amp; make &amp;&amp; make install</code></pre></div>
 
             </div>
             <hr>
@@ -380,7 +380,7 @@ iredis -h 10.0.43.106 -p 6379</code></pre></div>
                       <a href="/2020/05/21/blog_back_new/redis/redis%E8%BF%9B%E9%98%B6/">
                         <i class="iconfont icon-arrowleft"></i>
                         <span class="hidden-mobile">redis进阶</span>
-                        <span class="visible-mobile">Vorheriger</span>
+                        <span class="visible-mobile">上一篇</span>
                       </a>
                     
                   </article>
@@ -389,7 +389,7 @@ iredis -h 10.0.43.106 -p 6379</code></pre></div>
                     
                       <a href="/2020/05/17/blog_back_new/golang/gin/">
                         <span class="hidden-mobile">gin</span>
-                        <span class="visible-mobile">Nächster</span>
+                        <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
                     
@@ -406,7 +406,7 @@ iredis -h 10.0.43.106 -p 6379</code></pre></div>
     
       <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
         <div id="toc">
-  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
   <div class="toc-body" id="toc-body"></div>
 </div>
 
@@ -432,7 +432,7 @@ iredis -h 10.0.43.106 -p 6379</code></pre></div>
   <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">Suchen</h4>
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
         <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -441,7 +441,7 @@ iredis -h 10.0.43.106 -p 6379</code></pre></div>
         <div class="md-form mb-5">
           <input type="text" id="local-search-input" class="form-control validate">
           <label data-error="x" data-success="v"
-                 for="local-search-input">Stichwort</label>
+                 for="local-search-input">关键词</label>
         </div>
         <div class="list-group" id="local-search-result"></div>
       </div>

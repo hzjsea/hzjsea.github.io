@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html lang="cn" data-default-color-scheme=&#34;auto&#34;>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
 
 
 
@@ -61,7 +61,7 @@
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
 
 <body>
@@ -88,7 +88,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/">
                 <i class="iconfont icon-home-fill"></i>
-                Startseite
+                首页
               </a>
             </li>
           
@@ -100,7 +100,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/archives/">
                 <i class="iconfont icon-archive-fill"></i>
-                Archiv
+                归档
               </a>
             </li>
           
@@ -112,7 +112,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/categories/">
                 <i class="iconfont icon-category-fill"></i>
-                Kategorie
+                分类
               </a>
             </li>
           
@@ -124,7 +124,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/tags/">
                 <i class="iconfont icon-tags-fill"></i>
-                Etiketten
+                标签
               </a>
             </li>
           
@@ -136,7 +136,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/about/">
                 <i class="iconfont icon-user-fill"></i>
-                Über mich
+                关于
               </a>
             </li>
           
@@ -175,7 +175,7 @@
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
       <time datetime="2020-05-09 23:43" pubdate>
-        May 9, 2020 pm
+        2020年5月9日 晚上
       </time>
     </span>
   
@@ -186,7 +186,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      571 字
+      12.1k 字
     </span>
   
 
@@ -196,7 +196,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      6
+      166
        分钟
     </span>
   
@@ -318,55 +318,55 @@
 <p>golang中的指针没有像C/C++中的那样复杂，他不支持”&gt;”操作,golang中只有如下两个操作那个</p>
 <ul>
 <li>&amp; 取地址</li>
-<li>* 根据(指针)地址取值 也就是&amp;的反向操作<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params"><code class="language-hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
-	v:=<span class="hljs-string">"hzj"</span>
-	ptr := &v
-	fmt.Println(<span class="hljs-string">"指针的地址    "</span>,ptr)
-	fmt.Println(<span class="hljs-string">"指针的所指向的地址上面的值"</span>, *ptr)
-}</code></pre></div>
+<li>* 根据(指针)地址取值 也就是&amp;的反向操作<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
+	v:=<span class="hljs-string">&quot;hzj&quot;</span>
+	ptr := &amp;v
+	fmt.Println(<span class="hljs-string">&quot;指针的地址    &quot;</span>,ptr)
+	fmt.Println(<span class="hljs-string">&quot;指针的所指向的地址上面的值&quot;</span>, *ptr)
+&#125;</code></pre></div>
 
 </li>
 </ul>
 <h3 id="函数指针"><a href="#函数指针" class="headerlink" title="函数指针"></a>函数指针</h3><p>golang中可以把指针作为返回值，其实就是返回内存值</p>
-<div class="code-wrapper"><pre class=" language-hljs golang"><span class="hljs-keyword"><code class="language-hljs golang"><span class="hljs-keyword">package</span> main
+<div class="code-wrapper"><pre><code class="hljs golang"><span class="hljs-keyword">package</span> main
 
-<span class="hljs-keyword">import</span> <span class="hljs-string">"fmt"</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
 	pp := f()
 	fmt.Println(pp)
-}
+&#125;
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">f</span><span class="hljs-params">()</span> *<span class="hljs-title">int</span></span>{
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">f</span><span class="hljs-params">()</span> *<span class="hljs-title">int</span></span>&#123;
 	p:= <span class="hljs-number">22</span>
-	<span class="hljs-keyword">return</span> &p
-}</code></pre></div>
+	<span class="hljs-keyword">return</span> &amp;p
+&#125;</code></pre></div>
 <p>如果我们不断的修改指针指向的变量的值，他的地址也会不断的改变</p>
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">package</span> main
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main
 
-<span class="hljs-keyword">import</span> <span class="hljs-string">"fmt"</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
 	pp := f()
 	fmt.Println(pp)
 
-	<span class="hljs-keyword">for</span> i:=<span class="hljs-number">0</span>;i<=<span class="hljs-number">10</span>;i++{
-		<span class="hljs-keyword">var</span> ss <span class="hljs-keyword">int</span> = ff(&i)
-		fmt.Println(ss,&ss)
-	}
-}
+	<span class="hljs-keyword">for</span> i:=<span class="hljs-number">0</span>;i&lt;=<span class="hljs-number">10</span>;i++&#123;
+		<span class="hljs-keyword">var</span> ss <span class="hljs-keyword">int</span> = ff(&amp;i)
+		fmt.Println(ss,&amp;ss)
+	&#125;
+&#125;
 
 <span class="hljs-comment">// 要求返回一个int类型的指针(地址)</span>
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">f</span><span class="hljs-params">()</span> *<span class="hljs-title">int</span></span>{
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">f</span><span class="hljs-params">()</span> *<span class="hljs-title">int</span></span>&#123;
 	p:= <span class="hljs-number">22</span>
-	<span class="hljs-keyword">return</span> &p <span class="hljs-comment">// 取完地址返回</span>
-}
+	<span class="hljs-keyword">return</span> &amp;p <span class="hljs-comment">// 取完地址返回</span>
+&#125;
 
 <span class="hljs-comment">// 这里要求传入一个int类型的指针</span>
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">ff</span><span class="hljs-params">(p *<span class="hljs-keyword">int</span>)</span> <span class="hljs-title">int</span></span> {
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">ff</span><span class="hljs-params">(p *<span class="hljs-keyword">int</span>)</span> <span class="hljs-title">int</span></span> &#123;
 	*p++
 	<span class="hljs-keyword">return</span> *p
-}
+&#125;
 
 <span class="hljs-comment">// result</span>
 <span class="hljs-comment">// 0xc00001c0a0</span>
@@ -392,56 +392,56 @@
 <li>可以使用匿名字段指针</li>
 </ul>
 <p>结构体内的变量最好都是大写的,一方面是方便转换成json(go中的json库默认不会解析struct中的小写字段)<br>创建结构体的语法以及调用结构体中的字段如下</p>
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword">type</span> Demo <span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">type</span> Demo <span class="hljs-keyword">struct</span>{
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">type</span> Demo <span class="hljs-keyword">struct</span>&#123;
 	Age <span class="hljs-keyword">int</span>
 	Name <span class="hljs-keyword">string</span>
-}
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span>  {
+&#125;
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span>  &#123;
 	<span class="hljs-comment">// 实例化结构体</span>
-	<span class="hljs-keyword">var</span> Demo1 = Demo{<span class="hljs-number">1</span>,<span class="hljs-string">"hello"</span>}
-	<span class="hljs-keyword">var</span> Demo2 = Demo{Age: <span class="hljs-number">1</span>,Name: <span class="hljs-string">"hello"</span>}
+	<span class="hljs-keyword">var</span> Demo1 = Demo&#123;<span class="hljs-number">1</span>,<span class="hljs-string">&quot;hello&quot;</span>&#125;
+	<span class="hljs-keyword">var</span> Demo2 = Demo&#123;Age: <span class="hljs-number">1</span>,Name: <span class="hljs-string">&quot;hello&quot;</span>&#125;
 	<span class="hljs-comment">// 访问实例内容</span>
 	fmt.Println(Demo1.Name)
 	<span class="hljs-comment">// 修改实例内容</span>
-	Demo1.Name = <span class="hljs-string">"hzj"</span>
+	Demo1.Name = <span class="hljs-string">&quot;hzj&quot;</span>
 	<span class="hljs-comment">// 通过实例地址访问值来修改内容</span>
-	*&Demo1.Age =<span class="hljs-number">3</span>
+	*&amp;Demo1.Age =<span class="hljs-number">3</span>
 	fmt.Println(Demo1)
 	<span class="hljs-comment">// 通过结构体的(指针)地址来访问实例</span>
-	p2 := &Demo2
+	p2 := &amp;Demo2
 	fmt.Println(p2)
 	p2.Age = <span class="hljs-number">30</span>
 	fmt.Println(Demo2)
 
-}</code></pre></div>
+&#125;</code></pre></div>
 <h3 id="go结构体嵌套和匿名成员"><a href="#go结构体嵌套和匿名成员" class="headerlink" title="go结构体嵌套和匿名成员"></a>go结构体嵌套和匿名成员</h3><p>golang中的结构体支持嵌套和匿名成员，这里的匿名成员其实就是一组结构体，为了简写方便</p>
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">package</span> main
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main
 
-<span class="hljs-keyword">import</span> <span class="hljs-string">"fmt"</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
 
-<span class="hljs-keyword">type</span> Demo <span class="hljs-keyword">struct</span>{
+<span class="hljs-keyword">type</span> Demo <span class="hljs-keyword">struct</span>&#123;
 	Age <span class="hljs-keyword">int</span>
 	Name <span class="hljs-keyword">string</span>
 	Desc
-}
+&#125;
 
-<span class="hljs-keyword">type</span> Desc <span class="hljs-keyword">struct</span> {
+<span class="hljs-keyword">type</span> Desc <span class="hljs-keyword">struct</span> &#123;
 	From <span class="hljs-keyword">string</span>
 	Dest <span class="hljs-keyword">string</span>
 	Date <span class="hljs-keyword">string</span>
-}
+&#125;
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
 
 	<span class="hljs-comment">// 全都指定字段的写法</span>
-	<span class="hljs-keyword">var</span> Desc1 = Desc{<span class="hljs-string">"1"</span>,<span class="hljs-string">"2"</span>,<span class="hljs-string">"3"</span>}
-	<span class="hljs-keyword">var</span> Demo1 = Demo{Age: <span class="hljs-number">1</span>,Name: <span class="hljs-string">"hzj"</span>,Desc:Desc1}
+	<span class="hljs-keyword">var</span> Desc1 = Desc&#123;<span class="hljs-string">&quot;1&quot;</span>,<span class="hljs-string">&quot;2&quot;</span>,<span class="hljs-string">&quot;3&quot;</span>&#125;
+	<span class="hljs-keyword">var</span> Demo1 = Demo&#123;Age: <span class="hljs-number">1</span>,Name: <span class="hljs-string">&quot;hzj&quot;</span>,Desc:Desc1&#125;
 	fmt.Println(Demo1)
 
 	<span class="hljs-comment">// 全都不指定字段</span>
-	<span class="hljs-keyword">var</span> Demo2 = Demo{ <span class="hljs-number">2</span>, <span class="hljs-string">"3"</span>,Desc{<span class="hljs-string">"1"</span>,<span class="hljs-string">"2"</span>,<span class="hljs-string">"3"</span>}} 
+	<span class="hljs-keyword">var</span> Demo2 = Demo&#123; <span class="hljs-number">2</span>, <span class="hljs-string">&quot;3&quot;</span>,Desc&#123;<span class="hljs-string">&quot;1&quot;</span>,<span class="hljs-string">&quot;2&quot;</span>,<span class="hljs-string">&quot;3&quot;</span>&#125;&#125; 
 	fmt.Println(Demo2)
-}
+&#125;
 </code></pre></div>
 
 
@@ -456,10 +456,10 @@
 <li>可以使用 new 来创建数组，此方法返回一个指向数组的指针</li>
 </ol>
 <p>来看下第四条内容,<code>new</code>的方法如下,但是new不经常使用，使用的通常是make函数</p>
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">new</span><span class="hljs-params">(Type)</span> *<span class="hljs-title">Type</span> // 返回一个类型的指针<span class="hljs-params"><code class="language-hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">new</span><span class="hljs-params">(Type)</span> *<span class="hljs-title">Type</span> // 返回一个类型的指针<span class="hljs-params">(地址)</span></span></code></pre></div>
-<div class="code-wrapper"><pre class=" language-hljs go">list := <span class="hljs-built_in">new</span>([]<span class="hljs-keyword"><code class="language-hljs go">list := <span class="hljs-built_in">new</span>([]<span class="hljs-keyword">int</span>)
-fmt.Println(<span class="hljs-string">"返回指针类型的地址     "</span>,&list)  <span class="hljs-comment">//   0xc00000e030</span>
-fmt.Println(<span class="hljs-string">"返回指针类型    "</span>,list)  <span class="hljs-comment">// &[]</span>
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">new</span><span class="hljs-params">(Type)</span> *<span class="hljs-title">Type</span> // 返回一个类型的指针<span class="hljs-params">(地址)</span></span></code></pre></div>
+<div class="code-wrapper"><pre><code class="hljs go">list := <span class="hljs-built_in">new</span>([]<span class="hljs-keyword">int</span>)
+fmt.Println(<span class="hljs-string">&quot;返回指针类型的地址     &quot;</span>,&amp;list)  <span class="hljs-comment">//   0xc00000e030</span>
+fmt.Println(<span class="hljs-string">&quot;返回指针类型    &quot;</span>,list)  <span class="hljs-comment">// &amp;[]</span>
 <span class="hljs-comment">// 上面这两个取其实没有什么意义 </span>
 fmt.Println(*list) <span class="hljs-comment">//根据地址取值  // []</span>
 
@@ -474,33 +474,33 @@ fmt.Println(*a)
 fmt.Println(b)</code></pre></div>
 
 <p>make函数的源码如下</p>
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">make</span><span class="hljs-params">(t Type, size ...IntegerType)</span> <span class="hljs-title"><code class="language-hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">make</span><span class="hljs-params">(t Type, size ...IntegerType)</span> <span class="hljs-title">Type</span></span></code></pre></div>
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">make</span><span class="hljs-params">(t Type, size ...IntegerType)</span> <span class="hljs-title">Type</span></span></code></pre></div>
 <p>make函数接收type类型,以及一系列属性，比如静态数组则需要定义len  切片则需要定义 len和cap ,返回一个类型的本身，而不是像new一样，返回的是一个类型指针</p>
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">package</span> main
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main
 
-<span class="hljs-keyword">import</span> <span class="hljs-string">"fmt"</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
 	<span class="hljs-comment">// 创建数组 此时容量为2 长度为0</span>
 	<span class="hljs-keyword">var</span> a[<span class="hljs-number">2</span>] <span class="hljs-keyword">string</span>
 	<span class="hljs-comment">//数组赋值</span>
-	a[<span class="hljs-number">0</span>] = <span class="hljs-string">"hello"</span>
-	a[<span class="hljs-number">1</span>] = <span class="hljs-string">"world"</span>
+	a[<span class="hljs-number">0</span>] = <span class="hljs-string">&quot;hello&quot;</span>
+	a[<span class="hljs-number">1</span>] = <span class="hljs-string">&quot;world&quot;</span>
 
 	<span class="hljs-comment">// 数组打印</span>
 	fmt.Println(a[<span class="hljs-number">0</span>])
 	fmt.Println(a)
 
 	<span class="hljs-comment">// 创建数组并且固定大小+固定元素</span>
-	arrary1 := [<span class="hljs-number">10</span>]<span class="hljs-keyword">int</span>{<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>,<span class="hljs-number">5</span>,<span class="hljs-number">6</span>,<span class="hljs-number">7</span>,<span class="hljs-number">8</span>,<span class="hljs-number">9</span>,<span class="hljs-number">10</span>}
+	arrary1 := [<span class="hljs-number">10</span>]<span class="hljs-keyword">int</span>&#123;<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>,<span class="hljs-number">5</span>,<span class="hljs-number">6</span>,<span class="hljs-number">7</span>,<span class="hljs-number">8</span>,<span class="hljs-number">9</span>,<span class="hljs-number">10</span>&#125;
 	fmt.Println(arrary1)
 
 	<span class="hljs-comment">// 创建数组的时候不固定大小</span>
-	arrary2 := [...]<span class="hljs-keyword">int</span>{<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>}  <span class="hljs-comment">// 在编译器中被叫做DDDArray</span>
+	arrary2 := [...]<span class="hljs-keyword">int</span>&#123;<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>&#125;  <span class="hljs-comment">// 在编译器中被叫做DDDArray</span>
 	arrary2[<span class="hljs-number">0</span>] = <span class="hljs-number">3</span>
 	arrary2[<span class="hljs-number">1</span>] = <span class="hljs-number">4</span>
 	fmt.Println(arrary2)
-}</code></pre></div>
+&#125;</code></pre></div>
 <p>两种数组创建时，数据长度上限推导<br>第一种在创建的时候就固定大小<br><a target="_blank" rel="noopener" href="https://github.com/golang/go/blob/616c39f6a636166447bdaac4f0871a5ca52bae8c/src/cmd/compile/internal/types/type.go#L473-L481">https://github.com/golang/go/blob/616c39f6a636166447bdaac4f0871a5ca52bae8c/src/cmd/compile/internal/types/type.go#L473-L481</a><br>会采用上面的这种方式提取出来<br><a target="_blank" rel="noopener" href="https://github.com/golang/go/blob/b7d097a4cf6b8a9125e4770b54d33826fa803023/src/cmd/compile/internal/gc/typecheck.go#L2755-L2961">https://github.com/golang/go/blob/b7d097a4cf6b8a9125e4770b54d33826fa803023/src/cmd/compile/internal/gc/typecheck.go#L2755-L2961</a><br>而不固定大小的方式则会以上面这种方式进行推导</p>
 <h3 id="语句转换"><a href="#语句转换" class="headerlink" title="语句转换"></a>语句转换</h3><p>由字面量组成的数组，会根据数组中元素的个数实现优化</p>
 <ul>
@@ -516,48 +516,48 @@ fmt.Println(b)</code></pre></div>
 <li>访问数组的索引越界时会直接报错 —— “invalid array index %v (out of bounds for %d-element array)”；</li>
 </ul>
 <h3 id="数组取值循环-range"><a href="#数组取值循环-range" class="headerlink" title="数组取值循环 range"></a>数组取值循环 range</h3><p>数组取值循环可以使用range来遍历其中的元素,取出来的数据主要包括<code>元素的序号</code>和<code>当前序号所对应的值</code></p>
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">package</span> main
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main
 
-<span class="hljs-keyword">import</span> <span class="hljs-string">"fmt"</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
-	<span class="hljs-keyword">var</span> listN = [...]<span class="hljs-keyword">int</span>{<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>,<span class="hljs-number">5</span>}
-	<span class="hljs-keyword">for</span> i,v := <span class="hljs-keyword">range</span> listN{
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
+	<span class="hljs-keyword">var</span> listN = [...]<span class="hljs-keyword">int</span>&#123;<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>,<span class="hljs-number">5</span>&#125;
+	<span class="hljs-keyword">for</span> i,v := <span class="hljs-keyword">range</span> listN&#123;
 		fmt.Println(i,v)
-	}
+	&#125;
 
 
 	<span class="hljs-comment">// 对于不需要取出来的值，可以进行_操作</span>
-	<span class="hljs-keyword">for</span> _,v := <span class="hljs-keyword">range</span> listN{
+	<span class="hljs-keyword">for</span> _,v := <span class="hljs-keyword">range</span> listN&#123;
 		fmt.Println(v)
-	}
-}</code></pre></div>
+	&#125;
+&#125;</code></pre></div>
 
 <h3 id="判断元素是否存在数组当中"><a href="#判断元素是否存在数组当中" class="headerlink" title="判断元素是否存在数组当中"></a>判断元素是否存在数组当中</h3><p>因为go中有些内容并没有内置的函数，要自己写。这个是经常会使用到的函数</p>
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">package</span> main
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main
 
-<span class="hljs-keyword">import</span> <span class="hljs-string">"fmt"</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
 
 <span class="hljs-comment">// golang判断元素是否存在数组当中</span>
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">IsContain</span><span class="hljs-params">(items []<span class="hljs-keyword">string</span>,item <span class="hljs-keyword">string</span>)</span> <span class="hljs-title">bool</span></span>{
-	<span class="hljs-keyword">for</span> _,eachItem := <span class="hljs-keyword">range</span> items{
-		<span class="hljs-keyword">if</span> eachItem  == item{
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">IsContain</span><span class="hljs-params">(items []<span class="hljs-keyword">string</span>,item <span class="hljs-keyword">string</span>)</span> <span class="hljs-title">bool</span></span>&#123;
+	<span class="hljs-keyword">for</span> _,eachItem := <span class="hljs-keyword">range</span> items&#123;
+		<span class="hljs-keyword">if</span> eachItem  == item&#123;
 			<span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>
-		}
-	}
+		&#125;
+	&#125;
 	<span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>
-}
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
-	ss:=<span class="hljs-string">"hello"</span>
-	<span class="hljs-keyword">var</span> sentence = []<span class="hljs-keyword">string</span>{<span class="hljs-string">"my"</span>,<span class="hljs-string">"words"</span>,<span class="hljs-string">"hello"</span>}
-	<span class="hljs-keyword">if</span> IsContain(sentence,ss){
-		fmt.Println(<span class="hljs-string">"true"</span>)
-	}<span class="hljs-keyword">else</span> {
-		fmt.Println(<span class="hljs-string">"false"</span>)
-	}
+&#125;
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
+	ss:=<span class="hljs-string">&quot;hello&quot;</span>
+	<span class="hljs-keyword">var</span> sentence = []<span class="hljs-keyword">string</span>&#123;<span class="hljs-string">&quot;my&quot;</span>,<span class="hljs-string">&quot;words&quot;</span>,<span class="hljs-string">&quot;hello&quot;</span>&#125;
+	<span class="hljs-keyword">if</span> IsContain(sentence,ss)&#123;
+		fmt.Println(<span class="hljs-string">&quot;true&quot;</span>)
+	&#125;<span class="hljs-keyword">else</span> &#123;
+		fmt.Println(<span class="hljs-string">&quot;false&quot;</span>)
+	&#125;
 
-}</code></pre></div>
+&#125;</code></pre></div>
 
 <h2 id="go-slice"><a href="#go-slice" class="headerlink" title="go slice"></a>go slice</h2><p>golang中切片的使用率大于静态数组的使用率,切片表示一个拥有相同类型元素的可变长度<br>slice 类型的零值是nil,值为nil的slice没有底层数组，并且长度和容量都为0</p>
 <ul>
@@ -570,115 +570,115 @@ fmt.Println(b)</code></pre></div>
 <li>如果多个 slice 指向相同底层数组，其中一个的值改变会影响全部</li>
 <li>make([]T, len, cap)  其中 cap 可以省略，则和 len 的值相同，len 表示元素的个数，cap 表示当前最大可以存放的容量</li>
 </ul>
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">package</span> main
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main
 
-<span class="hljs-keyword">import</span> <span class="hljs-string">"fmt"</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
 	<span class="hljs-comment">// 创建数组</span>
-	arrary1 := [<span class="hljs-number">10</span>]<span class="hljs-keyword">int</span>{<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>,<span class="hljs-number">5</span>,<span class="hljs-number">6</span>,<span class="hljs-number">7</span>,<span class="hljs-number">8</span>,<span class="hljs-number">9</span>,<span class="hljs-number">10</span>}
+	arrary1 := [<span class="hljs-number">10</span>]<span class="hljs-keyword">int</span>&#123;<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>,<span class="hljs-number">5</span>,<span class="hljs-number">6</span>,<span class="hljs-number">7</span>,<span class="hljs-number">8</span>,<span class="hljs-number">9</span>,<span class="hljs-number">10</span>&#125;
 	fmt.Println(arrary1)
 	<span class="hljs-comment">//数组切片</span>
 	fmt.Println(arrary1[<span class="hljs-number">1</span>:<span class="hljs-number">4</span>])
-}</code></pre></div>
+&#125;</code></pre></div>
 
 <p>切片数组反转 </p>
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">package</span> main
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main
 
-<span class="hljs-keyword">import</span> <span class="hljs-string">"fmt"</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
-	listN := []<span class="hljs-keyword">int</span>{<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">5</span>,<span class="hljs-number">6</span>,<span class="hljs-number">7</span>}
-	<span class="hljs-keyword">for</span> i,j := <span class="hljs-number">0</span>,<span class="hljs-built_in">len</span>(listN)<span class="hljs-number">-1</span> ; i<j ;i,j = i+<span class="hljs-number">1</span>,j<span class="hljs-number">-1</span>{
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
+	listN := []<span class="hljs-keyword">int</span>&#123;<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">5</span>,<span class="hljs-number">6</span>,<span class="hljs-number">7</span>&#125;
+	<span class="hljs-keyword">for</span> i,j := <span class="hljs-number">0</span>,<span class="hljs-built_in">len</span>(listN)<span class="hljs-number">-1</span> ; i&lt;j ;i,j = i+<span class="hljs-number">1</span>,j<span class="hljs-number">-1</span>&#123;
 			listN[i],listN[j] = listN[j],listN[i]
-	}
+	&#125;
 	fmt.Println(listN)
 
-}</code></pre></div>
+&#125;</code></pre></div>
 
 <h3 id="切片中的nil值"><a href="#切片中的nil值" class="headerlink" title="切片中的nil值"></a>切片中的nil值</h3><p>不同的创建形式，切片的值也会不同</p>
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">package</span> main
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main
 
-<span class="hljs-keyword">import</span> <span class="hljs-string">"fmt"</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
 	<span class="hljs-keyword">var</span> s []<span class="hljs-keyword">int</span>  <span class="hljs-comment">// len(s) == 0 ;s == nil</span>
 	s = <span class="hljs-literal">nil</span>  <span class="hljs-comment">// len(s) == 0 ; s == nil</span>
 	s = []<span class="hljs-keyword">int</span>(<span class="hljs-literal">nil</span>) <span class="hljs-comment">// len(s) == 0; s == nil</span>
-	s = []<span class="hljs-keyword">int</span>{} <span class="hljs-comment">// len(s) == 0; s!=nil</span>
-}</code></pre></div>
+	s = []<span class="hljs-keyword">int</span>&#123;&#125; <span class="hljs-comment">// len(s) == 0; s!=nil</span>
+&#125;</code></pre></div>
 <p>如果len(s) == 0 则slice 为空，<br>但是s == nil 时候， slice 不一定为空</p>
 <h3 id="数组中嵌套struct"><a href="#数组中嵌套struct" class="headerlink" title="数组中嵌套struct"></a>数组中嵌套struct</h3><p>数组可以有很多种，其中初始化可以这样初始化<br>因为数组规定了类型必须是一样的，为了让他存储多种类型的值，可以定义一个struct来存储</p>
-<div class="code-wrapper"><pre class=" language-hljs go">q(被赋值的变量) := [](定义数组元素个数) <span class="hljs-keyword"><code class="language-hljs go">q(被赋值的变量) := [](定义数组元素个数) <span class="hljs-keyword">int</span>(数组中的变量类型) {}(数组元素集合)</code></pre></div>
+<div class="code-wrapper"><pre><code class="hljs go">q(被赋值的变量) := [](定义数组元素个数) <span class="hljs-keyword">int</span>(数组中的变量类型) &#123;&#125;(数组元素集合)</code></pre></div>
 <p>因此我们可以这样来写</p>
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">package</span> main
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main
 
-<span class="hljs-keyword">import</span> <span class="hljs-string">"fmt"</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
 	
 <span class="hljs-comment">//  定义数据元素为int 类型</span>
-	q := []<span class="hljs-keyword">int</span>{<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>,<span class="hljs-number">5</span>,<span class="hljs-number">5</span>}
+	q := []<span class="hljs-keyword">int</span>&#123;<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>,<span class="hljs-number">5</span>,<span class="hljs-number">5</span>&#125;
 	fmt.Println(q)
 
 <span class="hljs-comment">//  定义数据元素为string 类型</span>
-	r := [] <span class="hljs-keyword">string</span>{<span class="hljs-string">"hzj"</span>,<span class="hljs-string">"alpaca"</span>,<span class="hljs-string">"code"</span>,<span class="hljs-string">"cy"</span>}
+	r := [] <span class="hljs-keyword">string</span>&#123;<span class="hljs-string">&quot;hzj&quot;</span>,<span class="hljs-string">&quot;alpaca&quot;</span>,<span class="hljs-string">&quot;code&quot;</span>,<span class="hljs-string">&quot;cy&quot;</span>&#125;
 	fmt.Println(r)
 
 <span class="hljs-comment">// 数组中嵌套struct</span>
-	s := []<span class="hljs-keyword">struct</span>{
+	s := []<span class="hljs-keyword">struct</span>&#123;
 		i <span class="hljs-keyword">int</span>
 		q <span class="hljs-keyword">string</span>
-	}{
-		{<span class="hljs-number">2</span>,<span class="hljs-string">"hzj"</span>},
-		{<span class="hljs-number">3</span>,<span class="hljs-string">"hzj"</span>},
-	}
+	&#125;&#123;
+		&#123;<span class="hljs-number">2</span>,<span class="hljs-string">&quot;hzj&quot;</span>&#125;,
+		&#123;<span class="hljs-number">3</span>,<span class="hljs-string">&quot;hzj&quot;</span>&#125;,
+	&#125;
 
-}</code></pre></div>
+&#125;</code></pre></div>
 
 <h3 id="nil切片零值"><a href="#nil切片零值" class="headerlink" title="nil切片零值"></a>nil切片零值</h3><p>默认情况下go的切片的值为nil 也就是当数组为空的时候，他的值就是nil</p>
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">package</span> main
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main
 
-<span class="hljs-keyword">import</span> <span class="hljs-string">"fmt"</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
 
 	<span class="hljs-keyword">var</span> s []<span class="hljs-keyword">int</span>
 	fmt.Println(s,<span class="hljs-built_in">len</span>(s),<span class="hljs-built_in">cap</span>(s))
-	<span class="hljs-keyword">if</span> s == <span class="hljs-literal">nil</span>{
-		fmt.Println(<span class="hljs-string">"nil"</span>)
-	}
-}</code></pre></div>
+	<span class="hljs-keyword">if</span> s == <span class="hljs-literal">nil</span>&#123;
+		fmt.Println(<span class="hljs-string">&quot;nil&quot;</span>)
+	&#125;
+&#125;</code></pre></div>
 
 <h3 id="make创建动态数组"><a href="#make创建动态数组" class="headerlink" title="make创建动态数组"></a>make创建动态数组</h3><p>内置make可以创建一个具有指定元素类型、长度和容量的slice,其中容量参数可以省略，在这种情况下 slice的长度和容量相等，另外在golang中slice 可以通过<code>len()</code>以及<code>cap()</code> 分别来获取slice的长度和容量</p>
 <p>使用make 创建的slice 动态数组返回的是一个slice </p>
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">package</span> main
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main
 
-<span class="hljs-keyword">import</span> <span class="hljs-string">"fmt"</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
 	<span class="hljs-comment">// 创建一个长度为5的动态数组</span>
 	<span class="hljs-comment">// 静态数组因为长度是固定不变的，所以不需要传入参数，即使一开声明过程中</span>
 	<span class="hljs-comment">// 固定了数组的长度，也是需要填满的</span>
 	a := <span class="hljs-built_in">make</span>([]<span class="hljs-keyword">int</span>, <span class="hljs-number">5</span>)
-	printslice(<span class="hljs-string">"a"</span>, a)
+	printslice(<span class="hljs-string">&quot;a&quot;</span>, a)
 	<span class="hljs-comment">// res: [0 0 0 0 0]</span>
 
 	<span class="hljs-comment">// 创建一个长度为0 容量为5的动态数组</span>
 	b := <span class="hljs-built_in">make</span>([]<span class="hljs-keyword">int</span>, <span class="hljs-number">0</span>, <span class="hljs-number">5</span>)
-	printslice(<span class="hljs-string">"b"</span>, b)
+	printslice(<span class="hljs-string">&quot;b&quot;</span>, b)
 
 	c := b[:<span class="hljs-number">2</span>]
-	printslice(<span class="hljs-string">"c"</span>, c)
+	printslice(<span class="hljs-string">&quot;c&quot;</span>, c)
 
 	d := c[<span class="hljs-number">2</span>:<span class="hljs-number">5</span>]
-	printslice(<span class="hljs-string">"d"</span>, d)
-}
+	printslice(<span class="hljs-string">&quot;d&quot;</span>, d)
+&#125;
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">printslice</span><span class="hljs-params">(s <span class="hljs-keyword">string</span>, x []<span class="hljs-keyword">int</span>)</span></span> {
-	fmt.Printf(<span class="hljs-string">"数组为%s,长度为%d 容量为%d %v\n"</span>,
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">printslice</span><span class="hljs-params">(s <span class="hljs-keyword">string</span>, x []<span class="hljs-keyword">int</span>)</span></span> &#123;
+	fmt.Printf(<span class="hljs-string">&quot;数组为%s,长度为%d 容量为%d %v\n&quot;</span>,
 		s, <span class="hljs-built_in">len</span>(x), <span class="hljs-built_in">cap</span>(x), x)
-}
+&#125;
 
 <span class="hljs-comment">//res</span>
 <span class="hljs-comment">// 数组为a,长度为5 容量为5 [0 0 0 0 0]</span>
@@ -686,35 +686,35 @@ fmt.Println(b)</code></pre></div>
 <span class="hljs-comment">// 数组为c,长度为2 容量为5 [0 0]</span>
 <span class="hljs-comment">// 数组为d,长度为3 容量为3 [0 0 0]</span></code></pre></div>
 
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">package</span> main
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main
 
-<span class="hljs-keyword">import</span> <span class="hljs-string">"fmt"</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
 	listN := <span class="hljs-built_in">make</span>([]<span class="hljs-keyword">int</span>,<span class="hljs-number">20</span>)
-	fmt.Println(<span class="hljs-string">"长度是"</span>,<span class="hljs-built_in">len</span>(listN))
-	fmt.Println(<span class="hljs-string">"容量是"</span>,<span class="hljs-built_in">cap</span>(listN))
+	fmt.Println(<span class="hljs-string">&quot;长度是&quot;</span>,<span class="hljs-built_in">len</span>(listN))
+	fmt.Println(<span class="hljs-string">&quot;容量是&quot;</span>,<span class="hljs-built_in">cap</span>(listN))
 	<span class="hljs-comment">//长度是 20</span>
 	<span class="hljs-comment">//容量是 20</span>
 
 	listZ := <span class="hljs-built_in">make</span>([]<span class="hljs-keyword">int</span> ,<span class="hljs-number">20</span> ,<span class="hljs-number">30</span>)
-	fmt.Println(<span class="hljs-string">"长度是"</span>,<span class="hljs-built_in">len</span>(listZ))
-	fmt.Println(<span class="hljs-string">"容量是"</span>,<span class="hljs-built_in">cap</span>(listZ))
+	fmt.Println(<span class="hljs-string">&quot;长度是&quot;</span>,<span class="hljs-built_in">len</span>(listZ))
+	fmt.Println(<span class="hljs-string">&quot;容量是&quot;</span>,<span class="hljs-built_in">cap</span>(listZ))
 	<span class="hljs-comment">//长度是 20</span>
 	<span class="hljs-comment">//容量是 30</span>
 
 	listError := <span class="hljs-built_in">make</span>([]<span class="hljs-keyword">int</span> ,<span class="hljs-number">30</span> ,<span class="hljs-number">20</span>)
-	fmt.Println(<span class="hljs-string">"长度是"</span>,<span class="hljs-built_in">len</span>(listError))
-	fmt.Println(<span class="hljs-string">"容量是"</span>,<span class="hljs-built_in">cap</span>(listError))
+	fmt.Println(<span class="hljs-string">&quot;长度是&quot;</span>,<span class="hljs-built_in">len</span>(listError))
+	fmt.Println(<span class="hljs-string">&quot;容量是&quot;</span>,<span class="hljs-built_in">cap</span>(listError))
 	<span class="hljs-comment">// 这里就会报错，因为创建的slice 容量小于长度</span>
-}</code></pre></div>
+&#125;</code></pre></div>
 
 <h3 id="数组追加元素append"><a href="#数组追加元素append" class="headerlink" title="数组追加元素append"></a>数组追加元素append</h3><p>内置函数append用来将元素追加到slice后面</p>
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">package</span> main
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main
 
-<span class="hljs-keyword">import</span> <span class="hljs-string">"fmt"</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
 	<span class="hljs-keyword">var</span> s []<span class="hljs-keyword">int</span>
 	printSlice(s)
 
@@ -729,11 +729,11 @@ fmt.Println(b)</code></pre></div>
 	<span class="hljs-comment">// 可以一次性添加多个元素</span>
 	s = <span class="hljs-built_in">append</span>(s, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>)
 	printSlice(s)
-}
+&#125;
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">printSlice</span><span class="hljs-params">(s []<span class="hljs-keyword">int</span>)</span></span> {
-	fmt.Printf(<span class="hljs-string">"len=%d cap=%d %v\n"</span>, <span class="hljs-built_in">len</span>(s), <span class="hljs-built_in">cap</span>(s), s)
-}
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">printSlice</span><span class="hljs-params">(s []<span class="hljs-keyword">int</span>)</span></span> &#123;
+	fmt.Printf(<span class="hljs-string">&quot;len=%d cap=%d %v\n&quot;</span>, <span class="hljs-built_in">len</span>(s), <span class="hljs-built_in">cap</span>(s), s)
+&#125;
 </code></pre></div>
 
 <h2 id="go-map"><a href="#go-map" class="headerlink" title="go map"></a>go map</h2><p>map是一个无序的基于key-value的数据结构，go语言中的map是一个引用类型，必须初始化后才能使用，没有初始化的时候，他就是一个Nil值<br>go语言中定义语法如下，可以他把看成字典，也就是keytype表示Key的类型  valuetype表示value</p>
@@ -746,18 +746,18 @@ fmt.Println(b)</code></pre></div>
 <li>使用 len() 获取元素个数</li>
 <li>键值对儿不存在时自动添加，使用 delete() 删除某键值对儿，使用 for range 对 map 和 slice 进行迭代操作</li>
 </ul>
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">map</span>[KeyType]ValueType</code></pre></div>
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">map</span>[KeyType]ValueType</code></pre></div>
 <ul>
 <li>KeyType表示键类型</li>
 <li>ValueType表示值类型</li>
 </ul>
-<h3 id="创建一个基本的map"><a href="#创建一个基本的map" class="headerlink" title="创建一个基本的map"></a>创建一个基本的map</h3><div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">package</span> main
+<h3 id="创建一个基本的map"><a href="#创建一个基本的map" class="headerlink" title="创建一个基本的map"></a>创建一个基本的map</h3><div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main
 
-<span class="hljs-keyword">import</span> <span class="hljs-string">"fmt"</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
 	<span class="hljs-comment">// 创建一个空的map</span>
-	<span class="hljs-comment">// { "age": 1 } 类似于这样的</span>
+	<span class="hljs-comment">// &#123; &quot;age&quot;: 1 &#125; 类似于这样的</span>
 	<span class="hljs-keyword">var</span> map1 <span class="hljs-keyword">map</span>[<span class="hljs-keyword">string</span>]<span class="hljs-keyword">int</span>
 	<span class="hljs-comment">// 这里返回值是nil 因为这就是个空的</span>
 	fmt.Println(map1)
@@ -768,8 +768,8 @@ fmt.Println(b)</code></pre></div>
 	fmt.Println(map2)
 
 	<span class="hljs-comment">// 给map2赋值</span>
-	map2[<span class="hljs-string">"age"</span>] = <span class="hljs-number">2</span>
-	map2[<span class="hljs-string">"name"</span>] = <span class="hljs-number">3</span>
+	map2[<span class="hljs-string">&quot;age&quot;</span>] = <span class="hljs-number">2</span>
+	map2[<span class="hljs-string">&quot;name&quot;</span>] = <span class="hljs-number">3</span>
 	fmt.Println(map2)
 
 	<span class="hljs-comment">//map[]</span>
@@ -778,128 +778,128 @@ fmt.Println(b)</code></pre></div>
 
 	<span class="hljs-comment">// 声明map的同时，初始化</span>
 
-	map3 := <span class="hljs-keyword">map</span>[<span class="hljs-keyword">string</span>]<span class="hljs-keyword">int</span>{
-		<span class="hljs-string">"name"</span>: <span class="hljs-number">2</span>,
-		<span class="hljs-string">"age"</span>:  <span class="hljs-number">3</span>,
-	}
+	map3 := <span class="hljs-keyword">map</span>[<span class="hljs-keyword">string</span>]<span class="hljs-keyword">int</span>&#123;
+		<span class="hljs-string">&quot;name&quot;</span>: <span class="hljs-number">2</span>,
+		<span class="hljs-string">&quot;age&quot;</span>:  <span class="hljs-number">3</span>,
+	&#125;
 	fmt.Println(map3)
 	<span class="hljs-comment">//map[age:3 name:2]</span>
 
 	<span class="hljs-comment">//判断值是否存在于map中</span>
 	<span class="hljs-comment">// 类似于python中的</span>
 	<span class="hljs-comment">// for key,value in ites_dict.items():</span>
-	<span class="hljs-comment">//	if "xx" in key:</span>
+	<span class="hljs-comment">//	if &quot;xx&quot; in key:</span>
 	<span class="hljs-comment">//       return true</span>
 	<span class="hljs-comment">// 这里取值，返回value 以及是否存在的表示flag</span>
-	v, flag := map3[<span class="hljs-string">"name"</span>]
+	v, flag := map3[<span class="hljs-string">&quot;name&quot;</span>]
 	fmt.Println(v, flag)
 
-	vv, flag := map3[<span class="hljs-string">"class"</span>]
-	<span class="hljs-keyword">if</span> flag == <span class="hljs-literal">false</span> {
-		fmt.Println(<span class="hljs-string">"不存在class这个值"</span>)
-	} <span class="hljs-keyword">else</span> {
-		fmt.Println(<span class="hljs-string">"存在class这个值，值为"</span>, vv)
-	}
+	vv, flag := map3[<span class="hljs-string">&quot;class&quot;</span>]
+	<span class="hljs-keyword">if</span> flag == <span class="hljs-literal">false</span> &#123;
+		fmt.Println(<span class="hljs-string">&quot;不存在class这个值&quot;</span>)
+	&#125; <span class="hljs-keyword">else</span> &#123;
+		fmt.Println(<span class="hljs-string">&quot;存在class这个值，值为&quot;</span>, vv)
+	&#125;
 
 	<span class="hljs-comment">// 遍历map组</span>
 	<span class="hljs-comment">// map是无序的 键值对和添加的顺序无关</span>
-	<span class="hljs-keyword">for</span> k, v := <span class="hljs-keyword">range</span> map3 {
+	<span class="hljs-keyword">for</span> k, v := <span class="hljs-keyword">range</span> map3 &#123;
 		fmt.Println(k, v)
-	}
+	&#125;
 	<span class="hljs-comment">// 只遍历key</span>
-	<span class="hljs-keyword">for</span> k := <span class="hljs-keyword">range</span> map3 {
+	<span class="hljs-keyword">for</span> k := <span class="hljs-keyword">range</span> map3 &#123;
 		fmt.Println(k)
-	}
+	&#125;
 	<span class="hljs-comment">// 只遍历vlaue</span>
-	<span class="hljs-keyword">for</span> _, v := <span class="hljs-keyword">range</span> map3 {
+	<span class="hljs-keyword">for</span> _, v := <span class="hljs-keyword">range</span> map3 &#123;
 		fmt.Println(v)
-	}
+	&#125;
 
 	<span class="hljs-comment">// 根据键删除值</span>
-	<span class="hljs-built_in">delete</span>(map3, <span class="hljs-string">"name"</span>)
-	<span class="hljs-keyword">for</span> v, k := <span class="hljs-keyword">range</span> map3 {
+	<span class="hljs-built_in">delete</span>(map3, <span class="hljs-string">&quot;name&quot;</span>)
+	<span class="hljs-keyword">for</span> v, k := <span class="hljs-keyword">range</span> map3 &#123;
 		fmt.Println(v, k)
-	}
-}
+	&#125;
+&#125;
 </code></pre></div>
 
-<h3 id="利用map来获取相同key出现的次数"><a href="#利用map来获取相同key出现的次数" class="headerlink" title="利用map来获取相同key出现的次数"></a>利用map来获取相同key出现的次数</h3><div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">getmax3</span><span class="hljs-params">()</span> <span class="hljs-title"><code class="language-hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">getmax3</span><span class="hljs-params">()</span> <span class="hljs-title">int</span></span> {
+<h3 id="利用map来获取相同key出现的次数"><a href="#利用map来获取相同key出现的次数" class="headerlink" title="利用map来获取相同key出现的次数"></a>利用map来获取相同key出现的次数</h3><div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">getmax3</span><span class="hljs-params">()</span> <span class="hljs-title">int</span></span> &#123;
 	need := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">map</span>[<span class="hljs-keyword">string</span>]<span class="hljs-keyword">int</span>)
-	t:=<span class="hljs-string">"hello"</span> <span class="hljs-comment">// 类型 unit8 byte类型  fmt.Println(reflect.TypeOf(t[1]))</span>
-	<span class="hljs-keyword">for</span> i:=<span class="hljs-number">0</span> ;i<<span class="hljs-built_in">len</span>(t);i++{
+	t:=<span class="hljs-string">&quot;hello&quot;</span> <span class="hljs-comment">// 类型 unit8 byte类型  fmt.Println(reflect.TypeOf(t[1]))</span>
+	<span class="hljs-keyword">for</span> i:=<span class="hljs-number">0</span> ;i&lt;<span class="hljs-built_in">len</span>(t);i++&#123;
 		need[<span class="hljs-keyword">string</span>(t[i])]++
-	}
+	&#125;
 	fmt.Println(need)
 	<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>
-}
+&#125;
 
 
 <span class="hljs-comment">// result   map[e:1 h:1 l:2 o:1]</span>
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">getmax3</span><span class="hljs-params">()</span> <span class="hljs-title">int</span></span> {
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">getmax3</span><span class="hljs-params">()</span> <span class="hljs-title">int</span></span> &#123;
 	need := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">map</span>[<span class="hljs-keyword">byte</span>]<span class="hljs-keyword">int</span>)
-	t:=<span class="hljs-string">"hello"</span> <span class="hljs-comment">// 类型 unit8 byte类型  fmt.Println(reflect.TypeOf(t[1]))</span>
-	<span class="hljs-keyword">for</span> i:=<span class="hljs-number">0</span> ;i<<span class="hljs-built_in">len</span>(t);i++{
+	t:=<span class="hljs-string">&quot;hello&quot;</span> <span class="hljs-comment">// 类型 unit8 byte类型  fmt.Println(reflect.TypeOf(t[1]))</span>
+	<span class="hljs-keyword">for</span> i:=<span class="hljs-number">0</span> ;i&lt;<span class="hljs-built_in">len</span>(t);i++&#123;
 		need[t[i]]++
-	}
+	&#125;
 	fmt.Println(need)
 	<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>
-}
+&#125;
 
 
 <span class="hljs-comment">// result map[101:1 104:1 108:2 111:1]</span>
 </code></pre></div>
 
 <h3 id="映射值"><a href="#映射值" class="headerlink" title="映射值"></a>映射值</h3><p>映射的零值为 nil 。nil 映射既没有键，也不能添加键。<br>make 函数会返回给定类型的映射，并将其初始化备用。</p>
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">package</span> main
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main
 
-<span class="hljs-keyword">import</span> <span class="hljs-string">"fmt"</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
 
-<span class="hljs-keyword">type</span> Vertex <span class="hljs-keyword">struct</span> {
+<span class="hljs-keyword">type</span> Vertex <span class="hljs-keyword">struct</span> &#123;
 	Lat, Long <span class="hljs-keyword">float64</span>
-}
+&#125;
 
 <span class="hljs-keyword">var</span> m <span class="hljs-keyword">map</span>[<span class="hljs-keyword">string</span>]Vertex
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
 	m = <span class="hljs-built_in">make</span>(<span class="hljs-keyword">map</span>[<span class="hljs-keyword">string</span>]Vertex)
-	m[<span class="hljs-string">"Bell Labs"</span>] = Vertex{
+	m[<span class="hljs-string">&quot;Bell Labs&quot;</span>] = Vertex&#123;
 		<span class="hljs-number">40.68433</span>, <span class="hljs-number">-74.39967</span>,
-	}
-	fmt.Println(m[<span class="hljs-string">"Bell Labs"</span>])
-}</code></pre></div>
+	&#125;
+	fmt.Println(m[<span class="hljs-string">&quot;Bell Labs&quot;</span>])
+&#125;</code></pre></div>
 
 
-<h3 id="使用map统计单词数量"><a href="#使用map统计单词数量" class="headerlink" title="使用map统计单词数量"></a>使用map统计单词数量</h3><div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">package</span> main
+<h3 id="使用map统计单词数量"><a href="#使用map统计单词数量" class="headerlink" title="使用map统计单词数量"></a>使用map统计单词数量</h3><div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main
 
 <span class="hljs-keyword">import</span> (
-	<span class="hljs-string">"fmt"</span>
-	<span class="hljs-string">"strings"</span>
+	<span class="hljs-string">&quot;fmt&quot;</span>
+	<span class="hljs-string">&quot;strings&quot;</span>
 )
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
-	<span class="hljs-keyword">var</span> words = <span class="hljs-string">"how are you"</span>
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
+	<span class="hljs-keyword">var</span> words = <span class="hljs-string">&quot;how are you&quot;</span>
 	fmt.Println(words)
 
-	words_list := strings.Split(words, <span class="hljs-string">" "</span>)
+	words_list := strings.Split(words, <span class="hljs-string">&quot; &quot;</span>)
 	fmt.Println(words_list)
 
 	<span class="hljs-keyword">var</span> wordsCount = <span class="hljs-built_in">make</span>(<span class="hljs-keyword">map</span>[<span class="hljs-keyword">string</span>]<span class="hljs-keyword">int</span>, <span class="hljs-number">10</span>)
-	<span class="hljs-keyword">for</span> _, value := <span class="hljs-keyword">range</span> words_list {
+	<span class="hljs-keyword">for</span> _, value := <span class="hljs-keyword">range</span> words_list &#123;
 		v, ok := wordsCount[value]
 
-		<span class="hljs-keyword">if</span> ok {
+		<span class="hljs-keyword">if</span> ok &#123;
 			wordsCount[value] = v + <span class="hljs-number">1</span>
-		} <span class="hljs-keyword">else</span> {
+		&#125; <span class="hljs-keyword">else</span> &#123;
 			wordsCount[value] = <span class="hljs-number">1</span>
-		}
-	}
+		&#125;
+	&#125;
 
-	<span class="hljs-keyword">for</span> v, ok := <span class="hljs-keyword">range</span> wordsCount {
+	<span class="hljs-keyword">for</span> v, ok := <span class="hljs-keyword">range</span> wordsCount &#123;
 		fmt.Println(v, ok)
-	}
+	&#125;
 
-}
+&#125;
 </code></pre></div>
 
 <h2 id="go-function"><a href="#go-function" class="headerlink" title="go function"></a>go function</h2><ul>
@@ -914,56 +914,56 @@ fmt.Println(b)</code></pre></div>
 </ul>
 </li>
 <li> 定义函数使用关键字 func，且左大括号不能另起一行</li>
-<li> 函数也可以作为一种类型使用<h3 id="基本函数问题"><a href="#基本函数问题" class="headerlink" title="基本函数问题"></a>基本函数问题</h3><div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">package</span> main
+<li> 函数也可以作为一种类型使用<h3 id="基本函数问题"><a href="#基本函数问题" class="headerlink" title="基本函数问题"></a>基本函数问题</h3><div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main
 
-<span class="hljs-keyword">import</span> <span class="hljs-string">"fmt"</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
 	havefunc(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">5</span>)
 	havefunc1(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>)
 	res := havefunc2()
 	fmt.Println(res)
 	fixed_res := havefunc2_fixed()
 	fmt.Println(fixed_res)
-}
+&#125;
 
 <span class="hljs-comment">// 固定参数函数</span>
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">havefunc1</span><span class="hljs-params">(x <span class="hljs-keyword">int</span>, y <span class="hljs-keyword">int</span>)</span></span> {
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">havefunc1</span><span class="hljs-params">(x <span class="hljs-keyword">int</span>, y <span class="hljs-keyword">int</span>)</span></span> &#123;
 	fmt.Println(x + y)
-}
+&#125;
 
 <span class="hljs-comment">// 有返回值的函数</span>
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">havefunc2</span><span class="hljs-params">()</span> <span class="hljs-title">string</span></span> {
-	<span class="hljs-keyword">return</span> <span class="hljs-string">"havefunc2"</span>
-}
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">havefunc2</span><span class="hljs-params">()</span> <span class="hljs-title">string</span></span> &#123;
+	<span class="hljs-keyword">return</span> <span class="hljs-string">&quot;havefunc2&quot;</span>
+&#125;
 
 <span class="hljs-comment">// 命名函数返回值</span>
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">havefunc2_fixed</span><span class="hljs-params">()</span> <span class="hljs-params">(res <span class="hljs-keyword">string</span>)</span></span> {
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">havefunc2_fixed</span><span class="hljs-params">()</span> <span class="hljs-params">(res <span class="hljs-keyword">string</span>)</span></span> &#123;
 	<span class="hljs-comment">// 另外这里提醒一下，上面固定了返回类型，这个res的变量已经存在了</span>
-	<span class="hljs-comment">//res := "xxx" 如果这样写的话，其实会报错说没有新的变量在:=左边</span>
-	res = <span class="hljs-string">"这是一个固定的返回变量"</span>
+	<span class="hljs-comment">//res := &quot;xxx&quot; 如果这样写的话，其实会报错说没有新的变量在:=左边</span>
+	res = <span class="hljs-string">&quot;这是一个固定的返回变量&quot;</span>
 	<span class="hljs-keyword">return</span> res
-}
+&#125;
 
 <span class="hljs-comment">// 可变参数的函数</span>
 <span class="hljs-comment">// 这里的参数为可变参数列表，其实它就是一个slice</span>
 <span class="hljs-comment">// 强制规定：可变参数必须放在参互列表的最后位，如果还有其他参数请将其他参数放置其前面</span>
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">havefunc</span><span class="hljs-params">(x ...<span class="hljs-keyword">int</span>)</span></span> {
-	<span class="hljs-keyword">for</span> i := <span class="hljs-keyword">range</span> x {
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">havefunc</span><span class="hljs-params">(x ...<span class="hljs-keyword">int</span>)</span></span> &#123;
+	<span class="hljs-keyword">for</span> i := <span class="hljs-keyword">range</span> x &#123;
 		fmt.Println(i)
-	}
+	&#125;
 
-}
+&#125;
 </code></pre></div>
 
 </li>
 </ul>
-<h3 id="匿名函数"><a href="#匿名函数" class="headerlink" title="匿名函数"></a>匿名函数</h3><div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params"><code class="language-hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
-	hypot := <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(x, y <span class="hljs-keyword">float64</span>)</span> <span class="hljs-title">float64</span></span> {
+<h3 id="匿名函数"><a href="#匿名函数" class="headerlink" title="匿名函数"></a>匿名函数</h3><div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
+	hypot := <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(x, y <span class="hljs-keyword">float64</span>)</span> <span class="hljs-title">float64</span></span> &#123;
 		<span class="hljs-keyword">return</span> math.Sqrt(x*x + y*y)
-	}
+	&#125;
 	fmt.Println(hypot(<span class="hljs-number">5</span>, <span class="hljs-number">12</span>))
-}
+&#125;
 </code></pre></div>
 
 <h3 id="go必包"><a href="#go必包" class="headerlink" title="go必包"></a>go必包</h3><ul>
@@ -972,54 +972,54 @@ fmt.Println(b)</code></pre></div>
 </ul>
 <p><img src="http://img.noback.top/2020-09-11-17-12-13.png" srcset="/img/loading.gif" alt="2020-09-11-17-12-13"><br>受益 <a target="_blank" rel="noopener" href="https://www.cnblogs.com/liang1101/p/6606667.html">https://www.cnblogs.com/liang1101/p/6606667.html</a></p>
 <ul>
-<li>使用闭包注意事项<br>由于闭包会使得函数中的变量都被保存在内存中，内存消耗很大，所以不能滥用闭包，否则会造成网页的性能问题，在IE中可能导致内存泄露。解决方法是，在退出函数之前，将不使用的局部变量全部删除。<br>闭包会在父函数外部，改变父函数内部变量的值。所以，如果你把父函数当作对象（object）使用，把闭包当作它的公用方法（Public Method），把内部变量当作它的私有属性（private value），这时一定要小心，不要随便改变父函数内部变量的值。<br>另外闭包与匿名函数也经常一起出现<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">func_outer</span><span class="hljs-params">()</span> <span class="hljs-title">func</span><span class="hljs-params">(int2 <span class="hljs-keyword">int</span>)</span> <span class="hljs-title">int</span></span>&#123; <span class="hljs-comment"><code class="language-hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">func_outer</span><span class="hljs-params">()</span> <span class="hljs-title">func</span><span class="hljs-params">(int2 <span class="hljs-keyword">int</span>)</span> <span class="hljs-title">int</span></span>&#123; <span class="hljs-comment">// 后面一段归为一类看</span>
-	<span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(i <span class="hljs-keyword">int</span>)</span> <span class="hljs-title">int</span></span> {
+<li>使用闭包注意事项<br>由于闭包会使得函数中的变量都被保存在内存中，内存消耗很大，所以不能滥用闭包，否则会造成网页的性能问题，在IE中可能导致内存泄露。解决方法是，在退出函数之前，将不使用的局部变量全部删除。<br>闭包会在父函数外部，改变父函数内部变量的值。所以，如果你把父函数当作对象（object）使用，把闭包当作它的公用方法（Public Method），把内部变量当作它的私有属性（private value），这时一定要小心，不要随便改变父函数内部变量的值。<br>另外闭包与匿名函数也经常一起出现<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">func_outer</span><span class="hljs-params">()</span> <span class="hljs-title">func</span><span class="hljs-params">(int2 <span class="hljs-keyword">int</span>)</span> <span class="hljs-title">int</span></span>&#123; <span class="hljs-comment">// 后面一段归为一类看</span>
+	<span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(i <span class="hljs-keyword">int</span>)</span> <span class="hljs-title">int</span></span> &#123;
 		<span class="hljs-keyword">return</span> i
-	}
-}</code></pre></div>
+	&#125;
+&#125;</code></pre></div>
 func_outer 返回一个函数(这个函数为返回一个传入一个int类型，返回一个int类型的函数)</li>
 </ul>
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">package</span> main
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main
 
-<span class="hljs-keyword">import</span> <span class="hljs-string">"fmt"</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">adder</span><span class="hljs-params">()</span> <span class="hljs-title">func</span><span class="hljs-params">(<span class="hljs-keyword">int</span>)</span> <span class="hljs-title">int</span></span> {
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">adder</span><span class="hljs-params">()</span> <span class="hljs-title">func</span><span class="hljs-params">(<span class="hljs-keyword">int</span>)</span> <span class="hljs-title">int</span></span> &#123;
 	sum := <span class="hljs-number">0</span>
-	<span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(x <span class="hljs-keyword">int</span>)</span> <span class="hljs-title">int</span></span> {
+	<span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(x <span class="hljs-keyword">int</span>)</span> <span class="hljs-title">int</span></span> &#123;
 		sum += x
 		<span class="hljs-keyword">return</span> sum
-	}
-}
+	&#125;
+&#125;
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
 	pos, neg := adder(), adder()
-	<span class="hljs-keyword">for</span> i := <span class="hljs-number">0</span>; i < <span class="hljs-number">10</span>; i++ {
+	<span class="hljs-keyword">for</span> i := <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">10</span>; i++ &#123;
 		fmt.Println(
 			pos(i),
 			neg(<span class="hljs-number">-2</span>*i),
 		)
-	}
-}
+	&#125;
+&#125;
 </code></pre></div>
 
-<h3 id="函数返回多个值"><a href="#函数返回多个值" class="headerlink" title="函数返回多个值"></a>函数返回多个值</h3><div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">package</span> main
+<h3 id="函数返回多个值"><a href="#函数返回多个值" class="headerlink" title="函数返回多个值"></a>函数返回多个值</h3><div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main
 
-<span class="hljs-keyword">import</span> <span class="hljs-string">"fmt"</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
-	listString :=  []<span class="hljs-keyword">string</span>{<span class="hljs-string">"1"</span>,<span class="hljs-string">"2"</span>,<span class="hljs-string">"3"</span>}
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
+	listString :=  []<span class="hljs-keyword">string</span>&#123;<span class="hljs-string">&quot;1&quot;</span>,<span class="hljs-string">&quot;2&quot;</span>,<span class="hljs-string">&quot;3&quot;</span>&#125;
 	count,endwords :=returnManyWords(listString)
 	fmt.Println(count,endwords)
-}
+&#125;
 
 <span class="hljs-comment">// 返回多个值</span>
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">returnManyWords</span><span class="hljs-params">(listString []<span class="hljs-keyword">string</span>)</span><span class="hljs-params">(count <span class="hljs-keyword">int</span> , endwords <span class="hljs-keyword">string</span>)</span></span>{
-	<span class="hljs-keyword">for</span> i,v := <span class="hljs-keyword">range</span> listString{
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">returnManyWords</span><span class="hljs-params">(listString []<span class="hljs-keyword">string</span>)</span><span class="hljs-params">(count <span class="hljs-keyword">int</span> , endwords <span class="hljs-keyword">string</span>)</span></span>&#123;
+	<span class="hljs-keyword">for</span> i,v := <span class="hljs-keyword">range</span> listString&#123;
 		fmt.Println(i,v)
 		count ++
-	}
+	&#125;
 	<span class="hljs-keyword">return</span> count , listString[<span class="hljs-built_in">len</span>(listString)<span class="hljs-number">-1</span>]
-}</code></pre></div>
+&#125;</code></pre></div>
 
 
 <h2 id="go-method"><a href="#go-method" class="headerlink" title="go method"></a>go method</h2><p>方法 method</p>
@@ -1035,44 +1035,44 @@ func_outer 返回一个函数(这个函数为返回一个传入一个int类型�
 <li>类型别名不会拥有底层类型所附带的方法</li>
 <li>方法可以调用结构中的非公开字段</li>
 </ul>
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">package</span> main
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main
 
-<span class="hljs-keyword">import</span> <span class="hljs-string">"fmt"</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
 
-<span class="hljs-keyword">type</span> A <span class="hljs-keyword">struct</span> {
+<span class="hljs-keyword">type</span> A <span class="hljs-keyword">struct</span> &#123;
     Name <span class="hljs-keyword">string</span>
-}
+&#125;
 
-<span class="hljs-keyword">type</span> B <span class="hljs-keyword">struct</span> {
+<span class="hljs-keyword">type</span> B <span class="hljs-keyword">struct</span> &#123;
     Name <span class="hljs-keyword">string</span>
-}
+&#125;
 
 <span class="hljs-comment">//引用传递得道到是指针到拷贝，修改会同步修改结构体内到内容</span>
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(a *A)</span> <span class="hljs-title">Print</span><span class="hljs-params">()</span></span> {
-    a.Name = <span class="hljs-string">"AA"</span>
-    fmt.Println(<span class="hljs-string">"A"</span>)
-}
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(a *A)</span> <span class="hljs-title">Print</span><span class="hljs-params">()</span></span> &#123;
+    a.Name = <span class="hljs-string">&quot;AA&quot;</span>
+    fmt.Println(<span class="hljs-string">&quot;A&quot;</span>)
+&#125;
 
 <span class="hljs-comment">//值传递只是得到结构体内容到拷贝</span>
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(b B)</span> <span class="hljs-title">Print</span><span class="hljs-params">()</span></span>  {
-    b.Name = <span class="hljs-string">"BB"</span>
-    fmt.Println(<span class="hljs-string">"B"</span>)
-}
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(b B)</span> <span class="hljs-title">Print</span><span class="hljs-params">()</span></span>  &#123;
+    b.Name = <span class="hljs-string">&quot;BB&quot;</span>
+    fmt.Println(<span class="hljs-string">&quot;B&quot;</span>)
+&#125;
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
-    a := A{}
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
+    a := A&#123;&#125;
     a.Print() <span class="hljs-comment">// AA</span>
     fmt.Println(a.Name) <span class="hljs-comment">// AA</span>
 
-    b := B{}
+    b := B&#123;&#125;
     b.Print() <span class="hljs-comment">// BB</span>
     fmt.Println(b.Name) <span class="hljs-comment">// 空字符串</span>
-}</code></pre></div>
+&#125;</code></pre></div>
 
 <p>Go 还有一个特别灵活的地方，就是它可以为任何一个声明类型绑定定义一个方法，如下：</p>
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">package</span> main
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main
 
-<span class="hljs-keyword">import</span> <span class="hljs-string">"fmt"</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
 
 <span class="hljs-comment">/**</span>
 <span class="hljs-comment">Go到一个灵活到地方就是可以为type声明到任何类型绑定一个方法</span>
@@ -1080,74 +1080,74 @@ func_outer 返回一个函数(这个函数为返回一个传入一个int类型�
 <span class="hljs-comment"> */</span>
 <span class="hljs-keyword">type</span> Va <span class="hljs-keyword">int</span>
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(a *Va)</span> <span class="hljs-title">Print</span><span class="hljs-params">()</span></span> {
-    fmt.Println(<span class="hljs-string">"Va"</span>)
-}
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(a *Va)</span> <span class="hljs-title">Print</span><span class="hljs-params">()</span></span> &#123;
+    fmt.Println(<span class="hljs-string">&quot;Va&quot;</span>)
+&#125;
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
     <span class="hljs-keyword">var</span> a Va
     a.Print()
-}</code></pre></div>
+&#125;</code></pre></div>
 
 
 
 <h3 id="函数与方法中的指针"><a href="#函数与方法中的指针" class="headerlink" title="函数与方法中的指针"></a>函数与方法中的指针</h3><p>在之前 函数与方法两种写法不一样，调用的方法也不一样，如下</p>
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">package</span> main
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main
 
-<span class="hljs-keyword">import</span> <span class="hljs-string">"fmt"</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
 
-<span class="hljs-keyword">type</span> Vertex <span class="hljs-keyword">struct</span> {
+<span class="hljs-keyword">type</span> Vertex <span class="hljs-keyword">struct</span> &#123;
 	X, Y <span class="hljs-keyword">float64</span>
-}
+&#125;
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(v *Vertex)</span> <span class="hljs-title">Scale</span><span class="hljs-params">(f <span class="hljs-keyword">float64</span>)</span></span> { <span class="hljs-comment">// 方法</span>
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(v *Vertex)</span> <span class="hljs-title">Scale</span><span class="hljs-params">(f <span class="hljs-keyword">float64</span>)</span></span> &#123; <span class="hljs-comment">// 方法</span>
 	v.X = v.X * f
 	v.Y = v.Y * f
-}
+&#125;
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">ScaleFunc</span><span class="hljs-params">(v *Vertex, f <span class="hljs-keyword">float64</span>)</span></span> {  <span class="hljs-comment">// 函数</span>
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">ScaleFunc</span><span class="hljs-params">(v *Vertex, f <span class="hljs-keyword">float64</span>)</span></span> &#123;  <span class="hljs-comment">// 函数</span>
 	v.X = v.X * f
 	v.Y = v.Y * f
-}
+&#125;
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
-	v := Vertex{<span class="hljs-number">3</span>, <span class="hljs-number">4</span>}
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
+	v := Vertex&#123;<span class="hljs-number">3</span>, <span class="hljs-number">4</span>&#125;
 	v.Scale(<span class="hljs-number">2</span>)
-	ScaleFunc(&v, <span class="hljs-number">10</span>)
+	ScaleFunc(&amp;v, <span class="hljs-number">10</span>)
 
-	p := &Vertex{<span class="hljs-number">4</span>, <span class="hljs-number">3</span>}
+	p := &amp;Vertex&#123;<span class="hljs-number">4</span>, <span class="hljs-number">3</span>&#125;
 	p.Scale(<span class="hljs-number">3</span>)
 	ScaleFunc(p, <span class="hljs-number">8</span>)
 
 	fmt.Println(v, p)
-}
+&#125;
 </code></pre></div>
 
 <h3 id="函数与方法的区别"><a href="#函数与方法的区别" class="headerlink" title="函数与方法的区别"></a>函数与方法的区别</h3><p>方法更加对象抽象化</p>
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword">type</span> Rectangle <span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">type</span> Rectangle <span class="hljs-keyword">struct</span> {
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">type</span> Rectangle <span class="hljs-keyword">struct</span> &#123;
 	width, height <span class="hljs-keyword">float64</span>
-}
+&#125;
 
 <span class="hljs-comment">//　　这里就是函数即func,其声明：</span>
 <span class="hljs-comment">//   func funcName(parameters) (results)</span>
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">area</span><span class="hljs-params">(r Rectangle)</span> <span class="hljs-title">float64</span></span> {
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">area</span><span class="hljs-params">(r Rectangle)</span> <span class="hljs-title">float64</span></span> &#123;
     <span class="hljs-keyword">return</span> r.width*r.height
-}
+&#125;
 
 <span class="hljs-comment">// 这里就是方法即method，其声明：</span>
 <span class="hljs-comment">// func (r ReceiverType) funcName(parameters) (results)</span>
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(r Rectangle)</span> <span class="hljs-title">area</span><span class="hljs-params">()</span> <span class="hljs-title">float64</span></span> {
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(r Rectangle)</span> <span class="hljs-title">area</span><span class="hljs-params">()</span> <span class="hljs-title">float64</span></span> &#123;
     <span class="hljs-keyword">return</span> r.width*r.height
-}
+&#125;
 
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
-	c1 := Rectangle{<span class="hljs-number">20.0</span>,<span class="hljs-number">20.0</span>}
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
+	c1 := Rectangle&#123;<span class="hljs-number">20.0</span>,<span class="hljs-number">20.0</span>&#125;
 	c1.area() <span class="hljs-comment">//方法</span>
 	area(c1) <span class="hljs-comment">//函数</span>
 
-}</code></pre></div>
+&#125;</code></pre></div>
 
 
 
@@ -1165,491 +1165,491 @@ func_outer 返回一个函数(这个函数为返回一个传入一个int类型�
 <li>接口也可实现类似 OOP 中的多态</li>
 <li>空接口可以作为任何类型数据的容器</li>
 </ul>
-<h3 id="实现一个简单的接口"><a href="#实现一个简单的接口" class="headerlink" title="实现一个简单的接口"></a>实现一个简单的接口</h3><div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">package</span> main
+<h3 id="实现一个简单的接口"><a href="#实现一个简单的接口" class="headerlink" title="实现一个简单的接口"></a>实现一个简单的接口</h3><div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main
 
 <span class="hljs-keyword">import</span> (
-	<span class="hljs-string">"fmt"</span>
+	<span class="hljs-string">&quot;fmt&quot;</span>
 )
 
 <span class="hljs-comment">// 声明接口类型的方式</span>
 <span class="hljs-comment">/*</span>
 <span class="hljs-comment"></span>
-<span class="hljs-comment">type Name interface {</span>
+<span class="hljs-comment">type Name interface &#123;</span>
 <span class="hljs-comment">	Method1(param_list) return_type</span>
 <span class="hljs-comment">	Method2(param_list) return_type</span>
 <span class="hljs-comment">...</span>
-<span class="hljs-comment">}</span>
+<span class="hljs-comment">&#125;</span>
 <span class="hljs-comment"></span>
 <span class="hljs-comment">*/</span>
 
 <span class="hljs-comment">// 声明一个接口类型</span>
 <span class="hljs-comment">// 这里声明了一个area的接口类型,接口中包含了一个不带参数、返回值为 string 的方法 func_area()</span>
 <span class="hljs-comment">// 任何实现了方法 Area() 的类型 T，我们就说它实现了接口 Shape。</span>
-<span class="hljs-keyword">type</span> area <span class="hljs-keyword">interface</span> {
+<span class="hljs-keyword">type</span> area <span class="hljs-keyword">interface</span> &#123;
 	func_area() <span class="hljs-keyword">string</span>
-}
+&#125;
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
 	<span class="hljs-comment">// 创建接口实例</span>
 	<span class="hljs-keyword">var</span> ar area
 	<span class="hljs-comment">// 使用接口 这里会返回一个零值得</span>
-	fmt.Println(<span class="hljs-string">"value of s is"</span>, ar)
-	fmt.Printf(<span class="hljs-string">"type of s is %T\n"</span>,ar)
-}
+	fmt.Println(<span class="hljs-string">&quot;value of s is&quot;</span>, ar)
+	fmt.Printf(<span class="hljs-string">&quot;type of s is %T\n&quot;</span>,ar)
+&#125;
 
 <span class="hljs-comment">// res:</span>
-<span class="hljs-comment">// value of s is <nil></span>
-<span class="hljs-comment">// type of s is <nil></span>
+<span class="hljs-comment">// value of s is &lt;nil&gt;</span>
+<span class="hljs-comment">// type of s is &lt;nil&gt;</span>
 
 </code></pre></div>
 
 <h3 id="接口类型值"><a href="#接口类型值" class="headerlink" title="接口类型值"></a>接口类型值</h3><p>变量的类型在声明时指定、且不能改变，称为静态类型。接口类型的静态类型就是接口本身。接口没有静态值，它指向的是动态值。接口类型的变量存的是实现接口的类型的值。该值就是接口的动态值，实现接口的类型就是接口的动态类型。</p>
 <p>在实现最简单的接口类型的时候，看上面的代码块。接口返回的值和和类型都是nil值.这是因为我们并没有给这个接口实现具体的类型，有因为接口没有静态值，静态类型是其本身，也就是area<br>但他们的动态值和动态类型都是nil，现在我们来给他们的动态值和动态类型来赋值</p>
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">package</span> main
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main
 
-<span class="hljs-keyword">import</span> <span class="hljs-string">"fmt"</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
 
-<span class="hljs-keyword">type</span> area2 <span class="hljs-keyword">interface</span> {
+<span class="hljs-keyword">type</span> area2 <span class="hljs-keyword">interface</span> &#123;
 	func_area() <span class="hljs-keyword">string</span>
-}
+&#125;
 
 <span class="hljs-comment">// 创建一个空结构体</span>
-<span class="hljs-keyword">type</span> int_type1 <span class="hljs-keyword">struct</span>{}
-<span class="hljs-keyword">type</span> int_type2 <span class="hljs-keyword">struct</span>{}
+<span class="hljs-keyword">type</span> int_type1 <span class="hljs-keyword">struct</span>&#123;&#125;
+<span class="hljs-keyword">type</span> int_type2 <span class="hljs-keyword">struct</span>&#123;&#125;
 
 <span class="hljs-comment">// 实现接口</span>
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(int_type1)</span> <span class="hljs-title">func_area</span><span class="hljs-params">()</span> <span class="hljs-title">string</span></span> { <span class="hljs-keyword">return</span> <span class="hljs-string">"hello int_type1"</span> }
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(int_type2)</span> <span class="hljs-title">func_area</span><span class="hljs-params">()</span> <span class="hljs-title">string</span></span> { <span class="hljs-keyword">return</span> <span class="hljs-string">"hello int_type2"</span> }
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(int_type1)</span> <span class="hljs-title">func_area</span><span class="hljs-params">()</span> <span class="hljs-title">string</span></span> &#123; <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;hello int_type1&quot;</span> &#125;
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(int_type2)</span> <span class="hljs-title">func_area</span><span class="hljs-params">()</span> <span class="hljs-title">string</span></span> &#123; <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;hello int_type2&quot;</span> &#125;
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
 	<span class="hljs-comment">// 创建接口实例</span>
-	<span class="hljs-keyword">var</span> ar2 area2 = int_type1{}
+	<span class="hljs-keyword">var</span> ar2 area2 = int_type1&#123;&#125;
 	<span class="hljs-comment">// 返回类型</span>
-	fmt.Printf(<span class="hljs-string">"%T\n"</span>, ar2)
+	fmt.Printf(<span class="hljs-string">&quot;%T\n&quot;</span>, ar2)
 	<span class="hljs-comment">//</span>
-	fmt.Printf(<span class="hljs-string">"%v\n"</span>, ar2)
+	fmt.Printf(<span class="hljs-string">&quot;%v\n&quot;</span>, ar2)
 
-	ar2 = int_type2{}
+	ar2 = int_type2&#123;&#125;
 
-	fmt.Printf(<span class="hljs-string">"%T\n"</span>, ar2)
+	fmt.Printf(<span class="hljs-string">&quot;%T\n&quot;</span>, ar2)
 	<span class="hljs-comment">//</span>
-	fmt.Printf(<span class="hljs-string">"%v\n"</span>, ar2)
-}
+	fmt.Printf(<span class="hljs-string">&quot;%v\n&quot;</span>, ar2)
+&#125;
 
 
  <span class="hljs-comment">// res</span>
  <span class="hljs-comment">// main.int_type1</span>
- <span class="hljs-comment">// {}</span>
+ <span class="hljs-comment">// &#123;&#125;</span>
  <span class="hljs-comment">// main.int_type2</span>
- <span class="hljs-comment">// {}</span>
+ <span class="hljs-comment">// &#123;&#125;</span>
 </code></pre></div>
 
 <h3 id="为什么要使用接口"><a href="#为什么要使用接口" class="headerlink" title="为什么要使用接口"></a>为什么要使用接口</h3><p>接口就是一组具体方法的组合，就好比一根电缆，每一个方法就是里面的一根光纤，接入光纤的时候，与家庭中的任何属性都无关，光纤只实现它自己的方法</p>
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">package</span> main
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main
 
-<span class="hljs-keyword">import</span> <span class="hljs-string">"fmt"</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
 
 <span class="hljs-comment">// 首先我们来试着用struct</span>
 
-<span class="hljs-keyword">type</span> animal <span class="hljs-keyword">struct</span>{}
+<span class="hljs-keyword">type</span> animal <span class="hljs-keyword">struct</span>&#123;&#125;
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(a animal)</span> <span class="hljs-title">say</span><span class="hljs-params">()</span></span> {
-	fmt.Println(<span class="hljs-string">"i am animal"</span>)
-}
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(a animal)</span> <span class="hljs-title">say</span><span class="hljs-params">()</span></span> &#123;
+	fmt.Println(<span class="hljs-string">&quot;i am animal&quot;</span>)
+&#125;
 
 <span class="hljs-comment">// 引入接口</span>
-<span class="hljs-keyword">type</span> fruit <span class="hljs-keyword">struct</span>{}
+<span class="hljs-keyword">type</span> fruit <span class="hljs-keyword">struct</span>&#123;&#125;
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(f fruit)</span> <span class="hljs-title">say</span><span class="hljs-params">()</span></span> {
-	fmt.Println(<span class="hljs-string">"i am fruit"</span>)
-}
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(f fruit)</span> <span class="hljs-title">say</span><span class="hljs-params">()</span></span> &#123;
+	fmt.Println(<span class="hljs-string">&quot;i am fruit&quot;</span>)
+&#125;
 
 <span class="hljs-comment">// 定义接口</span>
 <span class="hljs-comment">// 在接口中声明say方法</span>
-<span class="hljs-keyword">type</span> Interfaces <span class="hljs-keyword">interface</span> {
+<span class="hljs-keyword">type</span> Interfaces <span class="hljs-keyword">interface</span> &#123;
 	say()
-}
+&#125;
 
-<span class="hljs-keyword">type</span> personal <span class="hljs-keyword">struct</span> {
+<span class="hljs-keyword">type</span> personal <span class="hljs-keyword">struct</span> &#123;
 	name <span class="hljs-keyword">string</span>
 	age  <span class="hljs-keyword">int</span>
 	desc <span class="hljs-keyword">string</span>
-}
+&#125;
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(p personal)</span> <span class="hljs-title">say</span><span class="hljs-params">()</span></span> {
-	fmt.Println(<span class="hljs-string">"hello world "</span>, p.name)
-}
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(p personal)</span> <span class="hljs-title">say</span><span class="hljs-params">()</span></span> &#123;
+	fmt.Println(<span class="hljs-string">&quot;hello world &quot;</span>, p.name)
+&#125;
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
-	a := animal{}
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
+	a := animal&#123;&#125;
 	a.say()
 
-	i := Interfaces(fruit{})
+	i := Interfaces(fruit&#123;&#125;)
 	<span class="hljs-comment">//fmt.Println(i.say())</span>
 	i.say()
 
-	q := Interfaces(personal{<span class="hljs-string">"hzj"</span>, <span class="hljs-number">12</span>, <span class="hljs-string">"hello"</span>})
+	q := Interfaces(personal&#123;<span class="hljs-string">&quot;hzj&quot;</span>, <span class="hljs-number">12</span>, <span class="hljs-string">&quot;hello&quot;</span>&#125;)
 	q.say()
 
-}
+&#125;
 </code></pre></div>
 <p>这里我们用空结构体来实现对象，其中有一个animal的对象我们只是简单的实现了调用方法</p>
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">package</span> main
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main
 
-<span class="hljs-keyword">import</span> <span class="hljs-string">"fmt"</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
 
 <span class="hljs-comment">// 首先我们来试着用struct</span>
 
-<span class="hljs-keyword">type</span> animal <span class="hljs-keyword">struct</span>{}
+<span class="hljs-keyword">type</span> animal <span class="hljs-keyword">struct</span>&#123;&#125;
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(a animal)</span> <span class="hljs-title">say</span><span class="hljs-params">()</span></span> {
-	fmt.Println(<span class="hljs-string">"i am animal"</span>)
-}
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(a animal)</span> <span class="hljs-title">say</span><span class="hljs-params">()</span></span> &#123;
+	fmt.Println(<span class="hljs-string">&quot;i am animal&quot;</span>)
+&#125;
 
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
-	a := animal{}
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
+	a := animal&#123;&#125;
 	a.say()
-}
+&#125;
 </code></pre></div>
 <p>如上是实现了一个空结构体对象实现的一个say方法,接下来是用接口实现</p>
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">package</span> main
-<span class="hljs-keyword">import</span> <span class="hljs-string">"fmt"</span>
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
 
-<span class="hljs-keyword">type</span> fruit <span class="hljs-keyword">struct</span>{}
+<span class="hljs-keyword">type</span> fruit <span class="hljs-keyword">struct</span>&#123;&#125;
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(f fruit)</span> <span class="hljs-title">say</span><span class="hljs-params">()</span></span> {
-	fmt.Println(<span class="hljs-string">"i am fruit"</span>)
-}
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(f fruit)</span> <span class="hljs-title">say</span><span class="hljs-params">()</span></span> &#123;
+	fmt.Println(<span class="hljs-string">&quot;i am fruit&quot;</span>)
+&#125;
 
-<span class="hljs-keyword">type</span> personal <span class="hljs-keyword">struct</span> {
+<span class="hljs-keyword">type</span> personal <span class="hljs-keyword">struct</span> &#123;
 	name <span class="hljs-keyword">string</span>
 	age  <span class="hljs-keyword">int</span>
 	desc <span class="hljs-keyword">string</span>
-}
+&#125;
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(p personal)</span> <span class="hljs-title">say</span><span class="hljs-params">()</span></span> {
-	fmt.Println(<span class="hljs-string">"hello world "</span>, p.name)
-}
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(p personal)</span> <span class="hljs-title">say</span><span class="hljs-params">()</span></span> &#123;
+	fmt.Println(<span class="hljs-string">&quot;hello world &quot;</span>, p.name)
+&#125;
 
 <span class="hljs-comment">// 定义接口</span>
 <span class="hljs-comment">// 在接口中声明say方法</span>
-<span class="hljs-keyword">type</span> Interfaces <span class="hljs-keyword">interface</span> {
+<span class="hljs-keyword">type</span> Interfaces <span class="hljs-keyword">interface</span> &#123;
 	say()
-}
+&#125;
 
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
-	i := Interfaces(fruit{})
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
+	i := Interfaces(fruit&#123;&#125;)
 	<span class="hljs-comment">//fmt.Println(i.say())</span>
 	i.say()
 	
-	q := Interfaces(personal{<span class="hljs-string">"hzj"</span>, <span class="hljs-number">12</span>, <span class="hljs-string">"hello"</span>})
+	q := Interfaces(personal&#123;<span class="hljs-string">&quot;hzj&quot;</span>, <span class="hljs-number">12</span>, <span class="hljs-string">&quot;hello&quot;</span>&#125;)
 	q.say()
 
-}
+&#125;
 </code></pre></div>
 <p>这样我们只需要对该接口传入我们的对象就可以实现方法了，但是接口并不是这么用的<br>接口主要的作用是用来做解耦，就像上面的，虽然上面的方法中我们定义了接口，并且看上去是使用了接口，但其实不然，并没有达到解耦的效果<br>在声明同一个接口的时候，我们传入了不同的struct对象，返回的也是不同的inter接口对象，但其实我们可以对这一步再进行一个封装</p>
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">package</span> main
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main
 
-<span class="hljs-keyword">import</span> <span class="hljs-string">"fmt"</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
 
 <span class="hljs-comment">// 首先我们来试着用struct</span>
 
-<span class="hljs-keyword">type</span> animal <span class="hljs-keyword">struct</span>{}
+<span class="hljs-keyword">type</span> animal <span class="hljs-keyword">struct</span>&#123;&#125;
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(a animal)</span> <span class="hljs-title">say</span><span class="hljs-params">()</span></span> {
-	fmt.Println(<span class="hljs-string">"i am animal"</span>)
-}
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(a animal)</span> <span class="hljs-title">say</span><span class="hljs-params">()</span></span> &#123;
+	fmt.Println(<span class="hljs-string">&quot;i am animal&quot;</span>)
+&#125;
 
 <span class="hljs-comment">// 引入接口</span>
-<span class="hljs-keyword">type</span> fruit <span class="hljs-keyword">struct</span>{}
+<span class="hljs-keyword">type</span> fruit <span class="hljs-keyword">struct</span>&#123;&#125;
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(f fruit)</span> <span class="hljs-title">say</span><span class="hljs-params">()</span></span> {
-	fmt.Println(<span class="hljs-string">"i am fruit"</span>)
-}
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(f fruit)</span> <span class="hljs-title">say</span><span class="hljs-params">()</span></span> &#123;
+	fmt.Println(<span class="hljs-string">&quot;i am fruit&quot;</span>)
+&#125;
 
 
-<span class="hljs-keyword">type</span> personal <span class="hljs-keyword">struct</span> {
+<span class="hljs-keyword">type</span> personal <span class="hljs-keyword">struct</span> &#123;
 	name <span class="hljs-keyword">string</span>
 	age  <span class="hljs-keyword">int</span>
 	desc <span class="hljs-keyword">string</span>
-}
+&#125;
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(p personal)</span> <span class="hljs-title">say</span><span class="hljs-params">()</span></span> {
-	fmt.Println(<span class="hljs-string">"hello world "</span>, p.name)
-}
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(p personal)</span> <span class="hljs-title">say</span><span class="hljs-params">()</span></span> &#123;
+	fmt.Println(<span class="hljs-string">&quot;hello world &quot;</span>, p.name)
+&#125;
 
 <span class="hljs-comment">// 定义接口</span>
 <span class="hljs-comment">// 在接口中声明say方法</span>
-<span class="hljs-keyword">type</span> Interfaces <span class="hljs-keyword">interface</span> {
+<span class="hljs-keyword">type</span> Interfaces <span class="hljs-keyword">interface</span> &#123;
 	say()
-}
+&#125;
 
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">DotypeInter</span><span class="hljs-params">(i Interfaces)</span></span>{
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">DotypeInter</span><span class="hljs-params">(i Interfaces)</span></span>&#123;
 	i.say()
-}
+&#125;
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
 
 
-	ii := fruit{}
+	ii := fruit&#123;&#125;
 	DotypeInter(ii)
 
-	qq := animal{}
+	qq := animal&#123;&#125;
 	DotypeInter(qq)
 
-	pp := personal{<span class="hljs-string">"hzj"</span>,<span class="hljs-number">12</span>,<span class="hljs-string">"hellowrold"</span>}
+	pp := personal&#123;<span class="hljs-string">&quot;hzj&quot;</span>,<span class="hljs-number">12</span>,<span class="hljs-string">&quot;hellowrold&quot;</span>&#125;
 	DotypeInter(pp)
-}
+&#125;
 </code></pre></div>
 <p>如上，我们又一步的封装了接口.<br>或者你也可以这样写，因为之前我们所有只要实现了这个接口中的所有方法，你就等于实现了这个接口</p>
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">package</span> main
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main
 
-<span class="hljs-keyword">import</span> <span class="hljs-string">"fmt"</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
 
 <span class="hljs-comment">// 首先我们来试着用struct</span>
 
-<span class="hljs-keyword">type</span> animal <span class="hljs-keyword">struct</span>{}
+<span class="hljs-keyword">type</span> animal <span class="hljs-keyword">struct</span>&#123;&#125;
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(a animal)</span> <span class="hljs-title">say</span><span class="hljs-params">()</span></span> {
-	fmt.Println(<span class="hljs-string">"i am animal"</span>)
-}
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(a animal)</span> <span class="hljs-title">say</span><span class="hljs-params">()</span></span> &#123;
+	fmt.Println(<span class="hljs-string">&quot;i am animal&quot;</span>)
+&#125;
 
 <span class="hljs-comment">// 引入接口</span>
-<span class="hljs-keyword">type</span> fruit <span class="hljs-keyword">struct</span>{}
+<span class="hljs-keyword">type</span> fruit <span class="hljs-keyword">struct</span>&#123;&#125;
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(f fruit)</span> <span class="hljs-title">say</span><span class="hljs-params">()</span></span> {
-	fmt.Println(<span class="hljs-string">"i am fruit"</span>)
-}
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(f fruit)</span> <span class="hljs-title">say</span><span class="hljs-params">()</span></span> &#123;
+	fmt.Println(<span class="hljs-string">&quot;i am fruit&quot;</span>)
+&#125;
 
 
-<span class="hljs-keyword">type</span> personal <span class="hljs-keyword">struct</span> {
+<span class="hljs-keyword">type</span> personal <span class="hljs-keyword">struct</span> &#123;
 	name <span class="hljs-keyword">string</span>
 	age  <span class="hljs-keyword">int</span>
 	desc <span class="hljs-keyword">string</span>
-}
+&#125;
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(p personal)</span> <span class="hljs-title">say</span><span class="hljs-params">()</span></span> {
-	fmt.Println(<span class="hljs-string">"hello world "</span>, p.name)
-}
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(p personal)</span> <span class="hljs-title">say</span><span class="hljs-params">()</span></span> &#123;
+	fmt.Println(<span class="hljs-string">&quot;hello world &quot;</span>, p.name)
+&#125;
 
 
 <span class="hljs-comment">// 定义一个没有实现任何方法的struct</span>
-<span class="hljs-keyword">type</span> empty_struct <span class="hljs-keyword">struct</span> {
+<span class="hljs-keyword">type</span> empty_struct <span class="hljs-keyword">struct</span> &#123;
 
-}
+&#125;
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
 	<span class="hljs-comment">// 定义一个接口</span>
 	<span class="hljs-keyword">var</span> i Interfaces
 	<span class="hljs-comment">// 创建一个空结构体</span>
-	zz := fruit{}
+	zz := fruit&#123;&#125;
 	<span class="hljs-comment">// 因为这个结构体实现了i这个接口中的所有方法，也就是实现了这个接口，所以可以直接赋值过去</span>
 	i = zz
 	<span class="hljs-comment">// 调用方法</span>
 	i.say()
 
 	<span class="hljs-comment">// 这样写就会报错，因为没有实现接口中的方法</span>
-	<span class="hljs-comment">// es := empty_struct{}</span>
+	<span class="hljs-comment">// es := empty_struct&#123;&#125;</span>
 	<span class="hljs-comment">// i = es</span>
 	<span class="hljs-comment">// i.say()</span>
-}
+&#125;
 </code></pre></div>
 <p>这样做的好处就是，下一次我不像再用fruit这个对象了，我想使用personal这个对象了，其他的都不用变，只需要改变传入参数就行了</p>
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params"><code class="language-hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
 	<span class="hljs-keyword">var</span> i Interfaces
-	zz := fruit{}
+	zz := fruit&#123;&#125;
 	i = zz
 	i.say()
 
 	<span class="hljs-comment">// example</span>
-	pp := personal{<span class="hljs-string">"hzj"</span>,<span class="hljs-number">12</span>,<span class="hljs-string">"hello"</span>}
+	pp := personal&#123;<span class="hljs-string">&quot;hzj&quot;</span>,<span class="hljs-number">12</span>,<span class="hljs-string">&quot;hello&quot;</span>&#125;
 	pp.say()
-}</code></pre></div>
+&#125;</code></pre></div>
 
 <h3 id="实现值类型接口与指针类型接口"><a href="#实现值类型接口与指针类型接口" class="headerlink" title="实现值类型接口与指针类型接口"></a>实现值类型接口与指针类型接口</h3><p>无论是值类型接口还是指针类型接口，都会被保存在接口的变量当中</p>
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">package</span> main
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main
 
-<span class="hljs-keyword">import</span> <span class="hljs-string">"fmt"</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
 
-<span class="hljs-keyword">type</span> valueInt <span class="hljs-keyword">struct</span> {
+<span class="hljs-keyword">type</span> valueInt <span class="hljs-keyword">struct</span> &#123;
 	name <span class="hljs-keyword">string</span>
-}
+&#125;
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(vi valueInt)</span> <span class="hljs-title">say</span> <span class="hljs-params">()</span></span>{
-	fmt.Printf(<span class="hljs-string">"hi %s, say your words\n"</span>,vi.name)
-}
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(vi valueInt)</span> <span class="hljs-title">say</span> <span class="hljs-params">()</span></span>&#123;
+	fmt.Printf(<span class="hljs-string">&quot;hi %s, say your words\n&quot;</span>,vi.name)
+&#125;
 
-<span class="hljs-keyword">type</span> pointInt <span class="hljs-keyword">struct</span>{
+<span class="hljs-keyword">type</span> pointInt <span class="hljs-keyword">struct</span>&#123;
 	name <span class="hljs-keyword">string</span>
-}
+&#125;
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(pi *pointInt)</span> <span class="hljs-title">say</span><span class="hljs-params">()</span></span> {
-	fmt.Printf(<span class="hljs-string">"hi %s,say your words\n"</span>,pi.name)
-}
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(pi *pointInt)</span> <span class="hljs-title">say</span><span class="hljs-params">()</span></span> &#123;
+	fmt.Printf(<span class="hljs-string">&quot;hi %s,say your words\n&quot;</span>,pi.name)
+&#125;
 
 <span class="hljs-comment">// 创建一个接口</span>
-<span class="hljs-keyword">type</span> interface_pi <span class="hljs-keyword">interface</span> {
+<span class="hljs-keyword">type</span> interface_pi <span class="hljs-keyword">interface</span> &#123;
 	say()
-}
+&#125;
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span>{
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span>&#123;
 	<span class="hljs-comment">// 声明接口</span>
 	<span class="hljs-keyword">var</span> ipp interface_pi
 
 	<span class="hljs-comment">// 创建值类型实例</span>
-	vi := valueInt{<span class="hljs-string">"hzj"</span>}
+	vi := valueInt&#123;<span class="hljs-string">&quot;hzj&quot;</span>&#125;
 	ipp = vi
 	ipp.say()
 
 	<span class="hljs-comment">// 创建指针类型实例</span>
-	pi := pointInt{<span class="hljs-string">"hzj"</span>}
-	ipp = &pi
+	pi := pointInt&#123;<span class="hljs-string">&quot;hzj&quot;</span>&#125;
+	ipp = &amp;pi
 	ipp.say()
-}</code></pre></div>
-<h3 id="实现接口与接口之间的嵌套"><a href="#实现接口与接口之间的嵌套" class="headerlink" title="实现接口与接口之间的嵌套"></a>实现接口与接口之间的嵌套</h3><div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">package</span> main
+&#125;</code></pre></div>
+<h3 id="实现接口与接口之间的嵌套"><a href="#实现接口与接口之间的嵌套" class="headerlink" title="实现接口与接口之间的嵌套"></a>实现接口与接口之间的嵌套</h3><div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main
 
-<span class="hljs-keyword">import</span> <span class="hljs-string">"fmt"</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
 
 <span class="hljs-comment">// 先实现一个say接口</span>
-<span class="hljs-keyword">type</span> sayword <span class="hljs-keyword">interface</span> {
+<span class="hljs-keyword">type</span> sayword <span class="hljs-keyword">interface</span> &#123;
 	say()
-}
+&#125;
 <span class="hljs-comment">// 再实现一个walk接口</span>
-<span class="hljs-keyword">type</span> walkdone <span class="hljs-keyword">interface</span> {
+<span class="hljs-keyword">type</span> walkdone <span class="hljs-keyword">interface</span> &#123;
 	walk()
-}
+&#125;
 
 <span class="hljs-comment">// 实现一个聚合接口包含say walk</span>
-<span class="hljs-keyword">type</span> SayAndWalkdone <span class="hljs-keyword">interface</span> {
+<span class="hljs-keyword">type</span> SayAndWalkdone <span class="hljs-keyword">interface</span> &#123;
 	sayword
 	walkdone
-}
+&#125;
 
 
 <span class="hljs-comment">// 创建一个personal 实现say walk 方法</span>
-<span class="hljs-keyword">type</span> personal <span class="hljs-keyword">struct</span> {
+<span class="hljs-keyword">type</span> personal <span class="hljs-keyword">struct</span> &#123;
 
-}
+&#125;
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(p personal)</span> <span class="hljs-title">say</span><span class="hljs-params">()</span></span>  {
-	fmt.Println(<span class="hljs-string">"i can say"</span>)
-}
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(p personal)</span> <span class="hljs-title">say</span><span class="hljs-params">()</span></span>  &#123;
+	fmt.Println(<span class="hljs-string">&quot;i can say&quot;</span>)
+&#125;
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(p personal)</span> <span class="hljs-title">walk</span><span class="hljs-params">()</span></span> {
-	fmt.Println(<span class="hljs-string">"i can walk"</span>)
-}
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(p personal)</span> <span class="hljs-title">walk</span><span class="hljs-params">()</span></span> &#123;
+	fmt.Println(<span class="hljs-string">&quot;i can walk&quot;</span>)
+&#125;
 
 <span class="hljs-comment">// 创建一个animal 仅实现walk 方法</span>
-<span class="hljs-keyword">type</span> animal <span class="hljs-keyword">struct</span> {
+<span class="hljs-keyword">type</span> animal <span class="hljs-keyword">struct</span> &#123;
 
-}
+&#125;
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(a animal)</span> <span class="hljs-title">walk</span> <span class="hljs-params">()</span></span> {
-	fmt.Println(<span class="hljs-string">"i can walk"</span>)
-}
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(a animal)</span> <span class="hljs-title">walk</span> <span class="hljs-params">()</span></span> &#123;
+	fmt.Println(<span class="hljs-string">&quot;i can walk&quot;</span>)
+&#125;
 
 
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span>{
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span>&#123;
 	<span class="hljs-comment">// 创建聚合接口</span>
 	<span class="hljs-keyword">var</span> sad SayAndWalkdone
 	<span class="hljs-comment">// 创建personal实例</span>
-	p1 := personal{}
+	p1 := personal&#123;&#125;
 	sad = p1
 	sad.walk()
 	sad.say()
 
 	<span class="hljs-comment">// 创建say接口</span>
 	<span class="hljs-keyword">var</span> walkdone walkdone
-	a1 := animal{}
+	a1 := animal&#123;&#125;
 	walkdone = a1
 	walkdone.walk()
-}</code></pre></div>
+&#125;</code></pre></div>
 
 <h3 id="空接口"><a href="#空接口" class="headerlink" title="空接口"></a>空接口</h3><p>空接口就是没有定义任何方法的接口，所以任何类型都实现了空接口<br>空接口类型变量可以存储任意类型的变量</p>
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">package</span> main
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main
 
-<span class="hljs-keyword">import</span> <span class="hljs-string">"fmt"</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span>  {
-	<span class="hljs-keyword">var</span> x <span class="hljs-keyword">interface</span>{}
-	x = <span class="hljs-string">"helloworld"</span>
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span>  &#123;
+	<span class="hljs-keyword">var</span> x <span class="hljs-keyword">interface</span>&#123;&#125;
+	x = <span class="hljs-string">&quot;helloworld&quot;</span>
 	fmt.Println(x)
 
 	<span class="hljs-comment">// Println的实现方法</span>
-	<span class="hljs-comment">//func Println(a ...interface{}) (n int, err error) {</span>
+	<span class="hljs-comment">//func Println(a ...interface&#123;&#125;) (n int, err error) &#123;</span>
 	<span class="hljs-comment">//	return Fprintln(os.Stdout, a...)</span>
-	<span class="hljs-comment">//}</span>
+	<span class="hljs-comment">//&#125;</span>
 
 	<span class="hljs-comment">// 利用空接口实现一个map 实现value值为任意值</span>
 
 	<span class="hljs-comment">// 创建一个普通的map</span>
 	<span class="hljs-keyword">var</span> map1 = <span class="hljs-built_in">make</span>(<span class="hljs-keyword">map</span>[<span class="hljs-keyword">string</span>]<span class="hljs-keyword">int</span>)
-	map1[<span class="hljs-string">"test1"</span>] = <span class="hljs-number">1</span>
-	map1[<span class="hljs-string">"test2"</span>] = <span class="hljs-number">2</span>
-	<span class="hljs-keyword">for</span> k,v := <span class="hljs-keyword">range</span>(map1){
+	map1[<span class="hljs-string">&quot;test1&quot;</span>] = <span class="hljs-number">1</span>
+	map1[<span class="hljs-string">&quot;test2&quot;</span>] = <span class="hljs-number">2</span>
+	<span class="hljs-keyword">for</span> k,v := <span class="hljs-keyword">range</span>(map1)&#123;
 		fmt.Println(k,v)
-	}
+	&#125;
 
 
 	<span class="hljs-comment">// 创建一个任意类型value的map</span>
-	<span class="hljs-keyword">var</span> map2 = <span class="hljs-built_in">make</span>(<span class="hljs-keyword">map</span>[<span class="hljs-keyword">string</span>]<span class="hljs-keyword">interface</span>{})
-	map2[<span class="hljs-string">"test"</span>] = <span class="hljs-number">1</span>
-	map2[<span class="hljs-string">"test2"</span>] = <span class="hljs-string">"hello"</span>
-	map2[<span class="hljs-string">"list"</span>] = []<span class="hljs-keyword">int</span>{<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>,<span class="hljs-number">5</span>}
-	<span class="hljs-keyword">for</span> k,v := <span class="hljs-keyword">range</span>(map2){
+	<span class="hljs-keyword">var</span> map2 = <span class="hljs-built_in">make</span>(<span class="hljs-keyword">map</span>[<span class="hljs-keyword">string</span>]<span class="hljs-keyword">interface</span>&#123;&#125;)
+	map2[<span class="hljs-string">&quot;test&quot;</span>] = <span class="hljs-number">1</span>
+	map2[<span class="hljs-string">&quot;test2&quot;</span>] = <span class="hljs-string">&quot;hello&quot;</span>
+	map2[<span class="hljs-string">&quot;list&quot;</span>] = []<span class="hljs-keyword">int</span>&#123;<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>,<span class="hljs-number">5</span>&#125;
+	<span class="hljs-keyword">for</span> k,v := <span class="hljs-keyword">range</span>(map2)&#123;
 		fmt.Println(k,v)
-	}
+	&#125;
 
-}</code></pre></div>
+&#125;</code></pre></div>
 
 <h3 id="接口值与接口类型"><a href="#接口值与接口类型" class="headerlink" title="接口值与接口类型"></a>接口值与接口类型</h3><p>一个接口的值是由一个具体的值和一个具体的类型决定的 他们分别被叫做接口的动态值和动态类型</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">package main
+<div class="code-wrapper"><pre><code class="hljs bash">package main
 
-import <span class="hljs-string">"fmt"</span>
+import <span class="hljs-string">&quot;fmt&quot;</span>
 
-func <span class="hljs-function"><span class="hljs-title">main</span></span>()  {
-	var x interface{}
-	fmt.Printf(<span class="hljs-string">"接口动态类型 %T\n"</span>,x)
-	fmt.Printf(<span class="hljs-string">"接口动态值 %v\n"</span>,x)
+func <span class="hljs-function"><span class="hljs-title">main</span></span>()  &#123;
+	var x interface&#123;&#125;
+	fmt.Printf(<span class="hljs-string">&quot;接口动态类型 %T\n&quot;</span>,x)
+	fmt.Printf(<span class="hljs-string">&quot;接口动态值 %v\n&quot;</span>,x)
 
 
-	x = <span class="hljs-string">"hello"</span>
-	fmt.Printf(<span class="hljs-string">"接口动态类型 %T\n"</span>,x)
-	fmt.Printf(<span class="hljs-string">"接口动态值 %v\n"</span>,x)
+	x = <span class="hljs-string">&quot;hello&quot;</span>
+	fmt.Printf(<span class="hljs-string">&quot;接口动态类型 %T\n&quot;</span>,x)
+	fmt.Printf(<span class="hljs-string">&quot;接口动态值 %v\n&quot;</span>,x)
 
 	x = <span class="hljs-literal">true</span>
-	fmt.Printf(<span class="hljs-string">"接口动态类型 %T\n"</span>,x)
-	fmt.Printf(<span class="hljs-string">"接口动态值 %v\n"</span>,x)
-}
+	fmt.Printf(<span class="hljs-string">&quot;接口动态类型 %T\n&quot;</span>,x)
+	fmt.Printf(<span class="hljs-string">&quot;接口动态值 %v\n&quot;</span>,x)
+&#125;
 
-<span class="hljs-comment"># 接口动态类型 <nil></span>
-<span class="hljs-comment"># 接口动态值 <nil></span>
+<span class="hljs-comment"># 接口动态类型 &lt;nil&gt;</span>
+<span class="hljs-comment"># 接口动态值 &lt;nil&gt;</span>
 <span class="hljs-comment"># 接口动态类型 string</span>
 <span class="hljs-comment"># 接口动态值 hello</span>
 <span class="hljs-comment"># 接口动态类型 bool</span>
 <span class="hljs-comment"># 接口动态值 true</span>
 </code></pre></div>
-<h3 id="利用断言来判断接口类型"><a href="#利用断言来判断接口类型" class="headerlink" title="利用断言来判断接口类型"></a>利用断言来判断接口类型</h3><div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">package</span> main
+<h3 id="利用断言来判断接口类型"><a href="#利用断言来判断接口类型" class="headerlink" title="利用断言来判断接口类型"></a>利用断言来判断接口类型</h3><div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main
 
-<span class="hljs-keyword">import</span> <span class="hljs-string">"fmt"</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span>  {
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span>  &#123;
 	x = <span class="hljs-literal">true</span>
-	fmt.Printf(<span class="hljs-string">"接口动态类型 %T\n"</span>,x)
-	fmt.Printf(<span class="hljs-string">"接口动态值 %v\n"</span>,x)
+	fmt.Printf(<span class="hljs-string">&quot;接口动态类型 %T\n&quot;</span>,x)
+	fmt.Printf(<span class="hljs-string">&quot;接口动态值 %v\n&quot;</span>,x)
 
 
 	_,ok := x.(<span class="hljs-keyword">bool</span>)
-	<span class="hljs-keyword">if</span> ok {
-		fmt.Println(<span class="hljs-string">"这是一个bool值"</span>)
-	}<span class="hljs-keyword">else</span> {
-		fmt.Println(<span class="hljs-string">"这不是一个布尔值"</span>)
-	}
-}
+	<span class="hljs-keyword">if</span> ok &#123;
+		fmt.Println(<span class="hljs-string">&quot;这是一个bool值&quot;</span>)
+	&#125;<span class="hljs-keyword">else</span> &#123;
+		fmt.Println(<span class="hljs-string">&quot;这不是一个布尔值&quot;</span>)
+	&#125;
+&#125;
 
 <span class="hljs-comment">//这是一个bool值</span>
 </code></pre></div>
@@ -1657,73 +1657,73 @@ func <span class="hljs-function"><span class="hljs-title">main</span></span>()  
 <h3 id="接口与抽象类进阶"><a href="#接口与抽象类进阶" class="headerlink" title="接口与抽象类进阶"></a>接口与抽象类进阶</h3><p>在使用接口的过程中，发现接口和抽象类有点类似，问了一下周围的人发现大部分人都在用接口做项目，抽象类用的比较少，但类似于生成数据库表的时候会涉及到抽象类的使用<br>首先接口和抽象类的设计目的就是不一样的。接口是对动作的抽象，而抽象类是对根源的抽象。对于抽象类，比如男人，女人这两个类，那我们可以为这两个类设计一个更高级别的抽象类–人。对于接口，我们可以坐着吃饭，可以站着吃饭，可以用筷子吃饭，可以用叉子吃饭，甚至可以学三哥一样用手抓着吃饭，那么可以把这些吃饭的动作抽象成一个接口–吃饭。所以在高级语言中（如Java,C#），一个类只能继承一个抽象类（因为你不可能同时是生物又是非生物）。但是一个类可以同时实现多个接口，比如开车接口，滑冰接口，啪啪啪接口，踢足球接口，游泳接口。也就是说抽象类的使用更加高级，但没有必要设计抽象类的设计在普通项目中<br>抽象类的功能应该要远多于接口，但是定义抽象类的代价较高。因为高级语言一个类只能继承一个父类，即你在设计这个类的时候必须要抽象出所有这个类的子类所具有的共同属性和方法；但是类（接口）却可以继承多个接口，因此每个接口你只需要将特定的动作方法抽象到这个接口即可。也就是说，接口的设计具有更大的可扩展性，而抽象类的设计必须十分谨慎。</p>
 <p>另外接口总是与方法一起出现 不是与函数一起出现 来看一下函数与方法的区别<br><code>func (a type) getMax() int &#123;&#125;</code> 这个是方法<br><code>func getMax(a type) int&#123;&#125;</code> 这个是函数</p>
 <p>来看一段代码，涉及到了接口的使用</p>
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">package</span> main
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main
 
-<span class="hljs-keyword">import</span> <span class="hljs-string">"fmt"</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
 
 <span class="hljs-comment">/*</span>
 <span class="hljs-comment">定义一个结构体</span>
 <span class="hljs-comment">*/</span>
 
-<span class="hljs-keyword">type</span> Run <span class="hljs-keyword">struct</span>{
+<span class="hljs-keyword">type</span> Run <span class="hljs-keyword">struct</span>&#123;
 	leg <span class="hljs-keyword">string</span>
 	arm <span class="hljs-keyword">string</span>
-}
+&#125;
 
-<span class="hljs-keyword">type</span>  Speak <span class="hljs-keyword">struct</span> {
+<span class="hljs-keyword">type</span>  Speak <span class="hljs-keyword">struct</span> &#123;
 	mouth <span class="hljs-keyword">string</span>
 	arm <span class="hljs-keyword">string</span>
 	eye <span class="hljs-keyword">string</span>
-}
+&#125;
 
-<span class="hljs-keyword">type</span> People <span class="hljs-keyword">struct</span> {
+<span class="hljs-keyword">type</span> People <span class="hljs-keyword">struct</span> &#123;
 	Speak
 	Run
 	name <span class="hljs-keyword">string</span>
 	age <span class="hljs-keyword">string</span>
 	habit <span class="hljs-keyword">string</span>
 	sex <span class="hljs-keyword">string</span>
-}
+&#125;
 
 <span class="hljs-comment">// 使用普通方法</span>
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">CreatePeople</span><span class="hljs-params">()</span> *<span class="hljs-title">People</span></span>{
-	run := Run{arm:<span class="hljs-string">"fast"</span>,leg: <span class="hljs-string">"fast"</span>}
-	speak := Speak{arm: <span class="hljs-string">"fast"</span>,mouth: <span class="hljs-string">"fast"</span>,eye:<span class="hljs-string">"eyes is fast"</span>}
-	people := People{speak,run,<span class="hljs-string">"hzj"</span>,<span class="hljs-string">"12"</span>,<span class="hljs-string">"linke"</span>,<span class="hljs-string">"man"</span>}
-	<span class="hljs-keyword">return</span> &people
-}
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">RunFunc</span><span class="hljs-params">(p1 *People)</span></span> {
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">CreatePeople</span><span class="hljs-params">()</span> *<span class="hljs-title">People</span></span>&#123;
+	run := Run&#123;arm:<span class="hljs-string">&quot;fast&quot;</span>,leg: <span class="hljs-string">&quot;fast&quot;</span>&#125;
+	speak := Speak&#123;arm: <span class="hljs-string">&quot;fast&quot;</span>,mouth: <span class="hljs-string">&quot;fast&quot;</span>,eye:<span class="hljs-string">&quot;eyes is fast&quot;</span>&#125;
+	people := People&#123;speak,run,<span class="hljs-string">&quot;hzj&quot;</span>,<span class="hljs-string">&quot;12&quot;</span>,<span class="hljs-string">&quot;linke&quot;</span>,<span class="hljs-string">&quot;man&quot;</span>&#125;
+	<span class="hljs-keyword">return</span> &amp;people
+&#125;
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">RunFunc</span><span class="hljs-params">(p1 *People)</span></span> &#123;
 	fmt.Println(p1.Run)
-}
+&#125;
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">SpeakFunc</span><span class="hljs-params">(p1 *People)</span></span>{
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">SpeakFunc</span><span class="hljs-params">(p1 *People)</span></span>&#123;
 	fmt.Println(p1.Speak)
-}
+&#125;
 
 <span class="hljs-comment">// 使用接口</span>
-<span class="hljs-keyword">type</span> Runer <span class="hljs-keyword">interface</span> {
+<span class="hljs-keyword">type</span> Runer <span class="hljs-keyword">interface</span> &#123;
 	RunImpl()
-}
+&#125;
 
-<span class="hljs-keyword">type</span> UseSpeaker <span class="hljs-keyword">interface</span> {
+<span class="hljs-keyword">type</span> UseSpeaker <span class="hljs-keyword">interface</span> &#123;
 	SpeakImpl()
 	SpeakNameImpl()
-}
+&#125;
 
 <span class="hljs-comment">// 给具体的数据类型实现接口中的方法</span>
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(p1 People)</span> <span class="hljs-title">RunImpl</span><span class="hljs-params">()</span></span> {
-	fmt.Println(<span class="hljs-string">"running "</span>)
-}
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(p1 People)</span> <span class="hljs-title">RunImpl</span><span class="hljs-params">()</span></span> &#123;
+	fmt.Println(<span class="hljs-string">&quot;running &quot;</span>)
+&#125;
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(p1 People)</span> <span class="hljs-title">SpeakImpl</span><span class="hljs-params">()</span></span> {
-	fmt.Println(<span class="hljs-string">"speaking "</span>)
-}
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(p1 People)</span> <span class="hljs-title">SpeakImpl</span><span class="hljs-params">()</span></span> &#123;
+	fmt.Println(<span class="hljs-string">&quot;speaking &quot;</span>)
+&#125;
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(p1 People)</span> <span class="hljs-title">SpeakNameImpl</span><span class="hljs-params">()</span></span>{
-	fmt.Println(<span class="hljs-string">"my name is"</span>,p1.name)
-}
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(p1 People)</span> <span class="hljs-title">SpeakNameImpl</span><span class="hljs-params">()</span></span>&#123;
+	fmt.Println(<span class="hljs-string">&quot;my name is&quot;</span>,p1.name)
+&#125;
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
 	p1 := CreatePeople()
 	RunFunc(p1)
 	SpeakFunc(p1)
@@ -1731,72 +1731,72 @@ func <span class="hljs-function"><span class="hljs-title">main</span></span>()  
 	p1.SpeakNameImpl()
 	p1.RunImpl()
 	
-}</code></pre></div>
+&#125;</code></pre></div>
 <p>在接口的使用过程中，只要某一个实例实现了接口中定义的全部方法，则表示实现了该接口<br>如上 所有的people类型都实现了Runer接口和UseSpeaker接口<br>另外接口与接口之间也可以实现嵌套</p>
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">package</span> main
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main
 
 <span class="hljs-keyword">import</span> (
-	<span class="hljs-string">"fmt"</span>
+	<span class="hljs-string">&quot;fmt&quot;</span>
 )
 
 <span class="hljs-comment">/*</span>
 <span class="hljs-comment">定义一个结构体</span>
 <span class="hljs-comment">*/</span>
 
-<span class="hljs-keyword">type</span> Run <span class="hljs-keyword">struct</span>{
+<span class="hljs-keyword">type</span> Run <span class="hljs-keyword">struct</span>&#123;
 	leg <span class="hljs-keyword">string</span>
 	arm <span class="hljs-keyword">string</span>
-}
+&#125;
 
-<span class="hljs-keyword">type</span>  Speak <span class="hljs-keyword">struct</span> {
+<span class="hljs-keyword">type</span>  Speak <span class="hljs-keyword">struct</span> &#123;
 	mouth <span class="hljs-keyword">string</span>
 	arm <span class="hljs-keyword">string</span>
 	eye <span class="hljs-keyword">string</span>
-}
+&#125;
 
-<span class="hljs-keyword">type</span> People <span class="hljs-keyword">struct</span> {
+<span class="hljs-keyword">type</span> People <span class="hljs-keyword">struct</span> &#123;
 	Speak
 	Run
 	name <span class="hljs-keyword">string</span>
 	age <span class="hljs-keyword">string</span>
 	habit <span class="hljs-keyword">string</span>
 	sex <span class="hljs-keyword">string</span>
-}
+&#125;
 
 <span class="hljs-comment">// 使用普通方法</span>
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">CreatePeople</span><span class="hljs-params">()</span> *<span class="hljs-title">People</span></span>{
-	run := Run{arm:<span class="hljs-string">"fast"</span>,leg: <span class="hljs-string">"fast"</span>}
-	speak := Speak{arm: <span class="hljs-string">"fast"</span>,mouth: <span class="hljs-string">"fast"</span>,eye:<span class="hljs-string">"eyes is fast"</span>}
-	people := People{speak,run,<span class="hljs-string">"hzj"</span>,<span class="hljs-string">"12"</span>,<span class="hljs-string">"linke"</span>,<span class="hljs-string">"man"</span>}
-	<span class="hljs-keyword">return</span> &people
-}
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">CreatePeople</span><span class="hljs-params">()</span> *<span class="hljs-title">People</span></span>&#123;
+	run := Run&#123;arm:<span class="hljs-string">&quot;fast&quot;</span>,leg: <span class="hljs-string">&quot;fast&quot;</span>&#125;
+	speak := Speak&#123;arm: <span class="hljs-string">&quot;fast&quot;</span>,mouth: <span class="hljs-string">&quot;fast&quot;</span>,eye:<span class="hljs-string">&quot;eyes is fast&quot;</span>&#125;
+	people := People&#123;speak,run,<span class="hljs-string">&quot;hzj&quot;</span>,<span class="hljs-string">&quot;12&quot;</span>,<span class="hljs-string">&quot;linke&quot;</span>,<span class="hljs-string">&quot;man&quot;</span>&#125;
+	<span class="hljs-keyword">return</span> &amp;people
+&#125;
 
 <span class="hljs-comment">// 使用接口</span>
-<span class="hljs-keyword">type</span> Runer <span class="hljs-keyword">interface</span> {
+<span class="hljs-keyword">type</span> Runer <span class="hljs-keyword">interface</span> &#123;
 	RunImpl()
 	UseSpeaker
-}
+&#125;
 
-<span class="hljs-keyword">type</span> UseSpeaker <span class="hljs-keyword">interface</span> {
+<span class="hljs-keyword">type</span> UseSpeaker <span class="hljs-keyword">interface</span> &#123;
 	SpeakImpl()
 	SpeakNameImpl()
-}
+&#125;
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(p1 People)</span> <span class="hljs-title">RunImpl</span><span class="hljs-params">()</span></span> {
-	fmt.Println(<span class="hljs-string">"running "</span>)
-}
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(p1 People)</span> <span class="hljs-title">RunImpl</span><span class="hljs-params">()</span></span> &#123;
+	fmt.Println(<span class="hljs-string">&quot;running &quot;</span>)
+&#125;
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(p1 People)</span> <span class="hljs-title">SpeakImpl</span><span class="hljs-params">()</span></span> {
-	fmt.Println(<span class="hljs-string">"speaking "</span>)
-}
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(p1 People)</span> <span class="hljs-title">SpeakImpl</span><span class="hljs-params">()</span></span> &#123;
+	fmt.Println(<span class="hljs-string">&quot;speaking &quot;</span>)
+&#125;
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(p1 People)</span> <span class="hljs-title">SpeakNameImpl</span><span class="hljs-params">()</span></span>{
-	fmt.Println(<span class="hljs-string">"my name is"</span>,p1.name)
-}
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(p1 People)</span> <span class="hljs-title">SpeakNameImpl</span><span class="hljs-params">()</span></span>&#123;
+	fmt.Println(<span class="hljs-string">&quot;my name is&quot;</span>,p1.name)
+&#125;
 
 
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
 	p1 := CreatePeople()
 	p1.SpeakImpl()
 	p1.SpeakNameImpl()
@@ -1809,90 +1809,90 @@ func <span class="hljs-function"><span class="hljs-title">main</span></span>()  
 	p3.SpeakNameImpl()
 	p3.SpeakImpl()
 	p3.RunImpl()
-}
+&#125;
 </code></pre></div>
 <ul>
 <li>强制转换接口，只能从高到低转换<code>var p2 UseSpeaker = UseSpeaker(*p1)</code></li>
 </ul>
 <h2 id="类型断言"><a href="#类型断言" class="headerlink" title="类型断言"></a>类型断言</h2><p>类型断言格式：<code>usb.(要判断的对象)</code>，判断传入的是否为Runer类型<br>关键词 interface switch</p>
 <p>类型断言 x.(T) 其实就是判断 T 是否实现了 x 接口，如果实现了，就把 x 接口类型具体化为 T 类型；而 x.(type) 这种方式的类型断言，就只能和 switch 搭配使用，因为它需要和多种类型比较判断，以确定其具体类型。</p>
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">checkType</span><span class="hljs-params">(args ...<span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">checkType</span><span class="hljs-params">(args ...<span class="hljs-keyword">interface</span>{})</span></span> {
-   <span class="hljs-keyword">for</span> _, arg := <span class="hljs-keyword">range</span> args {
-      <span class="hljs-keyword">switch</span> arg.(<span class="hljs-keyword">type</span>) {
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">checkType</span><span class="hljs-params">(args ...<span class="hljs-keyword">interface</span>&#123;&#125;)</span></span> &#123;
+   <span class="hljs-keyword">for</span> _, arg := <span class="hljs-keyword">range</span> args &#123;
+      <span class="hljs-keyword">switch</span> arg.(<span class="hljs-keyword">type</span>) &#123;
       <span class="hljs-keyword">case</span> <span class="hljs-keyword">int</span>:
-         fmt.Println(arg, <span class="hljs-string">"is an int value."</span>)
+         fmt.Println(arg, <span class="hljs-string">&quot;is an int value.&quot;</span>)
       <span class="hljs-keyword">case</span> <span class="hljs-keyword">string</span>:
-         fmt.Println(arg, <span class="hljs-string">"is a string value."</span>)
+         fmt.Println(arg, <span class="hljs-string">&quot;is a string value.&quot;</span>)
       <span class="hljs-keyword">case</span> <span class="hljs-keyword">int64</span>:
-         fmt.Println(arg, <span class="hljs-string">"is an int64 value."</span>)
+         fmt.Println(arg, <span class="hljs-string">&quot;is an int64 value.&quot;</span>)
       <span class="hljs-keyword">default</span>:
-         fmt.Println(arg, <span class="hljs-string">"is an unknown type."</span>)
-      }
-   }
-}</code></pre></div>
+         fmt.Println(arg, <span class="hljs-string">&quot;is an unknown type.&quot;</span>)
+      &#125;
+   &#125;
+&#125;</code></pre></div>
 <p>golang里面所有的数据类型都都是一个空接口</p>
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-comment"><code class="language-hljs go"><span class="hljs-comment">// 接口类型就可以</span>
-<span class="hljs-keyword">var</span> name <span class="hljs-keyword">interface</span>{} = <span class="hljs-number">1</span>
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-comment">// 接口类型就可以</span>
+<span class="hljs-keyword">var</span> name <span class="hljs-keyword">interface</span>&#123;&#125; = <span class="hljs-number">1</span>
 v,ok := name.(<span class="hljs-keyword">int</span>)
 
 fmt.Println(v,ok) 
 
 <span class="hljs-comment">// result  1 int</span></code></pre></div>
 
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">Disconnect</span><span class="hljs-params"><code class="language-hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">Disconnect</span><span class="hljs-params">(runner Runer)</span></span> {
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">Disconnect</span><span class="hljs-params">(runner Runer)</span></span> &#123;
 	<span class="hljs-comment">/**</span>
 <span class="hljs-comment">	  这里是通过类型断言来判定当前是哪个对象调用并打印</span>
 <span class="hljs-comment">	  类型断言格式：usb.(要判断的对象)，判断传入的是否为Runer类型</span>
 <span class="hljs-comment">	*/</span>
-	<span class="hljs-keyword">if</span> k, ok := runner.(Runer); ok {
+	<span class="hljs-keyword">if</span> k, ok := runner.(Runer); ok &#123;
 		k.SpeakImpl()
 		<span class="hljs-keyword">return</span>
-	}
-}
+	&#125;
+&#125;
 
 <span class="hljs-comment">/**</span>
 <span class="hljs-comment">Go语言中类型定义只要符合定义的接口那么它就实现来该接口，在java语言中都有一个顶级父类叫 Object。那么在Go语言中有吗？</span>
 <span class="hljs-comment">当然有的，通过接口概念可以了解到当我们定义一个空接口的时候，任何类型都会继承它。那么针对Disconnect方法我们就可以定义一种更加广泛的应用方式</span>
 <span class="hljs-comment">*/</span>
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">disconnectAll</span><span class="hljs-params">(NilInter <span class="hljs-keyword">interface</span>{})</span></span>{
-	<span class="hljs-keyword">if</span> k,ok := NilInter.(Runer); ok{
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">disconnectAll</span><span class="hljs-params">(NilInter <span class="hljs-keyword">interface</span>&#123;&#125;)</span></span>&#123;
+	<span class="hljs-keyword">if</span> k,ok := NilInter.(Runer); ok&#123;
 		k.SpeakNameImpl()
 		<span class="hljs-keyword">return</span>
-	}
-	fmt.Println(<span class="hljs-string">"error"</span>)
+	&#125;
+	fmt.Println(<span class="hljs-string">&quot;error&quot;</span>)
 
-}
+&#125;
 
 
 <span class="hljs-comment">/**</span>
 <span class="hljs-comment">在Go语言中可以用另外一种方式进行断言，叫：type switch</span>
 <span class="hljs-comment">*/</span>
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">DisconnectSwitch</span><span class="hljs-params">(usb <span class="hljs-keyword">interface</span>{})</span></span> {
-	<span class="hljs-keyword">switch</span> v := usb.(<span class="hljs-keyword">type</span>) {
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">DisconnectSwitch</span><span class="hljs-params">(usb <span class="hljs-keyword">interface</span>&#123;&#125;)</span></span> &#123;
+	<span class="hljs-keyword">switch</span> v := usb.(<span class="hljs-keyword">type</span>) &#123;
 	<span class="hljs-keyword">case</span> PhoneConnecter:
-		fmt.Println(<span class="hljs-string">"DisconnectSwitch："</span>, v.name)
+		fmt.Println(<span class="hljs-string">&quot;DisconnectSwitch：&quot;</span>, v.name)
 	<span class="hljs-keyword">default</span>:
-		fmt.Println(<span class="hljs-string">"Unknown decive."</span>)
-	}
-}</code></pre></div>
+		fmt.Println(<span class="hljs-string">&quot;Unknown decive.&quot;</span>)
+	&#125;
+&#125;</code></pre></div>
 
 
 <h2 id="go错误检查"><a href="#go错误检查" class="headerlink" title="go错误检查"></a>go错误检查</h2><p>golang错误检查，源码如下</p>
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword">type</span> error <span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">type</span> error <span class="hljs-keyword">interface</span> {
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">type</span> error <span class="hljs-keyword">interface</span> &#123;
     Error() <span class="hljs-keyword">string</span>
-}</code></pre></div>
+&#125;</code></pre></div>
 
-<h3 id="使用error-New创建一个错误提示"><a href="#使用error-New创建一个错误提示" class="headerlink" title="使用error.New创建一个错误提示"></a>使用error.New创建一个错误提示</h3><div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">Sqrt</span><span class="hljs-params">(f <span class="hljs-keyword">float64</span>)</span> <span class="hljs-params">(<span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">Sqrt</span><span class="hljs-params">(f <span class="hljs-keyword">float64</span>)</span> <span class="hljs-params">(<span class="hljs-keyword">float64</span>, error)</span></span> {
-    <span class="hljs-keyword">if</span> f < <span class="hljs-number">0</span> {
-        <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>, errors.New(<span class="hljs-string">"math: square root of negative number"</span>)
-    }
+<h3 id="使用error-New创建一个错误提示"><a href="#使用error-New创建一个错误提示" class="headerlink" title="使用error.New创建一个错误提示"></a>使用error.New创建一个错误提示</h3><div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">Sqrt</span><span class="hljs-params">(f <span class="hljs-keyword">float64</span>)</span> <span class="hljs-params">(<span class="hljs-keyword">float64</span>, error)</span></span> &#123;
+    <span class="hljs-keyword">if</span> f &lt; <span class="hljs-number">0</span> &#123;
+        <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>, errors.New(<span class="hljs-string">&quot;math: square root of negative number&quot;</span>)
+    &#125;
     <span class="hljs-comment">// 其他逻辑实现</span>
-}</code></pre></div>
-<h3 id="常用错误解决方法"><a href="#常用错误解决方法" class="headerlink" title="常用错误解决方法"></a>常用错误解决方法</h3><div class="code-wrapper"><pre class=" language-hljs go">result, err:= Sqrt(<span class="hljs-number">-1</span>) <span class="hljs-comment"><code class="language-hljs go">result, err:= Sqrt(<span class="hljs-number">-1</span>) <span class="hljs-comment">// 产生一个错误</span>
+&#125;</code></pre></div>
+<h3 id="常用错误解决方法"><a href="#常用错误解决方法" class="headerlink" title="常用错误解决方法"></a>常用错误解决方法</h3><div class="code-wrapper"><pre><code class="hljs go">result, err:= Sqrt(<span class="hljs-number">-1</span>) <span class="hljs-comment">// 产生一个错误</span>
 
-<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> {  <span class="hljs-comment">// 如果错误存在 则执行解决方法</span>
+<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;  <span class="hljs-comment">// 如果错误存在 则执行解决方法</span>
    fmt.Println(err)
-}</code></pre></div>
+&#125;</code></pre></div>
 
 
 <h2 id="go-reflect"><a href="#go-reflect" class="headerlink" title="go reflect"></a>go reflect</h2><p><a target="_blank" rel="noopener" href="https://studygolang.com/articles/24406">https://studygolang.com/articles/24406</a><br>反射reflection</p>
@@ -1903,50 +1903,50 @@ fmt.Println(v,ok)
 <li>想要利用反射修改对象状态，前提是 interface.data 是 settable，即 pointer-interface</li>
 <li>通过反射可以“动态”调用方法</li>
 </ul>
-<div class="code-wrapper"><pre class=" language-hljs go"><code class="language-hljs go">
-<span class="hljs-keyword">type</span> User <span class="hljs-keyword">struct</span> {
+<div class="code-wrapper"><pre><code class="hljs go">
+<span class="hljs-keyword">type</span> User <span class="hljs-keyword">struct</span> &#123;
 	Id <span class="hljs-keyword">int</span>
 	Name <span class="hljs-keyword">string</span>
 	Age <span class="hljs-keyword">int</span>
-}
+&#125;
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(u User)</span> <span class="hljs-title">hello</span><span class="hljs-params">()</span></span>{
-	fmt.Println(<span class="hljs-string">"helloworld"</span>)
-}
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(u User)</span> <span class="hljs-title">hello</span><span class="hljs-params">()</span></span>&#123;
+	fmt.Println(<span class="hljs-string">&quot;helloworld&quot;</span>)
+&#125;
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">Info</span><span class="hljs-params">(o <span class="hljs-keyword">interface</span>{})</span></span>{
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">Info</span><span class="hljs-params">(o <span class="hljs-keyword">interface</span>&#123;&#125;)</span></span>&#123;
 	t := reflect.TypeOf(o)   <span class="hljs-comment">// 获取接受到接口的类型</span>
 	fmt.Println(t.Name()) <span class="hljs-comment">// 输出类型名字</span>
 
 	<span class="hljs-comment">// 判断是哪种类型</span>
 	<span class="hljs-comment">//reflect.Int</span>
 	<span class="hljs-comment">//reflect.String 等等</span>
-	<span class="hljs-keyword">if</span> k:= t.Kind();k != reflect.Struct{
-		fmt.Println(<span class="hljs-string">"传入的类型有误，请检查"</span>)
+	<span class="hljs-keyword">if</span> k:= t.Kind();k != reflect.Struct&#123;
+		fmt.Println(<span class="hljs-string">&quot;传入的类型有误，请检查&quot;</span>)
 		<span class="hljs-keyword">return</span>
-	}
+	&#125;
 
 	<span class="hljs-comment">// 获取接口到的接口的类型+内容(属性字段和方法)</span>
 	v := reflect.ValueOf(o)
-	fmt.Println(<span class="hljs-string">"Fields:"</span>)
-	<span class="hljs-keyword">for</span> i:=<span class="hljs-number">0</span>;i<t.NumField();i++{
+	fmt.Println(<span class="hljs-string">&quot;Fields:&quot;</span>)
+	<span class="hljs-keyword">for</span> i:=<span class="hljs-number">0</span>;i&lt;t.NumField();i++&#123;
 		fmt.Println(i,t.Field(i),v.Field(i).Interface()) <span class="hljs-comment">// 输出字段，各个属性</span>
 		f:=t.Field(i)
 		fmt.Println(f.Name,f.Type)
-	}
+	&#125;
 	<span class="hljs-comment">// 通过接口类型.NumMethod 获取当前类型所有方法的个数</span>
-	<span class="hljs-keyword">for</span> i:=<span class="hljs-number">0</span>;i<t.NumMethod();i++{
+	<span class="hljs-keyword">for</span> i:=<span class="hljs-number">0</span>;i&lt;t.NumMethod();i++&#123;
 		m:=t.Method(i)
 		fmt.Println(m.Name,m.Type)
-	}
+	&#125;
 
-}
+&#125;
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
-	u1 := User{<span class="hljs-number">1</span>,<span class="hljs-string">"hzj"</span>,<span class="hljs-number">2</span>}
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
+	u1 := User&#123;<span class="hljs-number">1</span>,<span class="hljs-string">&quot;hzj&quot;</span>,<span class="hljs-number">2</span>&#125;
 	u1.hello()
 	Info(u1)
-}
+&#125;
 
 </code></pre></div>
 
@@ -1960,65 +1960,65 @@ fmt.Println(v,ok)
 <li>需要注意，Go 没有异常机制，但有 panic／recover 模式来处理错误</li>
 <li>Panic 可以在任何地方引发，但 recover 只有在 defer 调用的函数中有效</li>
 </ul>
-<h2 id="defer-向下抛到最后运行"><a href="#defer-向下抛到最后运行" class="headerlink" title="defer 向下抛到最后运行"></a>defer 向下抛到最后运行</h2><div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">package</span> main
+<h2 id="defer-向下抛到最后运行"><a href="#defer-向下抛到最后运行" class="headerlink" title="defer 向下抛到最后运行"></a>defer 向下抛到最后运行</h2><div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main
 
-<span class="hljs-keyword">import</span> <span class="hljs-string">"fmt"</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
-    fmt.Println(<span class="hljs-string">"a"</span>)
-    <span class="hljs-keyword">defer</span> fmt.Println(<span class="hljs-string">"b"</span>)
-    <span class="hljs-keyword">defer</span> fmt.Println(<span class="hljs-string">"c"</span>)
-    <span class="hljs-keyword">defer</span> fmt.Println(<span class="hljs-string">"d"</span>)
-}</code></pre></div>
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
+    fmt.Println(<span class="hljs-string">&quot;a&quot;</span>)
+    <span class="hljs-keyword">defer</span> fmt.Println(<span class="hljs-string">&quot;b&quot;</span>)
+    <span class="hljs-keyword">defer</span> fmt.Println(<span class="hljs-string">&quot;c&quot;</span>)
+    <span class="hljs-keyword">defer</span> fmt.Println(<span class="hljs-string">&quot;d&quot;</span>)
+&#125;</code></pre></div>
 
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">package</span> main
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main
 
-<span class="hljs-keyword">import</span> <span class="hljs-string">"fmt"</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span>{
-    <span class="hljs-keyword">defer</span> <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span></span>{ <span class="hljs-comment">// 必须要先声明defer，否则不能捕获到panic异常</span>
-        fmt.Println(<span class="hljs-string">"c"</span>)
-        <span class="hljs-keyword">if</span> err:=<span class="hljs-built_in">recover</span>();err!=<span class="hljs-literal">nil</span>{
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span>&#123;
+    <span class="hljs-keyword">defer</span> <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span></span>&#123; <span class="hljs-comment">// 必须要先声明defer，否则不能捕获到panic异常</span>
+        fmt.Println(<span class="hljs-string">&quot;c&quot;</span>)
+        <span class="hljs-keyword">if</span> err:=<span class="hljs-built_in">recover</span>();err!=<span class="hljs-literal">nil</span>&#123;
             fmt.Println(err) <span class="hljs-comment">// 这里的err其实就是panic传入的内容，55</span>
-        }
-        fmt.Println(<span class="hljs-string">"d"</span>)
-    }()
+        &#125;
+        fmt.Println(<span class="hljs-string">&quot;d&quot;</span>)
+    &#125;()
 
     f()
-}
+&#125;
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">f</span><span class="hljs-params">()</span></span>{
-    fmt.Println(<span class="hljs-string">"a"</span>)
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">f</span><span class="hljs-params">()</span></span>&#123;
+    fmt.Println(<span class="hljs-string">&quot;a&quot;</span>)
     <span class="hljs-built_in">panic</span>(<span class="hljs-number">55</span>)
-    fmt.Println(<span class="hljs-string">"b"</span>)
-    fmt.Println(<span class="hljs-string">"f"</span>)
-}</code></pre></div>
+    fmt.Println(<span class="hljs-string">&quot;b&quot;</span>)
+    fmt.Println(<span class="hljs-string">&quot;f&quot;</span>)
+&#125;</code></pre></div>
 
-<h2 id="golang-test测试"><a href="#golang-test测试" class="headerlink" title="golang test测试"></a>golang test测试</h2><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-built_in"><code class="language-hljs bash"><span class="hljs-built_in">cd</span> /myGoProject/src/go-test/utils
+<h2 id="golang-test测试"><a href="#golang-test测试" class="headerlink" title="golang test测试"></a>golang test测试</h2><div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-built_in">cd</span> /myGoProject/src/go-test/utils
 go <span class="hljs-built_in">test</span> -v
 </code></pre></div>
 <p>单独测试某个方法</p>
-<div class="code-wrapper"><pre class=" language-hljs bash">go <span class="hljs-built_in">test</span> -v -run=<span class="hljs-string"><code class="language-hljs bash">go <span class="hljs-built_in">test</span> -v -run=<span class="hljs-string">&#x27;TestTimestamp2StandardTimeStr&#x27;</span></code></pre></div>
+<div class="code-wrapper"><pre><code class="hljs bash">go <span class="hljs-built_in">test</span> -v -run=<span class="hljs-string">&#x27;TestTimestamp2StandardTimeStr&#x27;</span></code></pre></div>
 
 
 <h2 id="go类型判断"><a href="#go类型判断" class="headerlink" title="go类型判断"></a>go类型判断</h2><p>go类型判断一共两种原则，一种是使用空接口的功能,另外一种使用发射来获取变量属性</p>
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword">var</span> xx <span class="hljs-keyword">interface</span>&#123;&#125; = <span class="hljs-string">&quot;hellowrold&quot;</span> <span class="hljs-comment"><code class="language-hljs go"><span class="hljs-keyword">var</span> xx <span class="hljs-keyword">interface</span>&#123;&#125; = <span class="hljs-string">&quot;hellowrold&quot;</span> <span class="hljs-comment">// is string</span>
-<span class="hljs-keyword">var</span> xxx <span class="hljs-keyword">interface</span>{} = <span class="hljs-string">&#x27;x&#x27;</span>  <span class="hljs-comment">// is rune</span>
-<span class="hljs-keyword">switch</span> xxx.(<span class="hljs-keyword">type</span>) {
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">var</span> xx <span class="hljs-keyword">interface</span>&#123;&#125; = <span class="hljs-string">&quot;hellowrold&quot;</span> <span class="hljs-comment">// is string</span>
+<span class="hljs-keyword">var</span> xxx <span class="hljs-keyword">interface</span>&#123;&#125; = <span class="hljs-string">&#x27;x&#x27;</span>  <span class="hljs-comment">// is rune</span>
+<span class="hljs-keyword">switch</span> xxx.(<span class="hljs-keyword">type</span>) &#123;
 <span class="hljs-keyword">case</span> <span class="hljs-keyword">string</span>:
-	fmt.Println(<span class="hljs-string">"is string"</span>)
+	fmt.Println(<span class="hljs-string">&quot;is string&quot;</span>)
 <span class="hljs-keyword">case</span> <span class="hljs-keyword">rune</span>:
-	fmt.Println(<span class="hljs-string">"is rune"</span>)
+	fmt.Println(<span class="hljs-string">&quot;is rune&quot;</span>)
 <span class="hljs-keyword">case</span> <span class="hljs-keyword">byte</span>:
-	fmt.Println(<span class="hljs-string">"is byte"</span>)
+	fmt.Println(<span class="hljs-string">&quot;is byte&quot;</span>)
 <span class="hljs-keyword">default</span>:
-	fmt.Println(<span class="hljs-string">"dont know"</span>)
+	fmt.Println(<span class="hljs-string">&quot;dont know&quot;</span>)
 
-}
+&#125;
 
 <span class="hljs-keyword">var</span> xx  = <span class="hljs-number">20</span>;
 fmt.Println(reflect.TypeOf(xx)) <span class="hljs-comment">// int</span>
-<span class="hljs-keyword">var</span> qq = <span class="hljs-string">"hzj"</span>
+<span class="hljs-keyword">var</span> qq = <span class="hljs-string">&quot;hzj&quot;</span>
 <span class="hljs-keyword">var</span> qqq = <span class="hljs-string">&#x27;h&#x27;</span>
 fmt.Println(reflect.TypeOf(qq),reflect.TypeOf(qqq)) <span class="hljs-comment">// string int32</span>
 fmt.Println(reflect.TypeOf(xxx)) <span class="hljs-comment">// int32 == rune</span></code></pre></div>
@@ -2029,48 +2029,48 @@ fmt.Println(reflect.TypeOf(xxx)) <span class="hljs-comment">// int32 == rune</sp
 <li>一种类型</li>
 </ul>
 <p>因为golang语言设计的特殊性，只要实现了接口中的所有方法，就代表这个变量实现了这个接口, 在java中则需要继承接口，然后重写接口中的方法。<br>根据上面的内容所述，golang中存在一个空的接口，也就是说他没有任何的方法，那么所有的变量都实现了这个接口<br>因此，空接口作为参数的方法可以接受任何类型。Go 将继续转换为接口类型以满足这个函数</p>
-<h3 id="空接口中存在什么"><a href="#空接口中存在什么" class="headerlink" title="空接口中存在什么"></a>空接口中存在什么</h3><div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params"><code class="language-hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span>{
+<h3 id="空接口中存在什么"><a href="#空接口中存在什么" class="headerlink" title="空接口中存在什么"></a>空接口中存在什么</h3><div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span>&#123;
 	<span class="hljs-keyword">var</span> i <span class="hljs-keyword">byte</span> = <span class="hljs-number">1</span>
 	read(i)
-}
+&#125;
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">read</span><span class="hljs-params">(i <span class="hljs-keyword">interface</span>{})</span></span>{
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">read</span><span class="hljs-params">(i <span class="hljs-keyword">interface</span>&#123;&#125;)</span></span>&#123;
 	<span class="hljs-built_in">println</span>(i) <span class="hljs-comment">// (0x10ab540,0x1167e41)  </span>
-}</code></pre></div>
+&#125;</code></pre></div>
 
 <p><code>(0x10ab540,0x1167e41)</code> </p>
 <ul>
 <li>一个指向类型的相关信息的指针</li>
 <li>一个指向数据的相关信息的指针</li>
 </ul>
-<h2 id="闭包"><a href="#闭包" class="headerlink" title="闭包"></a>闭包</h2><div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">package</span> main
+<h2 id="闭包"><a href="#闭包" class="headerlink" title="闭包"></a>闭包</h2><div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main
 
-<span class="hljs-keyword">import</span> <span class="hljs-string">"fmt"</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
 
 <span class="hljs-comment">// 闭包的作用就是将函数看做变量来使用</span>
 <span class="hljs-comment">//  如下</span>
 
 <span class="hljs-comment">// 计算 两个整数变量相加的和</span>
-<span class="hljs-function"><span class="hljs-keyword">func</span>  <span class="hljs-title">cal</span><span class="hljs-params">(a <span class="hljs-keyword">int</span> ,b <span class="hljs-keyword">int</span>)</span> <span class="hljs-title">int</span></span> {
+<span class="hljs-function"><span class="hljs-keyword">func</span>  <span class="hljs-title">cal</span><span class="hljs-params">(a <span class="hljs-keyword">int</span> ,b <span class="hljs-keyword">int</span>)</span> <span class="hljs-title">int</span></span> &#123;
 	<span class="hljs-keyword">return</span> a+b
-}
+&#125;
 
 <span class="hljs-comment">// 2. 闭包的使用，将函数当做变量使用 ，作用是保护局部变量不被外部变量所改变</span>
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">incr</span><span class="hljs-params">()</span>	<span class="hljs-title">func</span><span class="hljs-params">()</span> <span class="hljs-title">int</span></span>{
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">incr</span><span class="hljs-params">()</span>	<span class="hljs-title">func</span><span class="hljs-params">()</span> <span class="hljs-title">int</span></span>&#123;
 	<span class="hljs-keyword">var</span> x <span class="hljs-keyword">int</span> = <span class="hljs-number">10</span>
-	<span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span> <span class="hljs-title">int</span></span> {
+	<span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span> <span class="hljs-title">int</span></span> &#123;
 		x++
 		<span class="hljs-keyword">return</span> x
-	}
-}
+	&#125;
+&#125;
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
 	<span class="hljs-comment">// 普通使用</span>
 	sum := cal(<span class="hljs-number">10</span>,<span class="hljs-number">20</span>)
 	fmt.Println(sum) <span class="hljs-comment">//30</span>
 
 	<span class="hljs-comment">// 把函数当做变量来使用</span>
-	sumfunc := cal   <span class="hljs-comment">//  <- 这里进行变量赋值</span>
+	sumfunc := cal   <span class="hljs-comment">//  &lt;- 这里进行变量赋值</span>
 	fmt.Println(sumfunc(<span class="hljs-number">1</span>,<span class="hljs-number">2</span>)) <span class="hljs-comment">// 3</span>
 	fmt.Println(sumfunc(<span class="hljs-number">2</span>,<span class="hljs-number">3</span>)) <span class="hljs-comment">// 5</span>
 
@@ -2085,16 +2085,16 @@ fmt.Println(reflect.TypeOf(xxx)) <span class="hljs-comment">// int32 == rune</sp
 	fmt.Println(sumx()) <span class="hljs-comment">// 13</span>
 	fmt.Println(sumx()) <span class="hljs-comment">// 14</span>
 	fmt.Println(sumx()) <span class="hljs-comment">// 15</span>
-}
+&#125;
 </code></pre></div>
 
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">package</span> main
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main
 
 <span class="hljs-keyword">import</span> (
-	<span class="hljs-string">"fmt"</span>
+	<span class="hljs-string">&quot;fmt&quot;</span>
 )
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
 	f1,f2 := calc(<span class="hljs-number">10</span>)
 	fmt.Println(f1(<span class="hljs-number">1</span>),f2(<span class="hljs-number">2</span>)) <span class="hljs-comment">// 11 9</span>
 	fmt.Println(f1(<span class="hljs-number">1</span>),f2(<span class="hljs-number">2</span>)) <span class="hljs-comment">// 10 8</span>
@@ -2112,26 +2112,26 @@ fmt.Println(reflect.TypeOf(xxx)) <span class="hljs-comment">// int32 == rune</sp
 
 
 
-}
+&#125;
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">calc</span><span class="hljs-params">(base <span class="hljs-keyword">int</span>)</span><span class="hljs-params">(<span class="hljs-keyword">func</span>(<span class="hljs-keyword">int</span>)</span> <span class="hljs-title">int</span>,<span class="hljs-title">func</span><span class="hljs-params">(<span class="hljs-keyword">int</span>)</span> <span class="hljs-title">int</span>)</span> {
-	add := <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(i <span class="hljs-keyword">int</span>)</span> <span class="hljs-title">int</span></span> {
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">calc</span><span class="hljs-params">(base <span class="hljs-keyword">int</span>)</span><span class="hljs-params">(<span class="hljs-keyword">func</span>(<span class="hljs-keyword">int</span>)</span> <span class="hljs-title">int</span>,<span class="hljs-title">func</span><span class="hljs-params">(<span class="hljs-keyword">int</span>)</span> <span class="hljs-title">int</span>)</span> &#123;
+	add := <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(i <span class="hljs-keyword">int</span>)</span> <span class="hljs-title">int</span></span> &#123;
 		base += i
 		<span class="hljs-keyword">return</span> base
-	}
+	&#125;
 
-	sub := <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(i <span class="hljs-keyword">int</span>)</span> <span class="hljs-title">int</span></span> {
+	sub := <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(i <span class="hljs-keyword">int</span>)</span> <span class="hljs-title">int</span></span> &#123;
 		base -= i
 		<span class="hljs-keyword">return</span> base
-	}
+	&#125;
 	<span class="hljs-keyword">return</span> add,sub
-}
+&#125;
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">calc2</span><span class="hljs-params">(base <span class="hljs-keyword">int</span>)</span> <span class="hljs-params">(<span class="hljs-keyword">int</span>,<span class="hljs-keyword">int</span>)</span></span> {
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">calc2</span><span class="hljs-params">(base <span class="hljs-keyword">int</span>)</span> <span class="hljs-params">(<span class="hljs-keyword">int</span>,<span class="hljs-keyword">int</span>)</span></span> &#123;
 	add := base +<span class="hljs-number">1</span>
 	sub :=  base <span class="hljs-number">-1</span>
 	<span class="hljs-keyword">return</span> add,sub
-}
+&#125;
 
 
 </code></pre></div>
@@ -2167,7 +2167,7 @@ fmt.Println(reflect.TypeOf(xxx)) <span class="hljs-comment">// int32 == rune</sp
                       <a href="/2020/05/11/blog_back_new/ansible/ansible-playbook2/">
                         <i class="iconfont icon-arrowleft"></i>
                         <span class="hidden-mobile">ansible-playbook合集</span>
-                        <span class="visible-mobile">Vorheriger</span>
+                        <span class="visible-mobile">上一篇</span>
                       </a>
                     
                   </article>
@@ -2176,7 +2176,7 @@ fmt.Println(reflect.TypeOf(xxx)) <span class="hljs-comment">// int32 == rune</sp
                     
                       <a href="/2020/05/09/blog_back_new/fastapi/fastapi-start/">
                         <span class="hidden-mobile">fastapi</span>
-                        <span class="visible-mobile">Nächster</span>
+                        <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
                     
@@ -2193,7 +2193,7 @@ fmt.Println(reflect.TypeOf(xxx)) <span class="hljs-comment">// int32 == rune</sp
     
       <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
         <div id="toc">
-  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
   <div class="toc-body" id="toc-body"></div>
 </div>
 
@@ -2219,7 +2219,7 @@ fmt.Println(reflect.TypeOf(xxx)) <span class="hljs-comment">// int32 == rune</sp
   <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">Suchen</h4>
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
         <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -2228,7 +2228,7 @@ fmt.Println(reflect.TypeOf(xxx)) <span class="hljs-comment">// int32 == rune</sp
         <div class="md-form mb-5">
           <input type="text" id="local-search-input" class="form-control validate">
           <label data-error="x" data-success="v"
-                 for="local-search-input">Stichwort</label>
+                 for="local-search-input">关键词</label>
         </div>
         <div class="list-group" id="local-search-result"></div>
       </div>

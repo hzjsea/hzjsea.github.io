@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html lang="cn" data-default-color-scheme=&#34;auto&#34;>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
 
 
 
@@ -61,7 +61,7 @@
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
 
 <body>
@@ -88,7 +88,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/">
                 <i class="iconfont icon-home-fill"></i>
-                Startseite
+                首页
               </a>
             </li>
           
@@ -100,7 +100,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/archives/">
                 <i class="iconfont icon-archive-fill"></i>
-                Archiv
+                归档
               </a>
             </li>
           
@@ -112,7 +112,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/categories/">
                 <i class="iconfont icon-category-fill"></i>
-                Kategorie
+                分类
               </a>
             </li>
           
@@ -124,7 +124,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/tags/">
                 <i class="iconfont icon-tags-fill"></i>
-                Etiketten
+                标签
               </a>
             </li>
           
@@ -136,7 +136,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/about/">
                 <i class="iconfont icon-user-fill"></i>
-                Über mich
+                关于
               </a>
             </li>
           
@@ -175,7 +175,7 @@
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
       <time datetime="2020-03-08 19:37" pubdate>
-        March 8, 2020 pm
+        2020年3月8日 晚上
       </time>
     </span>
   
@@ -186,7 +186,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      262 字
+      316 字
     </span>
   
 
@@ -196,7 +196,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      4
+      5
        分钟
     </span>
   
@@ -233,7 +233,7 @@
 <a id="more"></a>
 
 <h1 id="fastapi响应体"><a href="#fastapi响应体" class="headerlink" title="fastapi响应体"></a>fastapi响应体</h1><p>fastapi可以指定一个响应体用来作为返回参数，呈现给用户</p>
-<div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword"><code class="language-hljs py"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> FastAPI
+<div class="code-wrapper"><pre><code class="hljs py"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> FastAPI
 <span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span>  List
 <span class="hljs-keyword">from</span> pydantic <span class="hljs-keyword">import</span> BaseModel
 
@@ -247,7 +247,7 @@ app = FastAPI()
     tax: <span class="hljs-built_in">float</span> = <span class="hljs-literal">None</span>
     tags: List[<span class="hljs-built_in">str</span>] = []
 
-<span class="hljs-meta">@app.post("/",response_model=Item)</span>
+<span class="hljs-meta">@app.post(&quot;/&quot;,response_model=Item)</span>
 <span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">root</span>(<span class="hljs-params">item:Item</span>):</span>
     <span class="hljs-keyword">return</span> item
 
@@ -255,7 +255,7 @@ app = FastAPI()
 
 
 <p>定制不同的请求体和响应体<br><img src="http://img.noback.top/2020-04-01-13-19-10.png" srcset="/img/loading.gif" alt="2020-04-01-13-19-10"></p>
-<div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword"><code class="language-hljs py"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> FastAPI
+<div class="code-wrapper"><pre><code class="hljs py"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> FastAPI
 <span class="hljs-keyword">from</span> pydantic <span class="hljs-keyword">import</span> BaseModel
 
 app = FastAPI()
@@ -274,14 +274,14 @@ app = FastAPI()
     full_name: <span class="hljs-built_in">str</span> = <span class="hljs-literal">None</span>
 
 
-<span class="hljs-meta">@app.post("/user/", response_model=UserOut)</span>
+<span class="hljs-meta">@app.post(&quot;/user/&quot;, response_model=UserOut)</span>
 <span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">create_user</span>(<span class="hljs-params">*, user: UserIn</span>):</span>
     <span class="hljs-keyword">return</span> user</code></pre></div>
 
 
 <p>过滤请求体中没有值得字段<br><img src="http://img.noback.top/2020-04-01-13-34-42.png" srcset="/img/loading.gif" alt="2020-04-01-13-34-42"></p>
 <p><img src="http://img.noback.top/2020-04-01-13-35-40.png" srcset="/img/loading.gif" alt="2020-04-01-13-35-40"></p>
-<div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword"><code class="language-hljs py"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> FastAPI
+<div class="code-wrapper"><pre><code class="hljs py"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> FastAPI
 <span class="hljs-keyword">from</span> pydantic <span class="hljs-keyword">import</span> BaseModel
 
 app = FastAPI()
@@ -300,20 +300,20 @@ app = FastAPI()
     full_name: <span class="hljs-built_in">str</span> = <span class="hljs-literal">None</span>
 
 
-fake_db = {
-    <span class="hljs-string">"hzj"</span>:{<span class="hljs-string">"username"</span>:<span class="hljs-string">"hzj"</span>,<span class="hljs-string">"email"</span>:<span class="hljs-string">"1088xxx.com"</span>},
-    <span class="hljs-string">"qq"</span>: {<span class="hljs-string">"username"</span>: <span class="hljs-string">"hzdsj"</span>, <span class="hljs-string">"email"</span>: <span class="hljs-string">"1088xxxds.com"</span>},
-    <span class="hljs-string">"zz"</span>: {<span class="hljs-string">"username"</span>: <span class="hljs-string">"hzjdsds"</span>, <span class="hljs-string">"email"</span>: <span class="hljs-string">"1088xxx.dscom"</span>},
-    <span class="hljs-string">"j"</span>: {<span class="hljs-string">"username"</span>: <span class="hljs-string">"dsdhzj"</span>, <span class="hljs-string">"email"</span>: <span class="hljs-string">"1088xxxsds.com"</span>},
-}
+fake_db = &#123;
+    <span class="hljs-string">&quot;hzj&quot;</span>:&#123;<span class="hljs-string">&quot;username&quot;</span>:<span class="hljs-string">&quot;hzj&quot;</span>,<span class="hljs-string">&quot;email&quot;</span>:<span class="hljs-string">&quot;1088xxx.com&quot;</span>&#125;,
+    <span class="hljs-string">&quot;qq&quot;</span>: &#123;<span class="hljs-string">&quot;username&quot;</span>: <span class="hljs-string">&quot;hzdsj&quot;</span>, <span class="hljs-string">&quot;email&quot;</span>: <span class="hljs-string">&quot;1088xxxds.com&quot;</span>&#125;,
+    <span class="hljs-string">&quot;zz&quot;</span>: &#123;<span class="hljs-string">&quot;username&quot;</span>: <span class="hljs-string">&quot;hzjdsds&quot;</span>, <span class="hljs-string">&quot;email&quot;</span>: <span class="hljs-string">&quot;1088xxx.dscom&quot;</span>&#125;,
+    <span class="hljs-string">&quot;j&quot;</span>: &#123;<span class="hljs-string">&quot;username&quot;</span>: <span class="hljs-string">&quot;dsdhzj&quot;</span>, <span class="hljs-string">&quot;email&quot;</span>: <span class="hljs-string">&quot;1088xxxsds.com&quot;</span>&#125;,
+&#125;
 
-<span class="hljs-meta">@app.post("/user",response_model=UserOut)</span>
+<span class="hljs-meta">@app.post(&quot;/user&quot;,response_model=UserOut)</span>
 <span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">create_user</span>(<span class="hljs-params">*,user: UserIn</span>):</span>
     <span class="hljs-comment"># 这里虽然返回的是user 但是他会根据UserOut返回response</span>
     <span class="hljs-keyword">return</span> user
 
 
-<span class="hljs-meta">@app.get("/user/{user_id}", response_model=UserOut,response_model_exclude_unset=True)</span>
+<span class="hljs-meta">@app.get(&quot;/user/&#123;user_id&#125;&quot;, response_model=UserOut,response_model_exclude_unset=True)</span>
 <span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_user</span>(<span class="hljs-params">user_id :<span class="hljs-built_in">str</span>=<span class="hljs-literal">None</span> </span>):</span>
     <span class="hljs-keyword">if</span> user_id <span class="hljs-keyword">in</span> fake_db:
         <span class="hljs-keyword">return</span> fake_db[user_id]</code></pre></div>
@@ -352,7 +352,7 @@ fake_db = {
                       <a href="/2020/03/08/blog_back_new/ansible/2.ansible%E5%9F%BA%E7%A1%80/">
                         <i class="iconfont icon-arrowleft"></i>
                         <span class="hidden-mobile">ansible基础</span>
-                        <span class="visible-mobile">Vorheriger</span>
+                        <span class="visible-mobile">上一篇</span>
                       </a>
                     
                   </article>
@@ -361,7 +361,7 @@ fake_db = {
                     
                       <a href="/2020/03/08/blog_back_new/backup/fastapi/">
                         <span class="hidden-mobile">fastapi基础</span>
-                        <span class="visible-mobile">Nächster</span>
+                        <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
                     
@@ -378,7 +378,7 @@ fake_db = {
     
       <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
         <div id="toc">
-  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
   <div class="toc-body" id="toc-body"></div>
 </div>
 
@@ -404,7 +404,7 @@ fake_db = {
   <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">Suchen</h4>
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
         <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -413,7 +413,7 @@ fake_db = {
         <div class="md-form mb-5">
           <input type="text" id="local-search-input" class="form-control validate">
           <label data-error="x" data-success="v"
-                 for="local-search-input">Stichwort</label>
+                 for="local-search-input">关键词</label>
         </div>
         <div class="list-group" id="local-search-result"></div>
       </div>

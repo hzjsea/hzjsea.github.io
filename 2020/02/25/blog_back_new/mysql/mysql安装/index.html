@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html lang="cn" data-default-color-scheme=&#34;auto&#34;>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
 
 
 
@@ -61,7 +61,7 @@
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
 
 <body>
@@ -88,7 +88,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/">
                 <i class="iconfont icon-home-fill"></i>
-                Startseite
+                首页
               </a>
             </li>
           
@@ -100,7 +100,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/archives/">
                 <i class="iconfont icon-archive-fill"></i>
-                Archiv
+                归档
               </a>
             </li>
           
@@ -112,7 +112,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/categories/">
                 <i class="iconfont icon-category-fill"></i>
-                Kategorie
+                分类
               </a>
             </li>
           
@@ -124,7 +124,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/tags/">
                 <i class="iconfont icon-tags-fill"></i>
-                Etiketten
+                标签
               </a>
             </li>
           
@@ -136,7 +136,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/about/">
                 <i class="iconfont icon-user-fill"></i>
-                Über mich
+                关于
               </a>
             </li>
           
@@ -175,7 +175,7 @@
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
       <time datetime="2020-02-25 00:26" pubdate>
-        February 25, 2020 am
+        2020年2月25日 凌晨
       </time>
     </span>
   
@@ -249,7 +249,7 @@
 <a id="more"></a>
 <h1 id="mysql非docker安装"><a href="#mysql非docker安装" class="headerlink" title="mysql非docker安装"></a>mysql非docker安装</h1><h2 id="单容器多应用安装"><a href="#单容器多应用安装" class="headerlink" title="单容器多应用安装"></a>单容器多应用安装</h2><p>现在有一个需求,就是需要把一个python的应用程序+mysql数据库,然后安装到容器云上面,但是有一个问题,我们不能开启特权模式<br>一般情况下mysql默认是使用systemd托管的,也就是我们平常使用的<code>systemctl start mysqld</code> 是如果我们确定不使用docker中的特权模式的话,我们还有另外一种使用方法, 安装Mysqld的二进制包, 二进制包中有一个<code>support-files</code>中会有一个<code>mysql.server</code>启动脚本</p>
 <p>dockerfile 如下</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">FROM centos:7
+<div class="code-wrapper"><pre><code class="hljs bash">FROM centos:7
 
 <span class="hljs-comment"># 启动命令</span>
 <span class="hljs-comment"># mysqld --initialize --user=root</span>
@@ -257,11 +257,11 @@
 <span class="hljs-comment"># 准备工作</span>
 RUN yum install -y iproute python-setuptools hostname inotify-tools yum-utils <span class="hljs-built_in">which</span> jq numactl wget repo-release libaio  python3-pip \
 <span class="hljs-comment"># 清除缓存</span>
-&&  yum clean all \
-&& wget https://dev.mysql.com/get/Downloads/MySQL-5.7/mysql-5.7.28-linux-glibc2.12-x86_64.tar.gz \
-&& tar -zxvf mysql-5.7.28-linux-glibc2.12-x86_64.tar.gz \
-&& mv mysql-5.7.28-linux-glibc2.12-x86_64 /usr/<span class="hljs-built_in">local</span>/mysql \
-&& easy_install supervisor 
+&amp;&amp;  yum clean all \
+&amp;&amp; wget https://dev.mysql.com/get/Downloads/MySQL-5.7/mysql-5.7.28-linux-glibc2.12-x86_64.tar.gz \
+&amp;&amp; tar -zxvf mysql-5.7.28-linux-glibc2.12-x86_64.tar.gz \
+&amp;&amp; mv mysql-5.7.28-linux-glibc2.12-x86_64 /usr/<span class="hljs-built_in">local</span>/mysql \
+&amp;&amp; easy_install supervisor 
 
 COPY supervisord.conf /etc/supervisord.conf
 COPY xx.sh .
@@ -269,7 +269,7 @@ ADD init.tgz /
 
 
 <span class="hljs-meta">#!/bin/bash</span>
-<span class="hljs-built_in">echo</span> <span class="hljs-string">"export PATH=<span class="hljs-variable">$PATH</span>:/usr/local/mysql/bin"</span> >> /etc/profile
+<span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;export PATH=<span class="hljs-variable">$PATH</span>:/usr/local/mysql/bin&quot;</span> &gt;&gt; /etc/profile
 <span class="hljs-built_in">source</span> /etc/profile
 rm -rf mysql-5.7.28-linux-glibc2.12-x86_64.tar.gz
 
@@ -281,57 +281,57 @@ mkdir /usr/<span class="hljs-built_in">local</span>/mysql/run
 <span class="hljs-comment"># 初始化mysql</span>
 mysqld --initialize --user=root
 
-<span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> {1..10};<span class="hljs-keyword">do</span>
+<span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> &#123;1..10&#125;;<span class="hljs-keyword">do</span>
     sleep 1
 <span class="hljs-keyword">done</span>
 
-mysqld_safe --user=root &
+mysqld_safe --user=root &amp;
 </code></pre></div>
 
 
 <h2 id="单容器单应用安装"><a href="#单容器单应用安装" class="headerlink" title="单容器单应用安装"></a>单容器单应用安装</h2><p>pass</p>
 <h2 id="本机yum安装"><a href="#本机yum安装" class="headerlink" title="本机yum安装"></a>本机yum安装</h2><p>检查是否存在mysql,有则删除</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">rpm -qa | grep mysql | xargs -I {} rpm -e --nodeps {}
+<div class="code-wrapper"><pre><code class="hljs bash">rpm -qa | grep mysql | xargs -I &#123;&#125; rpm -e --nodeps &#123;&#125;
 yum clean  all
 yum makecache</code></pre></div>
 
 
 <p>更新yum 以及 添加yum源，为了下载的速度，我们添加一个阿里源</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">yum update -y
+<div class="code-wrapper"><pre><code class="hljs bash">yum update -y
 <span class="hljs-comment"># 安装wget工具</span>
 sudo yum install -y wget 
 <span class="hljs-comment"># 下载源 虽然下的是80的 但可以在里面找到57的源</span>
-mkdir /root/package && <span class="hljs-built_in">cd</span> /root/package
+mkdir /root/package &amp;&amp; <span class="hljs-built_in">cd</span> /root/package
 wget https://dev.mysql.com/get/mysql80-community-release-el7-3.noarch.rpm
 <span class="hljs-comment"># 本地添加mysql源</span>
 sudo yum localinstall mysql80-community-release-el7-3.noarch.rpm -y 
 <span class="hljs-comment"># 安装yum 工具</span>
 sudo yum install -y yum-utils -y  
 <span class="hljs-comment"># 查看可用enable的mysql源</span>
-yum repolist enabled | grep <span class="hljs-string">"mysql.*-community.*"</span>
+yum repolist enabled | grep <span class="hljs-string">&quot;mysql.*-community.*&quot;</span>
 <span class="hljs-comment"># 查看所有mysql源</span>
 yum repolist all  | grep mysql</code></pre></div>
 
 <p>关闭8.0镜像,开启5.7镜像<br>可以看一下这两个包的内容，里面分别配置了一些mysql各个版本存储的地址</p>
-<div class="code-wrapper"><pre class=" language-hljs bash">yum-config-manager --<span class="hljs-built_in"><code class="language-hljs bash">yum-config-manager --<span class="hljs-built_in">disable</span> mysql80-community
+<div class="code-wrapper"><pre><code class="hljs bash">yum-config-manager --<span class="hljs-built_in">disable</span> mysql80-community
 yum-config-manager --<span class="hljs-built_in">enable</span> mysql57-community
 <span class="hljs-comment"># 查看当前启用的仓库</span>
 yum repolist <span class="hljs-built_in">enable</span> | grep mysql</code></pre></div>
 
 <p>下载安装</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">yum install mysql-community-server
+<div class="code-wrapper"><pre><code class="hljs bash">yum install mysql-community-server
 systemctl start mysqld
 systemctl status mysqld
 
 <span class="hljs-comment"># 查看初始密码</span>
-oldpassword=$(sudo grep <span class="hljs-string">&#x27;temporary password&#x27;</span> /var/<span class="hljs-built_in">log</span>/mysqld.log  | awk -F <span class="hljs-string">"localhost: "</span> <span class="hljs-string">&#x27;{print $2}&#x27;</span>)
+oldpassword=$(sudo grep <span class="hljs-string">&#x27;temporary password&#x27;</span> /var/<span class="hljs-built_in">log</span>/mysqld.log  | awk -F <span class="hljs-string">&quot;localhost: &quot;</span> <span class="hljs-string">&#x27;&#123;print $2&#125;&#x27;</span>)
 <span class="hljs-comment"># 重置密码</span>
-mysql -u root -p<span class="hljs-variable">$oldpassword</span> -e <span class="hljs-string">"ALTER USER &#x27;root&#x27;@&#x27;localhost&#x27; IDENTIFIED BY &#x27;MyNewPass4!&#x27;;"</span></code></pre></div>
+mysql -u root -p<span class="hljs-variable">$oldpassword</span> -e <span class="hljs-string">&quot;ALTER USER &#x27;root&#x27;@&#x27;localhost&#x27; IDENTIFIED BY &#x27;MyNewPass4!&#x27;;&quot;</span></code></pre></div>
 
 
 <p>初始化mysql</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 取消密码复杂性设置</span>
-cat << <span class="hljs-string">EOF >> /etc/my.cnf</span>
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 取消密码复杂性设置</span>
+cat &lt;&lt; <span class="hljs-string">EOF &gt;&gt; /etc/my.cnf</span>
 <span class="hljs-string">validate_password_policy=0</span>
 <span class="hljs-string">validate_password_mixed_case_count=0</span>
 <span class="hljs-string">validate_password_number_count=3</span>
@@ -342,7 +342,7 @@ cat << <span class="hljs-string">EOF >> /etc/my.cnf</span>
 systemctl restart mysqld
 
 <span class="hljs-comment"># 重置密码以及远程连接配置</span>
-mysql -u root -pMyNewPass4! -e <span class="hljs-string">"ALTER USER &#x27;root&#x27;@&#x27;localhost&#x27; IDENTIFIED BY &#x27;upyun123&#x27;;CREATE USER &#x27;hzj&#x27;@&#x27;%&#x27; IDENTIFIED WITH mysql_native_password BY &#x27;upyun123&#x27;;GRANT ALL PRIVILEGES ON *.* TO &#x27;hzj&#x27;@&#x27;%&#x27;;"</span></code></pre></div>
+mysql -u root -pMyNewPass4! -e <span class="hljs-string">&quot;ALTER USER &#x27;root&#x27;@&#x27;localhost&#x27; IDENTIFIED BY &#x27;upyun123&#x27;;CREATE USER &#x27;hzj&#x27;@&#x27;%&#x27; IDENTIFIED WITH mysql_native_password BY &#x27;upyun123&#x27;;GRANT ALL PRIVILEGES ON *.* TO &#x27;hzj&#x27;@&#x27;%&#x27;;&quot;</span></code></pre></div>
 
 <blockquote>
 <p>如果需要更换国内镜像源，请划到最后</p>
@@ -351,20 +351,20 @@ mysql -u root -pMyNewPass4! -e <span class="hljs-string">"ALTER USER &#x27;root&
 <p>这里会出现一个问题，之前如果已经解析过，他会出现在缓存里面，然后你把文件删除以后，再去解析会发现他根本不能再次生成新的两个文件 需要清除缓存</p>
 </blockquote>
 <p><img src="http://img.noback.top/2020-06-08-09-08-40.png" srcset="/img/loading.gif" alt="2020-06-08-09-08-40"></p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">rpm -qa | grep mysql
+<div class="code-wrapper"><pre><code class="hljs bash">rpm -qa | grep mysql
 rpm -e --nodeps xxx</code></pre></div>
 
 <p>清理yum缓存，重新建立缓存</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">yum clean all
+<div class="code-wrapper"><pre><code class="hljs bash">yum clean all
 yum makecache</code></pre></div>
 
 
 
 <h2 id="mysql更换国内镜像源的问题"><a href="#mysql更换国内镜像源的问题" class="headerlink" title="mysql更换国内镜像源的问题"></a>mysql更换国内镜像源的问题</h2><p>自己的博客那边镜像源用的是国内的，因为当初打的时候，公司有vpn 所以不用考虑速度的问题，后面去了数据中心，需要考虑速度的问题了，就要切换成国内镜像源了<br><a target="_blank" rel="noopener" href="https://mirrors.tuna.tsinghua.edu.cn/help/mysql/">https://mirrors.tuna.tsinghua.edu.cn/help/mysql/</a><br>上面这个是清华的镜像源<br>先删除yum.repos.d下面的镜像包</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">rm -rf  /etc/yum.repos.d/mysql80-community.repo</code></pre></div>
+<div class="code-wrapper"><pre><code class="hljs bash">rm -rf  /etc/yum.repos.d/mysql80-community.repo</code></pre></div>
 <p>创建一个镜像源</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-built_in"><code class="language-hljs bash"><span class="hljs-built_in">cd</span> /etc/yum.repos.d && touch mysql-community.repo
-cat <<  <span class="hljs-string">EOF > mysql-community.repo</span>
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-built_in">cd</span> /etc/yum.repos.d &amp;&amp; touch mysql-community.repo
+cat &lt;&lt;  <span class="hljs-string">EOF &gt; mysql-community.repo</span>
 <span class="hljs-string">[mysql-connectors-community]</span>
 <span class="hljs-string">name=MySQL Connectors Community</span>
 <span class="hljs-string">baseurl=https://mirrors.tuna.tsinghua.edu.cn/mysql/yum/mysql-connectors-community-el7-$basearch/</span>
@@ -405,12 +405,12 @@ yum clean all
 yum makecache</code></pre></div>
 
 
-<h2 id="mysql无法启动的问题"><a href="#mysql无法启动的问题" class="headerlink" title="mysql无法启动的问题"></a>mysql无法启动的问题</h2><div class="code-wrapper"><pre class=" language-hljs routeros"><code class="language-hljs routeros">刚安装好的MySQL5.7.12，执行service mysqld start时报错，内容如下：
+<h2 id="mysql无法启动的问题"><a href="#mysql无法启动的问题" class="headerlink" title="mysql无法启动的问题"></a>mysql无法启动的问题</h2><div class="code-wrapper"><pre><code class="hljs routeros">刚安装好的MySQL5.7.12，执行service mysqld start时报错，内容如下：
 2017-02-19T07:52:53.807647Z 0 [<span class="hljs-builtin-name">Warning</span>] TIMESTAMP with implicit<span class="hljs-built_in"> DEFAULT </span>value is deprecated. Please use –explicit_defaults_for_timestamp<span class="hljs-built_in"> server </span>option (see documentation <span class="hljs-keyword">for</span> more details).
 2017-02-19T07:52:53.809065Z 0 [<span class="hljs-builtin-name">ERROR</span>] –initialize specified but the data directory has files <span class="hljs-keyword">in</span> it. Aborting.
 2017-02-19T07:52:53.809095Z 0 [<span class="hljs-builtin-name">ERROR</span>] Aborting</code></pre></div>
 <p>这个问题主要是因为数据库本地中已经存在了数据了，需要把他备份删除<br>查看本地的数据存放点<br><code>cat /etc/my.cnf | grep datadir</code><br>备份删除数据<br><code>mv mysql mysql.back</code><br>重启数据库<br><code>systemctl restart mysqld</code></p>
-<h2 id="莫名的错误"><a href="#莫名的错误" class="headerlink" title="莫名的错误"></a>莫名的错误</h2><div class="code-wrapper"><pre class=" language-hljs routeros">Filling help tables<span class="hljs-built_in">..</span>.2019-12-24 16:46:55 0 [<span class="hljs-builtin-name">Warning</span>] TIMESTAMP with implicit<span class="hljs-built_in"> DEFAULT </span>value is deprecated. Please use --explicit_defaults_for_timestamp<span class="hljs-built_in"> server </span>option (see documentation <span class="hljs-keyword"><code class="language-hljs routeros">Filling help tables<span class="hljs-built_in">..</span>.2019-12-24 16:46:55 0 [<span class="hljs-builtin-name">Warning</span>] TIMESTAMP with implicit<span class="hljs-built_in"> DEFAULT </span>value is deprecated. Please use --explicit_defaults_for_timestamp<span class="hljs-built_in"> server </span>option (see documentation <span class="hljs-keyword">for</span> more details).</code></pre></div>
+<h2 id="莫名的错误"><a href="#莫名的错误" class="headerlink" title="莫名的错误"></a>莫名的错误</h2><div class="code-wrapper"><pre><code class="hljs routeros">Filling help tables<span class="hljs-built_in">..</span>.2019-12-24 16:46:55 0 [<span class="hljs-builtin-name">Warning</span>] TIMESTAMP with implicit<span class="hljs-built_in"> DEFAULT </span>value is deprecated. Please use --explicit_defaults_for_timestamp<span class="hljs-built_in"> server </span>option (see documentation <span class="hljs-keyword">for</span> more details).</code></pre></div>
 <p>解决办法就是在配置文件中添加一段内容<br><code>explicit_defaults_for_timestamp=true</code></p>
 
             </div>
@@ -445,7 +445,7 @@ yum makecache</code></pre></div>
                       <a href="/2020/02/25/blog_back_new/docker/docker-k8s%E5%9F%BA%E7%A1%80/">
                         <i class="iconfont icon-arrowleft"></i>
                         <span class="hidden-mobile">docker-k8s 基础</span>
-                        <span class="visible-mobile">Vorheriger</span>
+                        <span class="visible-mobile">上一篇</span>
                       </a>
                     
                   </article>
@@ -454,7 +454,7 @@ yum makecache</code></pre></div>
                     
                       <a href="/2020/02/24/blog_back_new/mysql/mysql%E9%94%99%E8%AF%AF%E5%90%88%E9%9B%86/">
                         <span class="hidden-mobile">mysql错误</span>
-                        <span class="visible-mobile">Nächster</span>
+                        <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
                     
@@ -471,7 +471,7 @@ yum makecache</code></pre></div>
     
       <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
         <div id="toc">
-  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
   <div class="toc-body" id="toc-body"></div>
 </div>
 
@@ -497,7 +497,7 @@ yum makecache</code></pre></div>
   <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">Suchen</h4>
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
         <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -506,7 +506,7 @@ yum makecache</code></pre></div>
         <div class="md-form mb-5">
           <input type="text" id="local-search-input" class="form-control validate">
           <label data-error="x" data-success="v"
-                 for="local-search-input">Stichwort</label>
+                 for="local-search-input">关键词</label>
         </div>
         <div class="list-group" id="local-search-result"></div>
       </div>

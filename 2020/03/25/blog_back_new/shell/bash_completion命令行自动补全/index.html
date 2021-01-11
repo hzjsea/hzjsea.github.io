@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html lang="cn" data-default-color-scheme=&#34;auto&#34;>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
 
 
 
@@ -61,7 +61,7 @@
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
 
 <body>
@@ -88,7 +88,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/">
                 <i class="iconfont icon-home-fill"></i>
-                Startseite
+                首页
               </a>
             </li>
           
@@ -100,7 +100,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/archives/">
                 <i class="iconfont icon-archive-fill"></i>
-                Archiv
+                归档
               </a>
             </li>
           
@@ -112,7 +112,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/categories/">
                 <i class="iconfont icon-category-fill"></i>
-                Kategorie
+                分类
               </a>
             </li>
           
@@ -124,7 +124,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/tags/">
                 <i class="iconfont icon-tags-fill"></i>
-                Etiketten
+                标签
               </a>
             </li>
           
@@ -136,7 +136,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/about/">
                 <i class="iconfont icon-user-fill"></i>
-                Über mich
+                关于
               </a>
             </li>
           
@@ -175,7 +175,7 @@
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
       <time datetime="2020-03-25 11:37" pubdate>
-        March 25, 2020 am
+        2020年3月25日 中午
       </time>
     </span>
   
@@ -186,7 +186,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      1.9k 字
+      2k 字
     </span>
   
 
@@ -196,7 +196,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      29
+      31
        分钟
     </span>
   
@@ -256,26 +256,26 @@
 <!-- /code_chunk_output -->
 <a id="more"></a>
 <h1 id="手动编写bash-completion"><a href="#手动编写bash-completion" class="headerlink" title="手动编写bash-completion"></a>手动编写bash-completion</h1><p>bash提供了一个complete内建命令，它的用途是规定参数怎么自动补全。 有了它，第三方开发的命令就可以根据自己的实际情况指定自动提示功能了！<br>具体的，我们可以用man来查看这个内建命令</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">man complete</code></pre></div>
+<div class="code-wrapper"><pre><code class="hljs bash">man complete</code></pre></div>
 <p>同样的，我们也可以编写自己的补全命令脚本，通过bash_completion这个包来完成，<br>首先安装这个包</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">yum install bash-completion -y</code></pre></div>
+<div class="code-wrapper"><pre><code class="hljs bash">yum install bash-completion -y</code></pre></div>
 <p>安装完成之后，我们来看一下他安装的目录环境</p>
-<div class="code-wrapper"><pre class=" language-hljs bash">[root@node bash_completion.d]<span class="hljs-comment"><code class="language-hljs bash">[root@node bash_completion.d]<span class="hljs-comment"># rpm -ql bash-completion</span>
+<div class="code-wrapper"><pre><code class="hljs bash">[root@node bash_completion.d]<span class="hljs-comment"># rpm -ql bash-completion</span>
 /etc/bash_completion.d
 /etc/bash_completion.d/redefine_filedir
 /etc/profile.d/bash_completion.sh
 /usr/share/bash-completion</code></pre></div>
 <p>其中<code>/etc/bash_completion.d/</code>下面是用来放这些自动化补全脚本的， 然后通过<code>/etc/profile.d/bash_completion.sh</code>这个脚本来引入，其中/etc/profile.d下面的sh脚本是对系统中的所有用户都适用的<br>,并且在每次登录的时候都会加载</p>
 <p>然后这个<code>redefine_filedir</code>貌似是一个读取文件的脚本<br>然后这个<code>bash_completion</code>会去读取/etc/bash_completion.d/下面的脚本文件</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># Check for interactive bash and that we haven&#x27;t already been sourced.</span>
-[ -z <span class="hljs-string">"<span class="hljs-variable">$BASH_VERSION</span>"</span> -o -z <span class="hljs-string">"<span class="hljs-variable">$PS1</span>"</span> -o -n <span class="hljs-string">"<span class="hljs-variable">$BASH_COMPLETION_COMPAT_DIR</span>"</span> ] && <span class="hljs-built_in">return</span>
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># Check for interactive bash and that we haven&#x27;t already been sourced.</span>
+[ -z <span class="hljs-string">&quot;<span class="hljs-variable">$BASH_VERSION</span>&quot;</span> -o -z <span class="hljs-string">&quot;<span class="hljs-variable">$PS1</span>&quot;</span> -o -n <span class="hljs-string">&quot;<span class="hljs-variable">$BASH_COMPLETION_COMPAT_DIR</span>&quot;</span> ] &amp;&amp; <span class="hljs-built_in">return</span>
 
 <span class="hljs-comment"># Check for recent enough version of bash.</span>
-bash=<span class="hljs-variable">${BASH_VERSION%.*}</span>; bmajor=<span class="hljs-variable">${bash%.*}</span>; bminor=<span class="hljs-variable">${bash#*.}</span>
+bash=<span class="hljs-variable">$&#123;BASH_VERSION%.*&#125;</span>; bmajor=<span class="hljs-variable">$&#123;bash%.*&#125;</span>; bminor=<span class="hljs-variable">$&#123;bash#*.&#125;</span>
 <span class="hljs-keyword">if</span> [ <span class="hljs-variable">$bmajor</span> -gt 4 ] || [ <span class="hljs-variable">$bmajor</span> -eq 4 -a <span class="hljs-variable">$bminor</span> -ge 1 ]; <span class="hljs-keyword">then</span>
-    [ -r <span class="hljs-string">"<span class="hljs-variable">${XDG_CONFIG_HOME:-<span class="hljs-variable">$HOME</span>/.config}</span>/bash_completion"</span> ] && \
-        . <span class="hljs-string">"<span class="hljs-variable">${XDG_CONFIG_HOME:-<span class="hljs-variable">$HOME</span>/.config}</span>/bash_completion"</span>
-    <span class="hljs-keyword">if</span> <span class="hljs-built_in">shopt</span> -q progcomp && [ -r /usr/share/bash-completion/bash_completion ]; <span class="hljs-keyword">then</span>
+    [ -r <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;XDG_CONFIG_HOME:-<span class="hljs-variable">$HOME</span>/.config&#125;</span>/bash_completion&quot;</span> ] &amp;&amp; \
+        . <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;XDG_CONFIG_HOME:-<span class="hljs-variable">$HOME</span>/.config&#125;</span>/bash_completion&quot;</span>
+    <span class="hljs-keyword">if</span> <span class="hljs-built_in">shopt</span> -q progcomp &amp;&amp; [ -r /usr/share/bash-completion/bash_completion ]; <span class="hljs-keyword">then</span>
         <span class="hljs-comment"># Source completion code.</span>
         . /usr/share/bash-completion/bash_completion
     <span class="hljs-keyword">fi</span>
@@ -285,7 +285,7 @@ bash=<span class="hljs-variable">${BASH_VERSION%.*}</span>; bmajor=<span class="
 
 <h2 id="准备阶段"><a href="#准备阶段" class="headerlink" title="准备阶段"></a>准备阶段</h2><p>首先完成这个自动补全命令需要一些其他命令来做补充</p>
 <h3 id="complete命令"><a href="#complete命令" class="headerlink" title="complete命令"></a>complete命令</h3><p>这个命令是一个补全命令</p>
-<div class="code-wrapper"><pre class=" language-hljs bash">[root@node ~]<span class="hljs-comment"><code class="language-hljs bash">[root@node ~]<span class="hljs-comment"># help complete</span>
+<div class="code-wrapper"><pre><code class="hljs bash">[root@node ~]<span class="hljs-comment"># help complete</span>
 complete: complete [-abcdefgjksuv] [-pr] [-DE] [-o option] [-A action] [-G globpat] [-W wordlist]  [-F <span class="hljs-keyword">function</span>] [-C <span class="hljs-built_in">command</span>] [-X filterpat] [-P prefix] [-S suffix] [name ...]
     Specify how arguments are to be completed by Readline.
     指明
@@ -299,7 +299,7 @@ complete: complete [-abcdefgjksuv] [-pr] [-DE] [-o option] [-A action] [-G globp
         NAMEs are supplied, all completion specifications
       -D        apply the completions and actions as the default <span class="hljs-keyword">for</span> commands
         without any specific completion defined
-      -E        apply the completions and actions to <span class="hljs-string">"empty"</span> commands --
+      -E        apply the completions and actions to <span class="hljs-string">&quot;empty&quot;</span> commands --
         completion attempted on a blank line
 
     When completion is attempted, the actions are applied <span class="hljs-keyword">in</span> the order the
@@ -310,7 +310,7 @@ complete: complete [-abcdefgjksuv] [-pr] [-DE] [-o option] [-A action] [-G globp
     Returns success unless an invalid option is supplied or an error occurs.</code></pre></div>
 
 <h3 id="compgen-筛选命令"><a href="#compgen-筛选命令" class="headerlink" title="compgen 筛选命令"></a>compgen 筛选命令</h3><p>用来筛选生成匹配的候选补全结果<br>就是用来</p>
-<div class="code-wrapper"><pre class=" language-hljs bash">[root@node ~]<span class="hljs-comment"><code class="language-hljs bash">[root@node ~]<span class="hljs-comment"># help compgen</span>
+<div class="code-wrapper"><pre><code class="hljs bash">[root@node ~]<span class="hljs-comment"># help compgen</span>
 compgen: compgen [-abcdefgjksuv] [-o option]  [-A action] [-G globpat] [-W wordlist]  [-F <span class="hljs-keyword">function</span>] [-C <span class="hljs-built_in">command</span>] [-X filterpat] [-P prefix] [-S suffix] [word]
     Display possible completions depending on the options.
 
@@ -322,7 +322,7 @@ compgen: compgen [-abcdefgjksuv] [-o option]  [-A action] [-G globpat] [-W wordl
     Returns success unless an invalid option is supplied or an error occurs.</code></pre></div>
 <p><code>- W wordlist</code> 分割wordlist中的单词，生成候选补全列表<br><code>compgen -w &quot;aa ab ac ad ae&quot; -- &quot;a&quot;</code> 这个表示从”aa ab ac ad ae”中匹配出”a”开头的单词</p>
 <h3 id="compopt-修改补全命令设置"><a href="#compopt-修改补全命令设置" class="headerlink" title="compopt 修改补全命令设置"></a>compopt 修改补全命令设置</h3><p>用于修改补全命令设置，这个命令必须在补全函数中使用，否则会报错。</p>
-<div class="code-wrapper"><pre class=" language-hljs bash">[root@node ~]<span class="hljs-comment"><code class="language-hljs bash">[root@node ~]<span class="hljs-comment"># help compopt</span>
+<div class="code-wrapper"><pre><code class="hljs bash">[root@node ~]<span class="hljs-comment"># help compopt</span>
 compopt: compopt [-o|+o option] [-DE] [name ...]
     Modify or display completion options.
 
@@ -332,8 +332,8 @@ compopt: compopt [-o|+o option] [-DE] [name ...]
 
     Options:
         -o option       Set completion option OPTION <span class="hljs-keyword">for</span> each NAME
-        -D              Change options <span class="hljs-keyword">for</span> the <span class="hljs-string">"default"</span> <span class="hljs-built_in">command</span> completion
-        -E              Change options <span class="hljs-keyword">for</span> the <span class="hljs-string">"empty"</span> <span class="hljs-built_in">command</span> completion</code></pre></div>
+        -D              Change options <span class="hljs-keyword">for</span> the <span class="hljs-string">&quot;default&quot;</span> <span class="hljs-built_in">command</span> completion
+        -E              Change options <span class="hljs-keyword">for</span> the <span class="hljs-string">&quot;empty&quot;</span> <span class="hljs-built_in">command</span> completion</code></pre></div>
 
 <p><code>+o option 启用option配置</code><br><code>-o option 弃用option配置</code></p>
 <h3 id="内置补全命令"><a href="#内置补全命令" class="headerlink" title="内置补全命令"></a>内置补全命令</h3><table>
@@ -369,15 +369,15 @@ compopt: compopt [-o|+o option] [-DE] [name ...]
 </tr>
 </tbody></table>
 <h2 id="构建一个自动完成的替补工具"><a href="#构建一个自动完成的替补工具" class="headerlink" title="构建一个自动完成的替补工具"></a>构建一个自动完成的替补工具</h2><p>自动补全脚本</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># vi /etc/completion.d/ws</span>
-<span class="hljs-function"><span class="hljs-title">_start</span></span>(){
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># vi /etc/completion.d/ws</span>
+<span class="hljs-function"><span class="hljs-title">_start</span></span>()&#123;
     <span class="hljs-comment"># 数组，又来收集提醒的内容</span>
     COMPREPLY=()
 
     <span class="hljs-comment"># 返回当前输入的参数</span>
-    <span class="hljs-built_in">local</span> cur=<span class="hljs-variable">${COMP_WORDS[COMP_CWORD]}</span>
+    <span class="hljs-built_in">local</span> cur=<span class="hljs-variable">$&#123;COMP_WORDS[COMP_CWORD]&#125;</span>
     <span class="hljs-comment"># 返回当前输入的</span>
-    <span class="hljs-built_in">local</span> cmd=<span class="hljs-variable">${COMP_WORDS[COMP_CWORD-1]}</span>
+    <span class="hljs-built_in">local</span> cmd=<span class="hljs-variable">$&#123;COMP_WORDS[COMP_CWORD-1]&#125;</span>
     <span class="hljs-keyword">case</span> <span class="hljs-variable">$cmd</span>  <span class="hljs-keyword">in</span> 
         <span class="hljs-string">&#x27;ws&#x27;</span>)
         COMPREPLY=($(compgen -W <span class="hljs-string">&#x27;--word1 --word2 --word3&#x27;</span> -- <span class="hljs-variable">$cur</span>))
@@ -388,37 +388,37 @@ compopt: compopt [-o|+o option] [-DE] [name ...]
     <span class="hljs-keyword">esac</span>
     <span class="hljs-built_in">return</span> 0
     
-}
+&#125;
 complete -F _start ws</code></pre></div>
 <p>启动命令 ，或者重新登录一下，反正放在这个文件夹下面的脚本都会在用户登录的时候去加载<br><code>source ws</code></p>
 <p>使用命令</p>
-<div class="code-wrapper"><pre class=" language-hljs bash">ws [TAb][TAb] <span class="hljs-comment"><code class="language-hljs bash">ws [TAb][TAb] <span class="hljs-comment">#就会有提示出来了</span></code></pre></div>
+<div class="code-wrapper"><pre><code class="hljs bash">ws [TAb][TAb] <span class="hljs-comment">#就会有提示出来了</span></code></pre></div>
 
 
-<h3 id="自动补全模板"><a href="#自动补全模板" class="headerlink" title="自动补全模板"></a>自动补全模板</h3><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># vi /etc/completion.d/{{name}}</span>
-<span class="hljs-function"><span class="hljs-title">_start</span></span>(){
+<h3 id="自动补全模板"><a href="#自动补全模板" class="headerlink" title="自动补全模板"></a>自动补全模板</h3><div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># vi /etc/completion.d/&#123;&#123;name&#125;&#125;</span>
+<span class="hljs-function"><span class="hljs-title">_start</span></span>()&#123;
     <span class="hljs-comment"># 数组，又来收集提醒的内容</span>
     COMPREPLY=()
     <span class="hljs-comment"># 返回当前输入的参数</span>
-    <span class="hljs-built_in">local</span> cur=<span class="hljs-variable">${COMP_WORDS[COMP_CWORD]}</span>
+    <span class="hljs-built_in">local</span> cur=<span class="hljs-variable">$&#123;COMP_WORDS[COMP_CWORD]&#125;</span>
     <span class="hljs-comment"># 返回当前输入的</span>
-    <span class="hljs-built_in">local</span> cmd=<span class="hljs-variable">${COMP_WORDS[COMP_CWORD-1]}</span>
+    <span class="hljs-built_in">local</span> cmd=<span class="hljs-variable">$&#123;COMP_WORDS[COMP_CWORD-1]&#125;</span>
     <span class="hljs-keyword">case</span> <span class="hljs-variable">$cmd</span>  <span class="hljs-keyword">in</span> 
         <span class="hljs-string">&#x27;arg1&#x27;</span>)
-        COMPREPLY=($(compgen -W <span class="hljs-string">&#x27;{{argument}}&#x27;</span> -- <span class="hljs-variable">$cur</span>))
+        COMPREPLY=($(compgen -W <span class="hljs-string">&#x27;&#123;&#123;argument&#125;&#125;&#x27;</span> -- <span class="hljs-variable">$cur</span>))
         ;;
         <span class="hljs-string">&#x27;arg2&#x27;</span>)
-        COMPREPLY=($(compgen -W <span class="hljs-string">&#x27;{{argument}}&#x27;</span> -- <span class="hljs-variable">$cur</span>))
+        COMPREPLY=($(compgen -W <span class="hljs-string">&#x27;&#123;&#123;argument&#125;&#125;&#x27;</span> -- <span class="hljs-variable">$cur</span>))
         ;;
     <span class="hljs-keyword">esac</span>
     <span class="hljs-built_in">return</span> 0
     
-}
-complete -F _start {{name}}</code></pre></div>
+&#125;
+complete -F _start &#123;&#123;name&#125;&#125;</code></pre></div>
 
 
 <h2 id="构建一个文本筛选系统"><a href="#构建一个文本筛选系统" class="headerlink" title="构建一个文本筛选系统"></a>构建一个文本筛选系统</h2><p>同Upai里面的一个sws 自动补全工具</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 创建过滤文本 类似如下</span>
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 创建过滤文本 类似如下</span>
 [EDGE-SWITCH]
 ZEN-CN-HKG-S01 ansible_ssh_=ip_host_example T1/0/22
 CMN-SC-CTU4-S01 ansible_ssh_=ip_host_example T1/0/48
@@ -447,42 +447,42 @@ PCW-CN-HKG-S01 ansible_ssh_=ip_host_example uplink=T1/0/48
 NTT-CN-HKG-S01 ansible_ssh_=ip_host_example uplink=T1/0/48
 NTT-CN-HKG-S02 ansible_ssh_=ip_host_example uplink=T1/0/52</code></pre></div>
 <p>创建自动补全脚本</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># vi /etc/completion.d/sws</span>
-target_file=<span class="hljs-string">"/root/hzj/pro_shell/sws/inventory"</span>
-<span class="hljs-function"><span class="hljs-title">_start</span></span>(){
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># vi /etc/completion.d/sws</span>
+target_file=<span class="hljs-string">&quot;/root/hzj/pro_shell/sws/inventory&quot;</span>
+<span class="hljs-function"><span class="hljs-title">_start</span></span>()&#123;
     <span class="hljs-comment"># 数组，用来收集提醒的内容</span>
     COMPREPLY=()
     <span class="hljs-comment"># 返回当前输入的参数</span>
-    <span class="hljs-built_in">local</span> cur=<span class="hljs-variable">${COMP_WORDS[COMP_CWORD]}</span>
+    <span class="hljs-built_in">local</span> cur=<span class="hljs-variable">$&#123;COMP_WORDS[COMP_CWORD]&#125;</span>
     <span class="hljs-comment"># 返回当前输入的</span>
-    <span class="hljs-built_in">local</span> cmd=<span class="hljs-variable">${COMP_WORDS[COMP_CWORD-1]}</span>
+    <span class="hljs-built_in">local</span> cmd=<span class="hljs-variable">$&#123;COMP_WORDS[COMP_CWORD-1]&#125;</span>
 ▏       ▏       <span class="hljs-comment"># 做参数整理</span>
 ▏         cur=$(<span class="hljs-built_in">echo</span> <span class="hljs-variable">$cur</span> |tr <span class="hljs-string">&#x27;[:lower:]&#x27;</span> <span class="hljs-string">&#x27;[:upper:]&#x27;</span>| tr <span class="hljs-string">&#x27;.&#x27;</span> <span class="hljs-string">&#x27;-&#x27;</span>)
 ▏       ▏       <span class="hljs-comment">#输出参数</span>
-▏       ▏       <span class="hljs-keyword">if</span> [ <span class="hljs-variable">${cur}</span>  ]
+▏       ▏       <span class="hljs-keyword">if</span> [ <span class="hljs-variable">$&#123;cur&#125;</span>  ]
 ▏       ▏       <span class="hljs-keyword">then</span>
-▏       ▏       ▏       machines=$(grep -e <span class="hljs-string">"^<span class="hljs-variable">${cur}</span>"</span> <span class="hljs-variable">$target_file</span> )
+▏       ▏       ▏       machines=$(grep -e <span class="hljs-string">&quot;^<span class="hljs-variable">$&#123;cur&#125;</span>&quot;</span> <span class="hljs-variable">$target_file</span> )
 ▏       ▏       ▏       COMPREPLY=($(compgen -W <span class="hljs-string">&#x27;$machines&#x27;</span> -- <span class="hljs-variable">$cur</span>))
 ▏       ▏       ▏       <span class="hljs-built_in">return</span> 0
 ▏       ▏       <span class="hljs-keyword">fi</span>
 
-}
+&#125;
 complete -F _start sws</code></pre></div>
 
 <p>创建脚本</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-built_in">echo</span> <span class="hljs-string"><code class="language-hljs bash"><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;echo echo "hello world"&#x27;</span> > /hzj/pro_shell/sws</code></pre></div>
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;echo echo &quot;hello world&quot;&#x27;</span> &gt; /hzj/pro_shell/sws</code></pre></div>
 
 
 <h2 id="更高级的写法"><a href="#更高级的写法" class="headerlink" title="更高级的写法"></a>更高级的写法</h2><p>如果你用的是zsh，那么补全命令应该在/root/.zsh/completion/下面<br>上面只是一些小小的个例写法，另外高级的可以抛弃他给的那些内建函数，自己写,比如upssh</p>
-<h2 id="自动完成脚本实例"><a href="#自动完成脚本实例" class="headerlink" title="自动完成脚本实例"></a>自动完成脚本实例</h2><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-meta"><code class="language-hljs bash"><span class="hljs-meta">#!/bin/bash</span>
+<h2 id="自动完成脚本实例"><a href="#自动完成脚本实例" class="headerlink" title="自动完成脚本实例"></a>自动完成脚本实例</h2><div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-meta">#!/bin/bash</span>
 
-<span class="hljs-function"><span class="hljs-title">_start</span></span>(){
+<span class="hljs-function"><span class="hljs-title">_start</span></span>()&#123;
     <span class="hljs-comment"># 数组，又来收集提醒的内容</span>
     COMPREPLY=()
 
-    <span class="hljs-built_in">local</span> cur=<span class="hljs-variable">${COMP_WORDS[COMP_CWORD]}</span>
+    <span class="hljs-built_in">local</span> cur=<span class="hljs-variable">$&#123;COMP_WORDS[COMP_CWORD]&#125;</span>
     <span class="hljs-built_in">echo</span> <span class="hljs-variable">$cur</span>
-    <span class="hljs-built_in">local</span> cmd=<span class="hljs-variable">${COMP_WORDS[COMP_CWORD-1]}</span>
+    <span class="hljs-built_in">local</span> cmd=<span class="hljs-variable">$&#123;COMP_WORDS[COMP_CWORD-1]&#125;</span>
     <span class="hljs-built_in">echo</span> <span class="hljs-variable">$cmd</span>
     <span class="hljs-keyword">case</span> <span class="hljs-variable">$cmd</span>  <span class="hljs-keyword">in</span> 
         <span class="hljs-string">&#x27;./06_sws.sh&#x27;</span>)
@@ -494,18 +494,18 @@ complete -F _start sws</code></pre></div>
     <span class="hljs-keyword">esac</span>
     <span class="hljs-built_in">return</span> 0
     
-}
+&#125;
 complete -F _start ./06_sws.sh</code></pre></div>
 
-<h2 id="sws实例"><a href="#sws实例" class="headerlink" title="sws实例"></a>sws实例</h2><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-meta"><code class="language-hljs bash"><span class="hljs-meta">#!/bin/bash</span>
-<span class="hljs-function"><span class="hljs-title">usage</span></span>(){
-<span class="hljs-built_in">echo</span>  <span class="hljs-string">"Usage:  -p port [ default: 22 ]</span>
+<h2 id="sws实例"><a href="#sws实例" class="headerlink" title="sws实例"></a>sws实例</h2><div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-meta">#!/bin/bash</span>
+<span class="hljs-function"><span class="hljs-title">usage</span></span>()&#123;
+<span class="hljs-built_in">echo</span>  <span class="hljs-string">&quot;Usage:  -p port [ default: 22 ]</span>
 <span class="hljs-string">        -u user [ default: admin ]</span>
-<span class="hljs-string">        <-i> [ default: /root/.ssh/swmgmt ]"</span>
+<span class="hljs-string">        &lt;-i&gt; [ default: /root/.ssh/swmgmt ]&quot;</span>
 <span class="hljs-built_in">exit</span> 1
-}
+&#125;
 
-<span class="hljs-keyword">while</span> <span class="hljs-built_in">getopts</span> <span class="hljs-string">"p:u:i:"</span> OPT > /dev/null 2>&1
+<span class="hljs-keyword">while</span> <span class="hljs-built_in">getopts</span> <span class="hljs-string">&quot;p:u:i:&quot;</span> OPT &gt; /dev/null 2&gt;&amp;1
     <span class="hljs-keyword">do</span>
         <span class="hljs-keyword">case</span> <span class="hljs-variable">$OPT</span> <span class="hljs-keyword">in</span>
             p)
@@ -530,27 +530,27 @@ complete -F _start ./06_sws.sh</code></pre></div>
 <span class="hljs-comment"># 匹配IP</span>
 <span class="hljs-keyword">if</span> [ <span class="hljs-variable">$@</span> ]
    <span class="hljs-keyword">then</span>
-      IP=<span class="hljs-variable">${@#*/}</span>
+      IP=<span class="hljs-variable">$&#123;@#*/&#125;</span>
 <span class="hljs-keyword">else</span>
     usage
 <span class="hljs-keyword">fi</span>
 
 <span class="hljs-comment"># 匹配端口</span>
-PORT=<span class="hljs-variable">${PORT:=22}</span>
+PORT=<span class="hljs-variable">$&#123;PORT:=22&#125;</span>
 
 <span class="hljs-comment"># 匹配用户</span>
 USER=admin
 
 <span class="hljs-comment"># 匹配秘钥</span>
-IDY_FILE=<span class="hljs-variable">${IDY_FILE:=/root/.ssh/swmgmt}</span>
+IDY_FILE=<span class="hljs-variable">$&#123;IDY_FILE:=/root/.ssh/swmgmt&#125;</span>
 
 
 
-OPTIONS=<span class="hljs-string">"-p <span class="hljs-variable">${PORT}</span>"</span>
+OPTIONS=<span class="hljs-string">&quot;-p <span class="hljs-variable">$&#123;PORT&#125;</span>&quot;</span>
 
-[ -e <span class="hljs-variable">${IDY_FILE}</span> ] && OPTIONS=<span class="hljs-string">"<span class="hljs-variable">${OPTIONS}</span> -i <span class="hljs-variable">${IDY_FILE}</span>"</span>
+[ -e <span class="hljs-variable">$&#123;IDY_FILE&#125;</span> ] &amp;&amp; OPTIONS=<span class="hljs-string">&quot;<span class="hljs-variable">$&#123;OPTIONS&#125;</span> -i <span class="hljs-variable">$&#123;IDY_FILE&#125;</span>&quot;</span>
 
-ssh <span class="hljs-variable">${OPTIONS}</span> <span class="hljs-variable">${USER}</span>@<span class="hljs-variable">${IP}</span></code></pre></div>
+ssh <span class="hljs-variable">$&#123;OPTIONS&#125;</span> <span class="hljs-variable">$&#123;USER&#125;</span>@<span class="hljs-variable">$&#123;IP&#125;</span></code></pre></div>
             </div>
             <hr>
             <div>
@@ -583,7 +583,7 @@ ssh <span class="hljs-variable">${OPTIONS}</span> <span class="hljs-variable">${
                       <a href="/2020/03/26/blog_back_new/shell/linuxtr%E5%91%BD%E4%BB%A4%E4%BD%BF%E7%94%A8/">
                         <i class="iconfont icon-arrowleft"></i>
                         <span class="hidden-mobile">tr命令</span>
-                        <span class="visible-mobile">Vorheriger</span>
+                        <span class="visible-mobile">上一篇</span>
                       </a>
                     
                   </article>
@@ -592,7 +592,7 @@ ssh <span class="hljs-variable">${OPTIONS}</span> <span class="hljs-variable">${
                     
                       <a href="/2020/03/23/blog_back_new/Python/vscode%E4%B8%AD%E6%B7%BB%E5%8A%A0python%E8%99%9A%E6%8B%9F%E7%8E%AF%E5%A2%83/">
                         <span class="hidden-mobile">vscode中添加python虚拟环境</span>
-                        <span class="visible-mobile">Nächster</span>
+                        <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
                     
@@ -609,7 +609,7 @@ ssh <span class="hljs-variable">${OPTIONS}</span> <span class="hljs-variable">${
     
       <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
         <div id="toc">
-  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
   <div class="toc-body" id="toc-body"></div>
 </div>
 
@@ -635,7 +635,7 @@ ssh <span class="hljs-variable">${OPTIONS}</span> <span class="hljs-variable">${
   <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">Suchen</h4>
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
         <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -644,7 +644,7 @@ ssh <span class="hljs-variable">${OPTIONS}</span> <span class="hljs-variable">${
         <div class="md-form mb-5">
           <input type="text" id="local-search-input" class="form-control validate">
           <label data-error="x" data-success="v"
-                 for="local-search-input">Stichwort</label>
+                 for="local-search-input">关键词</label>
         </div>
         <div class="list-group" id="local-search-result"></div>
       </div>

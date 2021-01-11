@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html lang="cn" data-default-color-scheme=&#34;auto&#34;>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
 
 
 
@@ -61,7 +61,7 @@
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
 
 <body>
@@ -88,7 +88,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/">
                 <i class="iconfont icon-home-fill"></i>
-                Startseite
+                首页
               </a>
             </li>
           
@@ -100,7 +100,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/archives/">
                 <i class="iconfont icon-archive-fill"></i>
-                Archiv
+                归档
               </a>
             </li>
           
@@ -112,7 +112,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/categories/">
                 <i class="iconfont icon-category-fill"></i>
-                Kategorie
+                分类
               </a>
             </li>
           
@@ -124,7 +124,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/tags/">
                 <i class="iconfont icon-tags-fill"></i>
-                Etiketten
+                标签
               </a>
             </li>
           
@@ -136,7 +136,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/about/">
                 <i class="iconfont icon-user-fill"></i>
-                Über mich
+                关于
               </a>
             </li>
           
@@ -175,7 +175,7 @@
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
       <time datetime="2020-06-01 10:44" pubdate>
-        June 1, 2020 am
+        2020年6月1日 上午
       </time>
     </span>
   
@@ -186,7 +186,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      335 字
+      365 字
     </span>
   
 
@@ -196,7 +196,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      4
+      5
        分钟
     </span>
   
@@ -235,35 +235,35 @@
 
 <h1 id="pyredis"><a href="#pyredis" class="headerlink" title="pyredis"></a>pyredis</h1><p>pyredis的使用和redis的使用类似，无非是生成了一个redis的对象，用对来来使用命令</p>
 <p><font color='red'>单次连接使用redis</font></p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">
-<span class="hljs-comment"># ----> 单次连接redis</span>
+<div class="code-wrapper"><pre><code class="hljs bash">
+<span class="hljs-comment"># ----&gt; 单次连接redis</span>
 <span class="hljs-comment"># 连接redis需要IP地址，运行端口，数据库，密码。如果本地redis没有密码可以直接使用默认值</span>
-conn = StrictRedis(host=<span class="hljs-string">"localhost"</span>, port=6379, db=0, password=None)
-<span class="hljs-comment"># <class &#x27;redis.client.Redis&#x27;>  调用Redis子类对象生成连接实例</span>
+conn = StrictRedis(host=<span class="hljs-string">&quot;localhost&quot;</span>, port=6379, db=0, password=None)
+<span class="hljs-comment"># &lt;class &#x27;redis.client.Redis&#x27;&gt;  调用Redis子类对象生成连接实例</span>
 from redis.client import Redis
 <span class="hljs-built_in">print</span>(<span class="hljs-built_in">type</span>(conn))
 <span class="hljs-comment"># 连接成功之后调用实例对象的set方法设置值</span>
-conn.set(<span class="hljs-string">"name"</span>, <span class="hljs-string">"Yang"</span>)
+conn.set(<span class="hljs-string">&quot;name&quot;</span>, <span class="hljs-string">&quot;Yang&quot;</span>)
 <span class="hljs-comment"># 调用get方法获取值</span>
-<span class="hljs-built_in">print</span>(conn.get(<span class="hljs-string">"name"</span>))</code></pre></div>
+<span class="hljs-built_in">print</span>(conn.get(<span class="hljs-string">&quot;name&quot;</span>))</code></pre></div>
 
 
 <p><font color='red'>开启redis池,维护redis池</font></p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># ------> 维护一个redis池</span>
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># ------&gt; 维护一个redis池</span>
 <span class="hljs-comment"># 连接池设置参数，max_connections最大连接数。其他不变</span>
-pool = ConnectionPool(host=<span class="hljs-string">"10.0.43.102"</span>, port=6379, db=0, password=None, max_connections=5,decode_responses=True,encoding=<span class="hljs-string">&#x27;utf-8&#x27;</span>)
+pool = ConnectionPool(host=<span class="hljs-string">&quot;10.0.43.102&quot;</span>, port=6379, db=0, password=None, max_connections=5,decode_responses=True,encoding=<span class="hljs-string">&#x27;utf-8&#x27;</span>)
 <span class="hljs-comment"># 生成的连接池实例传递给StrictRedis连接redis数据库</span>
 redis =  StrictRedis(connection_pool=pool)
-<span class="hljs-comment"># <class &#x27;redis.client.Redis&#x27;>  一样的连接类型</span>
+<span class="hljs-comment"># &lt;class &#x27;redis.client.Redis&#x27;&gt;  一样的连接类型</span>
 <span class="hljs-comment"># print(type(redis))</span></code></pre></div>
 
 
 
 <h2 id="redis使用上的问题"><a href="#redis使用上的问题" class="headerlink" title="redis使用上的问题"></a>redis使用上的问题</h2><h3 id="redis输出内容为字节，不显示中文"><a href="#redis输出内容为字节，不显示中文" class="headerlink" title="redis输出内容为字节，不显示中文"></a>redis输出内容为字节，不显示中文</h3><p>这里需要对redis的连接代码做一些改变</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 单次连接</span>
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 单次连接</span>
 r = redis.StrictRedis(host=<span class="hljs-string">&#x27;127.0.0.1&#x27;</span>, port=6379, password=<span class="hljs-string">&#x27;123456&#x27;</span>,db=1, decode_responses=True,encoding=<span class="hljs-string">&#x27;utf-8&#x27;</span>)
 <span class="hljs-comment"># redis池</span>
-pool = ConnectionPool(host=<span class="hljs-string">"10.0.43.102"</span>, port=6379, db=0, password=None, max_connections=5,decode_responses=True,encoding=<span class="hljs-string">&#x27;utf-8&#x27;</span>)
+pool = ConnectionPool(host=<span class="hljs-string">&quot;10.0.43.102&quot;</span>, port=6379, db=0, password=None, max_connections=5,decode_responses=True,encoding=<span class="hljs-string">&#x27;utf-8&#x27;</span>)
 <span class="hljs-comment"># 生成的连接池实例传递给StrictRedis连接redis数据库</span>
 redis =  StrictRedis(connection_pool=pool)</code></pre></div>
 
@@ -305,7 +305,7 @@ redis =  StrictRedis(connection_pool=pool)</code></pre></div>
                       <a href="/2020/06/03/blog_back_new/vue/vue%E4%B8%AD%E5%86%85%E5%B5%8Cechart%E5%9B%BE%E6%96%B9%E6%A1%88/">
                         <i class="iconfont icon-arrowleft"></i>
                         <span class="hidden-mobile">vue中内嵌echart图方案</span>
-                        <span class="visible-mobile">Vorheriger</span>
+                        <span class="visible-mobile">上一篇</span>
                       </a>
                     
                   </article>
@@ -314,7 +314,7 @@ redis =  StrictRedis(connection_pool=pool)</code></pre></div>
                     
                       <a href="/2020/05/28/blog_back_new/NetWord/%E4%BA%8C%E5%B1%82%E4%B8%8E%E4%B8%89%E5%B1%82%E4%BA%A4%E6%8D%A2%E6%9C%BA%E9%85%8D%E7%BD%AE/">
                         <span class="hidden-mobile">二层与三层</span>
-                        <span class="visible-mobile">Nächster</span>
+                        <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
                     
@@ -331,7 +331,7 @@ redis =  StrictRedis(connection_pool=pool)</code></pre></div>
     
       <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
         <div id="toc">
-  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
   <div class="toc-body" id="toc-body"></div>
 </div>
 
@@ -357,7 +357,7 @@ redis =  StrictRedis(connection_pool=pool)</code></pre></div>
   <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">Suchen</h4>
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
         <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -366,7 +366,7 @@ redis =  StrictRedis(connection_pool=pool)</code></pre></div>
         <div class="md-form mb-5">
           <input type="text" id="local-search-input" class="form-control validate">
           <label data-error="x" data-success="v"
-                 for="local-search-input">Stichwort</label>
+                 for="local-search-input">关键词</label>
         </div>
         <div class="list-group" id="local-search-result"></div>
       </div>

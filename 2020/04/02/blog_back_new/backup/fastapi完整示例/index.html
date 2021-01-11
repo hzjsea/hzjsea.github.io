@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html lang="cn" data-default-color-scheme=&#34;auto&#34;>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
 
 
 
@@ -61,7 +61,7 @@
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
 
 <body>
@@ -88,7 +88,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/">
                 <i class="iconfont icon-home-fill"></i>
-                Startseite
+                首页
               </a>
             </li>
           
@@ -100,7 +100,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/archives/">
                 <i class="iconfont icon-archive-fill"></i>
-                Archiv
+                归档
               </a>
             </li>
           
@@ -112,7 +112,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/categories/">
                 <i class="iconfont icon-category-fill"></i>
-                Kategorie
+                分类
               </a>
             </li>
           
@@ -124,7 +124,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/tags/">
                 <i class="iconfont icon-tags-fill"></i>
-                Etiketten
+                标签
               </a>
             </li>
           
@@ -136,7 +136,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/about/">
                 <i class="iconfont icon-user-fill"></i>
-                Über mich
+                关于
               </a>
             </li>
           
@@ -175,7 +175,7 @@
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
       <time datetime="2020-04-02 13:41" pubdate>
-        April 2, 2020 pm
+        2020年4月2日 下午
       </time>
     </span>
   
@@ -186,7 +186,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      487 字
+      500 字
     </span>
   
 
@@ -240,7 +240,7 @@
 <li>sqllite做数据库 ，更推荐使用postgresql</li>
 </ul>
 <p><a target="_blank" rel="noopener" href="https://fastapi.tiangolo.com/tutorial/sql-databases/#migrations">https://fastapi.tiangolo.com/tutorial/sql-databases/#migrations</a></p>
-<h1 id="项目目录"><a href="#项目目录" class="headerlink" title="项目目录"></a>项目目录</h1><div class="code-wrapper"><pre class=" language-hljs py"><code class="language-hljs py">➜  project git:(master) ✗ tree .
+<h1 id="项目目录"><a href="#项目目录" class="headerlink" title="项目目录"></a>项目目录</h1><div class="code-wrapper"><pre><code class="hljs py">➜  project git:(master) ✗ tree .
 .
 ├── __init__.py
 ├── crud.py           <span class="hljs-comment"># database action</span>
@@ -258,7 +258,7 @@
 ```py
 (py_env) ➜  project git:(master) ✗ tree .        
 .
-├── app                                 <span class="hljs-comment"># -> app 多个app组成  里面放一些crud 以及model</span>
+├── app                                 <span class="hljs-comment"># -&gt; app 多个app组成  里面放一些crud 以及model</span>
 │   ├── Item
 │   │   ├── __pycache__
 │   │   │   └── model.cpython<span class="hljs-number">-37.</span>pyc
@@ -280,7 +280,7 @@
 <p>上面的内容会传到github上，后面记录地址</p>
 <h2 id="关于APIrouter的使用"><a href="#关于APIrouter的使用" class="headerlink" title="关于APIrouter的使用"></a>关于APIrouter的使用</h2><p>他其实对第一层路径相同的情况下做了优化</p>
 <p>这个是一个user的请求路径，但是这样会重复user的这个第一层路径</p>
-<div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword"><code class="language-hljs py"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> APIRouter
+<div class="code-wrapper"><pre><code class="hljs py"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> APIRouter
 <span class="hljs-keyword">from</span> app.user <span class="hljs-keyword">import</span> crud
 <span class="hljs-keyword">from</span> app <span class="hljs-keyword">import</span>  schemas
 
@@ -302,33 +302,33 @@
 
 router = APIRouter()
 
-<span class="hljs-meta">@router.post("/users/", response_model=schemas.User)</span>
+<span class="hljs-meta">@router.post(&quot;/users/&quot;, response_model=schemas.User)</span>
 <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">create_user</span>(<span class="hljs-params">user: schemas.UserCreate, db: Session = Depends(<span class="hljs-params">get_db</span>)</span>):</span>
     db_user = crud.get_user_by_email(db, email=user.email)
     <span class="hljs-keyword">if</span> db_user:
-        <span class="hljs-keyword">raise</span> HTTPException(status_code=<span class="hljs-number">400</span>, detail=<span class="hljs-string">"Email already registered"</span>)
+        <span class="hljs-keyword">raise</span> HTTPException(status_code=<span class="hljs-number">400</span>, detail=<span class="hljs-string">&quot;Email already registered&quot;</span>)
     <span class="hljs-keyword">return</span> crud.create_user(db=db, user=user)
 
 
 
 
-<span class="hljs-meta">@router.get("/users/", response_model=List[schemas.User])</span>
+<span class="hljs-meta">@router.get(&quot;/users/&quot;, response_model=List[schemas.User])</span>
 <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">read_users</span>(<span class="hljs-params">skip: <span class="hljs-built_in">int</span> = <span class="hljs-number">0</span>, limit: <span class="hljs-built_in">int</span> = <span class="hljs-number">100</span>, db: Session = Depends(<span class="hljs-params">get_db</span>)</span>):</span>
     users = crud.get_users(db, skip=skip, limit=limit)
     <span class="hljs-keyword">return</span> users
 
 
-<span class="hljs-meta">@router.get("/users/{user_id}", response_model=schemas.User)</span>
+<span class="hljs-meta">@router.get(&quot;/users/&#123;user_id&#125;&quot;, response_model=schemas.User)</span>
 <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">read_user</span>(<span class="hljs-params">user_id: <span class="hljs-built_in">int</span>, db: Session = Depends(<span class="hljs-params">get_db</span>)</span>):</span>
     db_user = crud.get_user(db, user_id=user_id)
     <span class="hljs-keyword">if</span> db_user <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>:
-        <span class="hljs-keyword">raise</span> HTTPException(status_code=<span class="hljs-number">404</span>, detail=<span class="hljs-string">"User not found"</span>)
+        <span class="hljs-keyword">raise</span> HTTPException(status_code=<span class="hljs-number">404</span>, detail=<span class="hljs-string">&quot;User not found&quot;</span>)
     <span class="hljs-keyword">return</span> db_user</code></pre></div>
 
 <p>可以在路由中修改第一层路由路径</p>
-<div class="code-wrapper"><pre class=" language-hljs py"><code class="language-hljs py">app.include_router(
+<div class="code-wrapper"><pre><code class="hljs py">app.include_router(
     users.router,
-    prefix=<span class="hljs-string">"/users"</span>,
+    prefix=<span class="hljs-string">&quot;/users&quot;</span>,
 )
 </code></pre></div>
             </div>
@@ -363,7 +363,7 @@ router = APIRouter()
                       <a href="/2020/04/10/blog_back_new/CDN/CDN%E6%B5%81%E7%A8%8B/">
                         <i class="iconfont icon-arrowleft"></i>
                         <span class="hidden-mobile">CDN流程</span>
-                        <span class="visible-mobile">Vorheriger</span>
+                        <span class="visible-mobile">上一篇</span>
                       </a>
                     
                   </article>
@@ -372,7 +372,7 @@ router = APIRouter()
                     
                       <a href="/2020/04/01/blog_back_new/NetWord/hybrid%E5%AE%9E%E8%B7%B5/">
                         <span class="hidden-mobile">hybrid实践</span>
-                        <span class="visible-mobile">Nächster</span>
+                        <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
                     
@@ -389,7 +389,7 @@ router = APIRouter()
     
       <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
         <div id="toc">
-  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
   <div class="toc-body" id="toc-body"></div>
 </div>
 
@@ -415,7 +415,7 @@ router = APIRouter()
   <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">Suchen</h4>
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
         <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -424,7 +424,7 @@ router = APIRouter()
         <div class="md-form mb-5">
           <input type="text" id="local-search-input" class="form-control validate">
           <label data-error="x" data-success="v"
-                 for="local-search-input">Stichwort</label>
+                 for="local-search-input">关键词</label>
         </div>
         <div class="list-group" id="local-search-result"></div>
       </div>

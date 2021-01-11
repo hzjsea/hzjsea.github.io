@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html lang="cn" data-default-color-scheme=&#34;auto&#34;>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
 
 
 
@@ -61,7 +61,7 @@
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
 
 <body>
@@ -88,7 +88,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/">
                 <i class="iconfont icon-home-fill"></i>
-                Startseite
+                首页
               </a>
             </li>
           
@@ -100,7 +100,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/archives/">
                 <i class="iconfont icon-archive-fill"></i>
-                Archiv
+                归档
               </a>
             </li>
           
@@ -112,7 +112,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/categories/">
                 <i class="iconfont icon-category-fill"></i>
-                Kategorie
+                分类
               </a>
             </li>
           
@@ -124,7 +124,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/tags/">
                 <i class="iconfont icon-tags-fill"></i>
-                Etiketten
+                标签
               </a>
             </li>
           
@@ -136,7 +136,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/about/">
                 <i class="iconfont icon-user-fill"></i>
-                Über mich
+                关于
               </a>
             </li>
           
@@ -175,7 +175,7 @@
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
       <time datetime="2020-05-09 10:24" pubdate>
-        May 9, 2020 am
+        2020年5月9日 上午
       </time>
     </span>
   
@@ -186,7 +186,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      2.4k 字
+      2.7k 字
     </span>
   
 
@@ -196,7 +196,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      36
+      43
        分钟
     </span>
   
@@ -292,20 +292,20 @@
 <li>功能完善: 自带Swagger作为API文档</li>
 </ul>
 <h2 id="Framework-Benchmarks"><a href="#Framework-Benchmarks" class="headerlink" title="Framework Benchmarks"></a>Framework Benchmarks</h2><p><a target="_blank" rel="noopener" href="https://www.techempower.com/benchmarks/#section=data-r19&amp;hw=ph&amp;test=fortune">https://www.techempower.com/benchmarks/#section=data-r19&amp;hw=ph&amp;test=fortune</a><br><img src="http://img.noback.top/2020-06-03-21-21-22.png" srcset="/img/loading.gif" alt="2020-06-03-21-21-22"><br><img src="http://img.noback.top/2020-06-03-21-21-47.png" srcset="/img/loading.gif" alt="2020-06-03-21-21-47"><br><img src="http://img.noback.top/2020-06-03-21-23-11.png" srcset="/img/loading.gif" alt="2020-06-03-21-23-11"><br><img src="http://img.noback.top/2020-06-03-21-23-24.png" srcset="/img/loading.gif" alt="2020-06-03-21-23-24"><br>可以看出在高并发下的排名情况，当然web框架如果单纯是性能之间的比较是没用的，还要看业务上的需求和使用场景。最适合的才是最好的，这里只介绍fastapi的一些用法和特性.</p>
-<h2 id="start-demo"><a href="#start-demo" class="headerlink" title="start demo"></a>start demo</h2><div class="code-wrapper"><pre class=" language-hljs py">pip install fastapi  <span class="hljs-comment"><code class="language-hljs py">pip install fastapi  <span class="hljs-comment"># fastapi 库</span>
+<h2 id="start-demo"><a href="#start-demo" class="headerlink" title="start demo"></a>start demo</h2><div class="code-wrapper"><pre><code class="hljs py">pip install fastapi  <span class="hljs-comment"># fastapi 库</span>
 pip install uvicorn  <span class="hljs-comment"># Asgi server</span></code></pre></div>
-<div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-comment"><code class="language-hljs py"><span class="hljs-comment"># main.py</span>
+<div class="code-wrapper"><pre><code class="hljs py"><span class="hljs-comment"># main.py</span>
 <span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> FastAPI
 
 app = FastAPI()
 
-<span class="hljs-meta">@app.get("/")</span>
+<span class="hljs-meta">@app.get(&quot;/&quot;)</span>
 <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">read_root</span>():</span>
-    <span class="hljs-keyword">return</span> {<span class="hljs-string">"Hello"</span>: <span class="hljs-string">"World"</span>}
+    <span class="hljs-keyword">return</span> &#123;<span class="hljs-string">&quot;Hello&quot;</span>: <span class="hljs-string">&quot;World&quot;</span>&#125;
 
-<span class="hljs-meta">@app.get("/items/{item_id}")</span>
+<span class="hljs-meta">@app.get(&quot;/items/&#123;item_id&#125;&quot;)</span>
 <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">read_item</span>(<span class="hljs-params">item_id: <span class="hljs-built_in">int</span>, q: <span class="hljs-built_in">str</span> = <span class="hljs-literal">None</span></span>):</span>
-    <span class="hljs-keyword">return</span> {<span class="hljs-string">"item_id"</span>: item_id, <span class="hljs-string">"q"</span>: q}
+    <span class="hljs-keyword">return</span> &#123;<span class="hljs-string">&quot;item_id&quot;</span>: item_id, <span class="hljs-string">&quot;q&quot;</span>: q&#125;
 
 <span class="hljs-comment"># 启动</span>
 uvicorn main:app 
@@ -314,27 +314,27 @@ uvicorn main:app  --host <span class="hljs-number">0.0</span><span class="hljs-n
 <span class="hljs-comment"># 支持热更新</span>
 uvicorn main:app --reload --host <span class="hljs-number">0.0</span><span class="hljs-number">.0</span><span class="hljs-number">.0</span> --port <span class="hljs-number">8080</span></code></pre></div>
 <p>同样的fastpai支持异步请求</p>
-<div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword"><code class="language-hljs py"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> FastAPI
+<div class="code-wrapper"><pre><code class="hljs py"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> FastAPI
 
 app = FastAPI()
 
-<span class="hljs-meta">@app.get("/")</span>
+<span class="hljs-meta">@app.get(&quot;/&quot;)</span>
 <span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">read_root</span>():</span>
-    <span class="hljs-keyword">return</span> {<span class="hljs-string">"Hello"</span>: <span class="hljs-string">"World"</span>}
+    <span class="hljs-keyword">return</span> &#123;<span class="hljs-string">&quot;Hello&quot;</span>: <span class="hljs-string">&quot;World&quot;</span>&#125;
 
-<span class="hljs-meta">@app.get("/items/{item_id}")</span>
+<span class="hljs-meta">@app.get(&quot;/items/&#123;item_id&#125;&quot;)</span>
 <span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">read_item</span>(<span class="hljs-params">item_id: <span class="hljs-built_in">int</span>, q: <span class="hljs-built_in">str</span> = <span class="hljs-literal">None</span></span>):</span>
-    <span class="hljs-keyword">return</span> {<span class="hljs-string">"item_id"</span>: item_id, <span class="hljs-string">"q"</span>: q}</code></pre></div>
+    <span class="hljs-keyword">return</span> &#123;<span class="hljs-string">&quot;item_id&quot;</span>: item_id, <span class="hljs-string">&quot;q&quot;</span>: q&#125;</code></pre></div>
 <p><img src="http://img.noback.top/2020-05-11-10-53-49.png" srcset="/img/loading.gif" alt="2020-05-11-10-53-49"><br><img src="http://img.noback.top/2020-05-11-10-56-24.png" srcset="/img/loading.gif" alt="2020-05-11-10-56-24"><br>项目浏览地址<br><a target="_blank" rel="noopener" href="http://127.0.0.1:8000/">http://127.0.0.1:8000</a><br>交互式文档地址<br><a target="_blank" rel="noopener" href="http://127.0.0.1:8000/docs">http://127.0.0.1:8000/docs</a><br>redoc地址<br><a target="_blank" rel="noopener" href="http://127.0.0.1:8000/redoc">http://127.0.0.1:8000/redoc</a></p>
 <h2 id="fastapi服务于API"><a href="#fastapi服务于API" class="headerlink" title="fastapi服务于API"></a>fastapi服务于API</h2><p>在我使用的情况中，我的感受是，fastapi主要受众群体应该是web-api开发者，对于前后端不分离的项目，也就是mvc设计模式，fastapi很明显是不受用的，并且他也没有提供这方面的解决方案。</p>
-<h3 id="设置根目录"><a href="#设置根目录" class="headerlink" title="设置根目录"></a>设置根目录</h3><div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-comment"><code class="language-hljs py"><span class="hljs-comment"># main.py</span>
+<h3 id="设置根目录"><a href="#设置根目录" class="headerlink" title="设置根目录"></a>设置根目录</h3><div class="code-wrapper"><pre><code class="hljs py"><span class="hljs-comment"># main.py</span>
 <span class="hljs-comment"># 设置路由</span>
 <span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> FastAPI
 <span class="hljs-keyword">import</span> users
 app = FastAPI()
 app.include_router(
     users.router,
-    prefix=<span class="hljs-string">"/fastapi/play/v1/users"</span>, <span class="hljs-comment"># 路由前缀</span>
+    prefix=<span class="hljs-string">&quot;/fastapi/play/v1/users&quot;</span>, <span class="hljs-comment"># 路由前缀</span>
     tags=[<span class="hljs-string">&#x27;users&#x27;</span>] <span class="hljs-comment"># 路由接口类别</span>
 )
 
@@ -342,127 +342,127 @@ app.include_router(
 <span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> FastAPI,APIRouter
 <span class="hljs-keyword">from</span> datetime <span class="hljs-keyword">import</span> datetime,timedelta
 router = APIRouter()
-<span class="hljs-meta">@router.get("/get/users/")</span>
+<span class="hljs-meta">@router.get(&quot;/get/users/&quot;)</span>
 <span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_users</span>():</span>
-    <span class="hljs-keyword">return</span> {
-        <span class="hljs-string">"desc"</span>:<span class="hljs-string">"Return to user list"</span>
-    }</code></pre></div>
+    <span class="hljs-keyword">return</span> &#123;
+        <span class="hljs-string">&quot;desc&quot;</span>:<span class="hljs-string">&quot;Return to user list&quot;</span>
+    &#125;</code></pre></div>
 <p><img src="http://img.noback.top/2020-06-03-21-35-53.png" srcset="/img/loading.gif" alt="2020-06-03-21-35-53"></p>
-<h3 id="对路径参数进行限制"><a href="#对路径参数进行限制" class="headerlink" title="对路径参数进行限制"></a>对路径参数进行限制</h3><div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-comment"><code class="language-hljs py"><span class="hljs-comment"># 根据名字获取列表</span>
-<span class="hljs-meta">@router.get("/get/user/{username}")</span>
+<h3 id="对路径参数进行限制"><a href="#对路径参数进行限制" class="headerlink" title="对路径参数进行限制"></a>对路径参数进行限制</h3><div class="code-wrapper"><pre><code class="hljs py"><span class="hljs-comment"># 根据名字获取列表</span>
+<span class="hljs-meta">@router.get(&quot;/get/user/&#123;username&#125;&quot;)</span>
 <span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_user_by_username</span>(<span class="hljs-params">username :<span class="hljs-built_in">str</span></span>):</span>
-    <span class="hljs-string">"""</span>
+    <span class="hljs-string">&quot;&quot;&quot;</span>
 <span class="hljs-string">        - username: 用户名</span>
-<span class="hljs-string">    """</span>
-    <span class="hljs-keyword">return</span> {
-       <span class="hljs-string">"desc"</span>:<span class="hljs-string">"this username is "</span>+ username 
-    }
+<span class="hljs-string">    &quot;&quot;&quot;</span>
+    <span class="hljs-keyword">return</span> &#123;
+       <span class="hljs-string">&quot;desc&quot;</span>:<span class="hljs-string">&quot;this username is &quot;</span>+ username 
+    &#125;
 </code></pre></div>
 <p><img src="http://img.noback.top/2020-06-03-21-39-37.png" srcset="/img/loading.gif" alt="2020-06-03-21-39-37"></p>
 <p>上面只是实现了一个简单的路径参数查找<br>使用枚举做限制</p>
-<div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-keyword">from</span> enum <span class="hljs-keyword"><code class="language-hljs py"><span class="hljs-keyword">from</span> enum <span class="hljs-keyword">import</span> Enum
+<div class="code-wrapper"><pre><code class="hljs py"><span class="hljs-keyword">from</span> enum <span class="hljs-keyword">import</span> Enum
 <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">type_enum</span>(<span class="hljs-params"><span class="hljs-built_in">str</span>,Enum</span>):</span>
-    woman=<span class="hljs-string">"alice"</span>
-    man = <span class="hljs-string">"hzj"</span>
-    dog = <span class="hljs-string">"hhh"</span>
+    woman=<span class="hljs-string">&quot;alice&quot;</span>
+    man = <span class="hljs-string">&quot;hzj&quot;</span>
+    dog = <span class="hljs-string">&quot;hhh&quot;</span>
 <span class="hljs-comment"># 路径参数+ 枚举</span>
-<span class="hljs-meta">@router.get("/username/{username_type}")</span>
+<span class="hljs-meta">@router.get(&quot;/username/&#123;username_type&#125;&quot;)</span>
 <span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_user_by_type</span>(<span class="hljs-params">username_type : <span class="hljs-built_in">str</span></span>):</span>
-    result = <span class="hljs-string">""</span>
+    result = <span class="hljs-string">&quot;&quot;</span>
     <span class="hljs-keyword">if</span> username_type == type_enum.alice:
-        result = <span class="hljs-string">"ok, i am {}"</span>.<span class="hljs-built_in">format</span>(type_enum.woman)
+        result = <span class="hljs-string">&quot;ok, i am &#123;&#125;&quot;</span>.<span class="hljs-built_in">format</span>(type_enum.woman)
     <span class="hljs-keyword">elif</span> username_type == type_enum.hzj:
-        result = <span class="hljs-string">"ok , i am {}"</span>.<span class="hljs-built_in">format</span>(type_enum.man)
+        result = <span class="hljs-string">&quot;ok , i am &#123;&#125;&quot;</span>.<span class="hljs-built_in">format</span>(type_enum.man)
     <span class="hljs-keyword">else</span>:
-        result = <span class="hljs-string">"None"</span>
-    <span class="hljs-keyword">return</span> {
-        <span class="hljs-string">"desc"</span>:result
-    }</code></pre></div>
+        result = <span class="hljs-string">&quot;None&quot;</span>
+    <span class="hljs-keyword">return</span> &#123;
+        <span class="hljs-string">&quot;desc&quot;</span>:result
+    &#125;</code></pre></div>
 
-<h3 id="对查询参数做限制"><a href="#对查询参数做限制" class="headerlink" title="对查询参数做限制"></a>对查询参数做限制</h3><div class="code-wrapper"><pre class=" language-hljs py"><code class="language-hljs py">test_json = [
-    {
-        <span class="hljs-string">"id"</span>:<span class="hljs-number">1</span>,
-        <span class="hljs-string">"name"</span>:<span class="hljs-string">"hzj"</span>
-    },
-    {
-        <span class="hljs-string">"id"</span>:<span class="hljs-number">2</span>,
-        <span class="hljs-string">"name"</span>:<span class="hljs-string">"app"</span>
-    },
-    {
-        <span class="hljs-string">"id"</span>:<span class="hljs-number">3</span>,
-        <span class="hljs-string">"name"</span>:<span class="hljs-string">"小敏"</span>
-    },
-    {
-        <span class="hljs-string">"id"</span>:<span class="hljs-number">4</span>,
-        <span class="hljs-string">"name"</span>:<span class="hljs-string">"小红"</span>
-    },
-    {
-        <span class="hljs-string">"id"</span>:<span class="hljs-number">5</span>,
-        <span class="hljs-string">"name"</span>:<span class="hljs-string">"晓晓"</span>
-    },
-    {
-        <span class="hljs-string">"id"</span>:<span class="hljs-number">6</span>,
-        <span class="hljs-string">"name"</span>:<span class="hljs-string">"cy"</span>
-    },
+<h3 id="对查询参数做限制"><a href="#对查询参数做限制" class="headerlink" title="对查询参数做限制"></a>对查询参数做限制</h3><div class="code-wrapper"><pre><code class="hljs py">test_json = [
+    &#123;
+        <span class="hljs-string">&quot;id&quot;</span>:<span class="hljs-number">1</span>,
+        <span class="hljs-string">&quot;name&quot;</span>:<span class="hljs-string">&quot;hzj&quot;</span>
+    &#125;,
+    &#123;
+        <span class="hljs-string">&quot;id&quot;</span>:<span class="hljs-number">2</span>,
+        <span class="hljs-string">&quot;name&quot;</span>:<span class="hljs-string">&quot;app&quot;</span>
+    &#125;,
+    &#123;
+        <span class="hljs-string">&quot;id&quot;</span>:<span class="hljs-number">3</span>,
+        <span class="hljs-string">&quot;name&quot;</span>:<span class="hljs-string">&quot;小敏&quot;</span>
+    &#125;,
+    &#123;
+        <span class="hljs-string">&quot;id&quot;</span>:<span class="hljs-number">4</span>,
+        <span class="hljs-string">&quot;name&quot;</span>:<span class="hljs-string">&quot;小红&quot;</span>
+    &#125;,
+    &#123;
+        <span class="hljs-string">&quot;id&quot;</span>:<span class="hljs-number">5</span>,
+        <span class="hljs-string">&quot;name&quot;</span>:<span class="hljs-string">&quot;晓晓&quot;</span>
+    &#125;,
+    &#123;
+        <span class="hljs-string">&quot;id&quot;</span>:<span class="hljs-number">6</span>,
+        <span class="hljs-string">&quot;name&quot;</span>:<span class="hljs-string">&quot;cy&quot;</span>
+    &#125;,
 ]
 <span class="hljs-keyword">import</span> json
 <span class="hljs-comment"># 对查询参数做限制</span>
-<span class="hljs-meta">@router.get("/friends/")</span>
+<span class="hljs-meta">@router.get(&quot;/friends/&quot;)</span>
 <span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_friends_by_id</span>(<span class="hljs-params"><span class="hljs-built_in">id</span> :<span class="hljs-built_in">int</span></span>):</span>
     <span class="hljs-keyword">for</span> item <span class="hljs-keyword">in</span> test_json:
         <span class="hljs-keyword">if</span> item[<span class="hljs-string">&#x27;id&#x27;</span>] == <span class="hljs-built_in">id</span>:
             <span class="hljs-keyword">return</span> item
         <span class="hljs-keyword">else</span>:
-            <span class="hljs-keyword">return</span> {
-                <span class="hljs-string">"desc"</span>: <span class="hljs-string">"no this id"</span>
-            }</code></pre></div>
-<div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-keyword"><code class="language-hljs py"><span class="hljs-keyword">import</span> json
+            <span class="hljs-keyword">return</span> &#123;
+                <span class="hljs-string">&quot;desc&quot;</span>: <span class="hljs-string">&quot;no this id&quot;</span>
+            &#125;</code></pre></div>
+<div class="code-wrapper"><pre><code class="hljs py"><span class="hljs-keyword">import</span> json
 <span class="hljs-comment"># 对查询参数做限制</span>
-<span class="hljs-meta">@router.get("/friends/")</span>
+<span class="hljs-meta">@router.get(&quot;/friends/&quot;)</span>
 <span class="hljs-comment"># 设置为None的时候，默认不可以不填</span>
 <span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_friends_by_id</span>(<span class="hljs-params"><span class="hljs-built_in">id</span> :<span class="hljs-built_in">int</span>=<span class="hljs-literal">None</span></span>):</span>
     <span class="hljs-keyword">for</span> item <span class="hljs-keyword">in</span> test_json:
         <span class="hljs-keyword">if</span> item[<span class="hljs-string">&#x27;id&#x27;</span>] == <span class="hljs-built_in">id</span>:
             <span class="hljs-keyword">return</span> item
         <span class="hljs-keyword">else</span>:
-            <span class="hljs-keyword">return</span> {
-                <span class="hljs-string">"desc"</span>: <span class="hljs-string">"no this id"</span>
-            }</code></pre></div>
+            <span class="hljs-keyword">return</span> &#123;
+                <span class="hljs-string">&quot;desc&quot;</span>: <span class="hljs-string">&quot;no this id&quot;</span>
+            &#125;</code></pre></div>
 
 <p><font color='red'>对查询参数做进一步的限制</font></p>
-<div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-meta"><code class="language-hljs py"><span class="hljs-meta">@router.get("/friends/"{id})</span>
+<div class="code-wrapper"><pre><code class="hljs py"><span class="hljs-meta">@router.get(&quot;/friends/&quot;&#123;id&#125;)</span>
 <span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_friends_by_id</span>(<span class="hljs-params"><span class="hljs-built_in">id</span> :<span class="hljs-built_in">int</span>= Query(<span class="hljs-params"><span class="hljs-literal">None</span>, gt=<span class="hljs-number">0</span></span>)</span>):</span>
     <span class="hljs-keyword">for</span> item <span class="hljs-keyword">in</span> test_json:
         <span class="hljs-keyword">if</span> item[<span class="hljs-string">&#x27;id&#x27;</span>] == <span class="hljs-built_in">id</span>:
             <span class="hljs-keyword">return</span> item
         <span class="hljs-keyword">else</span>:
-            <span class="hljs-keyword">return</span> {
-                <span class="hljs-string">"desc"</span>: <span class="hljs-string">"no this id"</span>
-            }
+            <span class="hljs-keyword">return</span> &#123;
+                <span class="hljs-string">&quot;desc&quot;</span>: <span class="hljs-string">&quot;no this id&quot;</span>
+            &#125;
 
 <span class="hljs-comment"># 多参数请求查询</span>
 <span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span> List
-<span class="hljs-meta">@router.get("/items/")</span>
-<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">read_items</span>(<span class="hljs-params">q: List[<span class="hljs-built_in">str</span>] = Query(<span class="hljs-params">[<span class="hljs-string">"foo"</span>, <span class="hljs-string">"bar"</span>]</span>)</span>):</span>
-    query_items = {<span class="hljs-string">"q"</span>: q}
+<span class="hljs-meta">@router.get(&quot;/items/&quot;)</span>
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">read_items</span>(<span class="hljs-params">q: List[<span class="hljs-built_in">str</span>] = Query(<span class="hljs-params">[<span class="hljs-string">&quot;foo&quot;</span>, <span class="hljs-string">&quot;bar&quot;</span>]</span>)</span>):</span>
+    query_items = &#123;<span class="hljs-string">&quot;q&quot;</span>: q&#125;
     <span class="hljs-keyword">return</span> query_items</code></pre></div>
 
 
-<h3 id="设置请求体"><a href="#设置请求体" class="headerlink" title="设置请求体"></a>设置请求体</h3><div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-comment"><code class="language-hljs py"><span class="hljs-comment"># 设置请求实体</span>
+<h3 id="设置请求体"><a href="#设置请求体" class="headerlink" title="设置请求体"></a>设置请求体</h3><div class="code-wrapper"><pre><code class="hljs py"><span class="hljs-comment"># 设置请求实体</span>
 
 <span class="hljs-keyword">from</span> pydantic <span class="hljs-keyword">import</span> BaseModel,Field
 <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">requestModel</span>(<span class="hljs-params">BaseModel</span>):</span>
     name :<span class="hljs-built_in">str</span>
-    age : <span class="hljs-built_in">int</span> = Field(..., gt=<span class="hljs-number">0</span>, description=<span class="hljs-string">"The age must be greater than zero"</span>)
+    age : <span class="hljs-built_in">int</span> = Field(..., gt=<span class="hljs-number">0</span>, description=<span class="hljs-string">&quot;The age must be greater than zero&quot;</span>)
     desc: <span class="hljs-built_in">str</span>
 
 
-<span class="hljs-meta">@router.post("/post/UserInfo/")</span>
+<span class="hljs-meta">@router.post(&quot;/post/UserInfo/&quot;)</span>
 <span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">post_UserInfo</span>(<span class="hljs-params">item: requestModel</span>):</span>
     <span class="hljs-keyword">return</span> item
 </code></pre></div>
 <p><img src="http://img.noback.top/2020-06-03-22-19-53.png" srcset="/img/loading.gif" alt="2020-06-03-22-19-53"></p>
-<h3 id="请求体嵌套"><a href="#请求体嵌套" class="headerlink" title="请求体嵌套"></a>请求体嵌套</h3><div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-keyword">from</span> pydantic <span class="hljs-keyword"><code class="language-hljs py"><span class="hljs-keyword">from</span> pydantic <span class="hljs-keyword">import</span> BaseModel,Field
+<h3 id="请求体嵌套"><a href="#请求体嵌套" class="headerlink" title="请求体嵌套"></a>请求体嵌套</h3><div class="code-wrapper"><pre><code class="hljs py"><span class="hljs-keyword">from</span> pydantic <span class="hljs-keyword">import</span> BaseModel,Field
 
 <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">levelInfoModel</span>(<span class="hljs-params">BaseModel</span>):</span>
     <span class="hljs-built_in">id</span>:<span class="hljs-built_in">int</span> = <span class="hljs-literal">None</span>
@@ -471,70 +471,70 @@ router = APIRouter()
 <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ClassInfo</span>(<span class="hljs-params">BaseModel</span>):</span>
     <span class="hljs-built_in">id</span>: <span class="hljs-built_in">int</span> = <span class="hljs-literal">None</span>
     name: <span class="hljs-built_in">str</span> = Field(..., max_length=<span class="hljs-number">20</span>, min_length=<span class="hljs-number">10</span>,
-                      description=<span class="hljs-string">"The necessary fields"</span>)
+                      description=<span class="hljs-string">&quot;The necessary fields&quot;</span>)
     desc: <span class="hljs-built_in">str</span> = Field(<span class="hljs-literal">None</span>, max_length=<span class="hljs-number">30</span>, min_length=<span class="hljs-number">10</span>)
     levelInfo: List[levelInfoModel]
 
     <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Config</span>:</span>
-        schema_extra = {
-            <span class="hljs-string">"example"</span>: {
-                <span class="hljs-string">"id"</span>: <span class="hljs-number">1</span>,
-                <span class="hljs-string">"name"</span>: <span class="hljs-string">"Foo"</span>,
-                <span class="hljs-string">"desc"</span>: <span class="hljs-string">"A very nice Item"</span>,
-                <span class="hljs-string">"levelInfo"</span>: [{
-                    <span class="hljs-string">"id"</span>: <span class="hljs-number">1</span>,
-                    <span class="hljs-string">"info"</span>: <span class="hljs-string">"一级"</span>
-                }]
-            }
-        }
+        schema_extra = &#123;
+            <span class="hljs-string">&quot;example&quot;</span>: &#123;
+                <span class="hljs-string">&quot;id&quot;</span>: <span class="hljs-number">1</span>,
+                <span class="hljs-string">&quot;name&quot;</span>: <span class="hljs-string">&quot;Foo&quot;</span>,
+                <span class="hljs-string">&quot;desc&quot;</span>: <span class="hljs-string">&quot;A very nice Item&quot;</span>,
+                <span class="hljs-string">&quot;levelInfo&quot;</span>: [&#123;
+                    <span class="hljs-string">&quot;id&quot;</span>: <span class="hljs-number">1</span>,
+                    <span class="hljs-string">&quot;info&quot;</span>: <span class="hljs-string">&quot;一级&quot;</span>
+                &#125;]
+            &#125;
+        &#125;
 
-<span class="hljs-meta">@router.post("/info/")</span>
+<span class="hljs-meta">@router.post(&quot;/info/&quot;)</span>
 <span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_classInfo</span>(<span class="hljs-params">item:ClassInfo</span>):</span>
     <span class="hljs-keyword">return</span> item</code></pre></div>
 <p><img src="http://img.noback.top/2020-06-03-22-29-20.png" srcset="/img/loading.gif" alt="2020-06-03-22-29-20"></p>
-<h3 id="设置响应体"><a href="#设置响应体" class="headerlink" title="设置响应体"></a>设置响应体</h3><div class="code-wrapper"><pre class=" language-hljs py"><code class="language-hljs py">test_json = {
-    <span class="hljs-string">"code"</span>: <span class="hljs-number">0</span>,
-    <span class="hljs-string">"status"</span>: <span class="hljs-string">"success"</span>,
-    <span class="hljs-string">"data"</span>:[
-        {
-        <span class="hljs-string">"id"</span>: <span class="hljs-number">1</span>,
-        <span class="hljs-string">"age"</span>: <span class="hljs-number">2</span>,
-        <span class="hljs-string">"name"</span>:<span class="hljs-string">"hzj"</span>
-    }
+<h3 id="设置响应体"><a href="#设置响应体" class="headerlink" title="设置响应体"></a>设置响应体</h3><div class="code-wrapper"><pre><code class="hljs py">test_json = &#123;
+    <span class="hljs-string">&quot;code&quot;</span>: <span class="hljs-number">0</span>,
+    <span class="hljs-string">&quot;status&quot;</span>: <span class="hljs-string">&quot;success&quot;</span>,
+    <span class="hljs-string">&quot;data&quot;</span>:[
+        &#123;
+        <span class="hljs-string">&quot;id&quot;</span>: <span class="hljs-number">1</span>,
+        <span class="hljs-string">&quot;age&quot;</span>: <span class="hljs-number">2</span>,
+        <span class="hljs-string">&quot;name&quot;</span>:<span class="hljs-string">&quot;hzj&quot;</span>
+    &#125;
     ]
-}
-<span class="hljs-meta">@router.get("/get/UserInfo",response_model=responseModel)</span>
+&#125;
+<span class="hljs-meta">@router.get(&quot;/get/UserInfo&quot;,response_model=responseModel)</span>
 <span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_UserInfo</span>(<span class="hljs-params"><span class="hljs-built_in">id</span> :<span class="hljs-built_in">int</span></span>):</span>
     <span class="hljs-keyword">return</span> test_json
 </code></pre></div>
 
-<h3 id="自定义响应码"><a href="#自定义响应码" class="headerlink" title="自定义响应码"></a>自定义响应码</h3><div class="code-wrapper"><pre class=" language-hljs py"><code class="language-hljs py">
-<span class="hljs-meta">@router.post("/items/", status_code=201)</span>
+<h3 id="自定义响应码"><a href="#自定义响应码" class="headerlink" title="自定义响应码"></a>自定义响应码</h3><div class="code-wrapper"><pre><code class="hljs py">
+<span class="hljs-meta">@router.post(&quot;/items/&quot;, status_code=201)</span>
 <span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">create_item</span>(<span class="hljs-params">name: <span class="hljs-built_in">str</span></span>):</span>
-    <span class="hljs-keyword">return</span> {<span class="hljs-string">"name"</span>: name}
+    <span class="hljs-keyword">return</span> &#123;<span class="hljs-string">&quot;name&quot;</span>: name&#125;
 
 <span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> FastAPI, status
 
 
-<span class="hljs-meta">@app.post("/items/", status_code=status.HTTP_201_CREATED)</span>
+<span class="hljs-meta">@app.post(&quot;/items/&quot;, status_code=status.HTTP_201_CREATED)</span>
 <span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">create_item</span>(<span class="hljs-params">name: <span class="hljs-built_in">str</span></span>):</span>
-    <span class="hljs-keyword">return</span> {<span class="hljs-string">"name"</span>: name}</code></pre></div>
+    <span class="hljs-keyword">return</span> &#123;<span class="hljs-string">&quot;name&quot;</span>: name&#125;</code></pre></div>
 
-<h3 id="依赖注入"><a href="#依赖注入" class="headerlink" title="依赖注入"></a>依赖注入</h3><div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword"><code class="language-hljs py"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> Depends, FastAPI
+<h3 id="依赖注入"><a href="#依赖注入" class="headerlink" title="依赖注入"></a>依赖注入</h3><div class="code-wrapper"><pre><code class="hljs py"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> Depends, FastAPI
 
 <span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">common_parameters</span>(<span class="hljs-params">q: <span class="hljs-built_in">str</span> = <span class="hljs-literal">None</span>, skip: <span class="hljs-built_in">int</span> = <span class="hljs-number">0</span>, limit: <span class="hljs-built_in">int</span> = <span class="hljs-number">100</span></span>):</span>
-    <span class="hljs-keyword">return</span> {<span class="hljs-string">"q"</span>: q, <span class="hljs-string">"skip"</span>: skip, <span class="hljs-string">"limit"</span>: limit}
+    <span class="hljs-keyword">return</span> &#123;<span class="hljs-string">&quot;q&quot;</span>: q, <span class="hljs-string">&quot;skip&quot;</span>: skip, <span class="hljs-string">&quot;limit&quot;</span>: limit&#125;
 
-<span class="hljs-meta">@router.get("/items/")</span>
+<span class="hljs-meta">@router.get(&quot;/items/&quot;)</span>
 <span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">read_items</span>(<span class="hljs-params">commons: <span class="hljs-built_in">dict</span> = Depends(<span class="hljs-params">common_parameters</span>)</span>):</span>
     <span class="hljs-keyword">return</span> commons
 
-<span class="hljs-meta">@router.get("/users/")</span>
+<span class="hljs-meta">@router.get(&quot;/users/&quot;)</span>
 <span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">read_users</span>(<span class="hljs-params">commons: <span class="hljs-built_in">dict</span> = Depends(<span class="hljs-params">common_parameters</span>)</span>):</span>
     <span class="hljs-keyword">return</span> commons</code></pre></div>
 <p>支持多层嵌套依赖注入</p>
-<h3 id="fastapi-login-demo"><a href="#fastapi-login-demo" class="headerlink" title="fastapi login demo"></a>fastapi login demo</h3><div class="code-wrapper"><pre class=" language-hljs python"><span class="hljs-comment"><code class="language-hljs python"><span class="hljs-comment"># 安装环境</span>
-mkdir fastapi-demo && cd fastapi-demo
+<h3 id="fastapi-login-demo"><a href="#fastapi-login-demo" class="headerlink" title="fastapi login demo"></a>fastapi login demo</h3><div class="code-wrapper"><pre><code class="hljs python"><span class="hljs-comment"># 安装环境</span>
+mkdir fastapi-demo &amp;&amp; cd fastapi-demo
 virtualenv env
 source env/<span class="hljs-built_in">bin</span>/active
 
@@ -552,7 +552,7 @@ uvicorn main:app --reload
 <li>sqlalchemy 但是不支持异步，不过貌似可以扩展成异步</li>
 <li>tortoise-orm 类django-orm的异步orm，不过正在起步过程中，有些功能还没有完成。</li>
 </ul>
-<h3 id="sqlalchemy实例"><a href="#sqlalchemy实例" class="headerlink" title="sqlalchemy实例"></a>sqlalchemy实例</h3><div class="code-wrapper"><pre class=" language-hljs py"><span class="hljs-keyword">from</span> typing <span class="hljs-keyword"><code class="language-hljs py"><span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span> List
+<h3 id="sqlalchemy实例"><a href="#sqlalchemy实例" class="headerlink" title="sqlalchemy实例"></a>sqlalchemy实例</h3><div class="code-wrapper"><pre><code class="hljs py"><span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span> List
 
 <span class="hljs-keyword">import</span> databases
 <span class="hljs-keyword">import</span> sqlalchemy
@@ -560,24 +560,24 @@ uvicorn main:app --reload
 <span class="hljs-keyword">from</span> pydantic <span class="hljs-keyword">import</span> BaseModel
 
 <span class="hljs-comment"># SQLAlchemy specific code, as with any other app</span>
-DATABASE_URL = <span class="hljs-string">"sqlite:///./test.db"</span>
-<span class="hljs-comment"># DATABASE_URL = "postgresql://user:password@postgresserver/db"</span>
+DATABASE_URL = <span class="hljs-string">&quot;sqlite:///./test.db&quot;</span>
+<span class="hljs-comment"># DATABASE_URL = &quot;postgresql://user:password@postgresserver/db&quot;</span>
 
 database = databases.Database(DATABASE_URL)
 
 metadata = sqlalchemy.MetaData()
 
 notes = sqlalchemy.Table(
-    <span class="hljs-string">"notes"</span>,
+    <span class="hljs-string">&quot;notes&quot;</span>,
     metadata,
-    sqlalchemy.Column(<span class="hljs-string">"id"</span>, sqlalchemy.Integer, primary_key=<span class="hljs-literal">True</span>),
-    sqlalchemy.Column(<span class="hljs-string">"text"</span>, sqlalchemy.String),
-    sqlalchemy.Column(<span class="hljs-string">"completed"</span>, sqlalchemy.Boolean),
+    sqlalchemy.Column(<span class="hljs-string">&quot;id&quot;</span>, sqlalchemy.Integer, primary_key=<span class="hljs-literal">True</span>),
+    sqlalchemy.Column(<span class="hljs-string">&quot;text&quot;</span>, sqlalchemy.String),
+    sqlalchemy.Column(<span class="hljs-string">&quot;completed&quot;</span>, sqlalchemy.Boolean),
 )
 
 
 engine = sqlalchemy.create_engine(
-    DATABASE_URL, connect_args={<span class="hljs-string">"check_same_thread"</span>: <span class="hljs-literal">False</span>}
+    DATABASE_URL, connect_args=&#123;<span class="hljs-string">&quot;check_same_thread&quot;</span>: <span class="hljs-literal">False</span>&#125;
 )
 metadata.create_all(engine)
 
@@ -596,46 +596,46 @@ metadata.create_all(engine)
 app = FastAPI()
 
 
-<span class="hljs-meta">@app.on_event("startup")</span>
+<span class="hljs-meta">@app.on_event(&quot;startup&quot;)</span>
 <span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">startup</span>():</span>
     <span class="hljs-keyword">await</span> database.connect()
 
 
-<span class="hljs-meta">@app.on_event("shutdown")</span>
+<span class="hljs-meta">@app.on_event(&quot;shutdown&quot;)</span>
 <span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">shutdown</span>():</span>
     <span class="hljs-keyword">await</span> database.disconnect()
 
 
-<span class="hljs-meta">@app.get("/notes/", response_model=List[Note])</span>
+<span class="hljs-meta">@app.get(&quot;/notes/&quot;, response_model=List[Note])</span>
 <span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">read_notes</span>():</span>
     query = notes.select()
     <span class="hljs-keyword">return</span> <span class="hljs-keyword">await</span> database.fetch_all(query)
 
 
-<span class="hljs-meta">@app.post("/notes/", response_model=Note)</span>
+<span class="hljs-meta">@app.post(&quot;/notes/&quot;, response_model=Note)</span>
 <span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">create_note</span>(<span class="hljs-params">note: NoteIn</span>):</span>
     query = notes.insert().values(text=note.text, completed=note.completed)
     last_record_id = <span class="hljs-keyword">await</span> database.execute(query)
-    <span class="hljs-keyword">return</span> {**note.<span class="hljs-built_in">dict</span>(), <span class="hljs-string">"id"</span>: last_record_id}</code></pre></div>
+    <span class="hljs-keyword">return</span> &#123;**note.<span class="hljs-built_in">dict</span>(), <span class="hljs-string">&quot;id&quot;</span>: last_record_id&#125;</code></pre></div>
 
 
-<h3 id="tortoise-orm实例"><a href="#tortoise-orm实例" class="headerlink" title="tortoise-orm实例"></a>tortoise-orm实例</h3><div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">pip install tortoise-orm</code></pre></div>
-<div class="code-wrapper"><pre class=" language-hljs py"><code class="language-hljs py">
+<h3 id="tortoise-orm实例"><a href="#tortoise-orm实例" class="headerlink" title="tortoise-orm实例"></a>tortoise-orm实例</h3><div class="code-wrapper"><pre><code class="hljs bash">pip install tortoise-orm</code></pre></div>
+<div class="code-wrapper"><pre><code class="hljs py">
 <span class="hljs-comment"># main.py</span>
 <span class="hljs-keyword">from</span> tortoise.contrib.fastapi <span class="hljs-keyword">import</span> HTTPNotFoundError, register_tortois
 <span class="hljs-comment"># 创建的数据表</span>
 models = [
-    <span class="hljs-string">"app.Users.models"</span>,
-    <span class="hljs-string">"app.Face.models"</span>,
-    <span class="hljs-string">"app.Roster.models"</span>,
-    <span class="hljs-string">"app.Statistical.models"</span>,
-    <span class="hljs-string">"app.pay.models"</span>
+    <span class="hljs-string">&quot;app.Users.models&quot;</span>,
+    <span class="hljs-string">&quot;app.Face.models&quot;</span>,
+    <span class="hljs-string">&quot;app.Roster.models&quot;</span>,
+    <span class="hljs-string">&quot;app.Statistical.models&quot;</span>,
+    <span class="hljs-string">&quot;app.pay.models&quot;</span>
 ]
 
 register_tortoise(
     app,
-    db_url=<span class="hljs-string">"mysql://username:password@ip:port/yydb"</span>,
-    modules={<span class="hljs-string">"models"</span>: models},
+    db_url=<span class="hljs-string">&quot;mysql://username:password@ip:port/yydb&quot;</span>,
+    modules=&#123;<span class="hljs-string">&quot;models&quot;</span>: models&#125;,
     generate_schemas=<span class="hljs-literal">True</span>,
     add_exception_handlers=<span class="hljs-literal">True</span>,
 )
@@ -650,16 +650,16 @@ register_tortoise(
     name = fields.CharField(max_length=<span class="hljs-number">20</span>)
 
     <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Meta</span>:</span>
-        db = <span class="hljs-string">"RosterGroupTable"</span>
+        db = <span class="hljs-string">&quot;RosterGroupTable&quot;</span>
 
 <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">RosterTabel</span>(<span class="hljs-params">models.Model</span>):</span>
     <span class="hljs-built_in">id</span> = fields.IntField(pk=<span class="hljs-literal">True</span>)
     phone = fields.CharField(max_length=<span class="hljs-number">20</span>,blank=<span class="hljs-literal">True</span>,null=<span class="hljs-literal">True</span>)
     name = fields.CharField(max_length=<span class="hljs-number">20</span>)
-    group_id = fields.ForeignKeyField(model_name=<span class="hljs-string">&#x27;models.RosterGroupTable&#x27;</span>,on_delete=fields.CASCADE,related_name=<span class="hljs-string">"events"</span>,blank=<span class="hljs-literal">True</span>,null=<span class="hljs-literal">True</span>)
+    group_id = fields.ForeignKeyField(model_name=<span class="hljs-string">&#x27;models.RosterGroupTable&#x27;</span>,on_delete=fields.CASCADE,related_name=<span class="hljs-string">&quot;events&quot;</span>,blank=<span class="hljs-literal">True</span>,null=<span class="hljs-literal">True</span>)
 
     <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Meta</span>:</span>
-        db = <span class="hljs-string">"RosterTabel"</span>
+        db = <span class="hljs-string">&quot;RosterTabel&quot;</span>
 
 RosterGroupTable_desc = pydantic_queryset_creator(RosterGroupTable)
 RosterTabel_desc = pydantic_queryset_creator(RosterTabel)
@@ -667,7 +667,7 @@ RosterTabel_desc = pydantic_queryset_creator(RosterTabel)
 
 
 <span class="hljs-comment"># roster.py</span>
-<span class="hljs-meta">@router.post("/roster_statistics/add")</span>
+<span class="hljs-meta">@router.post(&quot;/roster_statistics/add&quot;)</span>
 <span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">roster_add_statics</span>(<span class="hljs-params">*,item:RosterItem,token :<span class="hljs-built_in">str</span></span>):</span>
     res = <span class="hljs-keyword">await</span> RosterTabel.<span class="hljs-built_in">filter</span>(<span class="hljs-built_in">id</span>=item[<span class="hljs-string">&#x27;memberId&#x27;</span>]).first()
     <span class="hljs-keyword">if</span> res:
@@ -683,27 +683,27 @@ RosterTabel_desc = pydantic_queryset_creator(RosterTabel)
             name = res.name
         )
     <span class="hljs-keyword">else</span>:
-        <span class="hljs-keyword">return</span> rp_faildMessage(msg=<span class="hljs-string">"名单不存在"</span>,code=<span class="hljs-number">-1</span>)
-    <span class="hljs-keyword">return</span> rp_successMessage(msg=<span class="hljs-string">"名单创建成功"</span>,code=<span class="hljs-number">0</span>)</code></pre></div>
+        <span class="hljs-keyword">return</span> rp_faildMessage(msg=<span class="hljs-string">&quot;名单不存在&quot;</span>,code=<span class="hljs-number">-1</span>)
+    <span class="hljs-keyword">return</span> rp_successMessage(msg=<span class="hljs-string">&quot;名单创建成功&quot;</span>,code=<span class="hljs-number">0</span>)</code></pre></div>
 
-<h2 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h2><h3 id="dockerfile"><a href="#dockerfile" class="headerlink" title="dockerfile"></a>dockerfile</h3><div class="code-wrapper"><pre class=" language-hljs dockerfile"><span class="hljs-comment"><code class="language-hljs dockerfile"><span class="hljs-comment">#================================================================================</span>
+<h2 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h2><h3 id="dockerfile"><a href="#dockerfile" class="headerlink" title="dockerfile"></a>dockerfile</h3><div class="code-wrapper"><pre><code class="hljs dockerfile"><span class="hljs-comment">#================================================================================</span>
 <span class="hljs-comment">#      基于python3.7的创建fastapi的dockerfile文件</span>
 <span class="hljs-comment">#      fastapi + python3.7 + guvicorn</span>
 <span class="hljs-comment">#================================================================================</span>
 
 <span class="hljs-keyword">FROM</span> python:<span class="hljs-number">3.7</span>
-<span class="hljs-keyword">LABEL</span><span class="bash"> version=<span class="hljs-string">"v1"</span> \</span>
-<span class="bash">    description=<span class="hljs-string">"fastapi"</span> \</span>
-<span class="bash">    maintainer=<span class="hljs-string">"hzjsea"</span> \</span>
-<span class="bash">    using=<span class="hljs-string">"fastapi & python3.7 office image & gunicorn"</span></span>
+<span class="hljs-keyword">LABEL</span><span class="bash"> version=<span class="hljs-string">&quot;v1&quot;</span> \</span>
+<span class="bash">    description=<span class="hljs-string">&quot;fastapi&quot;</span> \</span>
+<span class="bash">    maintainer=<span class="hljs-string">&quot;hzjsea&quot;</span> \</span>
+<span class="bash">    using=<span class="hljs-string">&quot;fastapi &amp; python3.7 office image &amp; gunicorn&quot;</span></span>
 <span class="hljs-keyword">WORKDIR</span><span class="bash"> /root/code</span>
 <span class="hljs-keyword">COPY</span><span class="bash">  . .</span>
 <span class="hljs-keyword">RUN</span><span class="bash"> pip install -r requirements.txt</span>
 <span class="hljs-keyword">EXPOSE</span> <span class="hljs-number">8889</span>
-<span class="hljs-keyword">CMD</span><span class="bash"> [<span class="hljs-string">"gunicorn"</span>,<span class="hljs-string">"-c"</span>,<span class="hljs-string">"guvicorn.conf"</span>,<span class="hljs-string">"main:app"</span>]</span>
+<span class="hljs-keyword">CMD</span><span class="bash"> [<span class="hljs-string">&quot;gunicorn&quot;</span>,<span class="hljs-string">&quot;-c&quot;</span>,<span class="hljs-string">&quot;guvicorn.conf&quot;</span>,<span class="hljs-string">&quot;main:app&quot;</span>]</span>
 </code></pre></div>
 
-<h3 id="单机本地部署"><a href="#单机本地部署" class="headerlink" title="单机本地部署"></a>单机本地部署</h3><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-meta"><code class="language-hljs bash"><span class="hljs-meta">#!/usr/bin/bash</span>
+<h3 id="单机本地部署"><a href="#单机本地部署" class="headerlink" title="单机本地部署"></a>单机本地部署</h3><div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-meta">#!/usr/bin/bash</span>
 <span class="hljs-comment"># 测试用脚本部署</span>
 
 <span class="hljs-comment"># 开启的端口</span>
@@ -721,17 +721,17 @@ cp -r /root/fastapi_play/ /root/hzj/
 <span class="hljs-comment"># 安装依赖</span>
 pip install -r requirements.txt
 <span class="hljs-comment"># 关闭之前运行的进程  </span>
-lsof -i:<span class="hljs-variable">$port</span> | awk <span class="hljs-string">&#x27;{getline; print $2 }&#x27;</span> | xargs -t -I {} <span class="hljs-built_in">kill</span> -9 {}
+lsof -i:<span class="hljs-variable">$port</span> | awk <span class="hljs-string">&#x27;&#123;getline; print $2 &#125;&#x27;</span> | xargs -t -I &#123;&#125; <span class="hljs-built_in">kill</span> -9 &#123;&#125;
 <span class="hljs-comment"># 开启新进程</span>
-nohup uvicorn --host <span class="hljs-variable">$host</span>  --port <span class="hljs-variable">$port</span>  main:app --reload  &
-<span class="hljs-built_in">echo</span> <span class="hljs-string">"success"</span></code></pre></div>
+nohup uvicorn --host <span class="hljs-variable">$host</span>  --port <span class="hljs-variable">$port</span>  main:app --reload  &amp;
+<span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;success&quot;</span></code></pre></div>
 
-<h3 id="supervisor项目托管"><a href="#supervisor项目托管" class="headerlink" title="supervisor项目托管"></a>supervisor项目托管</h3><div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">[program:webserver]
+<h3 id="supervisor项目托管"><a href="#supervisor项目托管" class="headerlink" title="supervisor项目托管"></a>supervisor项目托管</h3><div class="code-wrapper"><pre><code class="hljs bash">[program:webserver]
 directory=/root/hzj/fastapi_play
 <span class="hljs-built_in">command</span>=/root/hzj/pro_env_all/venv/bin/uvicorn main:app --host 0.0.0.0 --port 8888
 autostart = <span class="hljs-literal">true</span></code></pre></div>
 
-<h3 id="gunicorn部署asgi服务"><a href="#gunicorn部署asgi服务" class="headerlink" title="gunicorn部署asgi服务"></a>gunicorn部署asgi服务</h3><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># gunicorn.conf</span>
+<h3 id="gunicorn部署asgi服务"><a href="#gunicorn部署asgi服务" class="headerlink" title="gunicorn部署asgi服务"></a>gunicorn部署asgi服务</h3><div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># gunicorn.conf</span>
 并行工作进程数
 workers = 4
 <span class="hljs-comment"># 指定每个工作者的线程数</span>
@@ -783,7 +783,7 @@ gunicorn -c gunicorn.conf</code></pre></div>
                       <a href="/2020/05/09/blog_back_new/golang/golang%E8%BF%9B%E9%98%B6/">
                         <i class="iconfont icon-arrowleft"></i>
                         <span class="hidden-mobile">golang进阶</span>
-                        <span class="visible-mobile">Vorheriger</span>
+                        <span class="visible-mobile">上一篇</span>
                       </a>
                     
                   </article>
@@ -792,7 +792,7 @@ gunicorn -c gunicorn.conf</code></pre></div>
                     
                       <a href="/2020/05/05/blog_back_new/CDN/%E5%8F%88%E6%8B%8D%E4%BA%91CDN%E5%85%A8%E7%AB%99%E5%8A%A0%E9%80%9F/">
                         <span class="hidden-mobile">又拍云CDN全站加速的问题</span>
-                        <span class="visible-mobile">Nächster</span>
+                        <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
                     
@@ -809,7 +809,7 @@ gunicorn -c gunicorn.conf</code></pre></div>
     
       <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
         <div id="toc">
-  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
   <div class="toc-body" id="toc-body"></div>
 </div>
 
@@ -835,7 +835,7 @@ gunicorn -c gunicorn.conf</code></pre></div>
   <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">Suchen</h4>
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
         <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -844,7 +844,7 @@ gunicorn -c gunicorn.conf</code></pre></div>
         <div class="md-form mb-5">
           <input type="text" id="local-search-input" class="form-control validate">
           <label data-error="x" data-success="v"
-                 for="local-search-input">Stichwort</label>
+                 for="local-search-input">关键词</label>
         </div>
         <div class="list-group" id="local-search-result"></div>
       </div>

@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html lang="cn" data-default-color-scheme=&#34;auto&#34;>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
 
 
 
@@ -61,7 +61,7 @@
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
 
 <body>
@@ -88,7 +88,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/">
                 <i class="iconfont icon-home-fill"></i>
-                Startseite
+                首页
               </a>
             </li>
           
@@ -100,7 +100,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/archives/">
                 <i class="iconfont icon-archive-fill"></i>
-                Archiv
+                归档
               </a>
             </li>
           
@@ -112,7 +112,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/categories/">
                 <i class="iconfont icon-category-fill"></i>
-                Kategorie
+                分类
               </a>
             </li>
           
@@ -124,7 +124,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/tags/">
                 <i class="iconfont icon-tags-fill"></i>
-                Etiketten
+                标签
               </a>
             </li>
           
@@ -136,7 +136,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/about/">
                 <i class="iconfont icon-user-fill"></i>
-                Über mich
+                关于
               </a>
             </li>
           
@@ -175,7 +175,7 @@
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
       <time datetime="2020-02-09 17:35" pubdate>
-        February 9, 2020 pm
+        2020年2月9日 下午
       </time>
     </span>
   
@@ -186,7 +186,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      649 字
+      907 字
     </span>
   
 
@@ -196,7 +196,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      10
+      14
        分钟
     </span>
   
@@ -247,7 +247,7 @@
 <h1 id="docker-swarm-wordpress"><a href="#docker-swarm-wordpress" class="headerlink" title="docker-swarm-wordpress"></a>docker-swarm-wordpress</h1><p>通过docker + swarm + wordpress 建立集群</p>
 <h2 id="实战"><a href="#实战" class="headerlink" title="实战"></a>实战</h2><p>在不指定同网络组的情况下，docker默认将所有的ip都归类到名字叫做docker0的bridge组里面，但是这样在跨机器的容器中，构建会十分麻烦，无法通过容器名来进行ip通信<br>因此，在创建的过程中需要指定网络组</p>
 <ol>
-<li>创建一个overlay的网络<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">docker network create -d overlay demo
+<li>创建一个overlay的网络<div class="code-wrapper"><pre><code class="hljs bash">docker network create -d overlay demo
 <span class="hljs-comment"># 查看是否创建成功 </span>
 [root@manager55 ~]<span class="hljs-comment"># docker network ls</span>
 NETWORK ID          NAME                DRIVER              SCOPE
@@ -255,10 +255,10 @@ ee5b54750620        bridge              bridge              <span class="hljs-bu
 mxmjjml84ldx        demo                overlay             swarm
 6ad358de8e6b        docker_gwbridge     bridge              <span class="hljs-built_in">local</span>
 f127d4764edd        host                host                <span class="hljs-built_in">local</span>
-ihvz4z5lfwis        ingress             overlay             swarm   <----这里
+ihvz4z5lfwis        ingress             overlay             swarm   &lt;----这里
 83efd9726723        none                null                <span class="hljs-built_in">local</span></code></pre></div>
 一个manager 两台work都有了这个网络</li>
-<li>创建服务<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># mysql</span>
+<li>创建服务<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># mysql</span>
 docker service create --name mysql --env MYSQL_ROOT_PASSWORD=root --env MYSQL_DATABASE=wordpress --network demo --mount <span class="hljs-built_in">type</span>=volume,<span class="hljs-built_in">source</span>=mysql-data,destination=/var/lib/mysql mysql:5.7 
 
 <span class="hljs-comment"># wordpress</span>
@@ -267,19 +267,19 @@ docker service create --name wordpress -p 80:80 --env WORDPRESS_DB_PASSWORD=root
 </ol>
 <ol>
 <li><p>创建一个overlay的网络</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">docker network create -d overylay demo</code></pre></div></li>
+<div class="code-wrapper"><pre><code class="hljs bash">docker network create -d overylay demo</code></pre></div></li>
 <li><p>创建一个web服务,并加入demo这个网络</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">docker service create --name whoami -p 8000:8000 --network demo -d jwilder/whoami</code></pre></div></li>
+<div class="code-wrapper"><pre><code class="hljs bash">docker service create --name whoami -p 8000:8000 --network demo -d jwilder/whoami</code></pre></div></li>
 <li><p>查看所建立的service</p>
-<div class="code-wrapper"><pre class=" language-hljs bash">[root@manager55 ~]<span class="hljs-comment"><code class="language-hljs bash">[root@manager55 ~]<span class="hljs-comment"># docker service ls</span>
+<div class="code-wrapper"><pre><code class="hljs bash">[root@manager55 ~]<span class="hljs-comment"># docker service ls</span>
 ID                  NAME                MODE                REPLICAS            IMAGE                   PORTS
 nnw1gekvbv0t        client              replicated          1/1                 busybox:latest
-3s9kfmq0eo8c        whoami              replicated          1/1                 jwilder/whoami:latest   *:8000->8000/tcp
+3s9kfmq0eo8c        whoami              replicated          1/1                 jwilder/whoami:latest   *:8000-&gt;8000/tcp
 [root@manager55 ~]<span class="hljs-comment"># docker service ps client</span>
 ID                  NAME                IMAGE               NODE                DESIRED STATE       CURRENT STATE            ERROR               PORTS
 t7xe5omklz28        client.1            busybox:latest      work196             Running             Running 15 minutes ago</code></pre></div>
 <p>可以发现busybox的容器是运行在work196上面的，这个时候我们去busybox ping whoami这个容器名，</p>
-<div class="code-wrapper"><pre class=" language-hljs bash">[root@work196 ~]<span class="hljs-comment"><code class="language-hljs bash">[root@work196 ~]<span class="hljs-comment"># docker exec bd2b98fdc7f9 ping whoami</span>
+<div class="code-wrapper"><pre><code class="hljs bash">[root@work196 ~]<span class="hljs-comment"># docker exec bd2b98fdc7f9 ping whoami</span>
 PING whoami (10.0.2.2): 56 data bytes
 64 bytes from 10.0.2.2: seq=0 ttl=64 time=0.077 ms
 64 bytes from 10.0.2.2: seq=1 ttl=64 time=0.194 ms
@@ -289,30 +289,30 @@ PING whoami (10.0.2.2): 56 data bytes
 docker: <span class="hljs-string">&#x27;ecec&#x27;</span> is not a docker <span class="hljs-built_in">command</span>.
 See <span class="hljs-string">&#x27;docker --help&#x27;</span>
 [root@manager55 ~]<span class="hljs-comment"># docker exec  dfcd2f4c0396 ip a</span>
-1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN qlen 1000
+1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN qlen 1000
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
     inet 127.0.0.1/8 scope host lo
        valid_lft forever preferred_lft forever
-31: eth1@if32: <BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN> mtu 1450 qdisc noqueue state UP
+31: eth1@if32: &lt;BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN&gt; mtu 1450 qdisc noqueue state UP
     link/ether 02:42:0a:00:00:08 brd ff:ff:ff:ff:ff:ff
     inet 10.0.0.8/24 brd 10.0.0.255 scope global eth1
        valid_lft forever preferred_lft forever
-33: eth2@if34: <BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN> mtu 1500 qdisc noqueue state UP
+33: eth2@if34: &lt;BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN&gt; mtu 1500 qdisc noqueue state UP
     link/ether 02:42:ac:12:00:03 brd ff:ff:ff:ff:ff:ff
     inet 172.18.0.3/16 brd 172.18.255.255 scope global eth2
        valid_lft forever preferred_lft forever
-35: eth0@if36: <BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN> mtu 1450 qdisc noqueue state UP
+35: eth0@if36: &lt;BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN&gt; mtu 1450 qdisc noqueue state UP
     link/ether 02:42:0a:00:02:03 brd ff:ff:ff:ff:ff:ff
     inet 10.0.2.3/24 brd 10.0.2.255 scope global eth0
        valid_lft forever preferred_lft forever</code></pre></div>
 <p>在ping whoami容器时候，并没有其ping他的任何一个ip说明在这之上又做了一层vip，用来统一管理所有容器名为whoami的机器</p>
 </li>
 <li><p>扩展whoamin容器</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">docker service scale whami=4</code></pre></div>
+<div class="code-wrapper"><pre><code class="hljs bash">docker service scale whami=4</code></pre></div>
 <p>再次使用ping的时候会发现，同样ping的是这个vip</p>
 </li>
 <li><p>查看虚拟ip下面的ip</p>
-<div class="code-wrapper"><pre class=" language-hljs bash">[root@work196 ~]<span class="hljs-comment"><code class="language-hljs bash">[root@work196 ~]<span class="hljs-comment"># docker exec bd2b98fdc7f9 nslookup tasks.whoami</span>
+<div class="code-wrapper"><pre><code class="hljs bash">[root@work196 ~]<span class="hljs-comment"># docker exec bd2b98fdc7f9 nslookup tasks.whoami</span>
 Server:         127.0.0.11
 Address:        127.0.0.11:53
 
@@ -363,7 +363,7 @@ Address: 10.0.2.8
                       <a href="/2020/02/10/blog_back_new/docker/docker-ks8/">
                         <i class="iconfont icon-arrowleft"></i>
                         <span class="hidden-mobile">docker-k8s</span>
-                        <span class="visible-mobile">Vorheriger</span>
+                        <span class="visible-mobile">上一篇</span>
                       </a>
                     
                   </article>
@@ -372,7 +372,7 @@ Address: 10.0.2.8
                     
                       <a href="/2020/02/07/blog_back_new/docker/docker-swarm/">
                         <span class="hidden-mobile">docker-swarm</span>
-                        <span class="visible-mobile">Nächster</span>
+                        <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
                     
@@ -389,7 +389,7 @@ Address: 10.0.2.8
     
       <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
         <div id="toc">
-  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
   <div class="toc-body" id="toc-body"></div>
 </div>
 
@@ -415,7 +415,7 @@ Address: 10.0.2.8
   <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">Suchen</h4>
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
         <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -424,7 +424,7 @@ Address: 10.0.2.8
         <div class="md-form mb-5">
           <input type="text" id="local-search-input" class="form-control validate">
           <label data-error="x" data-success="v"
-                 for="local-search-input">Stichwort</label>
+                 for="local-search-input">关键词</label>
         </div>
         <div class="list-group" id="local-search-result"></div>
       </div>

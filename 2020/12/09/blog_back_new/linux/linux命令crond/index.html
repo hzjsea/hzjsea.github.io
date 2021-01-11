@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html lang="cn" data-default-color-scheme=&#34;auto&#34;>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
 
 
 
@@ -61,7 +61,7 @@
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
 
 <body>
@@ -88,7 +88,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/">
                 <i class="iconfont icon-home-fill"></i>
-                Startseite
+                首页
               </a>
             </li>
           
@@ -100,7 +100,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/archives/">
                 <i class="iconfont icon-archive-fill"></i>
-                Archiv
+                归档
               </a>
             </li>
           
@@ -112,7 +112,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/categories/">
                 <i class="iconfont icon-category-fill"></i>
-                Kategorie
+                分类
               </a>
             </li>
           
@@ -124,7 +124,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/tags/">
                 <i class="iconfont icon-tags-fill"></i>
-                Etiketten
+                标签
               </a>
             </li>
           
@@ -136,7 +136,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/about/">
                 <i class="iconfont icon-user-fill"></i>
-                Über mich
+                关于
               </a>
             </li>
           
@@ -175,7 +175,7 @@
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
       <time datetime="2020-12-09 14:19" pubdate>
-        December 9, 2020 pm
+        2020年12月9日 下午
       </time>
     </span>
   
@@ -186,7 +186,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      314 字
+      336 字
     </span>
   
 
@@ -231,7 +231,7 @@
             <div class="markdown-body">
               <a id="more"></a>
 <h1 id="linux命令crond"><a href="#linux命令crond" class="headerlink" title="linux命令crond"></a>linux命令crond</h1><p>如果没有crond 或者 crontab命令,则说明可能使用的是精简过得系统,可以使用下面的命令安装</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">yum install crontabs -y</code></pre></div>
+<div class="code-wrapper"><pre><code class="hljs bash">yum install crontabs -y</code></pre></div>
 
 <ul>
 <li>crontab 是针对当前用户的</li>
@@ -245,40 +245,40 @@
 <p>注意2</p>
 </blockquote>
 <p>所有crond控制的脚本都必须是有绝对路径的 不然还是会跑到root下面 包括所有的命令路径<br>比如我要备份数据库,我会使用到mysqldump 因此我要使用绝对路径来使用mysqldump <code>/usr/local/sbin/mysqldump</code></p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-keyword">case</span> <span class="hljs-variable">$i</span> <span class="hljs-keyword"><code class="language-hljs bash"><span class="hljs-keyword">case</span> <span class="hljs-variable">$i</span> <span class="hljs-keyword">in</span>
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-keyword">case</span> <span class="hljs-variable">$i</span> <span class="hljs-keyword">in</span>
         init)
-                <span class="hljs-built_in">echo</span> <span class="hljs-string">"1"</span> >> ./xx.txt
+                <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;1&quot;</span> &gt;&gt; ./xx.txt
                 ;;
         *)
-                <span class="hljs-built_in">echo</span> <span class="hljs-string">"default"</span> >> ./xx.txt  <span class="hljs-comment"># 这里没有写绝对路径,就会跑到/root/下面去了</span>
+                <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;default&quot;</span> &gt;&gt; ./xx.txt  <span class="hljs-comment"># 这里没有写绝对路径,就会跑到/root/下面去了</span>
                 ;;
 <span class="hljs-keyword">esac</span>
 
 time_now=`date`
-<span class="hljs-built_in">echo</span> <span class="hljs-variable">${time_now}</span> >> ./xx.txt
+<span class="hljs-built_in">echo</span> <span class="hljs-variable">$&#123;time_now&#125;</span> &gt;&gt; ./xx.txt
 
 crond如下
-*/1 * * * *  root sh /etc/cron.d/xx.sh init >> /etc/cron.d/xxx.txt</code></pre></div>
+*/1 * * * *  root sh /etc/cron.d/xx.sh init &gt;&gt; /etc/cron.d/xxx.txt</code></pre></div>
 
 <blockquote>
 <p>使用crontab</p>
 </blockquote>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 在crontab -e 创建的文件下面</span>
->> crontab -e
-*/1 * * * * <span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;xxx&#x27;</span> >>  ./xxx.log</code></pre></div>
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 在crontab -e 创建的文件下面</span>
+&gt;&gt; crontab -e
+*/1 * * * * <span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;xxx&#x27;</span> &gt;&gt;  ./xxx.log</code></pre></div>
 
 <blockquote>
 <p>使用crond</p>
 </blockquote>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment">#在/etc/crond 文件夹下面</span>
-*/1 * * * *  root <span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;xxx&#x27;</span> >>  ./xxx.log</code></pre></div>
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment">#在/etc/crond 文件夹下面</span>
+*/1 * * * *  root <span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;xxx&#x27;</span> &gt;&gt;  ./xxx.log</code></pre></div>
 
 <h2 id="时间分布图"><a href="#时间分布图" class="headerlink" title="时间分布图"></a>时间分布图</h2><p><img src="http://img.noback.top/2020-12-09-14-26-13.png" srcset="/img/loading.gif" alt="2020-12-09-14-26-13"></p>
 <p>举例</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 每分钟写内容到log当中</span>
-*/1 * * * *  root <span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;xxx&#x27;</span> >>  ./xxx.log
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 每分钟写内容到log当中</span>
+*/1 * * * *  root <span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;xxx&#x27;</span> &gt;&gt;  ./xxx.log
 <span class="hljs-comment"># 每60分钟写内容到log当中</span>
-*/60 * * * *  root <span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;xxx&#x27;</span> >>  ./xxx.log</code></pre></div>
+*/60 * * * *  root <span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;xxx&#x27;</span> &gt;&gt;  ./xxx.log</code></pre></div>
             </div>
             <hr>
             <div>
@@ -313,7 +313,7 @@ crond如下
                       <a href="/2020/12/11/blog_back_new/linux/linux%E5%91%BD%E4%BB%A4hping3/">
                         <i class="iconfont icon-arrowleft"></i>
                         <span class="hidden-mobile">linux命令hping3</span>
-                        <span class="visible-mobile">Vorheriger</span>
+                        <span class="visible-mobile">上一篇</span>
                       </a>
                     
                   </article>
@@ -322,7 +322,7 @@ crond如下
                     
                       <a href="/2020/12/09/blog_back_new/linux/linux%E5%91%BD%E4%BB%A4curl/">
                         <span class="hidden-mobile">linux命令curl</span>
-                        <span class="visible-mobile">Nächster</span>
+                        <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
                     
@@ -339,7 +339,7 @@ crond如下
     
       <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
         <div id="toc">
-  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
   <div class="toc-body" id="toc-body"></div>
 </div>
 
@@ -365,7 +365,7 @@ crond如下
   <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">Suchen</h4>
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
         <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -374,7 +374,7 @@ crond如下
         <div class="md-form mb-5">
           <input type="text" id="local-search-input" class="form-control validate">
           <label data-error="x" data-success="v"
-                 for="local-search-input">Stichwort</label>
+                 for="local-search-input">关键词</label>
         </div>
         <div class="list-group" id="local-search-result"></div>
       </div>

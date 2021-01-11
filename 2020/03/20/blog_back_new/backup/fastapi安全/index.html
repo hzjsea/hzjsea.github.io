@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html lang="cn" data-default-color-scheme=&#34;auto&#34;>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
 
 
 
@@ -61,7 +61,7 @@
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
 
 <body>
@@ -88,7 +88,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/">
                 <i class="iconfont icon-home-fill"></i>
-                Startseite
+                首页
               </a>
             </li>
           
@@ -100,7 +100,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/archives/">
                 <i class="iconfont icon-archive-fill"></i>
-                Archiv
+                归档
               </a>
             </li>
           
@@ -112,7 +112,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/categories/">
                 <i class="iconfont icon-category-fill"></i>
-                Kategorie
+                分类
               </a>
             </li>
           
@@ -124,7 +124,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/tags/">
                 <i class="iconfont icon-tags-fill"></i>
-                Etiketten
+                标签
               </a>
             </li>
           
@@ -136,7 +136,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/about/">
                 <i class="iconfont icon-user-fill"></i>
-                Über mich
+                关于
               </a>
             </li>
           
@@ -175,7 +175,7 @@
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
       <time datetime="2020-03-20 14:03" pubdate>
-        March 20, 2020 pm
+        2020年3月20日 下午
       </time>
     </span>
   
@@ -186,7 +186,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      1k 字
+      1.2k 字
     </span>
   
 
@@ -196,7 +196,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      14
+      16
        分钟
     </span>
   
@@ -256,35 +256,35 @@
 <h2 id="fastapi使用"><a href="#fastapi使用" class="headerlink" title="fastapi使用"></a>fastapi使用</h2><p>安装库</p>
 <div class="code-wrapper"><pre><div class="caption"><span>script</span></div><code class="hljs shell">pip install python-multipart</code></pre></div>
 <p>创建OAuth2PasswordBearer</p>
-<div class="code-wrapper"><pre class=" language-hljs python"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword"><code class="language-hljs python"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span>  FastAPI,Depends
+<div class="code-wrapper"><pre><code class="hljs python"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span>  FastAPI,Depends
 <span class="hljs-keyword">from</span> fastapi.security <span class="hljs-keyword">import</span>  OAuth2PasswordBearer
 app = FastAPI()
 
 <span class="hljs-comment"># 创建一个token生成地址</span>
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl=<span class="hljs-string">"/token"</span>)
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl=<span class="hljs-string">&quot;/token&quot;</span>)
 
-<span class="hljs-meta">@app.get("/items/")</span>
+<span class="hljs-meta">@app.get(&quot;/items/&quot;)</span>
 <span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">read_item</span>(<span class="hljs-params">token: <span class="hljs-built_in">str</span> = Depends(<span class="hljs-params">oauth2_scheme</span>)</span>):</span>
-    <span class="hljs-keyword">return</span> {<span class="hljs-string">"token"</span>:token}</code></pre></div>
+    <span class="hljs-keyword">return</span> &#123;<span class="hljs-string">&quot;token&quot;</span>:token&#125;</code></pre></div>
 
 <p><img src="http://img.noback.top/2020-03-29-00-00-34.png" srcset="/img/loading.gif" alt="2020-03-29-00-00-34"><br>启动项目，<code>http://127.0.0.1:8000/docs</code> 右上角会出现一个锁，这个就是验证<br>不过我们还没有给这个授权锁添加验证的功能，</p>
-<h2 id="创建一个登陆检验的功能"><a href="#创建一个登陆检验的功能" class="headerlink" title="创建一个登陆检验的功能"></a>创建一个登陆检验的功能</h2><div class="code-wrapper"><pre class=" language-hljs python"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword"><code class="language-hljs python"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span>  FastAPI,Depends,HTTPException,status
+<h2 id="创建一个登陆检验的功能"><a href="#创建一个登陆检验的功能" class="headerlink" title="创建一个登陆检验的功能"></a>创建一个登陆检验的功能</h2><div class="code-wrapper"><pre><code class="hljs python"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span>  FastAPI,Depends,HTTPException,status
 <span class="hljs-keyword">from</span> fastapi.security <span class="hljs-keyword">import</span>  OAuth2PasswordBearer,OAuth2PasswordRequestForm
 <span class="hljs-keyword">from</span> pydantic <span class="hljs-keyword">import</span>  BaseModel
 <span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span>  Optional
 app = FastAPI()
 
-<span class="hljs-string">"""</span>
+<span class="hljs-string">&quot;&quot;&quot;</span>
 <span class="hljs-string">    //大致逻辑</span>
 <span class="hljs-string">    1. 创建一个地址用来生成token，地址生成token由OAuth2PasswordBearer控制，会在右上角生成一把锁</span>
 <span class="hljs-string">    2. 创建用户模型以及模拟用户数据fake_user_db</span>
 <span class="hljs-string">    3. 对用户输入的密码做二次加密的过程，因为数据库后面检验的是你二次加密后的内容，并不是你输入的密码 UserInDB</span>
 <span class="hljs-string">    4. </span>
-<span class="hljs-string">"""</span>
+<span class="hljs-string">&quot;&quot;&quot;</span>
 
 
 <span class="hljs-comment"># 创建一个token生成地址</span>
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl=<span class="hljs-string">"/token"</span>)
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl=<span class="hljs-string">&quot;/token&quot;</span>)
 
 <span class="hljs-comment"># 创建一个用户模型</span>
 <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">User</span>(<span class="hljs-params">BaseModel</span>):</span>
@@ -298,34 +298,34 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl=<span class="hljs-string">"/token"
     hashed_password: <span class="hljs-built_in">str</span>
 
 <span class="hljs-comment"># 创建虚拟数据 模拟数据库</span>
-fake_user_db = {
-    <span class="hljs-string">"johndoe"</span>: {
-        <span class="hljs-string">"username"</span>: <span class="hljs-string">"johndoe"</span>,
-        <span class="hljs-string">"full_name"</span>: <span class="hljs-string">"John Doe"</span>,
-        <span class="hljs-string">"email"</span>: <span class="hljs-string">"johndoe@example.com"</span>,
-        <span class="hljs-string">"hashed_password"</span>: <span class="hljs-string">"fakehashedsecret"</span>,
-        <span class="hljs-string">"disabled"</span>: <span class="hljs-literal">False</span>,
-    },
-    <span class="hljs-string">"alice"</span>: {
-        <span class="hljs-string">"username"</span>: <span class="hljs-string">"alice"</span>,
-        <span class="hljs-string">"full_name"</span>: <span class="hljs-string">"Alice Wonderson"</span>,
-        <span class="hljs-string">"email"</span>: <span class="hljs-string">"alice@example.com"</span>,
-        <span class="hljs-string">"hashed_password"</span>: <span class="hljs-string">"fakehashedsecret2"</span>,
-        <span class="hljs-string">"disabled"</span>: <span class="hljs-literal">True</span>,
-    },
-    <span class="hljs-string">"hzj"</span>: {
-        <span class="hljs-string">"username"</span>: <span class="hljs-string">"hzj"</span>,
-        <span class="hljs-string">"full_name"</span>: <span class="hljs-string">"hezejun"</span>,
-        <span class="hljs-string">"email"</span>: <span class="hljs-string">"hzj@example.com"</span>,
-        <span class="hljs-string">"hashed_password"</span>: <span class="hljs-string">"fakehashedhzj"</span>,
-        <span class="hljs-string">"disabled"</span>: <span class="hljs-literal">True</span>,
-    },
-}
+fake_user_db = &#123;
+    <span class="hljs-string">&quot;johndoe&quot;</span>: &#123;
+        <span class="hljs-string">&quot;username&quot;</span>: <span class="hljs-string">&quot;johndoe&quot;</span>,
+        <span class="hljs-string">&quot;full_name&quot;</span>: <span class="hljs-string">&quot;John Doe&quot;</span>,
+        <span class="hljs-string">&quot;email&quot;</span>: <span class="hljs-string">&quot;johndoe@example.com&quot;</span>,
+        <span class="hljs-string">&quot;hashed_password&quot;</span>: <span class="hljs-string">&quot;fakehashedsecret&quot;</span>,
+        <span class="hljs-string">&quot;disabled&quot;</span>: <span class="hljs-literal">False</span>,
+    &#125;,
+    <span class="hljs-string">&quot;alice&quot;</span>: &#123;
+        <span class="hljs-string">&quot;username&quot;</span>: <span class="hljs-string">&quot;alice&quot;</span>,
+        <span class="hljs-string">&quot;full_name&quot;</span>: <span class="hljs-string">&quot;Alice Wonderson&quot;</span>,
+        <span class="hljs-string">&quot;email&quot;</span>: <span class="hljs-string">&quot;alice@example.com&quot;</span>,
+        <span class="hljs-string">&quot;hashed_password&quot;</span>: <span class="hljs-string">&quot;fakehashedsecret2&quot;</span>,
+        <span class="hljs-string">&quot;disabled&quot;</span>: <span class="hljs-literal">True</span>,
+    &#125;,
+    <span class="hljs-string">&quot;hzj&quot;</span>: &#123;
+        <span class="hljs-string">&quot;username&quot;</span>: <span class="hljs-string">&quot;hzj&quot;</span>,
+        <span class="hljs-string">&quot;full_name&quot;</span>: <span class="hljs-string">&quot;hezejun&quot;</span>,
+        <span class="hljs-string">&quot;email&quot;</span>: <span class="hljs-string">&quot;hzj@example.com&quot;</span>,
+        <span class="hljs-string">&quot;hashed_password&quot;</span>: <span class="hljs-string">&quot;fakehashedhzj&quot;</span>,
+        <span class="hljs-string">&quot;disabled&quot;</span>: <span class="hljs-literal">True</span>,
+    &#125;,
+&#125;
 
 
 <span class="hljs-comment"># 模拟密码加密过程</span>
 <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">fake_hash_password</span>(<span class="hljs-params">password: <span class="hljs-built_in">str</span></span>):</span>
-    <span class="hljs-keyword">return</span> <span class="hljs-string">"fakehashed"</span> + password
+    <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;fakehashed&quot;</span> + password
 
 <span class="hljs-comment"># 获取用户</span>
 <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_user</span>(<span class="hljs-params">db,username: <span class="hljs-built_in">str</span></span>):</span>
@@ -347,32 +347,32 @@ fake_user_db = {
     <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> user:
         <span class="hljs-keyword">raise</span> HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=<span class="hljs-string">"Invalid authentication credentials"</span>,
-            headers={<span class="hljs-string">"WWW-Authenticate"</span>: <span class="hljs-string">"Bearer"</span>},
+            detail=<span class="hljs-string">&quot;Invalid authentication credentials&quot;</span>,
+            headers=&#123;<span class="hljs-string">&quot;WWW-Authenticate&quot;</span>: <span class="hljs-string">&quot;Bearer&quot;</span>&#125;,
         )
     <span class="hljs-keyword">return</span> user
 
 <span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_current_active_user</span>(<span class="hljs-params">current_user: User = Depends(<span class="hljs-params">get_current_user(<span class="hljs-params"></span>)</span>)</span>):</span>
     <span class="hljs-keyword">if</span> current_user.disabled:
-        <span class="hljs-keyword">raise</span> HTTPException(status_code=<span class="hljs-number">400</span>, detail=<span class="hljs-string">"Inactive user"</span>)
+        <span class="hljs-keyword">raise</span> HTTPException(status_code=<span class="hljs-number">400</span>, detail=<span class="hljs-string">&quot;Inactive user&quot;</span>)
     <span class="hljs-keyword">return</span> current_user
 
 
 
 <span class="hljs-comment"># 返回token</span>
-<span class="hljs-string">"""</span>
+<span class="hljs-string">&quot;&quot;&quot;</span>
 <span class="hljs-string">    0. 验证的数据表单由OAuth2PasswordRequestForm获得</span>
 <span class="hljs-string">    1.查看数据库中有没有这个用户对象</span>
 <span class="hljs-string">    2. 有则返回一个实例化的user对象，并且插入加密后的token</span>
 <span class="hljs-string">    3. 生成token进行校验，如果不相同，则返回错误</span>
 <span class="hljs-string">    </span>
-<span class="hljs-string">"""</span>
-<span class="hljs-meta">@app.post("/token")</span>
+<span class="hljs-string">&quot;&quot;&quot;</span>
+<span class="hljs-meta">@app.post(&quot;/token&quot;)</span>
 <span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">login</span>(<span class="hljs-params">form_data: OAuth2PasswordRequestForm = Depends(<span class="hljs-params"></span>)</span>):</span>
     <span class="hljs-comment"># 传入对象为username 比如我传入的username=hzj</span>
     user_dict = fake_user_db.get(form_data.username)
     <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> user_dict:
-        <span class="hljs-keyword">raise</span> HTTPException(status_code=<span class="hljs-number">400</span>, detail=<span class="hljs-string">"Incorrect username or password"</span>)
+        <span class="hljs-keyword">raise</span> HTTPException(status_code=<span class="hljs-number">400</span>, detail=<span class="hljs-string">&quot;Incorrect username or password&quot;</span>)
     user = UserInDB(**user_dict)
     print(user)
     <span class="hljs-comment"># 返回的内容</span>
@@ -380,23 +380,23 @@ fake_user_db = {
     <span class="hljs-comment"># 对输入的密码进行手动二次加密，再与数据库中的密码进行比较，存在则返回username</span>
     hashed_password = fake_hash_password(form_data.password)
     <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> hashed_password == user.hashed_password:
-        <span class="hljs-keyword">raise</span> HTTPException(status_code=<span class="hljs-number">400</span>, detail=<span class="hljs-string">"Incorrect username or password"</span>)
+        <span class="hljs-keyword">raise</span> HTTPException(status_code=<span class="hljs-number">400</span>, detail=<span class="hljs-string">&quot;Incorrect username or password&quot;</span>)
 
-    <span class="hljs-keyword">return</span> {<span class="hljs-string">"access_token"</span>: user.username, <span class="hljs-string">"token_type"</span>: <span class="hljs-string">"bearer"</span>}
+    <span class="hljs-keyword">return</span> &#123;<span class="hljs-string">&quot;access_token&quot;</span>: user.username, <span class="hljs-string">&quot;token_type&quot;</span>: <span class="hljs-string">&quot;bearer&quot;</span>&#125;
 
-<span class="hljs-comment"># @app.get("/items/")</span>
+<span class="hljs-comment"># @app.get(&quot;/items/&quot;)</span>
 <span class="hljs-comment"># async def read_item(token: str = Depends(oauth2_scheme)):</span>
-<span class="hljs-comment">#    return {"token":token}</span>
+<span class="hljs-comment">#    return &#123;&quot;token&quot;:token&#125;</span>
 
 
-<span class="hljs-meta">@app.get("/users/me")</span>
+<span class="hljs-meta">@app.get(&quot;/users/me&quot;)</span>
 <span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">read_users_me</span>(<span class="hljs-params">current_user: User = Depends(<span class="hljs-params">get_current_user</span>)</span>):</span>
     <span class="hljs-keyword">return</span> current_user
 
 </code></pre></div>
 
 <h2 id="使用jwt完成token验证"><a href="#使用jwt完成token验证" class="headerlink" title="使用jwt完成token验证"></a>使用jwt完成token验证</h2><p>jwt =&gt; json web<br>jwt的生成方式如上所示，无非他的二次加密中加入了各种各样的算法，并且还加入了令牌的过期时间，所以更加的眼睛<br>python调用jwt要使用到pyjwt这个库,另外我们还要用到passlib来处理密码哈希</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">pip install pyjwt
+<div class="code-wrapper"><pre><code class="hljs bash">pip install pyjwt
 pip install passlib</code></pre></div>
 
 
@@ -433,7 +433,7 @@ pip install passlib</code></pre></div>
                       <a href="/2020/03/20/blog_back_new/backup/fastapi%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5/">
                         <i class="iconfont icon-arrowleft"></i>
                         <span class="hidden-mobile">fastapi依赖注入</span>
-                        <span class="visible-mobile">Vorheriger</span>
+                        <span class="visible-mobile">上一篇</span>
                       </a>
                     
                   </article>
@@ -442,7 +442,7 @@ pip install passlib</code></pre></div>
                     
                       <a href="/2020/03/20/blog_back_new/backup/python%E4%B8%AD%E7%9A%84%E5%BA%8F%E5%88%97%E5%8C%96/">
                         <span class="hidden-mobile">python中的序列化</span>
-                        <span class="visible-mobile">Nächster</span>
+                        <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
                     
@@ -459,7 +459,7 @@ pip install passlib</code></pre></div>
     
       <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
         <div id="toc">
-  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
   <div class="toc-body" id="toc-body"></div>
 </div>
 
@@ -485,7 +485,7 @@ pip install passlib</code></pre></div>
   <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">Suchen</h4>
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
         <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -494,7 +494,7 @@ pip install passlib</code></pre></div>
         <div class="md-form mb-5">
           <input type="text" id="local-search-input" class="form-control validate">
           <label data-error="x" data-success="v"
-                 for="local-search-input">Stichwort</label>
+                 for="local-search-input">关键词</label>
         </div>
         <div class="list-group" id="local-search-result"></div>
       </div>

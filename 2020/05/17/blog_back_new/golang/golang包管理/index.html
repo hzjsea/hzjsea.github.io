@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html lang="cn" data-default-color-scheme=&#34;auto&#34;>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
 
 
 
@@ -61,7 +61,7 @@
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
 
 <body>
@@ -88,7 +88,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/">
                 <i class="iconfont icon-home-fill"></i>
-                Startseite
+                首页
               </a>
             </li>
           
@@ -100,7 +100,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/archives/">
                 <i class="iconfont icon-archive-fill"></i>
-                Archiv
+                归档
               </a>
             </li>
           
@@ -112,7 +112,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/categories/">
                 <i class="iconfont icon-category-fill"></i>
-                Kategorie
+                分类
               </a>
             </li>
           
@@ -124,7 +124,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/tags/">
                 <i class="iconfont icon-tags-fill"></i>
-                Etiketten
+                标签
               </a>
             </li>
           
@@ -136,7 +136,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/about/">
                 <i class="iconfont icon-user-fill"></i>
-                Über mich
+                关于
               </a>
             </li>
           
@@ -175,7 +175,7 @@
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
       <time datetime="2020-05-17 01:18" pubdate>
-        May 17, 2020 am
+        2020年5月17日 凌晨
       </time>
     </span>
   
@@ -186,7 +186,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      891 字
+      899 字
     </span>
   
 
@@ -265,29 +265,29 @@
 </ul>
 <h2 id="使用合适的包管理工具"><a href="#使用合适的包管理工具" class="headerlink" title="使用合适的包管理工具"></a>使用合适的包管理工具</h2><p>前面讲了一大堆的包管理工具的发展以及如何使用，现在我们来讲讲面对新版本的golang语言，我们应该有什么包管理工具来处理</p>
 <h3 id="包管理工具-go-mod"><a href="#包管理工具-go-mod" class="headerlink" title="包管理工具 go mod"></a>包管理工具 go mod</h3><p>Golang 版本：1.12.3。在 1.12 版本之前，使用 Go modules 之前需要环境变量 GO111MODULE:<br>在1.13版本以后 go mod是默认开启的。不在需要设置环境变量</p>
-<div class="code-wrapper"><pre class=" language-hljs livecodeserver"><code class="language-hljs livecodeserver">- GO111MODULE=off: 不使用 modules 功能，查找vendor和GOPATH目录
+<div class="code-wrapper"><pre><code class="hljs livecodeserver">- GO111MODULE=off: 不使用 modules 功能，查找vendor和GOPATH目录
 - GO111MODULE=<span class="hljs-keyword">on</span>: 使用 <span class="hljs-title">modules</span> 功能，不会去 <span class="hljs-title">GOPATH</span> 下面查找依赖包。
 - GO111MODULE=auto: Golang 自己检测是不是使用 modules 功能，如果当前目录不在$GOPATH 并且 当前目录（或者父目录）下有go.<span class="hljs-keyword">mod</span>文件，则使用 GO111MODULE， 否则仍旧使用 GOPATH mode
 
   export GO111MODULE=<span class="hljs-keyword">on</span> //<span class="hljs-title">linux</span></code></pre></div>
 <p>创建项目</p>
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">package</span> main
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main
 ​
-<span class="hljs-keyword">import</span> <span class="hljs-string">"fmt"</span>
-<span class="hljs-keyword">import</span> <span class="hljs-string">"github.com/astaxie/beego"</span>
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
-    fmt.Println(<span class="hljs-string">"hello"</span>)
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/astaxie/beego&quot;</span>
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
+    fmt.Println(<span class="hljs-string">&quot;hello&quot;</span>)
     beego.Run()
-}</code></pre></div>
+&#125;</code></pre></div>
 <p>初始化go module </p>
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">go</span> mod init test</code></pre></div>
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">go</span> mod init test</code></pre></div>
 <p>这里他会生成一个mod文件，和python里面的pyenv库一样，这个mod文件用于存放下载的包 另外还会产生一个go.sum 文件，这个文件用来存放依赖包对应版本的下载地址和哈希值这些 package 并不是直接存储到 GOPATH/src，而是存储到 GOPATH/pkg/mod 下面，不同版本并存的方式。<br>运行项目，go会自动检测使用的包,并且下载</p>
 <h3 id="包下载代理-goproxy"><a href="#包下载代理-goproxy" class="headerlink" title="包下载代理  goproxy"></a>包下载代理  goproxy</h3><p>有时候我们下包会出现超时，网络方面的问题，这是因为go的一些包会被丢在国外，然后无法透过网络，传到国内，这个时候就要用一些代理来完成这个操作，这里的代理值得是一些ss或者说国内的镜像源</p>
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-comment"><code class="language-hljs go"><span class="hljs-comment">// 切换镜像源</span>
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-comment">// 切换镜像源</span>
 export GOPROXY=https:<span class="hljs-comment">//goproxy.cn</span>
 <span class="hljs-comment">// export GOPROXY=https://mirrors.aliyun.com/goproxy/</span></code></pre></div>
 <p><img src="http://img.noback.top/2020-05-17-01-46-43.png" srcset="/img/loading.gif" alt="2020-05-17-01-46-43"></p>
-<h2 id="常用的命令"><a href="#常用的命令" class="headerlink" title="常用的命令"></a>常用的命令</h2><div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-comment"><code class="language-hljs go"><span class="hljs-comment">// 初始化modules</span>
+<h2 id="常用的命令"><a href="#常用的命令" class="headerlink" title="常用的命令"></a>常用的命令</h2><div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-comment">// 初始化modules</span>
 <span class="hljs-keyword">go</span> mod init filename
 <span class="hljs-comment">// 更新所有依赖</span>
 <span class="hljs-keyword">go</span> list -u -m all</code></pre></div>
@@ -325,7 +325,7 @@ export GOPROXY=https:<span class="hljs-comment">//goproxy.cn</span>
                       <a href="/2020/05/17/blog_back_new/golang/gin/">
                         <i class="iconfont icon-arrowleft"></i>
                         <span class="hidden-mobile">gin</span>
-                        <span class="visible-mobile">Vorheriger</span>
+                        <span class="visible-mobile">上一篇</span>
                       </a>
                     
                   </article>
@@ -334,7 +334,7 @@ export GOPROXY=https:<span class="hljs-comment">//goproxy.cn</span>
                     
                       <a href="/2020/05/15/blog_back_new/NetWord/%E9%9D%99%E6%80%81%E8%B7%AF%E7%94%B1-%E5%8A%A8%E6%80%81%E8%B7%AF%E7%94%B1-%E7%AD%96%E7%95%A5%E8%B7%AF%E7%94%B1/">
                         <span class="hidden-mobile">静态路由-动态路由-策略路由</span>
-                        <span class="visible-mobile">Nächster</span>
+                        <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
                     
@@ -351,7 +351,7 @@ export GOPROXY=https:<span class="hljs-comment">//goproxy.cn</span>
     
       <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
         <div id="toc">
-  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
   <div class="toc-body" id="toc-body"></div>
 </div>
 
@@ -377,7 +377,7 @@ export GOPROXY=https:<span class="hljs-comment">//goproxy.cn</span>
   <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">Suchen</h4>
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
         <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -386,7 +386,7 @@ export GOPROXY=https:<span class="hljs-comment">//goproxy.cn</span>
         <div class="md-form mb-5">
           <input type="text" id="local-search-input" class="form-control validate">
           <label data-error="x" data-success="v"
-                 for="local-search-input">Stichwort</label>
+                 for="local-search-input">关键词</label>
         </div>
         <div class="list-group" id="local-search-result"></div>
       </div>

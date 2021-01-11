@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html lang="cn" data-default-color-scheme=&#34;auto&#34;>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
 
 
 
@@ -61,7 +61,7 @@
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
 
 <body>
@@ -88,7 +88,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/">
                 <i class="iconfont icon-home-fill"></i>
-                Startseite
+                首页
               </a>
             </li>
           
@@ -100,7 +100,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/archives/">
                 <i class="iconfont icon-archive-fill"></i>
-                Archiv
+                归档
               </a>
             </li>
           
@@ -112,7 +112,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/categories/">
                 <i class="iconfont icon-category-fill"></i>
-                Kategorie
+                分类
               </a>
             </li>
           
@@ -124,7 +124,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/tags/">
                 <i class="iconfont icon-tags-fill"></i>
-                Etiketten
+                标签
               </a>
             </li>
           
@@ -136,7 +136,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/about/">
                 <i class="iconfont icon-user-fill"></i>
-                Über mich
+                关于
               </a>
             </li>
           
@@ -175,7 +175,7 @@
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
       <time datetime="2020-09-15 10:03" pubdate>
-        September 15, 2020 am
+        2020年9月15日 上午
       </time>
     </span>
   
@@ -186,7 +186,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      1.3k 字
+      2.4k 字
     </span>
   
 
@@ -196,7 +196,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      19
+      37
        分钟
     </span>
   
@@ -233,7 +233,7 @@
 
 
 <h1 id="go库cobra使用"><a href="#go库cobra使用" class="headerlink" title="go库cobra使用"></a>go库cobra使用</h1><p>cobra是一个命令提示工具，docker k8s里面的命令都是使用它来完成自动提示的</p>
-<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 使用golang 创建项目 mkdir gocommand</span>
+<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 使用golang 创建项目 mkdir gocommand</span>
 <span class="hljs-comment"># 进入文件夹 创建mod包</span>
 go mod init gocommand
 <span class="hljs-comment"># 拉取cobra项目</span>
@@ -244,7 +244,7 @@ cobra init --pkg-name Gocommand
 cobra add run</code></pre></div>
 
 <p>项目框架如下</p>
-<div class="code-wrapper"><pre class=" language-hljs go"><code class="language-hljs go">.
+<div class="code-wrapper"><pre><code class="hljs go">.
 ├── LICENSE   <span class="hljs-comment">// 证书</span>
 ├── cmd       <span class="hljs-comment">// 存放app</span>
 │   ├── completion.<span class="hljs-keyword">go</span>
@@ -255,12 +255,12 @@ cobra add run</code></pre></div>
 
 
 <h3 id="Configuring-the-cobra-generator"><a href="#Configuring-the-cobra-generator" class="headerlink" title="Configuring the cobra generator"></a>Configuring the cobra generator</h3><p>生成器配置文件，go同时还提供了一个配置文件,文件地址为<code>~/.cobra.yaml</code></p>
-<div class="code-wrapper"><pre class=" language-hljs go"><code class="language-hljs go">author: Steve Francia <spf@spf13.com>
+<div class="code-wrapper"><pre><code class="hljs go">author: Steve Francia &lt;spf@spf13.com&gt;
 year: <span class="hljs-number">2020</span>
 license:
   header: This file is part of CLI application foo.
   text: |
-    {{ .copyright }}
+    &#123;&#123; .copyright &#125;&#125;
 
     This is my license. There are many like it, but this one is mine.
     My license is my best friend. It is my life. I must master it as I must
@@ -276,39 +276,39 @@ license:
 <blockquote>
 <p>main.go</p>
 </blockquote>
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">package</span> main
-<span class="hljs-keyword">import</span> <span class="hljs-string">"gocommand/cmd"</span>
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;gocommand/cmd&quot;</span>
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
 	cmd.Execute() <span class="hljs-comment">// 调用了cmd/root.go/Execute(func)</span>
-}</code></pre></div>
+&#125;</code></pre></div>
 
 <blockquote>
 <p>cmd/root.go</p>
 </blockquote>
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword">var</span> cfgFile <span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">var</span> cfgFile <span class="hljs-keyword">string</span>
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">var</span> cfgFile <span class="hljs-keyword">string</span>
 
 <span class="hljs-comment">// rootCmd represents the base command when called without any subcommands</span>
-<span class="hljs-keyword">var</span> rootCmd = &cobra.Command{  <span class="hljs-comment">// 一个cmd对象</span>
-	Use:   <span class="hljs-string">"Gocommand"</span>,
-	Short: <span class="hljs-string">"short desc"</span>,
-	Long: <span class="hljs-string">"long desc"</span>
-	<span class="hljs-comment">//	Run: func(cmd *cobra.Command, args []string) { },</span>
-}
+<span class="hljs-keyword">var</span> rootCmd = &amp;cobra.Command&#123;  <span class="hljs-comment">// 一个cmd对象</span>
+	Use:   <span class="hljs-string">&quot;Gocommand&quot;</span>,
+	Short: <span class="hljs-string">&quot;short desc&quot;</span>,
+	Long: <span class="hljs-string">&quot;long desc&quot;</span>
+	<span class="hljs-comment">//	Run: func(cmd *cobra.Command, args []string) &#123; &#125;,</span>
+&#125;
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">Execute</span><span class="hljs-params">()</span></span> {  <span class="hljs-comment">//被main.go 调用</span>
-	<span class="hljs-keyword">if</span> err := rootCmd.Execute(); err != <span class="hljs-literal">nil</span> {
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">Execute</span><span class="hljs-params">()</span></span> &#123;  <span class="hljs-comment">//被main.go 调用</span>
+	<span class="hljs-keyword">if</span> err := rootCmd.Execute(); err != <span class="hljs-literal">nil</span> &#123;
 		fmt.Println(err)
 		os.Exit(<span class="hljs-number">1</span>)
-	}
-}
+	&#125;
+&#125;
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">init</span><span class="hljs-params">()</span></span> {  <span class="hljs-comment">// 初始化</span>
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">init</span><span class="hljs-params">()</span></span> &#123;  <span class="hljs-comment">// 初始化</span>
 	cobra.OnInitialize(initConfig)
-	rootCmd.PersistentFlags().StringVar(&cfgFile, <span class="hljs-string">"config"</span>, <span class="hljs-string">""</span>, <span class="hljs-string">"config file (default is $HOME/.Gocommand.yaml)"</span>)
-	rootCmd.Flags().BoolP(<span class="hljs-string">"toggle"</span>, <span class="hljs-string">"t"</span>, <span class="hljs-literal">false</span>, <span class="hljs-string">"Help message for toggle"</span>)
-}
+	rootCmd.PersistentFlags().StringVar(&amp;cfgFile, <span class="hljs-string">&quot;config&quot;</span>, <span class="hljs-string">&quot;&quot;</span>, <span class="hljs-string">&quot;config file (default is $HOME/.Gocommand.yaml)&quot;</span>)
+	rootCmd.Flags().BoolP(<span class="hljs-string">&quot;toggle&quot;</span>, <span class="hljs-string">&quot;t&quot;</span>, <span class="hljs-literal">false</span>, <span class="hljs-string">&quot;Help message for toggle&quot;</span>)
+&#125;
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">initConfig</span><span class="hljs-params">()</span></span> {} <span class="hljs-comment">// 如果没有配置文件的话，可以先不看</span></code></pre></div>
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">initConfig</span><span class="hljs-params">()</span></span> &#123;&#125; <span class="hljs-comment">// 如果没有配置文件的话，可以先不看</span></code></pre></div>
 
 <p>上面的执行顺序分别是</p>
 <ol>
@@ -319,51 +319,51 @@ license:
 <blockquote>
 <p>cmd/run.go</p>
 </blockquote>
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">var</span> runCmd = &cobra.Command{
-	Use:   <span class="hljs-string">"run"</span>,
-	Short: <span class="hljs-string">"short desc"</span>,
-	Long: <span class="hljs-string">"long desc"</span>
-	Run: <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(cmd *cobra.Command, args []<span class="hljs-keyword">string</span>)</span></span> {  <span class="hljs-comment">// 匿名函数，指令所执行的方法</span>
-		fmt.Println(<span class="hljs-string">"run called"</span>)   
-	},
-}
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">var</span> runCmd = &amp;cobra.Command&#123;
+	Use:   <span class="hljs-string">&quot;run&quot;</span>,
+	Short: <span class="hljs-string">&quot;short desc&quot;</span>,
+	Long: <span class="hljs-string">&quot;long desc&quot;</span>
+	Run: <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(cmd *cobra.Command, args []<span class="hljs-keyword">string</span>)</span></span> &#123;  <span class="hljs-comment">// 匿名函数，指令所执行的方法</span>
+		fmt.Println(<span class="hljs-string">&quot;run called&quot;</span>)   
+	&#125;,
+&#125;
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">init</span><span class="hljs-params">()</span></span> {
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">init</span><span class="hljs-params">()</span></span> &#123;
 	rootCmd.AddCommand(runCmd)  <span class="hljs-comment">// rootCmd是root下面声明的结构体 runCmd是run.go下面声明的变量</span>
-}
+&#125;
 </code></pre></div>
 
 
-<h2 id="添加子命令"><a href="#添加子命令" class="headerlink" title="添加子命令"></a>添加子命令</h2><div class="code-wrapper"><pre class=" language-hljs bash">cobra add run <span class="hljs-comment"><code class="language-hljs bash">cobra add run <span class="hljs-comment"># 创建子命令</span>
+<h2 id="添加子命令"><a href="#添加子命令" class="headerlink" title="添加子命令"></a>添加子命令</h2><div class="code-wrapper"><pre><code class="hljs bash">cobra add run <span class="hljs-comment"># 创建子命令</span>
 <span class="hljs-comment"># 取消Run的注释</span>
-Run: func(cmd *cobra.Command, args []string) {
-	fmt.Println(<span class="hljs-string">"run called"</span>)
-}
+Run: func(cmd *cobra.Command, args []string) &#123;
+	fmt.Println(<span class="hljs-string">&quot;run called&quot;</span>)
+&#125;
 <span class="hljs-comment"># 运行</span>
 go run main.go run</code></pre></div>
 
 <h2 id="添加多个命令继承"><a href="#添加多个命令继承" class="headerlink" title="添加多个命令继承"></a>添加多个命令继承</h2><p>命令的继承主要在于<code>init()</code>这个函数下面</p>
-<div class="code-wrapper"><pre class=" language-hljs bash">func <span class="hljs-function"><span class="hljs-title"><code class="language-hljs bash">func <span class="hljs-function"><span class="hljs-title">init</span></span>() {
+<div class="code-wrapper"><pre><code class="hljs bash">func <span class="hljs-function"><span class="hljs-title">init</span></span>() &#123;
 	rootCmd.AddCommand(runCmd) <span class="hljs-comment"># 这里表示的是将runCmd 放到rootCmd下面 也就是第一个出来的子命令</span>
-}
+&#125;
 <span class="hljs-comment">#  创建一个新的子命令</span>
 cobra add child_run
 <span class="hljs-comment">#  修改内容如下</span>
-func <span class="hljs-function"><span class="hljs-title">init</span></span>() {
+func <span class="hljs-function"><span class="hljs-title">init</span></span>() &#123;
 	runCmd.AddCommand(childRunCmd)
-}
+&#125;
 <span class="hljs-comment"># 运行</span>
 go run main.go run childRun
 go run main.go childRun <span class="hljs-comment"># 报错</span></code></pre></div>
 
-<h2 id="添加Flag"><a href="#添加Flag" class="headerlink" title="添加Flag"></a>添加Flag</h2><div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">init</span><span class="hljs-params"><code class="language-hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">init</span><span class="hljs-params">()</span></span> {
+<h2 id="添加Flag"><a href="#添加Flag" class="headerlink" title="添加Flag"></a>添加Flag</h2><div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">init</span><span class="hljs-params">()</span></span> &#123;
 	rootCmd.AddCommand(runCmd)
-	runCmd.Flags().String(<span class="hljs-string">"name"</span>,<span class="hljs-string">"hello"</span>,<span class="hljs-string">"echo "</span>)
-}
+	runCmd.Flags().String(<span class="hljs-string">&quot;name&quot;</span>,<span class="hljs-string">&quot;hello&quot;</span>,<span class="hljs-string">&quot;echo &quot;</span>)
+&#125;
 <span class="hljs-comment">// 获取写入的数据</span>
-Run: <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(cmd *cobra.Command, args []<span class="hljs-keyword">string</span>)</span></span> {
-	fmt.Println(cmd.Flag(<span class="hljs-string">"name"</span>).Value)
-}
+Run: <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(cmd *cobra.Command, args []<span class="hljs-keyword">string</span>)</span></span> &#123;
+	fmt.Println(cmd.Flag(<span class="hljs-string">&quot;name&quot;</span>).Value)
+&#125;
 
 <span class="hljs-comment">// 运行程序</span>
 <span class="hljs-keyword">go</span> run main.<span class="hljs-keyword">go</span> run --name xxds</code></pre></div>
@@ -377,32 +377,32 @@ Run: <span class="hljs-function"><span class="hljs-keyword">func</span><span cla
 </ul>
 <p>把上面的String换成其他的都适用，比如换成<code>int intP intVar intVarP</code></p>
 <p>另外最好的使用方式是使用后面两种</p>
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword">var</span> split <span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">var</span> split <span class="hljs-keyword">int</span>;
-runCmd.Flags().IntVar(&split,<span class="hljs-string">"split"</span>,<span class="hljs-number">2</span>,<span class="hljs-string">"split string"</span>)
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">var</span> split <span class="hljs-keyword">int</span>;
+runCmd.Flags().IntVar(&amp;split,<span class="hljs-string">&quot;split&quot;</span>,<span class="hljs-number">2</span>,<span class="hljs-string">&quot;split string&quot;</span>)
 
 
 <span class="hljs-comment">// Flags:</span>
 <span class="hljs-comment">//   -h, --help          help for run</span>
-<span class="hljs-comment">//       --name string   help (default "hello")</span>
+<span class="hljs-comment">//       --name string   help (default &quot;hello&quot;)</span>
 <span class="hljs-comment">//       --split int     split string (default 2)</span></code></pre></div>
 
 
 <h3 id="全局Flag与本地flag"><a href="#全局Flag与本地flag" class="headerlink" title="全局Flag与本地flag"></a>全局Flag与本地flag</h3><p>如果需要有一个flag能在所有指令下面都可以使用的，可以设定一个全局Flag，建议设置在<code>/root.go</code>下面</p>
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-comment"><code class="language-hljs go"><span class="hljs-comment">// root.go</span>
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-comment">// root.go</span>
 <span class="hljs-keyword">var</span> version <span class="hljs-keyword">string</span>
 <span class="hljs-keyword">var</span> verbose <span class="hljs-keyword">string</span>
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">init</span><span class="hljs-params">()</span></span> {
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">init</span><span class="hljs-params">()</span></span> &#123;
 	cobra.OnInitialize(initConfig)
-	rootCmd.PersistentFlags().StringVarP(&version,<span class="hljs-string">"version"</span>,<span class="hljs-string">"v"</span>,<span class="hljs-string">"6.12.1"</span>,<span class="hljs-string">"show version"</span>)
-	rootCmd.PersistentFlags().StringVar(&verbose,<span class="hljs-string">"verbose"</span>,<span class="hljs-string">"6.12.1"</span>,<span class="hljs-string">"show verbose"</span>)
-}
+	rootCmd.PersistentFlags().StringVarP(&amp;version,<span class="hljs-string">&quot;version&quot;</span>,<span class="hljs-string">&quot;v&quot;</span>,<span class="hljs-string">&quot;6.12.1&quot;</span>,<span class="hljs-string">&quot;show version&quot;</span>)
+	rootCmd.PersistentFlags().StringVar(&amp;verbose,<span class="hljs-string">&quot;verbose&quot;</span>,<span class="hljs-string">&quot;6.12.1&quot;</span>,<span class="hljs-string">&quot;show verbose&quot;</span>)
+&#125;
 
-	Run: <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(cmd *cobra.Command, args []<span class="hljs-keyword">string</span>)</span></span> {
-		fstatus,_ := cmd.Flags().GetBool(<span class="hljs-string">"version"</span>)
-		<span class="hljs-keyword">if</span> fstatus{
-			fmt.Println(<span class="hljs-string">"version is 20.0.1"</span>)
-		}
-	}
+	Run: <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(cmd *cobra.Command, args []<span class="hljs-keyword">string</span>)</span></span> &#123;
+		fstatus,_ := cmd.Flags().GetBool(<span class="hljs-string">&quot;version&quot;</span>)
+		<span class="hljs-keyword">if</span> fstatus&#123;
+			fmt.Println(<span class="hljs-string">&quot;version is 20.0.1&quot;</span>)
+		&#125;
+	&#125;
 	
 
 <span class="hljs-comment">// go run main.go run --version</span>
@@ -413,38 +413,38 @@ runCmd.Flags().IntVar(&split,<span class="hljs-string">"split"</span>,<span clas
 <h2 id="TAB的静态补全与动态补全"><a href="#TAB的静态补全与动态补全" class="headerlink" title="TAB的静态补全与动态补全"></a>TAB的静态补全与动态补全</h2><p>cobra支持静态补全与动态补全</p>
 <p>静态补全就是 在之前就在数组中设置好值<br>动态补全就是 可以动态的获取值到数组中</p>
 <h3 id="静态名称补全"><a href="#静态名称补全" class="headerlink" title="静态名称补全"></a>静态名称补全</h3><p>静态名称补全比较简单，只要在想要自动补全的子命令中加入 ValidArgs 字段，传入一组包含预期结果的字符串数组即可，代码如下：</p>
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-comment"><code class="language-hljs go"><span class="hljs-comment">// 创建一个kubectCmd</span>
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-comment">// 创建一个kubectCmd</span>
 cobra add kubect
 <span class="hljs-comment">// 加入补全参数列表</span>
-<span class="hljs-keyword">var</span> valids []<span class="hljs-keyword">string</span> = []<span class="hljs-keyword">string</span>{ <span class="hljs-string">"pod"</span>, <span class="hljs-string">"node"</span>, <span class="hljs-string">"service"</span>, <span class="hljs-string">"replicationcontroller"</span> }
+<span class="hljs-keyword">var</span> valids []<span class="hljs-keyword">string</span> = []<span class="hljs-keyword">string</span>&#123; <span class="hljs-string">&quot;pod&quot;</span>, <span class="hljs-string">&quot;node&quot;</span>, <span class="hljs-string">&quot;service&quot;</span>, <span class="hljs-string">&quot;replicationcontroller&quot;</span> &#125;
 
 <span class="hljs-comment">// 创建一个completionCmd</span>
 cobra add completion
 <span class="hljs-comment">// 复制粘贴 这是cobra官方提供的</span>
-<span class="hljs-keyword">var</span> completionCmd = &cobra.Command{
-	Use:                   <span class="hljs-string">"completion [bash|zsh|fish|powershell]"</span>,
-	Short:                 <span class="hljs-string">"Generate completion script"</span>,
+<span class="hljs-keyword">var</span> completionCmd = &amp;cobra.Command&#123;
+	Use:                   <span class="hljs-string">&quot;completion [bash|zsh|fish|powershell]&quot;</span>,
+	Short:                 <span class="hljs-string">&quot;Generate completion script&quot;</span>,
 	Long: <span class="hljs-string">`To load completions:</span>
 <span class="hljs-string"></span>
 <span class="hljs-string">Bash:</span>
 <span class="hljs-string"></span>
-<span class="hljs-string">$ source <(yourprogram completion bash)</span>
+<span class="hljs-string">$ source &lt;(yourprogram completion bash)</span>
 <span class="hljs-string"></span>
 <span class="hljs-string"># To load completions for each session, execute once:</span>
 <span class="hljs-string">Linux:</span>
-<span class="hljs-string">  $ yourprogram completion bash > /etc/bash_completion.d/yourprogram</span>
+<span class="hljs-string">  $ yourprogram completion bash &gt; /etc/bash_completion.d/yourprogram</span>
 <span class="hljs-string">MacOS:</span>
-<span class="hljs-string">  $ yourprogram completion bash > /usr/local/etc/bash_completion.d/yourprogram</span>
+<span class="hljs-string">  $ yourprogram completion bash &gt; /usr/local/etc/bash_completion.d/yourprogram</span>
 <span class="hljs-string"></span>
 <span class="hljs-string">Zsh:</span>
 <span class="hljs-string"></span>
 <span class="hljs-string"># If shell completion is not already enabled in your environment you will need</span>
 <span class="hljs-string"># to enable it.  You can execute the following once:</span>
 <span class="hljs-string"></span>
-<span class="hljs-string">$ echo "autoload -U compinit; compinit" >> ~/.zshrc</span>
+<span class="hljs-string">$ echo &quot;autoload -U compinit; compinit&quot; &gt;&gt; ~/.zshrc</span>
 <span class="hljs-string"></span>
 <span class="hljs-string"># To load completions for each session, execute once:</span>
-<span class="hljs-string">$ yourprogram completion zsh > "${fpath[1]}/_yourprogram"</span>
+<span class="hljs-string">$ yourprogram completion zsh &gt; &quot;$&#123;fpath[1]&#125;/_yourprogram&quot;</span>
 <span class="hljs-string"></span>
 <span class="hljs-string"># You will need to start a new shell for this setup to take effect.</span>
 <span class="hljs-string"></span>
@@ -453,120 +453,120 @@ cobra add completion
 <span class="hljs-string">$ yourprogram completion fish | source</span>
 <span class="hljs-string"></span>
 <span class="hljs-string"># To load completions for each session, execute once:</span>
-<span class="hljs-string">$ yourprogram completion fish > ~/.config/fish/completions/yourprogram.fish</span>
+<span class="hljs-string">$ yourprogram completion fish &gt; ~/.config/fish/completions/yourprogram.fish</span>
 <span class="hljs-string">`</span>,
 	DisableFlagsInUseLine: <span class="hljs-literal">true</span>,
-	ValidArgs:             []<span class="hljs-keyword">string</span>{<span class="hljs-string">"bash"</span>, <span class="hljs-string">"zsh"</span>, <span class="hljs-string">"fish"</span>, <span class="hljs-string">"powershell"</span>},
+	ValidArgs:             []<span class="hljs-keyword">string</span>&#123;<span class="hljs-string">&quot;bash&quot;</span>, <span class="hljs-string">&quot;zsh&quot;</span>, <span class="hljs-string">&quot;fish&quot;</span>, <span class="hljs-string">&quot;powershell&quot;</span>&#125;,
 	Args:                  cobra.ExactValidArgs(<span class="hljs-number">1</span>),
-	Run: <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(cmd *cobra.Command, args []<span class="hljs-keyword">string</span>)</span></span> {
-		<span class="hljs-keyword">switch</span> args[<span class="hljs-number">0</span>] {
-		<span class="hljs-keyword">case</span> <span class="hljs-string">"bash"</span>:
+	Run: <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(cmd *cobra.Command, args []<span class="hljs-keyword">string</span>)</span></span> &#123;
+		<span class="hljs-keyword">switch</span> args[<span class="hljs-number">0</span>] &#123;
+		<span class="hljs-keyword">case</span> <span class="hljs-string">&quot;bash&quot;</span>:
 			cmd.Root().GenBashCompletion(os.Stdout)
-		<span class="hljs-keyword">case</span> <span class="hljs-string">"zsh"</span>:
+		<span class="hljs-keyword">case</span> <span class="hljs-string">&quot;zsh&quot;</span>:
 			cmd.Root().GenZshCompletion(os.Stdout)
-		<span class="hljs-keyword">case</span> <span class="hljs-string">"fish"</span>:
+		<span class="hljs-keyword">case</span> <span class="hljs-string">&quot;fish&quot;</span>:
 			cmd.Root().GenFishCompletion(os.Stdout, <span class="hljs-literal">true</span>)
-		<span class="hljs-keyword">case</span> <span class="hljs-string">"powershell"</span>:
+		<span class="hljs-keyword">case</span> <span class="hljs-string">&quot;powershell&quot;</span>:
 			cmd.Root().GenPowerShellCompletion(os.Stdout)
-		}
-	},
-}
+		&#125;
+	&#125;,
+&#125;
 
 <span class="hljs-comment">// 针对不同的版本进行不同的操作</span>
 <span class="hljs-comment">// 比如bash</span>
-source <(<span class="hljs-keyword">go</span> run main.<span class="hljs-keyword">go</span> completion bash)
+source &lt;(<span class="hljs-keyword">go</span> run main.<span class="hljs-keyword">go</span> completion bash)
 <span class="hljs-comment">// 重启终端就OK了</span></code></pre></div>
 
 
 <h2 id="cobra源码分析"><a href="#cobra源码分析" class="headerlink" title="cobra源码分析"></a>cobra源码分析</h2><p>第一次分析源码，会有点乱</p>
 <p><code>main.go</code> 下面没什么好分析的</p>
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">package</span> main
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main
 
-<span class="hljs-keyword">import</span> <span class="hljs-string">"Gocommand/cmd"</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;Gocommand/cmd&quot;</span>
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
 	cmd.Execute()   <span class="hljs-comment">// from /cmd/root.go/  Execute()</span>
-}
+&#125;
 </code></pre></div>
 
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">package</span> cmd
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">package</span> cmd
 
 <span class="hljs-keyword">import</span> (
-	<span class="hljs-string">"fmt"</span>
-	<span class="hljs-string">"github.com/spf13/cobra"</span>
-	<span class="hljs-string">"os"</span>
+	<span class="hljs-string">&quot;fmt&quot;</span>
+	<span class="hljs-string">&quot;github.com/spf13/cobra&quot;</span>
+	<span class="hljs-string">&quot;os&quot;</span>
 
-	homedir <span class="hljs-string">"github.com/mitchellh/go-homedir"</span>
-	<span class="hljs-string">"github.com/spf13/viper"</span>
+	homedir <span class="hljs-string">&quot;github.com/mitchellh/go-homedir&quot;</span>
+	<span class="hljs-string">&quot;github.com/spf13/viper&quot;</span>
 )
 
 <span class="hljs-keyword">var</span> cfgFile <span class="hljs-keyword">string</span>
 
-<span class="hljs-keyword">var</span> rootCmd = &cobra.Command{
-	Use:   <span class="hljs-string">"Gocommand"</span>,     <span class="hljs-comment">// 这个不能改，改了运行命令就不一样了</span>
-	Short: <span class="hljs-string">"short desc"</span>,   
-	Long: <span class="hljs-string">"long desc"</span>
-	Run: <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(cmd *cobra.Command, args []<span class="hljs-keyword">string</span>)</span></span> {
-		fmt.Println(<span class="hljs-string">"helloworld"</span>)
-	 },
-}
+<span class="hljs-keyword">var</span> rootCmd = &amp;cobra.Command&#123;
+	Use:   <span class="hljs-string">&quot;Gocommand&quot;</span>,     <span class="hljs-comment">// 这个不能改，改了运行命令就不一样了</span>
+	Short: <span class="hljs-string">&quot;short desc&quot;</span>,   
+	Long: <span class="hljs-string">&quot;long desc&quot;</span>
+	Run: <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(cmd *cobra.Command, args []<span class="hljs-keyword">string</span>)</span></span> &#123;
+		fmt.Println(<span class="hljs-string">&quot;helloworld&quot;</span>)
+	 &#125;,
+&#125;
 
 <span class="hljs-comment">// 被main.go 调用</span>
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">Execute</span><span class="hljs-params">()</span></span> {
-	<span class="hljs-keyword">if</span> err := rootCmd.Execute(); err != <span class="hljs-literal">nil</span> {
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">Execute</span><span class="hljs-params">()</span></span> &#123;
+	<span class="hljs-keyword">if</span> err := rootCmd.Execute(); err != <span class="hljs-literal">nil</span> &#123;
 		fmt.Println(err)
 		os.Exit(<span class="hljs-number">1</span>)
-	}
-}
+	&#125;
+&#125;
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">init</span><span class="hljs-params">()</span></span> {
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">init</span><span class="hljs-params">()</span></span> &#123;
 	cobra.OnInitialize(initConfig)
-	rootCmd.PersistentFlags().StringVar(&cfgFile, <span class="hljs-string">"config"</span>, <span class="hljs-string">""</span>, <span class="hljs-string">"config file (default is $HOME/.Gocommand.yaml)"</span>)
-}
+	rootCmd.PersistentFlags().StringVar(&amp;cfgFile, <span class="hljs-string">&quot;config&quot;</span>, <span class="hljs-string">&quot;&quot;</span>, <span class="hljs-string">&quot;config file (default is $HOME/.Gocommand.yaml)&quot;</span>)
+&#125;
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">initConfig</span><span class="hljs-params">()</span></span> {
-	<span class="hljs-keyword">if</span> cfgFile != <span class="hljs-string">""</span> {
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">initConfig</span><span class="hljs-params">()</span></span> &#123;
+	<span class="hljs-keyword">if</span> cfgFile != <span class="hljs-string">&quot;&quot;</span> &#123;
 		viper.SetConfigFile(cfgFile)
-	} <span class="hljs-keyword">else</span> {
+	&#125; <span class="hljs-keyword">else</span> &#123;
 		home, err := homedir.Dir()
-		<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> {
+		<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;
 			fmt.Println(err)
 			os.Exit(<span class="hljs-number">1</span>)
-		}
+		&#125;
 		viper.AddConfigPath(home)
-		viper.SetConfigName(<span class="hljs-string">".Gocommand"</span>)
-	}
+		viper.SetConfigName(<span class="hljs-string">&quot;.Gocommand&quot;</span>)
+	&#125;
 
 	viper.AutomaticEnv()
-	<span class="hljs-keyword">if</span> err := viper.ReadInConfig(); err == <span class="hljs-literal">nil</span> {
-		fmt.Println(<span class="hljs-string">"Using config file:"</span>, viper.ConfigFileUsed())
-	}
-}</code></pre></div>
+	<span class="hljs-keyword">if</span> err := viper.ReadInConfig(); err == <span class="hljs-literal">nil</span> &#123;
+		fmt.Println(<span class="hljs-string">&quot;Using config file:&quot;</span>, viper.ConfigFileUsed())
+	&#125;
+&#125;</code></pre></div>
 
 
 
 
 
 
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(c *Command)</span> <span class="hljs-title">ExecuteC</span><span class="hljs-params">()</span> <span class="hljs-params"><code class="language-hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(c *Command)</span> <span class="hljs-title">ExecuteC</span><span class="hljs-params">()</span> <span class="hljs-params">(cmd *Command, err error)</span></span> {
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(c *Command)</span> <span class="hljs-title">ExecuteC</span><span class="hljs-params">()</span> <span class="hljs-params">(cmd *Command, err error)</span></span> &#123;
     <span class="hljs-comment">// 判断 ctx字段是否为nil</span>
 
-	<span class="hljs-keyword">if</span> c.ctx == <span class="hljs-literal">nil</span> {
+	<span class="hljs-keyword">if</span> c.ctx == <span class="hljs-literal">nil</span> &#123;
 		c.ctx = context.Background()
-	}
+	&#125;
 
     <span class="hljs-comment">// Regardless of what command execute is called on, run on Root only</span>
     <span class="hljs-comment">// 前面说过，我们所有的命令构成了一棵树，每次执行都是从根命令开始执行的</span>
 	<span class="hljs-comment">// 如果我们手残在代码的某处直接执行了一个子命令，这个方法也会向上遍历到根，然后执行根命令的</span>
-	<span class="hljs-keyword">if</span> c.HasParent() {
+	<span class="hljs-keyword">if</span> c.HasParent() &#123;
 		<span class="hljs-keyword">return</span> c.Root().ExecuteC()
-	}
+	&#125;
 
     <span class="hljs-comment">// windows hook</span>
     <span class="hljs-comment">// windows系统的钩子</span>
-	<span class="hljs-keyword">if</span> preExecHookFn != <span class="hljs-literal">nil</span> {
+	<span class="hljs-keyword">if</span> preExecHookFn != <span class="hljs-literal">nil</span> &#123;
 		preExecHookFn(c)
-	}
+	&#125;
 
 	<span class="hljs-comment">// initialize help as the last point possible to allow for user</span>
 	<span class="hljs-comment">// overriding</span>
@@ -574,11 +574,11 @@ source <(<span class="hljs-keyword">go</span> run main.<span class="hljs-keyword
 
 	args := c.args
 
-    <span class="hljs-comment">// Workaround FAIL with "go test -v" or "cobra.test -test.v", see #155</span>
+    <span class="hljs-comment">// Workaround FAIL with &quot;go test -v&quot; or &quot;cobra.test -test.v&quot;, see #155</span>
     <span class="hljs-comment">// 如果没有设置过命令的调用参数，使用os.Args[1:]作为默认参数</span>
-	<span class="hljs-keyword">if</span> c.args == <span class="hljs-literal">nil</span> && filepath.Base(os.Args[<span class="hljs-number">0</span>]) != <span class="hljs-string">"cobra.test"</span> {
+	<span class="hljs-keyword">if</span> c.args == <span class="hljs-literal">nil</span> &amp;&amp; filepath.Base(os.Args[<span class="hljs-number">0</span>]) != <span class="hljs-string">&quot;cobra.test&quot;</span> &#123;
 		args = os.Args[<span class="hljs-number">1</span>:]
-	}
+	&#125;
 
 	<span class="hljs-comment">// initialize the hidden command to be used for bash completion</span>
 	c.initCompleteCmd(args)
@@ -592,57 +592,57 @@ source <(<span class="hljs-keyword">go</span> run main.<span class="hljs-keyword
 	<span class="hljs-comment">// 可以将命令的 TraverseChildren 属性置为 true ，cobra 会在执行命令前解析所有命令</span>
 	<span class="hljs-comment">// 的 local flag</span>
 	<span class="hljs-keyword">var</span> flags []<span class="hljs-keyword">string</span>
-	<span class="hljs-keyword">if</span> c.TraverseChildren {
+	<span class="hljs-keyword">if</span> c.TraverseChildren &#123;
 		cmd, flags, err = c.Traverse(args)
-	} <span class="hljs-keyword">else</span> {
+	&#125; <span class="hljs-keyword">else</span> &#123;
 		cmd, flags, err = c.Find(args)
-	}
-	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> {
+	&#125;
+	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;
 		<span class="hljs-comment">// If found parse to a subcommand and then failed, talk about the subcommand</span>
-		<span class="hljs-keyword">if</span> cmd != <span class="hljs-literal">nil</span> {
+		<span class="hljs-keyword">if</span> cmd != <span class="hljs-literal">nil</span> &#123;
 			c = cmd
-		}
-		<span class="hljs-keyword">if</span> !c.SilenceErrors {
-			c.Println(<span class="hljs-string">"Error:"</span>, err.Error())
-			c.Printf(<span class="hljs-string">"Run &#x27;%v --help&#x27; for usage.\n"</span>, c.CommandPath())
-		}
+		&#125;
+		<span class="hljs-keyword">if</span> !c.SilenceErrors &#123;
+			c.Println(<span class="hljs-string">&quot;Error:&quot;</span>, err.Error())
+			c.Printf(<span class="hljs-string">&quot;Run &#x27;%v --help&#x27; for usage.\n&quot;</span>, c.CommandPath())
+		&#125;
 		<span class="hljs-keyword">return</span> c, err
-	}
+	&#125;
 
 	cmd.commandCalledAs.called = <span class="hljs-literal">true</span>
-	<span class="hljs-keyword">if</span> cmd.commandCalledAs.name == <span class="hljs-string">""</span> {
+	<span class="hljs-keyword">if</span> cmd.commandCalledAs.name == <span class="hljs-string">&quot;&quot;</span> &#123;
 		cmd.commandCalledAs.name = cmd.Name()
-	}
+	&#125;
 
 	<span class="hljs-comment">// We have to pass global context to children command</span>
 	<span class="hljs-comment">// if context is present on the parent command.</span>
-	<span class="hljs-keyword">if</span> cmd.ctx == <span class="hljs-literal">nil</span> {
+	<span class="hljs-keyword">if</span> cmd.ctx == <span class="hljs-literal">nil</span> &#123;
 		cmd.ctx = c.ctx
-	}
+	&#125;
 
 	err = cmd.execute(flags)
-	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> {
+	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;
 		<span class="hljs-comment">// Always show help if requested, even if SilenceErrors is in</span>
 		<span class="hljs-comment">// effect</span>
-		<span class="hljs-keyword">if</span> err == flag.ErrHelp {
+		<span class="hljs-keyword">if</span> err == flag.ErrHelp &#123;
 			cmd.HelpFunc()(cmd, args)
 			<span class="hljs-keyword">return</span> cmd, <span class="hljs-literal">nil</span>
-		}
+		&#125;
 
 		<span class="hljs-comment">// If root command has SilentErrors flagged,</span>
 		<span class="hljs-comment">// all subcommands should respect it</span>
-		<span class="hljs-keyword">if</span> !cmd.SilenceErrors && !c.SilenceErrors {
-			c.Println(<span class="hljs-string">"Error:"</span>, err.Error())
-		}
+		<span class="hljs-keyword">if</span> !cmd.SilenceErrors &amp;&amp; !c.SilenceErrors &#123;
+			c.Println(<span class="hljs-string">&quot;Error:&quot;</span>, err.Error())
+		&#125;
 
 		<span class="hljs-comment">// If root command has SilentUsage flagged,</span>
 		<span class="hljs-comment">// all subcommands should respect it</span>
-		<span class="hljs-keyword">if</span> !cmd.SilenceUsage && !c.SilenceUsage {
+		<span class="hljs-keyword">if</span> !cmd.SilenceUsage &amp;&amp; !c.SilenceUsage &#123;
 			c.Println(cmd.UsageString())
-		}
-	}
+		&#125;
+	&#125;
 	<span class="hljs-keyword">return</span> cmd, err
-}</code></pre></div>
+&#125;</code></pre></div>
 <p>判断一些字段是否存在，并作出相应的动作</p>
 <p>主要是看这两个方法<br><img src="http://img.noback.top/2020-09-15-10-40-07.png" srcset="/img/loading.gif" alt="2020-09-15-10-40-07"></p>
 <blockquote>
@@ -682,7 +682,7 @@ source <(<span class="hljs-keyword">go</span> run main.<span class="hljs-keyword
                       <a href="/2020/09/15/blog_back_new/NetWord/4OSI%E6%A8%A1%E5%9E%8B%E6%95%B0%E6%8D%AE%E9%93%BE%E8%B7%AF%E5%B1%82/">
                         <i class="iconfont icon-arrowleft"></i>
                         <span class="hidden-mobile"></span>
-                        <span class="visible-mobile">Vorheriger</span>
+                        <span class="visible-mobile">上一篇</span>
                       </a>
                     
                   </article>
@@ -691,7 +691,7 @@ source <(<span class="hljs-keyword">go</span> run main.<span class="hljs-keyword
                     
                       <a href="/2020/09/14/blog_back_new/golang/golang%E5%9F%BA%E7%A1%80/">
                         <span class="hidden-mobile">golang基础</span>
-                        <span class="visible-mobile">Nächster</span>
+                        <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
                     
@@ -708,7 +708,7 @@ source <(<span class="hljs-keyword">go</span> run main.<span class="hljs-keyword
     
       <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
         <div id="toc">
-  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
   <div class="toc-body" id="toc-body"></div>
 </div>
 
@@ -734,7 +734,7 @@ source <(<span class="hljs-keyword">go</span> run main.<span class="hljs-keyword
   <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">Suchen</h4>
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
         <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -743,7 +743,7 @@ source <(<span class="hljs-keyword">go</span> run main.<span class="hljs-keyword
         <div class="md-form mb-5">
           <input type="text" id="local-search-input" class="form-control validate">
           <label data-error="x" data-success="v"
-                 for="local-search-input">Stichwort</label>
+                 for="local-search-input">关键词</label>
         </div>
         <div class="list-group" id="local-search-result"></div>
       </div>

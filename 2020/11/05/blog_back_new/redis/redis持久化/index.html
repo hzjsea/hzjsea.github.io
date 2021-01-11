@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html lang="cn" data-default-color-scheme=&#34;auto&#34;>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
 
 
 
@@ -61,7 +61,7 @@
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
 
 <body>
@@ -88,7 +88,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/">
                 <i class="iconfont icon-home-fill"></i>
-                Startseite
+                首页
               </a>
             </li>
           
@@ -100,7 +100,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/archives/">
                 <i class="iconfont icon-archive-fill"></i>
-                Archiv
+                归档
               </a>
             </li>
           
@@ -112,7 +112,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/categories/">
                 <i class="iconfont icon-category-fill"></i>
-                Kategorie
+                分类
               </a>
             </li>
           
@@ -124,7 +124,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/tags/">
                 <i class="iconfont icon-tags-fill"></i>
-                Etiketten
+                标签
               </a>
             </li>
           
@@ -136,7 +136,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/about/">
                 <i class="iconfont icon-user-fill"></i>
-                Über mich
+                关于
               </a>
             </li>
           
@@ -175,7 +175,7 @@
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
       <time datetime="2020-11-05 15:38" pubdate>
-        November 5, 2020 pm
+        2020年11月5日 下午
       </time>
     </span>
   
@@ -255,8 +255,8 @@
 <li>进程发送信号给父进程表示完成，父进程更新统计信息，具体见info Persistence下的rdb_*相关选项</li>
 </ul>
 <h3 id="RDB文件处理"><a href="#RDB文件处理" class="headerlink" title="RDB文件处理"></a>RDB文件处理</h3><p>RDB文件保存在dir配置指定的目录下<br>RDB的名字由dbfilename决定</p>
-<div class="code-wrapper"><pre class=" language-hljs bash">grep <span class="hljs-string"><code class="language-hljs bash">grep <span class="hljs-string">"^dir"</span> redis.conf
-grep <span class="hljs-string">"^dbfilename"</span>  redis.conf</code></pre></div>
+<div class="code-wrapper"><pre><code class="hljs bash">grep <span class="hljs-string">&quot;^dir&quot;</span> redis.conf
+grep <span class="hljs-string">&quot;^dbfilename&quot;</span>  redis.conf</code></pre></div>
 <p>可以通过执行<code>config set dir&#123;newDir&#125;</code>和<code>config set dbfilename&#123;newFileName&#125;</code>运行期动态执行，当下次运行时RDB文件会保存到新目录。</p>
 <p>文件压缩<br>Redis默认采用LZF算法对生成的RDB文件做压缩处理，压缩后的文件远远小于内存大小，默认开启，可以通过参数<code>config set rdbcompression&#123;yes|no&#125;</code>动态修改。<br>可以使用Redis提供的<code>redis-check-dump</code>工具检测RDB文件并获取对应的错误报告。<br>脚本地址再<code>redis-package/src/redis-check-dump</code></p>
 <h3 id="RDB的优缺点"><a href="#RDB的优缺点" class="headerlink" title="RDB的优缺点"></a>RDB的优缺点</h3><p>优点</p>
@@ -270,8 +270,8 @@ grep <span class="hljs-string">"^dbfilename"</span>  redis.conf</code></pre></di
 <li>RDB文件使用特定二进制格式保存，Redis版本演进过程中有多个格式的RDB版本，存在老版本Redis服务无法兼容新版RDB格式的问题</li>
 </ul>
 <h2 id="AOF持久化存储"><a href="#AOF持久化存储" class="headerlink" title="AOF持久化存储"></a>AOF持久化存储</h2><p>AOF（append only file）持久化：以独立日志的方式记录每次写命令，重启时再重新执行AOF文件中的命令达到恢复数据的目的。AOF的主要作用是解决了数据持久化的实时性，目前已经是Redis持久化的主流方式。理解掌握好AOF持久化机制对我们兼顾数据安全性和性能非常有帮助。<br>设置配置 ，默认不开启<br>aof的文件名字由appendfilename决定<br>aof的文件保存的地址由dir配置决定</p>
-<div class="code-wrapper"><pre class=" language-hljs bash">sed -i <span class="hljs-string"><code class="language-hljs bash">sed -i <span class="hljs-string">"/^appendonly/s/no/yes/"</span> redis.conf
-grep <span class="hljs-string">"appendfilename"</span> redis.conf</code></pre></div>
+<div class="code-wrapper"><pre><code class="hljs bash">sed -i <span class="hljs-string">&quot;/^appendonly/s/no/yes/&quot;</span> redis.conf
+grep <span class="hljs-string">&quot;appendfilename&quot;</span> redis.conf</code></pre></div>
 <p><img src="http://img.noback.top/2020-11-09-14-47-45.png" srcset="/img/loading.gif" alt="2020-11-09-14-47-45"></p>
 <ul>
 <li>所有的写入命令会追加到aof_buf（缓冲区）中。</li>
@@ -280,7 +280,7 @@ grep <span class="hljs-string">"appendfilename"</span> redis.conf</code></pre></
 <li>当Redis服务器重启时，可以加载AOF文件进行数据恢复。</li>
 </ul>
 <h3 id="AOF文件的存储格式"><a href="#AOF文件的存储格式" class="headerlink" title="AOF文件的存储格式"></a>AOF文件的存储格式</h3><p>AOF会直接采用文本协议格式来存储 ,比如一条<code>set hello world</code>的命令，AOF会存储这样的形式<code>*3\r\n$3\r\nset\r\n$5\r\nhello\r\n$5\r\nworld\r\n</code><br>转义之后内容为</p>
-<div class="code-wrapper"><pre class=" language-hljs bash">[root@dev ~]<span class="hljs-comment"><code class="language-hljs bash">[root@dev ~]<span class="hljs-comment"># echo -e  "*3\r\n$3\r\nset\r\n$5\r\nhello\r\n$5\r\nworld\r\n"</span>
+<div class="code-wrapper"><pre><code class="hljs bash">[root@dev ~]<span class="hljs-comment"># echo -e  &quot;*3\r\n$3\r\nset\r\n$5\r\nhello\r\n$5\r\nworld\r\n&quot;</span>
 *3
 
 <span class="hljs-built_in">set</span>
@@ -312,12 +312,12 @@ world</code></pre></div>
 <li>手动触发 直接调用<code>bgrewriteaof</code>命令</li>
 <li>自动触发 根据<code>auto-aof-rewrite-min-size</code>和<code>auto-aof-rewrite-percentage</code>参数确定自动触发时机。</li>
 </ul>
-<div class="code-wrapper"><pre class=" language-hljs bash">auto-aof-rewrite-min-size <span class="hljs-comment"><code class="language-hljs bash">auto-aof-rewrite-min-size <span class="hljs-comment"># 运行AOF重写时的文件最小体积，默认为64MB</span>
+<div class="code-wrapper"><pre><code class="hljs bash">auto-aof-rewrite-min-size <span class="hljs-comment"># 运行AOF重写时的文件最小体积，默认为64MB</span>
 auto-aof-rewrite-percentage <span class="hljs-comment">#代表当前AOF文件空间（aof_current_size）和上一次重写后AOF文件空间（aof_base_size）的比值。</span>
 <span class="hljs-comment"># 自动触发时间</span>
-自动触发时机 = aof_current_size > auto-aof-rewrite-min-size &&（aof_current_size-aof_base_size）/aof_base_size>=auto-aof-rewrite-percentage</code></pre></div>
+自动触发时机 = aof_current_size &gt; auto-aof-rewrite-min-size &amp;&amp;（aof_current_size-aof_base_size）/aof_base_size&gt;=auto-aof-rewrite-percentage</code></pre></div>
 <p>其中aof_current_size 和aof_base_size可以在info Persistence统计信息中查看。</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">127.0.0.1:6379> info Persistence
+<div class="code-wrapper"><pre><code class="hljs bash">127.0.0.1:6379&gt; info Persistence
 <span class="hljs-comment"># Persistence</span>
 loading:0
 rdb_changes_since_last_save:0
@@ -341,8 +341,8 @@ aof_last_cow_size:0</code></pre></div>
 </blockquote>
 <p><img src="http://img.noback.top/2020-11-09-15-13-04.png" srcset="/img/loading.gif" alt="2020-11-09-15-13-04"></p>
 <ol>
-<li>执行AOF重写请求，如果进程中正在执行AOF重写，请求不执行并返回如下响应<div class="code-wrapper"><pre class=" language-hljs bash">ERR Background append only file rewriting already <span class="hljs-keyword"><code class="language-hljs bash">ERR Background append only file rewriting already <span class="hljs-keyword">in</span> progress</code></pre></div></li>
-<li>如果当前进程正在执行bgsave操作，当前重写命令延迟到上一个结束之后再执行，则返回内容为<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">Background append only file rewriting scheduled</code></pre></div></li>
+<li>执行AOF重写请求，如果进程中正在执行AOF重写，请求不执行并返回如下响应<div class="code-wrapper"><pre><code class="hljs bash">ERR Background append only file rewriting already <span class="hljs-keyword">in</span> progress</code></pre></div></li>
+<li>如果当前进程正在执行bgsave操作，当前重写命令延迟到上一个结束之后再执行，则返回内容为<div class="code-wrapper"><pre><code class="hljs bash">Background append only file rewriting scheduled</code></pre></div></li>
 <li>父进程执行fork创建子进程，开销等同于bgsave过程。</li>
 <li>主进程fork操作完成后，继续响应其他命令。所有修改命令依然写入AOF缓冲区并根据appendfsync策略同步到硬盘，保证原有AOF机制正确性。</li>
 <li>由于fork操作运用写时复制技术，子进程只能共享fork操作时的内存数据。由于父进程依然响应命令，Redis使用“AOF重写缓冲区”保存这部分新数据，防止新AOF文件生成期间丢失这部分数据。</li>
@@ -353,8 +353,8 @@ aof_last_cow_size:0</code></pre></div>
 </ol>
 <h3 id="重启加载"><a href="#重启加载" class="headerlink" title="重启加载"></a>重启加载</h3><p>使用新AOF文件替换老文件，完成AOF重写。<br><img src="http://img.noback.top/2020-11-09-15-21-54.png" srcset="/img/loading.gif" alt="2020-11-09-15-21-54"> </p>
 <h3 id="文件校验"><a href="#文件校验" class="headerlink" title="文件校验"></a>文件校验</h3><p>加载损坏的AOF文件时，会拒绝启动，并打印如下的日志</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># Bad file format reading the append only file: make a backup of your AOF file, </span>
-<span class="hljs-keyword">then</span> use ./redis-check-aof --fix <filename></code></pre></div>
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># Bad file format reading the append only file: make a backup of your AOF file, </span>
+<span class="hljs-keyword">then</span> use ./redis-check-aof --fix &lt;filename&gt;</code></pre></div>
 <p>修复AOF文件过程 </p>
 <ol>
 <li>先备份损坏的文件</li>
@@ -362,13 +362,13 @@ aof_last_cow_size:0</code></pre></div>
 <li>尝试手动修复 先 <code>diff -u </code>查看， 然后人工补全</li>
 </ol>
 <p>AOF文件可能存在结尾不完整的情况，比如机器突然掉电导致AOF尾部文件命令写入不全。Redis为我们提供了aof-load-truncated配置来兼容这种情况，默认开启。加载AOF时，当遇到此问题时会忽略并继续启动，同时打印如下警告日志：</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># !!! Warning: short read while loading the AOF file !!!</span>
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># !!! Warning: short read while loading the AOF file !!!</span>
 <span class="hljs-comment"># !!! Truncating the AOF at offset 397856725 !!!</span>
 <span class="hljs-comment"># AOF loaded anyway because aof-load-truncated is enabled</span></code></pre></div>
 
 
 <h2 id="问题定位和优化"><a href="#问题定位和优化" class="headerlink" title="问题定位和优化"></a>问题定位和优化</h2><p>正常情况下fork耗时应该是每GB消耗20毫秒左右，查看上一次fork操作的时间</p>
-<div class="code-wrapper"><pre class=" language-hljs bash">redis-cli info stats | grep latest_fork_usec <span class="hljs-comment"><code class="language-hljs bash">redis-cli info stats | grep latest_fork_usec <span class="hljs-comment"># 基本单位为微妙 进位为1000</span></code></pre></div>
+<div class="code-wrapper"><pre><code class="hljs bash">redis-cli info stats | grep latest_fork_usec <span class="hljs-comment"># 基本单位为微妙 进位为1000</span></code></pre></div>
 
 <p>优化</p>
 <ul>
@@ -411,7 +411,7 @@ aof_last_cow_size:0</code></pre></div>
                       <a href="/2020/11/09/blog_back_new/redis/redis%E5%A4%8D%E5%88%B6/">
                         <i class="iconfont icon-arrowleft"></i>
                         <span class="hidden-mobile">redis复制</span>
-                        <span class="visible-mobile">Vorheriger</span>
+                        <span class="visible-mobile">上一篇</span>
                       </a>
                     
                   </article>
@@ -420,7 +420,7 @@ aof_last_cow_size:0</code></pre></div>
                     
                       <a href="/2020/11/02/blog_back_new/redis/redis%E5%9F%BA%E7%A1%80/">
                         <span class="hidden-mobile">redis基础</span>
-                        <span class="visible-mobile">Nächster</span>
+                        <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
                     
@@ -437,7 +437,7 @@ aof_last_cow_size:0</code></pre></div>
     
       <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
         <div id="toc">
-  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
   <div class="toc-body" id="toc-body"></div>
 </div>
 
@@ -463,7 +463,7 @@ aof_last_cow_size:0</code></pre></div>
   <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">Suchen</h4>
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
         <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -472,7 +472,7 @@ aof_last_cow_size:0</code></pre></div>
         <div class="md-form mb-5">
           <input type="text" id="local-search-input" class="form-control validate">
           <label data-error="x" data-success="v"
-                 for="local-search-input">Stichwort</label>
+                 for="local-search-input">关键词</label>
         </div>
         <div class="list-group" id="local-search-result"></div>
       </div>

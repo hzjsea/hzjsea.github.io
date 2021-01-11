@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html lang="cn" data-default-color-scheme=&#34;auto&#34;>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
 
 
 
@@ -61,7 +61,7 @@
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
 
 <body>
@@ -88,7 +88,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/">
                 <i class="iconfont icon-home-fill"></i>
-                Startseite
+                首页
               </a>
             </li>
           
@@ -100,7 +100,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/archives/">
                 <i class="iconfont icon-archive-fill"></i>
-                Archiv
+                归档
               </a>
             </li>
           
@@ -112,7 +112,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/categories/">
                 <i class="iconfont icon-category-fill"></i>
-                Kategorie
+                分类
               </a>
             </li>
           
@@ -124,7 +124,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/tags/">
                 <i class="iconfont icon-tags-fill"></i>
-                Etiketten
+                标签
               </a>
             </li>
           
@@ -136,7 +136,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/about/">
                 <i class="iconfont icon-user-fill"></i>
-                Über mich
+                关于
               </a>
             </li>
           
@@ -175,7 +175,7 @@
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
       <time datetime="2020-02-05 11:09" pubdate>
-        February 5, 2020 am
+        2020年2月5日 上午
       </time>
     </span>
   
@@ -271,26 +271,26 @@
 <h2 id="镜像大小的问题"><a href="#镜像大小的问题" class="headerlink" title="镜像大小的问题"></a>镜像大小的问题</h2><p>为什么tomcat镜像大小大于centos镜像大小?<br><img src="http://img.noback.top/2020-02-05-12-13-04.png" srcset="/img/loading.gif" alt="2020-02-05-12-13-04"><br>可以通过上面docker镜像的组成、加载两方面来解释<br>同样以kernel作为最底层文件系统，在centos镜像中，上层只放了一个centos的rootfs，而tomcat需要写入多层base文件系统，比如jdk8 tomcat 等等，因此tomcat的镜像大小大于centos的镜像大小</p>
 <h2 id="镜像分层的好处"><a href="#镜像分层的好处" class="headerlink" title="镜像分层的好处"></a>镜像分层的好处</h2><p><font color='red'>共享资源</font><br>有多个镜像都从相同的base镜像构建而来，那么宿主机只需在磁盘上保存一份base镜像，同时内存中也只需加载一份base镜像，就可以为所有容器服务了，饿而且镜像的每一层都可以被共享</p>
 <h2 id="创建镜像"><a href="#创建镜像" class="headerlink" title="创建镜像"></a>创建镜像</h2><ul>
-<li>基于已有镜像的容器创建<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 提交一个容器成为一个新的镜像</span>
+<li>基于已有镜像的容器创建<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 提交一个容器成为一个新的镜像</span>
 docker commit [OPTIONS] CONTAINER [RSPOSITORY[:TAG]]
-<span class="hljs-comment"># -a; --author="" 作者信息</span>
-<span class="hljs-comment"># -m; --message="" 提交信息</span>
+<span class="hljs-comment"># -a; --author=&quot;&quot; 作者信息</span>
+<span class="hljs-comment"># -m; --message=&quot;&quot; 提交信息</span>
 <span class="hljs-comment"># -p; --pause=true 提交时暂停容器运行</span></code></pre></div>
-创建流程<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># pull 一个新的image </span>
+创建流程<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># pull 一个新的image </span>
 docker pull ubuntu
 <span class="hljs-comment"># 改变ubuntu 使其与原来image不同</span>
 docker run -it ccc6e87d482b /bin/bash
-<span class="hljs-built_in">echo</span> <span class="hljs-string">"update file "</span> > <span class="hljs-built_in">test</span>
+<span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;update file &quot;</span> &gt; <span class="hljs-built_in">test</span>
 <span class="hljs-built_in">exit</span>
 <span class="hljs-comment"># 返回前记住当前容器的名字，一般都是主机名</span>
 <span class="hljs-comment"># 提交当前容器为新的镜像文件</span>
-docker commit -m <span class="hljs-string">"update - add a file in ubuntu "</span> -a <span class="hljs-string">"hzj"</span> dc758c368fda <span class="hljs-built_in">test</span>
+docker commit -m <span class="hljs-string">&quot;update - add a file in ubuntu &quot;</span> -a <span class="hljs-string">&quot;hzj&quot;</span> dc758c368fda <span class="hljs-built_in">test</span>
 <span class="hljs-comment"># 查看当前镜像列表</span>
 root:~<span class="hljs-comment"># docker images</span>
 REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
 <span class="hljs-built_in">test</span>                latest              41f1d7eba8f3        10 seconds ago      64.2 MB
 docker.io/ubuntu    latest              ccc6e87d482b        6 days ago          64.2 MB</code></pre></div></li>
-<li>基于本地模版导入<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 下载模版压缩包</span>
+<li>基于本地模版导入<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 下载模版压缩包</span>
 wget xx
 <span class="hljs-comment"># 根据压缩包导入成镜像</span>
 cat ubuntu-14.04.tar.gz | docker import - ubuntu:14.04 
@@ -299,22 +299,22 @@ cat ubuntu-14.04.tar.gz | docker import - ubuntu:14.04
 docker save -o ubuntu_latest.tar ubuntu:latest
 <span class="hljs-comment"># 载入镜像</span>
 docker load --input ubuntu_latest.tar
-docker load < ubuntu_latest.tar</code></pre></div></li>
+docker load &lt; ubuntu_latest.tar</code></pre></div></li>
 <li>基于Dockerfile创建</li>
 </ul>
 <p><font color='red'>如何创建一个hello-world的docker镜像</font> </p>
 <ol>
-<li>创建一个输出hello world的c文件<div class="code-wrapper"><pre class=" language-hljs c"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span><span class="hljs-meta-string"><code class="language-hljs c"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span><span class="hljs-meta-string"><stdio.h></span></span>
+<li>创建一个输出hello world的c文件<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span><span class="hljs-meta-string">&lt;stdio.h&gt;</span></span>
 
 <span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span>
-<span class="hljs-function"></span>{
-  <span class="hljs-built_in">printf</span>(<span class="hljs-string">"hello world\n"</span>);
-}</code></pre></div></li>
-<li>编译c文件<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">gcc -static hello.c -o hello</code></pre></div></li>
-<li>编写dockerfile<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">FROM scratch
+<span class="hljs-function"></span>&#123;
+  <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;hello world\n&quot;</span>);
+&#125;</code></pre></div></li>
+<li>编译c文件<div class="code-wrapper"><pre><code class="hljs bash">gcc -static hello.c -o hello</code></pre></div></li>
+<li>编写dockerfile<div class="code-wrapper"><pre><code class="hljs bash">FROM scratch
 ADD hello /
 CMD [<span class="hljs-string">&#x27;/hello&#x27;</span>]</code></pre></div></li>
-<li>新建helloworld镜像<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">docker -f /tmp/dockerfile -t helloworld .</code></pre></div></li>
+<li>新建helloworld镜像<div class="code-wrapper"><pre><code class="hljs bash">docker -f /tmp/dockerfile -t helloworld .</code></pre></div></li>
 </ol>
 
             </div>
@@ -349,7 +349,7 @@ CMD [<span class="hljs-string">&#x27;/hello&#x27;</span>]</code></pre></div></li
                       <a href="/2020/02/05/blog_back_new/docker/docker%E5%AE%B9%E5%99%A8%E6%95%B0%E6%8D%AE%E5%8D%B7/">
                         <i class="iconfont icon-arrowleft"></i>
                         <span class="hidden-mobile">docker容器数据卷</span>
-                        <span class="visible-mobile">Vorheriger</span>
+                        <span class="visible-mobile">上一篇</span>
                       </a>
                     
                   </article>
@@ -358,7 +358,7 @@ CMD [<span class="hljs-string">&#x27;/hello&#x27;</span>]</code></pre></div></li
                     
                       <a href="/2020/02/04/blog_back_new/docker/docker%E5%9F%BA%E7%A1%80/">
                         <span class="hidden-mobile">docker基础</span>
-                        <span class="visible-mobile">Nächster</span>
+                        <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
                     
@@ -375,7 +375,7 @@ CMD [<span class="hljs-string">&#x27;/hello&#x27;</span>]</code></pre></div></li
     
       <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
         <div id="toc">
-  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
   <div class="toc-body" id="toc-body"></div>
 </div>
 
@@ -401,7 +401,7 @@ CMD [<span class="hljs-string">&#x27;/hello&#x27;</span>]</code></pre></div></li
   <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">Suchen</h4>
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
         <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -410,7 +410,7 @@ CMD [<span class="hljs-string">&#x27;/hello&#x27;</span>]</code></pre></div></li
         <div class="md-form mb-5">
           <input type="text" id="local-search-input" class="form-control validate">
           <label data-error="x" data-success="v"
-                 for="local-search-input">Stichwort</label>
+                 for="local-search-input">关键词</label>
         </div>
         <div class="list-group" id="local-search-result"></div>
       </div>

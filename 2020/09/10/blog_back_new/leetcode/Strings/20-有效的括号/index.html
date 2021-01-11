@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html lang="cn" data-default-color-scheme=&#34;auto&#34;>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
 
 
 
@@ -61,7 +61,7 @@
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
 
 <body>
@@ -88,7 +88,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/">
                 <i class="iconfont icon-home-fill"></i>
-                Startseite
+                首页
               </a>
             </li>
           
@@ -100,7 +100,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/archives/">
                 <i class="iconfont icon-archive-fill"></i>
-                Archiv
+                归档
               </a>
             </li>
           
@@ -112,7 +112,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/categories/">
                 <i class="iconfont icon-category-fill"></i>
-                Kategorie
+                分类
               </a>
             </li>
           
@@ -124,7 +124,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/tags/">
                 <i class="iconfont icon-tags-fill"></i>
-                Etiketten
+                标签
               </a>
             </li>
           
@@ -136,7 +136,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/about/">
                 <i class="iconfont icon-user-fill"></i>
-                Über mich
+                关于
               </a>
             </li>
           
@@ -175,7 +175,7 @@
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
       <time datetime="2020-09-10 15:11" pubdate>
-        September 10, 2020 pm
+        2020年9月10日 下午
       </time>
     </span>
   
@@ -186,7 +186,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      327 字
+      381 字
     </span>
   
 
@@ -196,7 +196,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      5
+      6
        分钟
     </span>
   
@@ -233,64 +233,64 @@
 <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 <h1 id="有效的括号"><a href="#有效的括号" class="headerlink" title="有效的括号"></a>有效的括号</h1><h2 id="题目要求"><a href="#题目要求" class="headerlink" title="题目要求"></a>题目要求</h2><p>给定一个只包括 <code>&#39;(&#39;，&#39;)&#39;，&#39;&#123;&#39;，&#39;&#125;&#39;，&#39;[&#39;，&#39;]&#39;</code> 的字符串，判断字符串是否有效。 </p>
 <h2 id="解法1-思路"><a href="#解法1-思路" class="headerlink" title="解法1 思路"></a>解法1 思路</h2><p>使用替换法，只要是有效的括号，都会呈现出对称的形式，并且由内向外</p>
-<h2 id="解法1-golang"><a href="#解法1-golang" class="headerlink" title="解法1 golang"></a>解法1 golang</h2><div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">isValid</span><span class="hljs-params">(s <span class="hljs-keyword">string</span>)</span> <span class="hljs-title"><code class="language-hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">isValid</span><span class="hljs-params">(s <span class="hljs-keyword">string</span>)</span> <span class="hljs-title">bool</span></span> {
-	<span class="hljs-keyword">for</span>  {
+<h2 id="解法1-golang"><a href="#解法1-golang" class="headerlink" title="解法1 golang"></a>解法1 golang</h2><div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">isValid</span><span class="hljs-params">(s <span class="hljs-keyword">string</span>)</span> <span class="hljs-title">bool</span></span> &#123;
+	<span class="hljs-keyword">for</span>  &#123;
 		old := s
-		s = strings.Replace(s,<span class="hljs-string">"()"</span>,<span class="hljs-string">""</span>,<span class="hljs-number">-1</span>)
-		s = strings.Replace(s,<span class="hljs-string">"[]"</span>,<span class="hljs-string">""</span>,<span class="hljs-number">-1</span>)
-		s = strings.Replace(s,<span class="hljs-string">"{}"</span>,<span class="hljs-string">""</span>,<span class="hljs-number">-1</span>)
-		<span class="hljs-keyword">if</span> s == <span class="hljs-string">""</span> {
+		s = strings.Replace(s,<span class="hljs-string">&quot;()&quot;</span>,<span class="hljs-string">&quot;&quot;</span>,<span class="hljs-number">-1</span>)
+		s = strings.Replace(s,<span class="hljs-string">&quot;[]&quot;</span>,<span class="hljs-string">&quot;&quot;</span>,<span class="hljs-number">-1</span>)
+		s = strings.Replace(s,<span class="hljs-string">&quot;&#123;&#125;&quot;</span>,<span class="hljs-string">&quot;&quot;</span>,<span class="hljs-number">-1</span>)
+		<span class="hljs-keyword">if</span> s == <span class="hljs-string">&quot;&quot;</span> &#123;
 			<span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>
-		}
-		<span class="hljs-keyword">if</span> s == old {
+		&#125;
+		<span class="hljs-keyword">if</span> s == old &#123;
 			<span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>
-		}
-	}
+		&#125;
+	&#125;
 	<span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>
 
-}</code></pre></div>
+&#125;</code></pre></div>
 
 
 <h2 id="解法2，思路"><a href="#解法2，思路" class="headerlink" title="解法2，思路"></a>解法2，思路</h2><p>栈+hashmap的方法<br>栈解决，现将前半部分压入栈中， 设定一个条件，再依次出栈进行匹配</p>
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">isValid2</span><span class="hljs-params">(s <span class="hljs-keyword">string</span>)</span><span class="hljs-title"><code class="language-hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">isValid2</span><span class="hljs-params">(s <span class="hljs-keyword">string</span>)</span><span class="hljs-title">bool</span></span>{
-	hash := <span class="hljs-keyword">map</span>[<span class="hljs-keyword">byte</span>]<span class="hljs-keyword">byte</span>{<span class="hljs-string">&#x27;)&#x27;</span>:<span class="hljs-string">&#x27;(&#x27;</span>, <span class="hljs-string">&#x27;]&#x27;</span>:<span class="hljs-string">&#x27;[&#x27;</span>, <span class="hljs-string">&#x27;}&#x27;</span>:<span class="hljs-string">&#x27;{&#x27;</span>}
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">isValid2</span><span class="hljs-params">(s <span class="hljs-keyword">string</span>)</span><span class="hljs-title">bool</span></span>&#123;
+	hash := <span class="hljs-keyword">map</span>[<span class="hljs-keyword">byte</span>]<span class="hljs-keyword">byte</span>&#123;<span class="hljs-string">&#x27;)&#x27;</span>:<span class="hljs-string">&#x27;(&#x27;</span>, <span class="hljs-string">&#x27;]&#x27;</span>:<span class="hljs-string">&#x27;[&#x27;</span>, <span class="hljs-string">&#x27;&#125;&#x27;</span>:<span class="hljs-string">&#x27;&#123;&#x27;</span>&#125;
 	stack := <span class="hljs-built_in">make</span>([]<span class="hljs-keyword">byte</span>, <span class="hljs-number">0</span>)
 
-	<span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(s) == <span class="hljs-number">0</span> {
+	<span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(s) == <span class="hljs-number">0</span> &#123;
 		<span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>
-	}
+	&#125;
 
-	<span class="hljs-keyword">for</span> i := <span class="hljs-number">0</span>; i < <span class="hljs-built_in">len</span>(s); i++ {
-		<span class="hljs-keyword">if</span> s[i] == <span class="hljs-string">&#x27;(&#x27;</span> || s[i] == <span class="hljs-string">&#x27;[&#x27;</span> || s[i] == <span class="hljs-string">&#x27;{&#x27;</span> {
+	<span class="hljs-keyword">for</span> i := <span class="hljs-number">0</span>; i &lt; <span class="hljs-built_in">len</span>(s); i++ &#123;
+		<span class="hljs-keyword">if</span> s[i] == <span class="hljs-string">&#x27;(&#x27;</span> || s[i] == <span class="hljs-string">&#x27;[&#x27;</span> || s[i] == <span class="hljs-string">&#x27;&#123;&#x27;</span> &#123;
 			stack = <span class="hljs-built_in">append</span>(stack, s[i])
-		} <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(stack) > <span class="hljs-number">0</span> && stack[<span class="hljs-built_in">len</span>(stack)<span class="hljs-number">-1</span>] == hash[s[i]] {
+		&#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(stack) &gt; <span class="hljs-number">0</span> &amp;&amp; stack[<span class="hljs-built_in">len</span>(stack)<span class="hljs-number">-1</span>] == hash[s[i]] &#123;
 			stack = stack[:<span class="hljs-built_in">len</span>(stack)<span class="hljs-number">-1</span>]
-		} <span class="hljs-keyword">else</span> {
+		&#125; <span class="hljs-keyword">else</span> &#123;
 			<span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>
-		}
-	}
+		&#125;
+	&#125;
 	<span class="hljs-keyword">return</span> <span class="hljs-built_in">len</span>(stack) == <span class="hljs-number">0</span>
-}</code></pre></div>
+&#125;</code></pre></div>
 
-<h2 id="解法2-golang"><a href="#解法2-golang" class="headerlink" title="解法2 golang"></a>解法2 golang</h2><div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">isValid2</span><span class="hljs-params">(s <span class="hljs-keyword">string</span>)</span><span class="hljs-title"><code class="language-hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">isValid2</span><span class="hljs-params">(s <span class="hljs-keyword">string</span>)</span><span class="hljs-title">bool</span></span>{
-	hash := <span class="hljs-keyword">map</span>[<span class="hljs-keyword">byte</span>]<span class="hljs-keyword">byte</span>{<span class="hljs-string">&#x27;)&#x27;</span>:<span class="hljs-string">&#x27;(&#x27;</span>, <span class="hljs-string">&#x27;]&#x27;</span>:<span class="hljs-string">&#x27;[&#x27;</span>, <span class="hljs-string">&#x27;}&#x27;</span>:<span class="hljs-string">&#x27;{&#x27;</span>}
+<h2 id="解法2-golang"><a href="#解法2-golang" class="headerlink" title="解法2 golang"></a>解法2 golang</h2><div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">isValid2</span><span class="hljs-params">(s <span class="hljs-keyword">string</span>)</span><span class="hljs-title">bool</span></span>&#123;
+	hash := <span class="hljs-keyword">map</span>[<span class="hljs-keyword">byte</span>]<span class="hljs-keyword">byte</span>&#123;<span class="hljs-string">&#x27;)&#x27;</span>:<span class="hljs-string">&#x27;(&#x27;</span>, <span class="hljs-string">&#x27;]&#x27;</span>:<span class="hljs-string">&#x27;[&#x27;</span>, <span class="hljs-string">&#x27;&#125;&#x27;</span>:<span class="hljs-string">&#x27;&#123;&#x27;</span>&#125;
 	stack := <span class="hljs-built_in">make</span>([]<span class="hljs-keyword">byte</span>, <span class="hljs-number">0</span>)
 
-	<span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(s) == <span class="hljs-number">0</span> {
+	<span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(s) == <span class="hljs-number">0</span> &#123;
 		<span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>
-	}
+	&#125;
 
-	<span class="hljs-keyword">for</span> i := <span class="hljs-number">0</span>; i < <span class="hljs-built_in">len</span>(s); i++ {
-		<span class="hljs-keyword">if</span> s[i] == <span class="hljs-string">&#x27;(&#x27;</span> || s[i] == <span class="hljs-string">&#x27;[&#x27;</span> || s[i] == <span class="hljs-string">&#x27;{&#x27;</span> {
+	<span class="hljs-keyword">for</span> i := <span class="hljs-number">0</span>; i &lt; <span class="hljs-built_in">len</span>(s); i++ &#123;
+		<span class="hljs-keyword">if</span> s[i] == <span class="hljs-string">&#x27;(&#x27;</span> || s[i] == <span class="hljs-string">&#x27;[&#x27;</span> || s[i] == <span class="hljs-string">&#x27;&#123;&#x27;</span> &#123;
 			stack = <span class="hljs-built_in">append</span>(stack, s[i])
-		} <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(stack) > <span class="hljs-number">0</span> && stack[<span class="hljs-built_in">len</span>(stack)<span class="hljs-number">-1</span>] == hash[s[i]] {
+		&#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(stack) &gt; <span class="hljs-number">0</span> &amp;&amp; stack[<span class="hljs-built_in">len</span>(stack)<span class="hljs-number">-1</span>] == hash[s[i]] &#123;
 			stack = stack[:<span class="hljs-built_in">len</span>(stack)<span class="hljs-number">-1</span>]
-		} <span class="hljs-keyword">else</span> {
+		&#125; <span class="hljs-keyword">else</span> &#123;
 			<span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>
-		}
-	}
+		&#125;
+	&#125;
 	<span class="hljs-keyword">return</span> <span class="hljs-built_in">len</span>(stack) == <span class="hljs-number">0</span>
-}</code></pre></div>
+&#125;</code></pre></div>
             </div>
             <hr>
             <div>
@@ -323,7 +323,7 @@
                       <a href="/2020/09/10/blog_back_new/leetcode/Strings/28-%E5%AE%9E%E7%8E%B0strStr/">
                         <i class="iconfont icon-arrowleft"></i>
                         <span class="hidden-mobile">实现strStr</span>
-                        <span class="visible-mobile">Vorheriger</span>
+                        <span class="visible-mobile">上一篇</span>
                       </a>
                     
                   </article>
@@ -332,7 +332,7 @@
                     
                       <a href="/2020/09/10/blog_back_new/leetcode/Strings/13-%E7%BD%97%E9%A9%AC%E6%95%B0%E5%AD%97%E8%BD%AC%E6%95%B4%E6%95%B0/">
                         <span class="hidden-mobile">罗马数字转整数</span>
-                        <span class="visible-mobile">Nächster</span>
+                        <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
                     
@@ -349,7 +349,7 @@
     
       <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
         <div id="toc">
-  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
   <div class="toc-body" id="toc-body"></div>
 </div>
 
@@ -375,7 +375,7 @@
   <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">Suchen</h4>
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
         <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -384,7 +384,7 @@
         <div class="md-form mb-5">
           <input type="text" id="local-search-input" class="form-control validate">
           <label data-error="x" data-success="v"
-                 for="local-search-input">Stichwort</label>
+                 for="local-search-input">关键词</label>
         </div>
         <div class="list-group" id="local-search-result"></div>
       </div>

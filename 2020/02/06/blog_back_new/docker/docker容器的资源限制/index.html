@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html lang="cn" data-default-color-scheme=&#34;auto&#34;>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
 
 
 
@@ -61,7 +61,7 @@
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
 
 <body>
@@ -88,7 +88,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/">
                 <i class="iconfont icon-home-fill"></i>
-                Startseite
+                首页
               </a>
             </li>
           
@@ -100,7 +100,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/archives/">
                 <i class="iconfont icon-archive-fill"></i>
-                Archiv
+                归档
               </a>
             </li>
           
@@ -112,7 +112,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/categories/">
                 <i class="iconfont icon-category-fill"></i>
-                Kategorie
+                分类
               </a>
             </li>
           
@@ -124,7 +124,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/tags/">
                 <i class="iconfont icon-tags-fill"></i>
-                Etiketten
+                标签
               </a>
             </li>
           
@@ -136,7 +136,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/about/">
                 <i class="iconfont icon-user-fill"></i>
-                Über mich
+                关于
               </a>
             </li>
           
@@ -175,7 +175,7 @@
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
       <time datetime="2020-02-06 21:54" pubdate>
-        February 6, 2020 pm
+        2020年2月6日 晚上
       </time>
     </span>
   
@@ -186,7 +186,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      289 字
+      333 字
     </span>
   
 
@@ -244,27 +244,27 @@
 
 
 <h1 id="docker容器的资源限制"><a href="#docker容器的资源限制" class="headerlink" title="docker容器的资源限制"></a>docker容器的资源限制</h1><p>在虚拟机中我们可以对所创建的机器在资源上进行限制，比如内存等等<br>同样的，在docker中也能对容器进行资源上的配置</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 分配400M的内存给容器  指定给memory的话是200M 但其实swap也会得到200M 因此是400M</span>
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 分配400M的内存给容器  指定给memory的话是200M 但其实swap也会得到200M 因此是400M</span>
 docker run --memory=200M new/ubuntu-stress</code></pre></div>
 
-<h2 id="使用stress进行压力测试"><a href="#使用stress进行压力测试" class="headerlink" title="使用stress进行压力测试"></a>使用stress进行压力测试</h2><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># dockerfile</span>
+<h2 id="使用stress进行压力测试"><a href="#使用stress进行压力测试" class="headerlink" title="使用stress进行压力测试"></a>使用stress进行压力测试</h2><div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># dockerfile</span>
 FROM ubuntu
-RUN apt-get update && apt-get install stress -y
-ENTRYPOINT [<span class="hljs-string">"/usr/bin/stress"</span>]
-<span class="hljs-comment"># ENTRYPOINT ["/bin/bash","-c","stress"]</span>
+RUN apt-get update &amp;&amp; apt-get install stress -y
+ENTRYPOINT [<span class="hljs-string">&quot;/usr/bin/stress&quot;</span>]
+<span class="hljs-comment"># ENTRYPOINT [&quot;/bin/bash&quot;,&quot;-c&quot;,&quot;stress&quot;]</span>
 CMD []</code></pre></div>
 <p>先分配给他400M 然后使用stress做压力测试，stress 会开启进程，进程默认为256M 然后不断的开启不断的释放</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># -m 开一个进程 --verbos 详细信息  默认开启256M --vm-bytes 指定开启多少大小的内存进程</span>
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># -m 开一个进程 --verbos 详细信息  默认开启256M --vm-bytes 指定开启多少大小的内存进程</span>
 docker run --memory=200M  new/ubuntu-stress -m 1 --verbos 
 
 <span class="hljs-comment"># 超范围运行</span>
 root:~<span class="hljs-comment"># docker run  --memory=200M  new/ubuntu-stress -m 1 --verbose --vm-bytes 500M</span>
 stress: info: [1] dispatching hogs: 0 cpu, 0 io, 1 vm, 0 hdd
 stress: dbug: [1] using backoff sleep of 3000us
-stress: dbug: [1] --> hogvm worker 1 [6] forked
+stress: dbug: [1] --&gt; hogvm worker 1 [6] forked
 stress: dbug: [6] allocating 524288000 bytes ...
 stress: dbug: [6] touching bytes <span class="hljs-keyword">in</span> strides of 4096 bytes ...
-stress: FAIL: [1] (415) <-- worker 6 got signal 9
+stress: FAIL: [1] (415) &lt;-- worker 6 got signal 9
 stress: WARN: [1] (417) now reaping child worker processes
 stress: FAIL: [1] (421) <span class="hljs-built_in">kill</span> error: No such process
 stress: FAIL: [1] (451) failed run completed <span class="hljs-keyword">in</span> 0s</code></pre></div>
@@ -301,7 +301,7 @@ stress: FAIL: [1] (451) failed run completed <span class="hljs-keyword">in</span
                       <a href="/2020/02/06/blog_back_new/docker/docker%E7%BD%91%E7%BB%9C/">
                         <i class="iconfont icon-arrowleft"></i>
                         <span class="hidden-mobile">docker网络</span>
-                        <span class="visible-mobile">Vorheriger</span>
+                        <span class="visible-mobile">上一篇</span>
                       </a>
                     
                   </article>
@@ -310,7 +310,7 @@ stress: FAIL: [1] (451) failed run completed <span class="hljs-keyword">in</span
                     
                       <a href="/2020/02/05/blog_back_new/docker/docker-file/">
                         <span class="hidden-mobile">docker-DokcerFile</span>
-                        <span class="visible-mobile">Nächster</span>
+                        <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
                     
@@ -327,7 +327,7 @@ stress: FAIL: [1] (451) failed run completed <span class="hljs-keyword">in</span
     
       <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
         <div id="toc">
-  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
   <div class="toc-body" id="toc-body"></div>
 </div>
 
@@ -353,7 +353,7 @@ stress: FAIL: [1] (451) failed run completed <span class="hljs-keyword">in</span
   <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">Suchen</h4>
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
         <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -362,7 +362,7 @@ stress: FAIL: [1] (451) failed run completed <span class="hljs-keyword">in</span
         <div class="md-form mb-5">
           <input type="text" id="local-search-input" class="form-control validate">
           <label data-error="x" data-success="v"
-                 for="local-search-input">Stichwort</label>
+                 for="local-search-input">关键词</label>
         </div>
         <div class="list-group" id="local-search-result"></div>
       </div>

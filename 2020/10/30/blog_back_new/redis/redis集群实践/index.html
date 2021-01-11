@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html lang="cn" data-default-color-scheme=&#34;auto&#34;>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
 
 
 
@@ -61,7 +61,7 @@
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
 
 <body>
@@ -88,7 +88,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/">
                 <i class="iconfont icon-home-fill"></i>
-                Startseite
+                首页
               </a>
             </li>
           
@@ -100,7 +100,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/archives/">
                 <i class="iconfont icon-archive-fill"></i>
-                Archiv
+                归档
               </a>
             </li>
           
@@ -112,7 +112,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/categories/">
                 <i class="iconfont icon-category-fill"></i>
-                Kategorie
+                分类
               </a>
             </li>
           
@@ -124,7 +124,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/tags/">
                 <i class="iconfont icon-tags-fill"></i>
-                Etiketten
+                标签
               </a>
             </li>
           
@@ -136,7 +136,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/about/">
                 <i class="iconfont icon-user-fill"></i>
-                Über mich
+                关于
               </a>
             </li>
           
@@ -175,7 +175,7 @@
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
       <time datetime="2020-10-30 18:04" pubdate>
-        October 30, 2020 pm
+        2020年10月30日 晚上
       </time>
     </span>
   
@@ -186,7 +186,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      3.4k 字
+      3.6k 字
     </span>
   
 
@@ -196,7 +196,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      43
+      47
        分钟
     </span>
   
@@ -244,10 +244,10 @@
 <p>后面有了虚拟槽区位</p>
 <h3 id="虚拟槽分区"><a href="#虚拟槽分区" class="headerlink" title="虚拟槽分区"></a>虚拟槽分区</h3><p>虚拟槽分区巧妙地使用了哈希空间，使用分散度良好的哈希函数把所有数据映射到一个固定范围的整数集合中，整数定义为槽（slot）<br>槽位的数量一定大于节点的数量，每一个节点掌管一定数量的槽位<br>比如 假设一个集群有5个节点，每个节点平均大约负责3276个槽。由于采用高质量的哈希算法，每个槽所映射的数据通常比较均匀，将数据平均划分到5个节点进行数据分区。Redis Cluster就是采用虚拟槽分区</p>
 <p>key值哈希计算方法</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">slot=CRC16（key）&16383</code></pre></div>
+<div class="code-wrapper"><pre><code class="hljs bash">slot=CRC16（key）&amp;16383</code></pre></div>
 <p>所有的key根据哈希函数映射到0~16383整数槽内<br>多个节点平均分配16384个槽<br><img src="http://img.noback.top/2020-11-12-16-46-13.png" srcset="/img/loading.gif" alt="2020-11-12-16-46-13"><br>key根据哈希算法分配到16384个槽中<br><img src="http://img.noback.top/2020-11-12-16-46-41.png" srcset="/img/loading.gif" alt="2020-11-12-16-46-41"></p>
 <p>特点<br>解耦数据和节点之间的关系，简化了节点扩容和收缩难度。<br>节点自身维护槽的映射关系，不需要客户端或者代理服务维护槽分区元数据。<br>支持节点、槽、键之间的映射查询，用于数据路由、在线伸缩等场景。</p>
-<h2 id="redis-cluster常用命令"><a href="#redis-cluster常用命令" class="headerlink" title="redis-cluster常用命令"></a>redis-cluster常用命令</h2><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 登录</span>
+<h2 id="redis-cluster常用命令"><a href="#redis-cluster常用命令" class="headerlink" title="redis-cluster常用命令"></a>redis-cluster常用命令</h2><div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 登录</span>
 redis-cli -c -p 6382 -h 10.0.6.55
 <span class="hljs-comment"># 打印集群信息</span>
 cluster info   <span class="hljs-comment"># 只有当16384个槽位全部被分配之后，才会显示OK</span>
@@ -256,39 +256,39 @@ cluster myid
 <span class="hljs-comment"># 列出集群当前已知的所有节点， 以及这些节点的相关信息</span>
 cluster nodes
 <span class="hljs-comment"># 握手 将 ip 和 port 所指定的节点添加到集群当中，让它成为集群的一份子</span>
-cluster meet <ip> <port>
+cluster meet &lt;ip&gt; &lt;port&gt;
 <span class="hljs-comment"># 从集群中移除 node_id 指定的结点  (线上不建议使用 建议使用redis-cli --cluster del-node)</span>
-cluster forget <node_id>
+cluster forget &lt;node_id&gt;
 <span class="hljs-comment"># 将当前从节点设置为 node_id 指定的master节点的slave节点。只能针对slave节点操作</span>
-cluster replicate <master_node_id>
+cluster replicate &lt;master_node_id&gt;
 <span class="hljs-comment"># 将节点的配置文件保存到硬盘里面</span>
 cluster saveconfig 
 
 <span class="hljs-comment"># 槽(slot)</span>
 <span class="hljs-comment"># 将一个或多个槽(slot)指派给当前节点</span>
-cluster addslots <slot> [slot ...]
+cluster addslots &lt;slot&gt; [slot ...]
 <span class="hljs-comment"># 移除一个或多个槽对当前节点的指派</span>
-cluster delslots <slot> [slot ...] 
+cluster delslots &lt;slot&gt; [slot ...] 
 <span class="hljs-comment"># 移除指派给当前节点的所有槽，让当前节点变成一个没有指派任何槽的节点</span>
 cluster flushslots 
 <span class="hljs-comment"># 迁移节点</span>
 <span class="hljs-comment"># 从目标节点导入</span>
-cluster setslot <slot> importing <target_node_id>
+cluster setslot &lt;slot&gt; importing &lt;target_node_id&gt;
 <span class="hljs-comment"># 将本节点的槽 slot 迁移到 node_id 指定的节点中</span>
-cluster setslot <slot> migrating <target_node_id>
+cluster setslot &lt;slot&gt; migrating &lt;target_node_id&gt;
 <span class="hljs-comment"># 取消对槽slot的导入或者迁移</span>
-cluster setslot <slot> stable 
+cluster setslot &lt;slot&gt; stable 
 <span class="hljs-comment"># 键hash </span>
 <span class="hljs-comment"># 计算键key应该被放置在哪个槽上</span>
-cluster keyslot <key>
+cluster keyslot &lt;key&gt;
 <span class="hljs-comment"># 返回槽 slot 目前包含的键值对数量</span>
-cluster countkeysinslot <slot>
+cluster countkeysinslot &lt;slot&gt;
 <span class="hljs-comment"># 返回 count 个 slot 槽中的键 </span>
-cluster getkeysinslot <slot> <count></code></pre></div>
+cluster getkeysinslot &lt;slot&gt; &lt;count&gt;</code></pre></div>
 
 <h2 id="redis集群的存储方式"><a href="#redis集群的存储方式" class="headerlink" title="redis集群的存储方式"></a>redis集群的存储方式</h2><p>redis会把存储的key值做一个hash 然后存放到各自的桶里面<br>reids一共分成16384个桶，也就是说最多可以有16384个master 也就是16384*2个机器(一主一从)</p>
 <p>如下所示，将不同key存放到不同的桶当中<br>集群如下<br><img src="http://img.noback.top/2020-11-04-12-02-16.png" srcset="/img/loading.gif" alt="2020-11-04-12-02-16"></p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 获取当前key被hash后的id是多少</span>
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 获取当前key被hash后的id是多少</span>
 cluster keyslot name <span class="hljs-comment"># 5798 所以name这个key应该被放在5798这个槽里面  根据上面这个图的分配，可以看出name应该存放在6380这个端口下面</span></code></pre></div>
 <p><img src="http://img.noback.top/2020-11-04-16-37-05.png" srcset="/img/loading.gif" alt="2020-11-04-16-37-05"></p>
 <p>如果当前设置的key不在当前的端口下，则会报错<br><img src="http://img.noback.top/2020-11-04-16-38-03.png" srcset="/img/loading.gif" alt="2020-11-04-16-38-03"><br>比如要在6379下面才能去设置<br>当然这是单纯的命令行，在程序中会有其他的解决办法</p>
@@ -301,20 +301,20 @@ cluster keyslot name <span class="hljs-comment"># 5798 所以name这个key应该
 <p>为了实现将key分到相同机器，就需要相同的hash值，即相同的key，但key相同是不现实的，因为key都有不同的用途。例如user:user1:ids保存用户id，user:user1:detail保存用户的具体信息，两个key不可能同名。两个key其实有相同的地方，即user。能不能拿这一部分去计算hash呢？这就是 Hash Tag。允许用key的部分字符串来计算hash,<br>当一个key包含 {} 的时候，就不对整个key做hash，而仅对 {} 包括的字符串做hash。</p>
 <p>假设hash算法为sha1。对user:{user1}:ids和user:{user1}:detail，其hash值都等同于sha1(user1)。<br>将不同的key放在同一个槽之内，如下<br><img src="http://img.noback.top/2020-11-04-17-02-47.png" srcset="/img/loading.gif" alt="2020-11-04-17-02-47"><br>在hash计算的时候，回去计算a的hash值，然后放到对应id的桶当中。</p>
 <h2 id="手动操作槽与数据的迁移"><a href="#手动操作槽与数据的迁移" class="headerlink" title="手动操作槽与数据的迁移"></a>手动操作槽与数据的迁移</h2><p><img src="http://img.noback.top/2020-11-04-12-02-16.png" srcset="/img/loading.gif" alt="2020-11-04-12-02-16"><br>首先准备数据，准备3条数据到6379中，操作如下</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">mset {test1}name hzj {test1}name2 cy {test1}name3 helloworld
+<div class="code-wrapper"><pre><code class="hljs bash">mset &#123;test1&#125;name hzj &#123;test1&#125;name2 cy &#123;test1&#125;name3 helloworld
 cluster keyslot test1 <span class="hljs-comment"># 获取桶ID</span>
 cluster getkeysinslot 4768 5 <span class="hljs-comment"># 获取对应桶ID中对应数量的值</span></code></pre></div>
 <p><img src="http://img.noback.top/2020-11-04-17-16-03.png" srcset="/img/loading.gif" alt="2020-11-04-17-16-03"><br>现在我们将6379节点4768桶中的数据转移到6380当中去</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 目标节点准备导入桶4768中的数据</span>
-10.0.6.35:6380> cluster setslot 4768 IMPORTING 2a46fd184a14f6d0e320fdd31cfd93c6d80bf052
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 目标节点准备导入桶4768中的数据</span>
+10.0.6.35:6380&gt; cluster setslot 4768 IMPORTING 2a46fd184a14f6d0e320fdd31cfd93c6d80bf052
 <span class="hljs-comment"># 源节点 准备导出桶4786中的数据</span>
-10.0.6.35:6379> cluster setslot 4768 MIGRATING f3f2c1910f30573d82071ee1746b3f3b0a07267d
+10.0.6.35:6379&gt; cluster setslot 4768 MIGRATING f3f2c1910f30573d82071ee1746b3f3b0a07267d
 <span class="hljs-comment"># 确认导出状态</span>
-10.0.6.35:6380> cluster nodes | grep master
+10.0.6.35:6380&gt; cluster nodes | grep master
 <span class="hljs-comment"># 批量获取对应槽内的key-value</span>
-10.0.6.35:6379> cluster getkeysinslot 4768 100
+10.0.6.35:6379&gt; cluster getkeysinslot 4768 100
 <span class="hljs-comment"># 批量迁移</span>
-10.0.6.35:6379> migrate 127.0.0.1 6380 <span class="hljs-string">""</span> 0 5000 KEYS {test1}name {test1}name2 {test1}name3
+10.0.6.35:6379&gt; migrate 127.0.0.1 6380 <span class="hljs-string">&quot;&quot;</span> 0 5000 KEYS &#123;test1&#125;name &#123;test1&#125;name2 &#123;test1&#125;name3
 <span class="hljs-comment"># 通知其他节点槽4768 指派给节点</span>
 iredis -h 10.0.6.35 -p 6379 cluster setslot 4768 node f3f2c1910f30573d82071ee1746b3f3b0a07267d
 iredis -h 10.0.6.35 -p 6381 cluster setslot 4768 node f3f2c1910f30573d82071ee1746b3f3b0a07267d
@@ -323,7 +323,7 @@ iredis -h 10.0.6.35 -p 6382 cluster setslot 4768 node f3f2c1910f30573d82071ee174
 </code></pre></div>
 <p>确认导出状态的图<br><img src="http://img.noback.top/2020-11-04-17-22-21.png" srcset="/img/loading.gif" alt="2020-11-04-17-22-21"><br>转移成功状态图<br><img src="http://img.noback.top/2020-11-04-17-56-11.png" srcset="/img/loading.gif" alt="2020-11-04-17-56-11"></p>
 <h2 id="脚本操作槽与数据的迁移"><a href="#脚本操作槽与数据的迁移" class="headerlink" title="脚本操作槽与数据的迁移"></a>脚本操作槽与数据的迁移</h2><p>创建环境<br><img src="http://img.noback.top/2020-11-04-18-04-30.png" srcset="/img/loading.gif" alt="2020-11-04-18-04-30"><br><img src="http://img.noback.top/2020-11-04-18-05-08.png" srcset="/img/loading.gif" alt="2020-11-04-18-05-08"></p>
-<h3 id="老版本使用ruby脚本"><a href="#老版本使用ruby脚本" class="headerlink" title="老版本使用ruby脚本"></a>老版本使用ruby脚本</h3><div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">redis-trib.rb reshard host:port --from <arg> --to <arg> --slots <arg> --yes --timeout <arg> --pipeline <arg></code></pre></div>
+<h3 id="老版本使用ruby脚本"><a href="#老版本使用ruby脚本" class="headerlink" title="老版本使用ruby脚本"></a>老版本使用ruby脚本</h3><div class="code-wrapper"><pre><code class="hljs bash">redis-trib.rb reshard host:port --from &lt;arg&gt; --to &lt;arg&gt; --slots &lt;arg&gt; --yes --timeout &lt;arg&gt; --pipeline &lt;arg&gt;</code></pre></div>
 <ul>
 <li>host 集群内任意节点地址，用来获取参数</li>
 <li>–form 制定源节点的id，如果有多个源节点，使用逗号分隔，如果是all源节点变为集群内所有主节点，在迁移过程中提示用户输入</li>
@@ -333,18 +333,18 @@ iredis -h 10.0.6.35 -p 6382 cluster setslot 4768 node f3f2c1910f30573d82071ee174
 <li>–timeout 控制每次migrate操作的超时时间，默认为60000毫秒。</li>
 <li>–pipline 控制每次批量迁移键的数量，默认为10</li>
 </ul>
-<h3 id="新版本使用redis-cli脚本"><a href="#新版本使用redis-cli脚本" class="headerlink" title="新版本使用redis-cli脚本"></a>新版本使用redis-cli脚本</h3><div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">./redis-cli --cluster reshard 127.0.0.1 6379</code></pre></div>
+<h3 id="新版本使用redis-cli脚本"><a href="#新版本使用redis-cli脚本" class="headerlink" title="新版本使用redis-cli脚本"></a>新版本使用redis-cli脚本</h3><div class="code-wrapper"><pre><code class="hljs bash">./redis-cli --cluster reshard 127.0.0.1 6379</code></pre></div>
 <p>使用参数和ruby脚本一样</p>
-<h3 id="添加从节点"><a href="#添加从节点" class="headerlink" title="添加从节点"></a>添加从节点</h3><div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">10.0.6.35:6386> cluster replicate 16e43ced3ae6c4fd7912b7f609df363ab56cd89a</code></pre></div>
+<h3 id="添加从节点"><a href="#添加从节点" class="headerlink" title="添加从节点"></a>添加从节点</h3><div class="code-wrapper"><pre><code class="hljs bash">10.0.6.35:6386&gt; cluster replicate 16e43ced3ae6c4fd7912b7f609df363ab56cd89a</code></pre></div>
 
 <h2 id="节点下线流程"><a href="#节点下线流程" class="headerlink" title="节点下线流程"></a>节点下线流程</h2><p>要保证节点的下线，首先是要转移节点中的槽，保证数据的完整性<br>要通知所有的其他节点， 该节点已经下线了</p>
-<h3 id="忘记节点"><a href="#忘记节点" class="headerlink" title="忘记节点"></a>忘记节点</h3><div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">cluster forget{down NodeId}</code></pre></div>
+<h3 id="忘记节点"><a href="#忘记节点" class="headerlink" title="忘记节点"></a>忘记节点</h3><div class="code-wrapper"><pre><code class="hljs bash">cluster forget&#123;down NodeId&#125;</code></pre></div>
 <p>当节点接收到cluster forget{down NodeId}命令后，会把nodeId指定的节点加入到禁用列表中，在禁用列表内的节点不再发送Gossip消息。禁用列表有效期是60秒，超过60秒节点会再次参与消息交换。也就是说当第一次forget命令发出后，我们有60秒的时间让集群内的所有节点忘记下线节点。</p>
 <p>下线需求，最好先下线从节点，再下线主节点。如果从节点丢失了主节点，他会自动去更新一个新的主节点，这样会出现没有必要的全量复制<br>线上环境建议使用</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 旧版本</span>
-redis-trib.rb del-node{host：port}{downNodeId}
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 旧版本</span>
+redis-trib.rb del-node&#123;host：port&#125;&#123;downNodeId&#125;
 <span class="hljs-comment"># 新版本</span>
-redis-cli --cluster del-node {host:port}{downNodeId}
+redis-cli --cluster del-node &#123;host:port&#125;&#123;downNodeId&#125;
 <span class="hljs-comment"># 示例</span>
 ./redis-cli --cluster del-node  127.0.0.1:6379 81b2d20ffe75f429b4934b494e368697b388ff22</code></pre></div>
 
@@ -356,11 +356,11 @@ redis-cli --cluster del-node {host:port}{downNodeId}
 <p><img src="http://img.noback.top/2020-11-05-11-02-01.png" srcset="/img/loading.gif" alt="2020-11-05-11-02-01"><br><img src="http://img.noback.top/2020-11-05-11-02-16.png" srcset="/img/loading.gif" alt="2020-11-05-11-02-16"></p>
 <p>name这个key的hash值计算出来是5798 应该是在6380这个节点上面的，但是当前的节点是6386这个节点，于是在设置值的时候回出现重定向。这里只做出反应，并不作出转发的动作，因此不会去6380上面设置key</p>
 <h2 id="快速部署脚本"><a href="#快速部署脚本" class="headerlink" title="快速部署脚本"></a>快速部署脚本</h2><p>ruby安装以及gem源更新成国内源</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">wget https://cache.ruby-china.com/pub/ruby/ruby-2.6.5.tar.xz
+<div class="code-wrapper"><pre><code class="hljs bash">wget https://cache.ruby-china.com/pub/ruby/ruby-2.6.5.tar.xz
 xz -d ruby-2.6.5.tar.xz         
 tar -xvf ruby-2.6.5.tar   
 <span class="hljs-built_in">cd</span> /home/joyce/soft/ruby-2.6.5
-./configure  && make -j8 && make install && ruby -v
+./configure  &amp;&amp; make -j8 &amp;&amp; make install &amp;&amp; ruby -v
 <span class="hljs-comment"># 执行配置。或者：   ./configure  --with-openssl-dir=/usr/local/ssl  可以解决报错：Unable to require openssl, install OpenSSL and rebuild ruby (preferred) or use non-HTTPS sources</span>
 
 gem sources 　　<span class="hljs-comment"># 查看当前源</span>
@@ -370,56 +370,56 @@ gem sources -u 　　 <span class="hljs-comment"># 更新源的缓存</span></co
 
 <p>redis中自带ruby脚本，可以用来快速搭建redis集群，脚本位置在 <code>/redis/src/redis-trib.rb</code><br><font color='red'>5.0的redis中redis-trib这个脚本已经被弃用了，工能都放在redis-cli里面</font></p>
 <p>机器部署</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-meta"><code class="language-hljs bash"><span class="hljs-meta">#!/bin/bash</span>
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-meta">#!/bin/bash</span>
 
-module_file=<span class="hljs-string">"./redis.conf"</span>
+module_file=<span class="hljs-string">&quot;./redis.conf&quot;</span>
 
-<span class="hljs-keyword">if</span> <span class="hljs-built_in">test</span> -z <span class="hljs-string">"<span class="hljs-variable">$1</span>"</span>
+<span class="hljs-keyword">if</span> <span class="hljs-built_in">test</span> -z <span class="hljs-string">&quot;<span class="hljs-variable">$1</span>&quot;</span>
 <span class="hljs-keyword">then</span>
-  <span class="hljs-built_in">echo</span> <span class="hljs-string">"no set config name"</span>
+  <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;no set config name&quot;</span>
   <span class="hljs-built_in">exit</span> 1
 <span class="hljs-keyword">else</span>
-  <span class="hljs-built_in">echo</span> <span class="hljs-string">"config the redis-<span class="hljs-variable">$1</span>.conf now"</span>
-  Port=<span class="hljs-string">"<span class="hljs-variable">$1</span>"</span>
+  <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;config the redis-<span class="hljs-variable">$1</span>.conf now&quot;</span>
+  Port=<span class="hljs-string">&quot;<span class="hljs-variable">$1</span>&quot;</span>
 <span class="hljs-keyword">fi</span>
 
 
-<span class="hljs-keyword">if</span> <span class="hljs-built_in">test</span> -f <span class="hljs-string">"./redis-<span class="hljs-variable">$1</span>.conf"</span>
+<span class="hljs-keyword">if</span> <span class="hljs-built_in">test</span> -f <span class="hljs-string">&quot;./redis-<span class="hljs-variable">$1</span>.conf&quot;</span>
 <span class="hljs-keyword">then</span>
-  <span class="hljs-built_in">echo</span> <span class="hljs-string">"file exit"</span>
+  <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;file exit&quot;</span>
 <span class="hljs-keyword">else</span>
-  <span class="hljs-built_in">echo</span> <span class="hljs-string">"copy <span class="hljs-variable">$module_file</span> >> ./redis-<span class="hljs-variable">$1</span>.conf"</span>
+  <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;copy <span class="hljs-variable">$module_file</span> &gt;&gt; ./redis-<span class="hljs-variable">$1</span>.conf&quot;</span>
   `cp <span class="hljs-variable">$module_file</span> ./redis-<span class="hljs-variable">$1</span>.conf`
 <span class="hljs-keyword">fi</span>
 
-sed -i -e  <span class="hljs-string">"/^port/s/.*/port <span class="hljs-variable">${Port}</span>/"</span>  \
-    -e <span class="hljs-string">"/^daemonize/s/no/yes/"</span>   \
-    -e <span class="hljs-string">"/^logfile/s/.*/logfile \"<span class="hljs-variable">${Port}</span>.log\"/"</span> \
-    -e <span class="hljs-string">"/^dbfilename/s/.*/dbfilename \"dump-<span class="hljs-variable">${Port}</span>.rdb\"/"</span>   \
-    -e <span class="hljs-string">"/^dir/s@.*@dir ./data/@"</span> \
-    -e <span class="hljs-string">&#x27;s/^bind/#&/&#x27;</span> \
-    -e <span class="hljs-string">"/^protected-mode/s/yes/no/"</span> \
-    -e <span class="hljs-string">"/cluster-node-timeout/s@# @"</span><span class="hljs-string">"@"</span> \
-    -e <span class="hljs-string">"/cluster-config-file/s@.*@cluster-config-file nodes-<span class="hljs-variable">${Port}</span>.conf@"</span>\
-    -e <span class="hljs-string">"/cluster-enabled/s@# @"</span><span class="hljs-string">"@"</span> \
-    redis-<span class="hljs-variable">${Port}</span>.conf
+sed -i -e  <span class="hljs-string">&quot;/^port/s/.*/port <span class="hljs-variable">$&#123;Port&#125;</span>/&quot;</span>  \
+    -e <span class="hljs-string">&quot;/^daemonize/s/no/yes/&quot;</span>   \
+    -e <span class="hljs-string">&quot;/^logfile/s/.*/logfile \&quot;<span class="hljs-variable">$&#123;Port&#125;</span>.log\&quot;/&quot;</span> \
+    -e <span class="hljs-string">&quot;/^dbfilename/s/.*/dbfilename \&quot;dump-<span class="hljs-variable">$&#123;Port&#125;</span>.rdb\&quot;/&quot;</span>   \
+    -e <span class="hljs-string">&quot;/^dir/s@.*@dir ./data/@&quot;</span> \
+    -e <span class="hljs-string">&#x27;s/^bind/#&amp;/&#x27;</span> \
+    -e <span class="hljs-string">&quot;/^protected-mode/s/yes/no/&quot;</span> \
+    -e <span class="hljs-string">&quot;/cluster-node-timeout/s@# @&quot;</span><span class="hljs-string">&quot;@&quot;</span> \
+    -e <span class="hljs-string">&quot;/cluster-config-file/s@.*@cluster-config-file nodes-<span class="hljs-variable">$&#123;Port&#125;</span>.conf@&quot;</span>\
+    -e <span class="hljs-string">&quot;/cluster-enabled/s@# @&quot;</span><span class="hljs-string">&quot;@&quot;</span> \
+    redis-<span class="hljs-variable">$&#123;Port&#125;</span>.conf
 
-<span class="hljs-built_in">echo</span> <span class="hljs-string">"success"</span>
+<span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;success&quot;</span>
 <span class="hljs-comment"># sh ./master.sh 6666</span></code></pre></div>
 
 
-<h2 id="错误预告"><a href="#错误预告" class="headerlink" title="错误预告"></a>错误预告</h2><h3 id="没有设置集群模式"><a href="#没有设置集群模式" class="headerlink" title="没有设置集群模式"></a>没有设置集群模式</h3><div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">Redis报错：ERR This instance has cluster support disabled</code></pre></div>
+<h2 id="错误预告"><a href="#错误预告" class="headerlink" title="错误预告"></a>错误预告</h2><h3 id="没有设置集群模式"><a href="#没有设置集群模式" class="headerlink" title="没有设置集群模式"></a>没有设置集群模式</h3><div class="code-wrapper"><pre><code class="hljs bash">Redis报错：ERR This instance has cluster support disabled</code></pre></div>
 <p>配置没有修改成集群模式</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># cluster-enabled yes  =></span>
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># cluster-enabled yes  =&gt;</span>
 cluster-enabled yes</code></pre></div>
 
 <h3 id="迁移未完成"><a href="#迁移未完成" class="headerlink" title="迁移未完成"></a>迁移未完成</h3><p><img src="http://img.noback.top/2020-11-04-18-26-28.png" srcset="/img/loading.gif" alt="2020-11-04-18-26-28"><br><img src="http://img.noback.top/2020-11-04-18-26-56.png" srcset="/img/loading.gif" alt="2020-11-04-18-26-56"><br>一般情况下是手动迁移没有完成<br>解决办法，关闭迁移</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">cluster setslot <slot_id> STABLE</code></pre></div>
+<div class="code-wrapper"><pre><code class="hljs bash">cluster setslot &lt;slot_id&gt; STABLE</code></pre></div>
 
 
 <h2 id="单点集群实验测试案例"><a href="#单点集群实验测试案例" class="headerlink" title="单点集群实验测试案例"></a>单点集群实验测试案例</h2><p>开启节点集群模式<br>标注的几个是需要修改的</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">protected-mode no
-port 6666  <span class="hljs-comment"># "this"</span>
+<div class="code-wrapper"><pre><code class="hljs bash">protected-mode no
+port 6666  <span class="hljs-comment"># &quot;this&quot;</span>
 tcp-backlog 511
 timeout 0
 tcp-keepalive 300
@@ -427,7 +427,7 @@ daemonize yes
 supervised no
 pidfile /var/run/redis_6379.pid
 loglevel notice
-logfile <span class="hljs-string">"6666.log"</span>  <span class="hljs-comment"># "this"</span>
+logfile <span class="hljs-string">&quot;6666.log&quot;</span>  <span class="hljs-comment"># &quot;this&quot;</span>
 databases 16
 always-show-logo yes
 save 900 1
@@ -436,7 +436,7 @@ save 60 10000
 stop-writes-on-bgsave-error yes
 rdbcompression yes
 rdbchecksum yes
-dbfilename <span class="hljs-string">"dump-6666.rdb"</span>  <span class="hljs-comment"># "this"</span>
+dbfilename <span class="hljs-string">&quot;dump-6666.rdb&quot;</span>  <span class="hljs-comment"># &quot;this&quot;</span>
 dir ./data/
 replica-serve-stale-data yes
 replica-read-only yes
@@ -449,7 +449,7 @@ lazyfree-lazy-expire no
 lazyfree-lazy-server-del no
 replica-lazy-flush no
 appendonly no
-appendfilename <span class="hljs-string">"appendonly.aof"</span>
+appendfilename <span class="hljs-string">&quot;appendonly.aof&quot;</span>
 appendfsync everysec
 no-appendfsync-on-rewrite no
 auto-aof-rewrite-percentage 100
@@ -457,13 +457,13 @@ auto-aof-rewrite-min-size 64mb
 aof-load-truncated yes
 aof-use-rdb-preamble yes
 lua-time-limit 5000
-cluster-enabled yes   <span class="hljs-comment"># "this"</span>
-cluster-config-file nodes-6666.conf   <span class="hljs-comment"># "this"</span>
-cluster-node-timeout 15000   <span class="hljs-comment"># "this"</span>
+cluster-enabled yes   <span class="hljs-comment"># &quot;this&quot;</span>
+cluster-config-file nodes-6666.conf   <span class="hljs-comment"># &quot;this&quot;</span>
+cluster-node-timeout 15000   <span class="hljs-comment"># &quot;this&quot;</span>
 slowlog-log-slower-than 10000 
 slowlog-max-len 128
 latency-monitor-threshold 0
-notify-keyspace-events <span class="hljs-string">""</span>
+notify-keyspace-events <span class="hljs-string">&quot;&quot;</span>
 hash-max-ziplist-entries 512
 hash-max-ziplist-value 64
 list-max-ziplist-size -2
@@ -484,7 +484,7 @@ aof-rewrite-incremental-fsync yes
 rdb-save-incremental-fsync yes</code></pre></div>
 
 <p>启动集群</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">redis-server conf/redis-6379.conf
+<div class="code-wrapper"><pre><code class="hljs bash">redis-server conf/redis-6379.conf
 redis-server conf/redis-6380.conf
 redis-server conf/redis-6381.conf
 redis-server conf/redis-6382.conf
@@ -525,7 +525,7 @@ redis-server conf/redis-6384.conf</code></pre></div>
                       <a href="/2020/11/02/blog_back_new/redis/redis%E5%9F%BA%E7%A1%80/">
                         <i class="iconfont icon-arrowleft"></i>
                         <span class="hidden-mobile">redis基础</span>
-                        <span class="visible-mobile">Vorheriger</span>
+                        <span class="visible-mobile">上一篇</span>
                       </a>
                     
                   </article>
@@ -534,7 +534,7 @@ redis-server conf/redis-6384.conf</code></pre></div>
                     
                       <a href="/2020/10/29/blog_back_new/redis/redis%E5%93%A8%E5%85%B5%E5%AE%9E%E8%B7%B5/">
                         <span class="hidden-mobile">redis哨兵实践</span>
-                        <span class="visible-mobile">Nächster</span>
+                        <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
                     
@@ -551,7 +551,7 @@ redis-server conf/redis-6384.conf</code></pre></div>
     
       <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
         <div id="toc">
-  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
   <div class="toc-body" id="toc-body"></div>
 </div>
 
@@ -577,7 +577,7 @@ redis-server conf/redis-6384.conf</code></pre></div>
   <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">Suchen</h4>
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
         <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -586,7 +586,7 @@ redis-server conf/redis-6384.conf</code></pre></div>
         <div class="md-form mb-5">
           <input type="text" id="local-search-input" class="form-control validate">
           <label data-error="x" data-success="v"
-                 for="local-search-input">Stichwort</label>
+                 for="local-search-input">关键词</label>
         </div>
         <div class="list-group" id="local-search-result"></div>
       </div>

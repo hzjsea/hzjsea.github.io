@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html lang="cn" data-default-color-scheme=&#34;auto&#34;>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
 
 
 
@@ -61,7 +61,7 @@
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
 
 <body>
@@ -88,7 +88,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/">
                 <i class="iconfont icon-home-fill"></i>
-                Startseite
+                首页
               </a>
             </li>
           
@@ -100,7 +100,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/archives/">
                 <i class="iconfont icon-archive-fill"></i>
-                Archiv
+                归档
               </a>
             </li>
           
@@ -112,7 +112,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/categories/">
                 <i class="iconfont icon-category-fill"></i>
-                Kategorie
+                分类
               </a>
             </li>
           
@@ -124,7 +124,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/tags/">
                 <i class="iconfont icon-tags-fill"></i>
-                Etiketten
+                标签
               </a>
             </li>
           
@@ -136,7 +136,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/about/">
                 <i class="iconfont icon-user-fill"></i>
-                Über mich
+                关于
               </a>
             </li>
           
@@ -175,7 +175,7 @@
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
       <time datetime="2019-12-29 13:13" pubdate>
-        December 29, 2019 pm
+        2019年12月29日 下午
       </time>
     </span>
   
@@ -186,7 +186,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      581 字
+      599 字
     </span>
   
 
@@ -246,35 +246,35 @@
 
 <a id="more"></a>
 
-<h1 id="centos7错误总结"><a href="#centos7错误总结" class="headerlink" title="centos7错误总结"></a>centos7错误总结</h1><h2 id="yum不支持python3"><a href="#yum不支持python3" class="headerlink" title="yum不支持python3"></a>yum不支持python3</h2><div class="code-wrapper"><pre class=" language-hljs bash">[root@gogogo alpaca]<span class="hljs-comment"><code class="language-hljs bash">[root@gogogo alpaca]<span class="hljs-comment"># yum</span>
-  File <span class="hljs-string">"/bin/yum"</span>, line 30
+<h1 id="centos7错误总结"><a href="#centos7错误总结" class="headerlink" title="centos7错误总结"></a>centos7错误总结</h1><h2 id="yum不支持python3"><a href="#yum不支持python3" class="headerlink" title="yum不支持python3"></a>yum不支持python3</h2><div class="code-wrapper"><pre><code class="hljs bash">[root@gogogo alpaca]<span class="hljs-comment"># yum</span>
+  File <span class="hljs-string">&quot;/bin/yum&quot;</span>, line 30
     except KeyboardInterrupt, e:
                             ^
 SyntaxError: invalid syntax
-  File <span class="hljs-string">"/usr/libexec/urlgrabber-ext-down"</span>, line 28
+  File <span class="hljs-string">&quot;/usr/libexec/urlgrabber-ext-down&quot;</span>, line 28
     except OSError, e:</code></pre></div>
 <p><strong>解决办法</strong></p>
-<div class="code-wrapper"><pre class=" language-hljs bash">sed -i <span class="hljs-string"><code class="language-hljs bash">sed -i <span class="hljs-string">&#x27;s:bin/python:bin/python2.7:&#x27;</span> /usr/bin/yum
+<div class="code-wrapper"><pre><code class="hljs bash">sed -i <span class="hljs-string">&#x27;s:bin/python:bin/python2.7:&#x27;</span> /usr/bin/yum
 sed -i <span class="hljs-string">&#x27;s:bin/python:bin/python2.7:&#x27;</span> /usr/libexec/urlgrabber-ext-down</code></pre></div>
 
 <h2 id="可以通外网，但是无法ping百度"><a href="#可以通外网，但是无法ping百度" class="headerlink" title="可以通外网，但是无法ping百度"></a>可以通外网，但是无法ping百度</h2><p>包括无法使用yum wget 等下载工具<br>或者报错 cannot find a valid baseurl for repo:base/7/x86_64 的解决方法</p>
 <p><strong>解决办法</strong><br>原因 - &gt; DNS的问题</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-built_in"><code class="language-hljs bash"><span class="hljs-built_in">echo</span> nameserver 114.114.114.114 > /etc/reslov.conf</code></pre></div>
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-built_in">echo</span> nameserver 114.114.114.114 &gt; /etc/reslov.conf</code></pre></div>
 
 <h2 id="linux中如何恢复到后台进程"><a href="#linux中如何恢复到后台进程" class="headerlink" title="linux中如何恢复到后台进程"></a>linux中如何恢复到后台进程</h2><p>linux 下我们如果想一个任务或者程序进行调度<br>bg 将一个后台暂停的命令，变成继续执行<br>fg 将后台的命令调至前台继续运行<br>jobs 查看当前在后台运行的命令<br>c-z 将前台命令放到后台运行 并且暂停<br>nohup command &amp; 在后台不断运行command命令</p>
 <h2 id="ssh配置的问题"><a href="#ssh配置的问题" class="headerlink" title="ssh配置的问题"></a>ssh配置的问题</h2><p><font color='blue'>这个问题主要是存在于交换机ssh登陆交换机的过程</font><br>ssh配置过程中，配置了密码登陆，但是出现下面的错误</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash"><ONI-KC-R01-CR1>ssh 10.0.0.166
+<div class="code-wrapper"><pre><code class="hljs bash">&lt;ONI-KC-R01-CR1&gt;ssh 10.0.0.166
 The server<span class="hljs-string">&#x27;s host key does not match the local cached key. Either the server administrator has changed the host key, or you connected to another server pretending to be this server. Please remove the local cached key, before logging in!</span></code></pre></div>
 
 <p>主要问题是一开始用ssh登陆交换机的时候，选择了保存key</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash"><ONI-KC-R01-CR1>ssh 10.0.0.166
+<div class="code-wrapper"><pre><code class="hljs bash">&lt;ONI-KC-R01-CR1&gt;ssh 10.0.0.166
 Username: tt
 Press CTRL+C to abort.
 Connecting to 10.0.0.166 port 22.
 The server is not authenticated. Continue? [Y/N]:y
 Do you want to save the server public key? [Y/N]:y</code></pre></div>
 <p>这样导致的问题就是在当前交换机上会保存一个登陆另一个交换机的key</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment">#</span>
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment">#</span>
 public-key peer 10.0.0.166
  public-key-code begin
    30819F300D06092A864886F70D010101050003818D0030818902818100DF3E1240D158E197
@@ -287,7 +287,7 @@ public-key peer 10.0.0.166
 <span class="hljs-comment"># </span></code></pre></div>
 <p>于是当你下次选择使用ssh+密码登陆交换机的时候就会发现错误</p>
 <p><font color='red'>解决</font><br>删除当前交换机的key  并在下次登陆的时候选择</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash"><ONI-KC-R01-CR1>ssh 10.0.0.166
+<div class="code-wrapper"><pre><code class="hljs bash">&lt;ONI-KC-R01-CR1&gt;ssh 10.0.0.166
 Username: tt
 Press CTRL+C to abort.
 Connecting to 10.0.0.166 port 22.
@@ -327,7 +327,7 @@ Do you want to save the server public key? [Y/N]:n</code></pre></div>
                       <a href="/2019/12/29/blog_back_new/%E9%94%99%E8%AF%AF%E6%80%BB%E7%BB%93/%E5%8F%88%E6%8B%8D%E4%BA%91/">
                         <i class="iconfont icon-arrowleft"></i>
                         <span class="hidden-mobile">内容记录</span>
-                        <span class="visible-mobile">Vorheriger</span>
+                        <span class="visible-mobile">上一篇</span>
                       </a>
                     
                   </article>
@@ -336,7 +336,7 @@ Do you want to save the server public key? [Y/N]:n</code></pre></div>
                     
                       <a href="/2019/12/29/blog_back_new/%E9%94%99%E8%AF%AF%E6%80%BB%E7%BB%93/%E8%BD%AF%E4%BB%B6%E9%85%8D%E7%BD%AE/">
                         <span class="hidden-mobile">软件配置</span>
-                        <span class="visible-mobile">Nächster</span>
+                        <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
                     
@@ -353,7 +353,7 @@ Do you want to save the server public key? [Y/N]:n</code></pre></div>
     
       <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
         <div id="toc">
-  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
   <div class="toc-body" id="toc-body"></div>
 </div>
 
@@ -379,7 +379,7 @@ Do you want to save the server public key? [Y/N]:n</code></pre></div>
   <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">Suchen</h4>
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
         <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -388,7 +388,7 @@ Do you want to save the server public key? [Y/N]:n</code></pre></div>
         <div class="md-form mb-5">
           <input type="text" id="local-search-input" class="form-control validate">
           <label data-error="x" data-success="v"
-                 for="local-search-input">Stichwort</label>
+                 for="local-search-input">关键词</label>
         </div>
         <div class="list-group" id="local-search-result"></div>
       </div>

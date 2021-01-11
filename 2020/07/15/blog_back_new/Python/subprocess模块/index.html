@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html lang="cn" data-default-color-scheme=&#34;auto&#34;>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
 
 
 
@@ -61,7 +61,7 @@
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
 
 <body>
@@ -88,7 +88,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/">
                 <i class="iconfont icon-home-fill"></i>
-                Startseite
+                首页
               </a>
             </li>
           
@@ -100,7 +100,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/archives/">
                 <i class="iconfont icon-archive-fill"></i>
-                Archiv
+                归档
               </a>
             </li>
           
@@ -112,7 +112,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/categories/">
                 <i class="iconfont icon-category-fill"></i>
-                Kategorie
+                分类
               </a>
             </li>
           
@@ -124,7 +124,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/tags/">
                 <i class="iconfont icon-tags-fill"></i>
-                Etiketten
+                标签
               </a>
             </li>
           
@@ -136,7 +136,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/about/">
                 <i class="iconfont icon-user-fill"></i>
-                Über mich
+                关于
               </a>
             </li>
           
@@ -175,7 +175,7 @@
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
       <time datetime="2020-07-15 18:18" pubdate>
-        July 15, 2020 pm
+        2020年7月15日 晚上
       </time>
     </span>
   
@@ -234,11 +234,11 @@
 <a id="more"></a>
 
 <h1 id="subprocess模块"><a href="#subprocess模块" class="headerlink" title="subprocess模块"></a>subprocess模块</h1><p>这里跟os里面的popen一起使用 两个都是调用子进程的库</p>
-<h2 id="popen调用子进程"><a href="#popen调用子进程" class="headerlink" title="popen调用子进程"></a>popen调用子进程</h2><div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">import os
-data = os.popen(<span class="hljs-string">"ls -al"</span>).<span class="hljs-built_in">read</span>()  <span class="hljs-comment"># 直接返回终端打印出来的东西</span>
-data1 = os.popen(<span class="hljs-string">"ls -al"</span>).readlines() <span class="hljs-comment"># 返回一个数组</span>
-data2 = os.popen(<span class="hljs-string">"ls -al"</span>).readline(10) <span class="hljs-comment"># 返回一定数量的字符，由readline(size) 中的size决定</span>
-<span class="hljs-built_in">print</span>(data,<span class="hljs-string">"\n"</span>,data1,<span class="hljs-string">"\n"</span>,data2)
+<h2 id="popen调用子进程"><a href="#popen调用子进程" class="headerlink" title="popen调用子进程"></a>popen调用子进程</h2><div class="code-wrapper"><pre><code class="hljs bash">import os
+data = os.popen(<span class="hljs-string">&quot;ls -al&quot;</span>).<span class="hljs-built_in">read</span>()  <span class="hljs-comment"># 直接返回终端打印出来的东西</span>
+data1 = os.popen(<span class="hljs-string">&quot;ls -al&quot;</span>).readlines() <span class="hljs-comment"># 返回一个数组</span>
+data2 = os.popen(<span class="hljs-string">&quot;ls -al&quot;</span>).readline(10) <span class="hljs-comment"># 返回一定数量的字符，由readline(size) 中的size决定</span>
+<span class="hljs-built_in">print</span>(data,<span class="hljs-string">&quot;\n&quot;</span>,data1,<span class="hljs-string">&quot;\n&quot;</span>,data2)
 
 <span class="hljs-comment"># total 16</span>
 <span class="hljs-comment"># drwxr-xr-x   4 alpaca  staff   128 Jul 15 18:20 .</span>
@@ -250,13 +250,13 @@ data2 = os.popen(<span class="hljs-string">"ls -al"</span>).readline(10) <span c
 <span class="hljs-comment">#  t</span></code></pre></div>
 
 <p><font color='red'>但是popen会有一个问题，就是在调用awk的时候会出现错误,需要使用双花括号来解决 <code>\&#123;\&#123;\&#125;\&#125;</code></font></p>
-<div class="code-wrapper"><pre class=" language-hljs python"><span class="hljs-keyword"><code class="language-hljs python"><span class="hljs-keyword">import</span> os
-<span class="hljs-comment"># res = os.popen("ls -al {} | awk &#x27;{ print $NF }&#x27;".format(".")).read() #  这样会报错无法识别{} 需要加双花括号来解决</span>
-res = os.popen(<span class="hljs-string">"ls -al {} | awk &#x27;{{ print $NF }}&#x27;"</span>.<span class="hljs-built_in">format</span>(<span class="hljs-string">"."</span>)).read()
+<div class="code-wrapper"><pre><code class="hljs python"><span class="hljs-keyword">import</span> os
+<span class="hljs-comment"># res = os.popen(&quot;ls -al &#123;&#125; | awk &#x27;&#123; print $NF &#125;&#x27;&quot;.format(&quot;.&quot;)).read() #  这样会报错无法识别&#123;&#125; 需要加双花括号来解决</span>
+res = os.popen(<span class="hljs-string">&quot;ls -al &#123;&#125; | awk &#x27;&#123;&#123; print $NF &#125;&#125;&#x27;&quot;</span>.<span class="hljs-built_in">format</span>(<span class="hljs-string">&quot;.&quot;</span>)).read()
 print(res)</code></pre></div>
 
 <h2 id="subprocess调用子进程"><a href="#subprocess调用子进程" class="headerlink" title="subprocess调用子进程"></a>subprocess调用子进程</h2><p>subprocess模块比较新把，意在替代一些老的模块，比如<code>os.popen</code></p>
-<div class="code-wrapper"><pre class=" language-hljs py">filelist = subprocess.Popen(args=<span class="hljs-string">&quot;ls -al &#123;&#125; | awk &#x27;&#123;&#123; print $NF&#125;&#125;&#x27; | xargs&quot;</span>.<span class="hljs-built_in">format</span>(filepath),shell=<span class="hljs-literal">True</span>,stdin=subprocess.PIPE,stdout=subprocess.PIPE)  <span class="hljs-comment"><code class="language-hljs py">filelist = subprocess.Popen(args=<span class="hljs-string">&quot;ls -al &#123;&#125; | awk &#x27;&#123;&#123; print $NF&#125;&#125;&#x27; | xargs&quot;</span>.<span class="hljs-built_in">format</span>(filepath),shell=<span class="hljs-literal">True</span>,stdin=subprocess.PIPE,stdout=subprocess.PIPE)  <span class="hljs-comment"># 这里返回的是一个tuple对象 (out,error)</span>
+<div class="code-wrapper"><pre><code class="hljs py">filelist = subprocess.Popen(args=<span class="hljs-string">&quot;ls -al &#123;&#125; | awk &#x27;&#123;&#123; print $NF&#125;&#125;&#x27; | xargs&quot;</span>.<span class="hljs-built_in">format</span>(filepath),shell=<span class="hljs-literal">True</span>,stdin=subprocess.PIPE,stdout=subprocess.PIPE)  <span class="hljs-comment"># 这里返回的是一个tuple对象 (out,error)</span>
 (out,error) = filelist.communicate()
 
 print(out)</code></pre></div>
@@ -292,7 +292,7 @@ print(out)</code></pre></div>
                       <a href="/2020/07/17/blog_back_new/Python/re%E6%AD%A3%E5%88%99%E6%A8%A1%E5%9D%97/">
                         <i class="iconfont icon-arrowleft"></i>
                         <span class="hidden-mobile"></span>
-                        <span class="visible-mobile">Vorheriger</span>
+                        <span class="visible-mobile">上一篇</span>
                       </a>
                     
                   </article>
@@ -301,7 +301,7 @@ print(out)</code></pre></div>
                     
                       <a href="/2020/07/12/blog_back_new/NetWord/TCP%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E4%B8%8E%E5%9B%9B%E6%AC%A1%E6%8C%A5%E6%89%8B/">
                         <span class="hidden-mobile">TCP/IP的三次握手与四次挥手</span>
-                        <span class="visible-mobile">Nächster</span>
+                        <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
                     
@@ -318,7 +318,7 @@ print(out)</code></pre></div>
     
       <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
         <div id="toc">
-  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
   <div class="toc-body" id="toc-body"></div>
 </div>
 
@@ -344,7 +344,7 @@ print(out)</code></pre></div>
   <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">Suchen</h4>
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
         <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -353,7 +353,7 @@ print(out)</code></pre></div>
         <div class="md-form mb-5">
           <input type="text" id="local-search-input" class="form-control validate">
           <label data-error="x" data-success="v"
-                 for="local-search-input">Stichwort</label>
+                 for="local-search-input">关键词</label>
         </div>
         <div class="list-group" id="local-search-result"></div>
       </div>

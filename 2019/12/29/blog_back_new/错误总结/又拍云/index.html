@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html lang="cn" data-default-color-scheme=&#34;auto&#34;>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
 
 
 
@@ -61,7 +61,7 @@
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
 
 <body>
@@ -88,7 +88,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/">
                 <i class="iconfont icon-home-fill"></i>
-                Startseite
+                首页
               </a>
             </li>
           
@@ -100,7 +100,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/archives/">
                 <i class="iconfont icon-archive-fill"></i>
-                Archiv
+                归档
               </a>
             </li>
           
@@ -112,7 +112,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/categories/">
                 <i class="iconfont icon-category-fill"></i>
-                Kategorie
+                分类
               </a>
             </li>
           
@@ -124,7 +124,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/tags/">
                 <i class="iconfont icon-tags-fill"></i>
-                Etiketten
+                标签
               </a>
             </li>
           
@@ -136,7 +136,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/about/">
                 <i class="iconfont icon-user-fill"></i>
-                Über mich
+                关于
               </a>
             </li>
           
@@ -175,7 +175,7 @@
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
       <time datetime="2019-12-29 13:13" pubdate>
-        December 29, 2019 pm
+        2019年12月29日 下午
       </time>
     </span>
   
@@ -186,7 +186,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      1.5k 字
+      1.6k 字
     </span>
   
 
@@ -196,7 +196,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      25
+      26
        分钟
     </span>
   
@@ -254,14 +254,14 @@
 <a id="more"></a>
 
 <h1 id="网络工作流程以及处理方案"><a href="#网络工作流程以及处理方案" class="headerlink" title="网络工作流程以及处理方案"></a>网络工作流程以及处理方案</h1><h2 id="交换机命名格式"><a href="#交换机命名格式" class="headerlink" title="交换机命名格式"></a>交换机命名格式</h2><p>三大运营商缩写 + 附近机场代码 + S01等</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">移动 CMN
+<div class="code-wrapper"><pre><code class="hljs bash">移动 CMN
 电信 CTN
 联通 CUN
 三线 MIX CMN CTN CUN</code></pre></div>
 
 <h2 id="交换机ipv6检测内容"><a href="#交换机ipv6检测内容" class="headerlink" title="交换机ipv6检测内容"></a>交换机ipv6检测内容</h2><p>原因 内网机器比如全是移动的，交换机配的移动的ip，下面配的也是移动的ip<br>这样ping的通，但是联通的服务器ip ping不同。也就是说是内网通，外网不同。<br>内网ping 网关肯定通</p>
 <p>检测：<br>用移动的交换机下面的服务器（出问题的交换机）  去mtr外网的ip，去看是哪里断掉的<br>而不是用外网的机器来mtr内网的ip，这样截止的地方会看不出来，因为不是内网的机器</p>
-<h2 id="ipv6配置"><a href="#ipv6配置" class="headerlink" title="ipv6配置"></a>ipv6配置</h2><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment">#业务vlan</span>
+<h2 id="ipv6配置"><a href="#ipv6配置" class="headerlink" title="ipv6配置"></a>ipv6配置</h2><div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment">#业务vlan</span>
 interface Vlan-interface1
 ipv6 address +业务vlan ip
 undo ipv6 nd ra halt
@@ -271,7 +271,7 @@ ipv6 address  +互联本地ip
 <span class="hljs-comment">#默认路由</span>
 ipv6 route-static :: 0 + 互联对端ip</code></pre></div>
 
-<h2 id="配置案例"><a href="#配置案例" class="headerlink" title="配置案例"></a>配置案例</h2><div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">
+<h2 id="配置案例"><a href="#配置案例" class="headerlink" title="配置案例"></a>配置案例</h2><div class="code-wrapper"><pre><code class="hljs bash">
 广东广州移动机房（自有机房NM）：2409:8C54:B000:0704::/64   互联地址 机房：FEC0::C/127， 我司 FEC0::D/127
 
 vlan 1 
@@ -313,7 +313,7 @@ ipv6 route-static :: 0 240E:E9:B804:3:200::A3</code></pre></div>
 <h2 id="整理香港ntt点ip对应关系"><a href="#整理香港ntt点ip对应关系" class="headerlink" title="整理香港ntt点ip对应关系"></a>整理香港ntt点ip对应关系</h2><ol>
 <li>登陆netop服务器</li>
 <li>登陆香港ntt交换机</li>
-<li>查看vlan1 对应ip 其中157.xxx/27 <div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">[NTT-CN-HKG-S01-Vlan-interface1]display this
+<li>查看vlan1 对应ip 其中157.xxx/27 <div class="code-wrapper"><pre><code class="hljs bash">[NTT-CN-HKG-S01-Vlan-interface1]display this
 <span class="hljs-comment">#</span>
 interface Vlan-interface1
  ip address 157.119.232.1 255.255.255.224
@@ -329,7 +329,7 @@ interface Vlan-interface1
 <span class="hljs-built_in">return</span></code></pre></div>
 在netop服务器上用fping -g 157.119.231.1/27 来查看对应ip的状态</li>
 </ol>
-<div class="code-wrapper"><pre class=" language-hljs bash">[root@NETOPS machines]<span class="hljs-comment"><code class="language-hljs bash">[root@NETOPS machines]<span class="hljs-comment"># fping -g 157.119.232.65/27</span>
+<div class="code-wrapper"><pre><code class="hljs bash">[root@NETOPS machines]<span class="hljs-comment"># fping -g 157.119.232.65/27</span>
 157.119.232.65 is alive
 157.119.232.66 is alive
 157.119.232.67 is alive
@@ -394,7 +394,7 @@ interface Vlan-interface1
 
 
 <p>查看inventory中对应关系</p>
-<div class="code-wrapper"><pre class=" language-hljs bash">[root@NETOPS machines]<span class="hljs-comment"><code class="language-hljs bash">[root@NETOPS machines]<span class="hljs-comment"># grep 157.119.232.73 /root/mingtao/inventory/machines/*</span>
+<div class="code-wrapper"><pre><code class="hljs bash">[root@NETOPS machines]<span class="hljs-comment"># grep 157.119.232.73 /root/mingtao/inventory/machines/*</span>
 /root/mingtao/inventory/machines/lists-upapp-01:157.119.232.73
 [root@NETOPS machines]<span class="hljs-comment"># grep 157.119.232.30 /root/mingtao/inventory/machines/*</span>
 /root/mingtao/inventory/machines/lists-cdn-v406:<span class="hljs-comment"># NTT-CN-HKG-030 ansible_ssh_host=157.119.232.30</span>
@@ -409,32 +409,32 @@ interface Vlan-interface1
 [root@NETOPS machines]<span class="hljs-comment"># grep 157.119.232.24 /root/mingtao/inventory/machines/*</span>
 [root@NETOPS machines]<span class="hljs-comment"># grep 157.119.232.21 /root/mingtao/inventory/machines/* </span></code></pre></div>
 <p>记录机器的对应名字</p>
-<h3 id="ntt机器对应脚本"><a href="#ntt机器对应脚本" class="headerlink" title="ntt机器对应脚本"></a>ntt机器对应脚本</h3><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-meta"><code class="language-hljs bash"><span class="hljs-meta">#!/usr/bin/bash</span>
+<h3 id="ntt机器对应脚本"><a href="#ntt机器对应脚本" class="headerlink" title="ntt机器对应脚本"></a>ntt机器对应脚本</h3><div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-meta">#!/usr/bin/bash</span>
 <span class="hljs-comment"># add ip (active and unknown)</span>
-fping -g 157.119.232.65/27 > ntt_machine
-fping -g 157.119.231.1/27 >> ntt_machine
+fping -g 157.119.232.65/27 &gt; ntt_machine
+fping -g 157.119.231.1/27 &gt;&gt; ntt_machine
 
 <span class="hljs-comment"># filter active to tmp.txt</span>
-awk <span class="hljs-string">&#x27;{if($3=="alive"){print $1}}&#x27;</span> > tmp.txt ntt_machine
+awk <span class="hljs-string">&#x27;&#123;if($3==&quot;alive&quot;)&#123;print $1&#125;&#125;&#x27;</span> &gt; tmp.txt ntt_machine
 
 <span class="hljs-comment"># Calculate the total</span>
 nums=`cat tmp.txt | wc -l`
 
 <span class="hljs-comment"># reset result.txt to blank</span>
-<span class="hljs-built_in">echo</span> <span class="hljs-string">"result:"</span> > result.txt
+<span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;result:&quot;</span> &gt; result.txt
 
 <span class="hljs-comment"># filter ip</span>
 <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> `seq 1 <span class="hljs-variable">$nums</span>`
 <span class="hljs-keyword">do</span>
-        ip=`awk <span class="hljs-string">"NR==<span class="hljs-variable">$i</span>"</span> tmp.txt`
+        ip=`awk <span class="hljs-string">&quot;NR==<span class="hljs-variable">$i</span>&quot;</span> tmp.txt`
         link=`grep -w <span class="hljs-variable">$ip</span> mingtao/inventory/machines/machines/*`
-        link=`<span class="hljs-built_in">echo</span> <span class="hljs-variable">$link</span> | awk -F<span class="hljs-string">":"</span> <span class="hljs-string">&#x27;{print $2}&#x27;</span> `
-        link=`<span class="hljs-built_in">echo</span> <span class="hljs-variable">$link</span> | awk <span class="hljs-string">&#x27;{if($1=="#"){print $2}else{print $1}}&#x27;</span>`
-        <span class="hljs-built_in">echo</span>  <span class="hljs-variable">$ip</span>   ,<span class="hljs-string">"active"</span>   ,   <span class="hljs-variable">$link</span> >> result.txt
+        link=`<span class="hljs-built_in">echo</span> <span class="hljs-variable">$link</span> | awk -F<span class="hljs-string">&quot;:&quot;</span> <span class="hljs-string">&#x27;&#123;print $2&#125;&#x27;</span> `
+        link=`<span class="hljs-built_in">echo</span> <span class="hljs-variable">$link</span> | awk <span class="hljs-string">&#x27;&#123;if($1==&quot;#&quot;)&#123;print $2&#125;else&#123;print $1&#125;&#125;&#x27;</span>`
+        <span class="hljs-built_in">echo</span>  <span class="hljs-variable">$ip</span>   ,<span class="hljs-string">&quot;active&quot;</span>   ,   <span class="hljs-variable">$link</span> &gt;&gt; result.txt
 <span class="hljs-keyword">done</span>
 
 <span class="hljs-comment"># add unknown to tmp.txt</span>
-awk <span class="hljs-string">&#x27;{if($3!="alive"){print $1,$3}}&#x27;</span> >> result.txt ntt_machine
+awk <span class="hljs-string">&#x27;&#123;if($3!=&quot;alive&quot;)&#123;print $1,$3&#125;&#125;&#x27;</span> &gt;&gt; result.txt ntt_machine
 ~</code></pre></div>
 
 <h3 id="底层设备到网络配置"><a href="#底层设备到网络配置" class="headerlink" title="底层设备到网络配置"></a>底层设备到网络配置</h3><p><img src="http://img.noback.top/2019-12-31-11-26-32.png" srcset="/img/loading.gif" alt="2019-12-31-11-26-32"><br>通过该tower截图来获取网络配置需求<br>15台1U服务器<br>1台5130交换机<br>2个万兆多模模块<br>30根网线<br>16根电源线</p>
@@ -473,7 +473,7 @@ awk <span class="hljs-string">&#x27;{if($3!="alive"){print $1,$3}}&#x27;</span> 
                       <a href="/2019/12/29/blog_back_new/Python/%E7%88%AC%E5%8E%BBYouTube%E4%B8%8A%E7%9A%84%E8%A7%86%E9%A2%91/">
                         <i class="iconfont icon-arrowleft"></i>
                         <span class="hidden-mobile">Python爬YouTube视频</span>
-                        <span class="visible-mobile">Vorheriger</span>
+                        <span class="visible-mobile">上一篇</span>
                       </a>
                     
                   </article>
@@ -482,7 +482,7 @@ awk <span class="hljs-string">&#x27;{if($3!="alive"){print $1,$3}}&#x27;</span> 
                     
                       <a href="/2019/12/29/blog_back_new/%E9%94%99%E8%AF%AF%E6%80%BB%E7%BB%93/linux%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98/">
                         <span class="hidden-mobile">常见错误</span>
-                        <span class="visible-mobile">Nächster</span>
+                        <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
                     
@@ -499,7 +499,7 @@ awk <span class="hljs-string">&#x27;{if($3!="alive"){print $1,$3}}&#x27;</span> 
     
       <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
         <div id="toc">
-  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
   <div class="toc-body" id="toc-body"></div>
 </div>
 
@@ -525,7 +525,7 @@ awk <span class="hljs-string">&#x27;{if($3!="alive"){print $1,$3}}&#x27;</span> 
   <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">Suchen</h4>
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
         <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -534,7 +534,7 @@ awk <span class="hljs-string">&#x27;{if($3!="alive"){print $1,$3}}&#x27;</span> 
         <div class="md-form mb-5">
           <input type="text" id="local-search-input" class="form-control validate">
           <label data-error="x" data-success="v"
-                 for="local-search-input">Stichwort</label>
+                 for="local-search-input">关键词</label>
         </div>
         <div class="list-group" id="local-search-result"></div>
       </div>

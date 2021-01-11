@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html lang="cn" data-default-color-scheme=&#34;auto&#34;>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
 
 
 
@@ -61,7 +61,7 @@
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
 
 <body>
@@ -88,7 +88,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/">
                 <i class="iconfont icon-home-fill"></i>
-                Startseite
+                首页
               </a>
             </li>
           
@@ -100,7 +100,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/archives/">
                 <i class="iconfont icon-archive-fill"></i>
-                Archiv
+                归档
               </a>
             </li>
           
@@ -112,7 +112,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/categories/">
                 <i class="iconfont icon-category-fill"></i>
-                Kategorie
+                分类
               </a>
             </li>
           
@@ -124,7 +124,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/tags/">
                 <i class="iconfont icon-tags-fill"></i>
-                Etiketten
+                标签
               </a>
             </li>
           
@@ -136,7 +136,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/about/">
                 <i class="iconfont icon-user-fill"></i>
-                Über mich
+                关于
               </a>
             </li>
           
@@ -175,7 +175,7 @@
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
       <time datetime="2020-06-05 15:10" pubdate>
-        June 5, 2020 pm
+        2020年6月5日 下午
       </time>
     </span>
   
@@ -283,9 +283,9 @@
 </ol>
 <p>mysql复制的几种形式</p>
 <ol>
-<li><strong>基于语句的复制</strong>：在主服务器上执行的SQL语句，在从服务器上执行同样的语句。MySQL默认采用基于语句的复制，效率比较高。 一旦发现没法精确复制时，会自动选着基于行的复制<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">binlog_format=Statement</code></pre></div></li>
-<li><strong>基于行的复制</strong>：把改变的内容复制过去，而不是把命令在从服务器上执行一遍. 从mysql5.0开始支持<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">binlog_format=Row</code></pre></div></li>
-<li><strong>混合类型的复制</strong>：默认采用基于语句的复制，一旦发现基于语句的无法精确的复制时，就会采用基于行的复制。<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">binlog_format=Mixed</code></pre></div>
+<li><strong>基于语句的复制</strong>：在主服务器上执行的SQL语句，在从服务器上执行同样的语句。MySQL默认采用基于语句的复制，效率比较高。 一旦发现没法精确复制时，会自动选着基于行的复制<div class="code-wrapper"><pre><code class="hljs bash">binlog_format=Statement</code></pre></div></li>
+<li><strong>基于行的复制</strong>：把改变的内容复制过去，而不是把命令在从服务器上执行一遍. 从mysql5.0开始支持<div class="code-wrapper"><pre><code class="hljs bash">binlog_format=Row</code></pre></div></li>
+<li><strong>混合类型的复制</strong>：默认采用基于语句的复制，一旦发现基于语句的无法精确的复制时，就会采用基于行的复制。<div class="code-wrapper"><pre><code class="hljs bash">binlog_format=Mixed</code></pre></div>
 
 </li>
 </ol>
@@ -302,7 +302,7 @@
 <li>SQL线程：该线程读取中继日志中的内容，并且根据中继日志中的内容对Slave数据库做相应的操作。<br>可能造成的问题：在写请求相当多的情况下，可能会造成Slave数据和Master数据不一致的情况，这是因为日志传输过程中的短暂延迟、或者写命令较多，系统速度不匹配造成的。<br>这大致就是MySQL主从同步的原理，真正在其中起到作用的实际上就是这两个日志文件，binlog和中继日志（Relay log）。</li>
 </ul>
 <p>创建两个mysql容器 因为配置文件我们后面要做修改，所以需要外面挂载进去<br>设置配置文件</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">mkdir /hzj/mysql
+<div class="code-wrapper"><pre><code class="hljs bash">mkdir /hzj/mysql
 [mysqld]
 datadir=/var/lib/mysql
 socket=/var/lib/mysql/mysql.sock
@@ -376,33 +376,33 @@ binlog-do-db = datafordata
 <span class="hljs-comment"># binlog-ignore-db = information_schema</span>
 <span class="hljs-comment"># binlog-ignore-db = mysql</span>
 </code></pre></div>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">docker pull mysql:5.7
+<div class="code-wrapper"><pre><code class="hljs bash">docker pull mysql:5.7
 docker run -p 3305:3306 --name mysql-slave -v /root/hzj/hzj/mysql/slave.cnf:/etc/mysql/conf.d/slave.cnf -e MYSQL_ROOT_PASSWORD=upyun123 -itd mysql:5.7
 docker run -p 3306:3306 --name mysql-master -v /root/hzj/hzj/mysql/master.cnf:/etc/mysql/conf.d/master.cnf -e MYSQL_ROOT_PASSWORD=upyun123 -itd mysql:5.7</code></pre></div>
 
 <p>进入容器配置远程用户</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 主机</span>
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 主机</span>
 docker <span class="hljs-built_in">exec</span> -it mysql-master /bin/bash
 
-> mysql -u root -p
+&gt; mysql -u root -p
 <span class="hljs-comment"># 修改本地root密码</span>
-> ALTER USER <span class="hljs-string">&#x27;root&#x27;</span>@<span class="hljs-string">&#x27;localhost&#x27;</span> IDENTIFIED BY <span class="hljs-string">&#x27;upyun123&#x27;</span>;
+&gt; ALTER USER <span class="hljs-string">&#x27;root&#x27;</span>@<span class="hljs-string">&#x27;localhost&#x27;</span> IDENTIFIED BY <span class="hljs-string">&#x27;upyun123&#x27;</span>;
 <span class="hljs-comment"># 创建远程登录用户</span>
-> CREATE USER <span class="hljs-string">&#x27;hzj&#x27;</span>@<span class="hljs-string">&#x27;%&#x27;</span> IDENTIFIED WITH mysql_native_password BY <span class="hljs-string">&#x27;upyun123&#x27;</span>;
-> GRANT ALL PRIVILEGES ON *.* TO <span class="hljs-string">&#x27;hzj&#x27;</span>@<span class="hljs-string">&#x27;%&#x27;</span>;
+&gt; CREATE USER <span class="hljs-string">&#x27;hzj&#x27;</span>@<span class="hljs-string">&#x27;%&#x27;</span> IDENTIFIED WITH mysql_native_password BY <span class="hljs-string">&#x27;upyun123&#x27;</span>;
+&gt; GRANT ALL PRIVILEGES ON *.* TO <span class="hljs-string">&#x27;hzj&#x27;</span>@<span class="hljs-string">&#x27;%&#x27;</span>;
 
 <span class="hljs-comment"># 备机</span>
 docker <span class="hljs-built_in">exec</span> -it mysql-slave /bin/bash
 
-> mysql -u root -p
+&gt; mysql -u root -p
 <span class="hljs-comment"># 修改本地root密码</span>
-> ALTER USER <span class="hljs-string">&#x27;root&#x27;</span>@<span class="hljs-string">&#x27;localhost&#x27;</span> IDENTIFIED BY <span class="hljs-string">&#x27;upyun123&#x27;</span>;
+&gt; ALTER USER <span class="hljs-string">&#x27;root&#x27;</span>@<span class="hljs-string">&#x27;localhost&#x27;</span> IDENTIFIED BY <span class="hljs-string">&#x27;upyun123&#x27;</span>;
 <span class="hljs-comment"># 创建远程登录用户</span>
-> CREATE USER <span class="hljs-string">&#x27;hzj&#x27;</span>@<span class="hljs-string">&#x27;%&#x27;</span> IDENTIFIED WITH mysql_native_password BY <span class="hljs-string">&#x27;upyun123&#x27;</span>;
-> GRANT ALL PRIVILEGES ON *.* TO <span class="hljs-string">&#x27;hzj&#x27;</span>@<span class="hljs-string">&#x27;%&#x27;</span>;</code></pre></div>
+&gt; CREATE USER <span class="hljs-string">&#x27;hzj&#x27;</span>@<span class="hljs-string">&#x27;%&#x27;</span> IDENTIFIED WITH mysql_native_password BY <span class="hljs-string">&#x27;upyun123&#x27;</span>;
+&gt; GRANT ALL PRIVILEGES ON *.* TO <span class="hljs-string">&#x27;hzj&#x27;</span>@<span class="hljs-string">&#x27;%&#x27;</span>;</code></pre></div>
 <p><img src="http://img.noback.top/2020-06-05-15-30-18.png" srcset="/img/loading.gif" alt="2020-06-05-15-30-18"></p>
 <p>初始化主机上的内容，并插入内容，模拟需要备份的内容</p>
-<div class="code-wrapper"><pre class=" language-hljs sql"><code class="language-hljs sql">
+<div class="code-wrapper"><pre><code class="hljs sql">
 <span class="hljs-keyword">create</span> <span class="hljs-keyword">database</span> datafordata  <span class="hljs-built_in">character</span> <span class="hljs-keyword">set</span> utf8mb4;
 
 <span class="hljs-keyword">use</span> datafordata;
@@ -427,9 +427,9 @@ docker <span class="hljs-built_in">exec</span> -it mysql-slave /bin/bash
 <li>Binlog_Ignore_DB: </li>
 </ul>
 <p>在从机上设置同步目标</p>
-<div class="code-wrapper"><pre class=" language-hljs bash">change  master to master_host=<span class="hljs-string">&#x27;10.0.6.55&#x27;</span>,MASTER_PORT=3306,master_user=<span class="hljs-string">&#x27;root&#x27;</span>,master_password=<span class="hljs-string">&#x27;upyun123&#x27;</span>,master_log_file=<span class="hljs-string"><code class="language-hljs bash">change  master to master_host=<span class="hljs-string">&#x27;10.0.6.55&#x27;</span>,MASTER_PORT=3306,master_user=<span class="hljs-string">&#x27;root&#x27;</span>,master_password=<span class="hljs-string">&#x27;upyun123&#x27;</span>,master_log_file=<span class="hljs-string">&#x27;mysql-bin.000003&#x27;</span>,master_log_pos=4210;</code></pre></div>
+<div class="code-wrapper"><pre><code class="hljs bash">change  master to master_host=<span class="hljs-string">&#x27;10.0.6.55&#x27;</span>,MASTER_PORT=3306,master_user=<span class="hljs-string">&#x27;root&#x27;</span>,master_password=<span class="hljs-string">&#x27;upyun123&#x27;</span>,master_log_file=<span class="hljs-string">&#x27;mysql-bin.000003&#x27;</span>,master_log_pos=4210;</code></pre></div>
 <p>其中master_log_pos和master_log_file是在主机上面使用<code>show master status </code> 查看对应的log名字和log大小<br>开启同步</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">start slave;
+<div class="code-wrapper"><pre><code class="hljs bash">start slave;
 <span class="hljs-comment"># 查看同步状态</span>
 show slave status\G;
 <span class="hljs-comment">#</span></code></pre></div>
@@ -442,7 +442,7 @@ show slave status\G;
 <li>第二种方案是对主库的数据进行备份，然后将主数据库中导出的数据导入到从数据库，然后再开启主从复制，以此来保证主从数据库数据一致</li>
 </ul>
 <h3 id="mysqldump-冷备份"><a href="#mysqldump-冷备份" class="headerlink" title="mysqldump 冷备份"></a>mysqldump 冷备份</h3><p>在之前就备份好数据库，使用mysqldump备份数据库<br>mysqldump是mysql原生自带很好用的逻辑备份工具<br>备份的基本流程如下</p>
-<div class="code-wrapper"><pre class=" language-hljs bash">1.调用FTWRL(flush tables with <span class="hljs-built_in"><code class="language-hljs bash">1.调用FTWRL(flush tables with <span class="hljs-built_in">read</span> lock)，全局禁止读写
+<div class="code-wrapper"><pre><code class="hljs bash">1.调用FTWRL(flush tables with <span class="hljs-built_in">read</span> lock)，全局禁止读写
 2.开启快照读，获取此时的快照(仅对innodb表起作用)
 3.备份非innodb表数据(*.frm,*.myi,*.myd等)
 4.非innodb表备份完毕后，释放FTWRL锁
@@ -451,11 +451,11 @@ show slave status\G;
 
 
 <p>常用备份参数</p>
-<div class="code-wrapper"><pre class=" language-hljs bash">-A <span class="hljs-comment"><code class="language-hljs bash">-A <span class="hljs-comment">#备份全库</span>
+<div class="code-wrapper"><pre><code class="hljs bash">-A <span class="hljs-comment">#备份全库</span>
 -B <span class="hljs-comment">#备某一个数据库下的所有表</span>
 -R <span class="hljs-comment">#备份存储过程和函数数据</span>
 --triggers <span class="hljs-comment"># 备份触发器数据</span>
---master-data = {1|2} <span class="hljs-comment"># 告诉你备份后时刻的binlog位置 ,如果等于1，则将其打印为CHANGE MASTER命令; 如果等于2，那么该命令将以注释符号为前缀。</span>
+--master-data = &#123;1|2&#125; <span class="hljs-comment"># 告诉你备份后时刻的binlog位置 ,如果等于1，则将其打印为CHANGE MASTER命令; 如果等于2，那么该命令将以注释符号为前缀。</span>
 --single-transaction <span class="hljs-comment"># 对innodb引擎进行热备</span>
 -F, --flush-logs <span class="hljs-comment"># 刷新binlog日志</span>
 -x, --lock-all-tables <span class="hljs-comment"># 锁定所有数据库的所有表。这是通过在整个转储期间采用全局读锁来实现的</span>
@@ -464,14 +464,14 @@ show slave status\G;
 -t, <span class="hljs-comment"># 仅数据</span>
 --compact <span class="hljs-comment">#减少无用数据输出(调试)</span>
 
-mysqldump -A -R --triggers --master-data=2 --single-transaction |gzip >/opt/all_$(date +%F).sql.gz</code></pre></div>
+mysqldump -A -R --triggers --master-data=2 --single-transaction |gzip &gt;/opt/all_$(date +%F).sql.gz</code></pre></div>
 
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 1.锁定数据库，保证在同步的过程中不会有新的数据插入</span>
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 1.锁定数据库，保证在同步的过程中不会有新的数据插入</span>
 flush tables with <span class="hljs-built_in">read</span> lock;
 <span class="hljs-comment"># 2. 使用mysqldump备份数据库</span>
 
 [root@localhost data]<span class="hljs-comment"># cd /data/db_backup/</span>
-[root@localhost db_backup]<span class="hljs-comment">#  mysqldump -uroot -p --master-data=1 --single-transaction --routines --triggers --events  --all-databases > all.sql</span>
+[root@localhost db_backup]<span class="hljs-comment">#  mysqldump -uroot -p --master-data=1 --single-transaction --routines --triggers --events  --all-databases &gt; all.sql</span>
 Enter password
 
 <span class="hljs-comment"># 3.解除主数据库的锁定</span>
@@ -482,7 +482,7 @@ unlock tables;
 
 <h3 id="Xtrabackup-热备份"><a href="#Xtrabackup-热备份" class="headerlink" title="Xtrabackup 热备份"></a>Xtrabackup 热备份</h3><p>Xtrabackup是一个开源的免费的热备工具，在Xtrabackup包中主要有Xtrabackup和innobackupex两个工具。xtrabackup 是用来备份 InnoDB 表的，不能备份非 InnoDB 表，和 mysqld server 没有交互；innobackupex 脚本用来备份非 InnoDB 表，同时会调用 xtrabackup 命令来备份 InnoDB 表，还会和 mysqld server 发送命令进行交互，如加读锁（FTWRL）、获取位点（SHOW SLAVE STATUS）等。简单来说，innobackupex 在 xtrabackup 之上做了一层封装。</p>
 <p>安装完成xtarbackup之后，会有下面4个工具</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">usr
+<div class="code-wrapper"><pre><code class="hljs bash">usr
 ├── bin
 │   ├── innobackupex  <span class="hljs-comment"># 备份innodb表</span>
 │   ├── xbcrypt  <span class="hljs-comment"># 备份加密</span>
@@ -521,7 +521,7 @@ InnoDB 和非 InnoDB 文件的备份都是通过拷贝文件来做的，但是�
 然后下载依赖包，网址是http://rpmfind.net/linux/atrpms/el6-x86_64/atrpms/stable/libev-4.04-2.el6.x86_64.rpm。
 
 ```bash
-mdkir /root/package && <span class="hljs-built_in">cd</span> /root/package
+mdkir /root/package &amp;&amp; <span class="hljs-built_in">cd</span> /root/package
 wget Percona-XtraBackup-2.4.14-ref675d4-el7-x86_64-bundle.tar
 wget http://rpmfind.net/linux/atrpms/el6-x86_64/atrpms/stable/libev-4.04-2.el6.x86_64.rpm
 
@@ -532,7 +532,7 @@ yum -y install percona-xtrabackup-24-2.4.14-1.el7.x86_64.rpm</code></pre></div>
 <p><font color='red'>xtrabackup是根据数据库的配置文件来查找数据库的，默认情况下指向/etc/my.cnf</font></p>
 <h4 id="使用xtrabackup全量备份"><a href="#使用xtrabackup全量备份" class="headerlink" title="使用xtrabackup全量备份"></a>使用xtrabackup全量备份</h4><p>在备份数据库时会涉及到两个用户：系统用户与数据库内部的用户。<br>　　系统用户需要在datadir（配置文件内设置的目录）上具有读写执行权限（rwx）。而数据库内部用户需要：RELOAD和LOCK TABLES权限，为了执行FLUSH TABLES WITH READ LOCK；REPLICATION CLIENT权限，为了获取binary log（二进制日志文件）位置；CREATE TABLESPACE权限，为了导入表，用户表级别的恢复；SUPER权限，为了在slave环境下备份用来启动和关闭slave线程。</p>
 <p>常用参数</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">--user=[数据库用户]    以什么用户身份进行操作
+<div class="code-wrapper"><pre><code class="hljs bash">--user=[数据库用户]    以什么用户身份进行操作
 --password=[密码]    数据库用户的密码
 --port=[端口号]    数据库的端口号，默认3306
 --stream=[tar|xbstream]　　打包（数据流）
@@ -544,9 +544,9 @@ yum -y install percona-xtrabackup-24-2.4.14-1.el7.x86_64.rpm</code></pre></div>
 --incremental-basedir=[地址]　　与--incremental选项联合使用，该参数指定上一级备份的地址来做增量备份</code></pre></div>
 
 <p>使用</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 复制数据库中的内容</span>
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 复制数据库中的内容</span>
 innobackupex --user=root --password=123456 ./db_backup/  <span class="hljs-comment"># 会打印每一个备份的步骤</span>
-innobackupex --user=root --password=123456 ./db_backup/ 2>>./db_backup/backup.log　　<span class="hljs-comment"># 将输出内容丢到黑洞如果不想要输出信息，可以将输出信息重定向到指定文件或黑洞文件中 </span>
+innobackupex --user=root --password=123456 ./db_backup/ 2&gt;&gt;./db_backup/backup.log　　<span class="hljs-comment"># 将输出内容丢到黑洞如果不想要输出信息，可以将输出信息重定向到指定文件或黑洞文件中 </span>
 
 <span class="hljs-comment"># 如果mysql是挂在docker里面的 需要指定IP和端口 本机也需要</span>
 innobackupex --user=root --password=123456 --host=10.0.6.55 --port=3303 ./db_backup/
@@ -560,12 +560,12 @@ nc -l 9998 | tar -ixvf -
 
 
 <span class="hljs-comment"># ==== 官方的xbstream</span>
-innobackupex  --user=root --password=<span class="hljs-string">"upyun123"</span> --port=3303 --host=10.0.6.55 --slave-info --parallel=16  --stream=xbstream ./ 2>/data/xtrabackup_log.txt | pv -q -L40m | ssh lily@172.26.1.245 <span class="hljs-string">" cat - |  xbstream -x -C /data/innobackup"</span>
+innobackupex  --user=root --password=<span class="hljs-string">&quot;upyun123&quot;</span> --port=3303 --host=10.0.6.55 --slave-info --parallel=16  --stream=xbstream ./ 2&gt;/data/xtrabackup_log.txt | pv -q -L40m | ssh lily@172.26.1.245 <span class="hljs-string">&quot; cat - |  xbstream -x -C /data/innobackup&quot;</span>
 
 
 <span class="hljs-comment"># 备份完成后会在/db_backup文件夹下面产生一个根据日期来创建的备份文件夹</span>
 <span class="hljs-comment"># 自定义备份文件名</span>
-innobackupex --user=root --password=123456 --no-timestamp ./db_backup/<span class="hljs-built_in">test</span>/ 2>>./db_backup/backup.log
+innobackupex --user=root --password=123456 --no-timestamp ./db_backup/<span class="hljs-built_in">test</span>/ 2&gt;&gt;./db_backup/backup.log
 
 <span class="hljs-comment"># 需要清除数据，不然出现报错</span>
 systemctl stop mysqld
@@ -577,8 +577,8 @@ systemctl start mysqld</code></pre></div>
 
 <h4 id="使用xtrabackup增量备份"><a href="#使用xtrabackup增量备份" class="headerlink" title="使用xtrabackup增量备份"></a>使用xtrabackup增量备份</h4><p>待填<br><a target="_blank" rel="noopener" href="https://www.centos.bz/2017/09/xtrabackup-backup-mysql-innodb/">https://www.centos.bz/2017/09/xtrabackup-backup-mysql-innodb/</a><br>cnblogs.com/zhoujinyi/p/4088866.html<br><a target="_blank" rel="noopener" href="https://www.cnblogs.com/gaogao67/p/10980642.html">https://www.cnblogs.com/gaogao67/p/10980642.html</a></p>
 <h4 id="xtrabackup-流式备份"><a href="#xtrabackup-流式备份" class="headerlink" title="xtrabackup 流式备份"></a>xtrabackup 流式备份</h4><p>如果需要将 机器上面的备份数据发送到远程机器，或者快速搭建主从，可以采用流式备份。<br>例如：这里将172.26.1.3的数据发送到 172.26.1.245 并做成主从同步。  master: 172.26.1.3  slave:172.26.1.245<br>172.26.1.3 备份之前需要先关闭多线程复制，否则会报错</p>
-<div class="code-wrapper"><pre class=" language-hljs bash">mysql&gt; show variables like <span class="hljs-string"><code class="language-hljs bash">mysql&gt; show variables like <span class="hljs-string">&#x27;%worker%&#x27;</span>
-    -> ;
+<div class="code-wrapper"><pre><code class="hljs bash">mysql&gt; show variables like <span class="hljs-string">&#x27;%worker%&#x27;</span>
+    -&gt; ;
 +------------------------+-------+
 | Variable_name          | Value |
 +------------------------+-------+
@@ -586,26 +586,26 @@ systemctl start mysqld</code></pre></div>
 +------------------------+-------+
 1 row <span class="hljs-keyword">in</span> <span class="hljs-built_in">set</span> (0.00 sec)
 
-mysql> <span class="hljs-built_in">set</span> global slave_parallel_workers=0;
+mysql&gt; <span class="hljs-built_in">set</span> global slave_parallel_workers=0;
 Query OK, 0 rows affected (0.00 sec)</code></pre></div>
 
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># master端 </span>
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># master端 </span>
 <span class="hljs-comment"># 主要操作就是打包本地的数据，使用xbstream传输到对端机器，然后使用ssh登录对端 并且接收</span>
-innobackupex  --user=root --password=<span class="hljs-string">"upyun123"</span> --port=3303 --host=10.0.6.55 --slave-info --parallel=16  --stream=xbstream ./ 2>/data/xtrabackup_log.txt | pv -q -L40m | ssh lily@172.26.1.245 <span class="hljs-string">" cat - |  xbstream -x -C /data/innobackup"</span></code></pre></div>
+innobackupex  --user=root --password=<span class="hljs-string">&quot;upyun123&quot;</span> --port=3303 --host=10.0.6.55 --slave-info --parallel=16  --stream=xbstream ./ 2&gt;/data/xtrabackup_log.txt | pv -q -L40m | ssh lily@172.26.1.245 <span class="hljs-string">&quot; cat - |  xbstream -x -C /data/innobackup&quot;</span></code></pre></div>
 <p>注：这里的 172.26.1.245 是远程机器的ip</p>
 <p>–slave-info： 备份目录下会多生成一个xtrabackup_slave_info文件，文件内容类似于:CHANGE MASTER TO MASTER_LOG_FILE=’’, MASTER_LOG_POS=0。<br>    这个参数适用的场景：假设有主库A和从库B，目前想再添加一台备库C，并让备库C以主库A为master；因为主库A是生产库，压力一般比较大，所以就在备库B上备份一个数据库，然后把这个备份拿到C服务器上，并导入到C库，接下来再在C服务器上执行change master的命令：其中master_host是A的ip,而master_log_file和master_log_pos就是这个xtrabackup_slave_info里面的值。 </p>
-<h4 id="备份恢复"><a href="#备份恢复" class="headerlink" title="备份恢复"></a>备份恢复</h4><div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">恢复（在远程机器172.26.1.245执行）
+<h4 id="备份恢复"><a href="#备份恢复" class="headerlink" title="备份恢复"></a>备份恢复</h4><div class="code-wrapper"><pre><code class="hljs bash">恢复（在远程机器172.26.1.245执行）
 1，拷贝master机器的/etc/my.cnf 文件，并修改server_id。
 2，将172.26.1.245做成172.26.1.3的从库， 从 /data/innobackup/xtrabackup_binlog_info 文件里面读取binlog和position信息。
 <span class="hljs-comment">#  cat /data/innobackup/xtrabackup_binlog_info </span>
 mysql-bin.000066 94839444
-mysql> CHANGE MASTER TO MASTER_HOST=<span class="hljs-string">&#x27;172.26.1.3&#x27;</span>,MASTER_USER=<span class="hljs-string">&#x27;repl&#x27;</span>,MASTER_PASSWORD=<span class="hljs-string">&#x27;xxxxxx&#x27;</span>,MASTER_AUTO_POSITION=0,MASTER_LOG_FILE=<span class="hljs-string">&#x27;mysql-bin.000066&#x27;</span>,MASTER_LOG_POS=94839444; 
+mysql&gt; CHANGE MASTER TO MASTER_HOST=<span class="hljs-string">&#x27;172.26.1.3&#x27;</span>,MASTER_USER=<span class="hljs-string">&#x27;repl&#x27;</span>,MASTER_PASSWORD=<span class="hljs-string">&#x27;xxxxxx&#x27;</span>,MASTER_AUTO_POSITION=0,MASTER_LOG_FILE=<span class="hljs-string">&#x27;mysql-bin.000066&#x27;</span>,MASTER_LOG_POS=94839444; 
 
-mysql> start slave;</code></pre></div>
+mysql&gt; start slave;</code></pre></div>
 
 <h4 id="区别"><a href="#区别" class="headerlink" title="区别"></a>区别</h4><p>Xtrabackup备份时不能备份表结构、触发器等等，也不能智能区分.idb数据文件。另外innobackupex还不能完全支持增量备份，需要和xtrabackup结合起来实现全备的功能。</p>
 <h2 id="xtrabackup详解"><a href="#xtrabackup详解" class="headerlink" title="xtrabackup详解"></a>xtrabackup详解</h2><p>记录一下xtrabackup的备份流程</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 先备份</span>
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 先备份</span>
 innobackupex --user=hzj --password=upyun123 --port=3303 --host=10.0.6.55 ./
 cat /root/data/backup/2020-06-08_01-55-22/xtrabackup_checkpoints
 <span class="hljs-comment"># backup_type = full-backuped  # 这里提示backup 说明当前是备份的</span>
@@ -637,27 +637,27 @@ systemctl restart mysqld</code></pre></div>
 
 
 
-<h2 id="错误"><a href="#错误" class="headerlink" title="错误"></a>错误</h2><h3 id="docker-mysql"><a href="#docker-mysql" class="headerlink" title="docker mysql"></a>docker mysql</h3><div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">docker run -p 3306:3306 --name mysql-master -v /opt/docker_v/mysql/conf:./master.cnf -e MYSQL_ROOT_PASSWORD=upyun123 -itd mysql:5.7
-docker: Error response from daemon: invalid volume specification: <span class="hljs-string">&#x27;/opt/docker_v/mysql/conf:./master.cnf&#x27;</span>: invalid mount config <span class="hljs-keyword">for</span> <span class="hljs-built_in">type</span> <span class="hljs-string">"bind"</span>: invalid mount path: <span class="hljs-string">&#x27;./master.cnf&#x27;</span> mount path must be absolute.</code></pre></div>
+<h2 id="错误"><a href="#错误" class="headerlink" title="错误"></a>错误</h2><h3 id="docker-mysql"><a href="#docker-mysql" class="headerlink" title="docker mysql"></a>docker mysql</h3><div class="code-wrapper"><pre><code class="hljs bash">docker run -p 3306:3306 --name mysql-master -v /opt/docker_v/mysql/conf:./master.cnf -e MYSQL_ROOT_PASSWORD=upyun123 -itd mysql:5.7
+docker: Error response from daemon: invalid volume specification: <span class="hljs-string">&#x27;/opt/docker_v/mysql/conf:./master.cnf&#x27;</span>: invalid mount config <span class="hljs-keyword">for</span> <span class="hljs-built_in">type</span> <span class="hljs-string">&quot;bind&quot;</span>: invalid mount path: <span class="hljs-string">&#x27;./master.cnf&#x27;</span> mount path must be absolute.</code></pre></div>
 <p>这里挂在需要挂在绝对路径</p>
-<h3 id="innobackupex-命令出错"><a href="#innobackupex-命令出错" class="headerlink" title="innobackupex 命令出错"></a>innobackupex 命令出错</h3><div class="code-wrapper"><pre class=" language-hljs bash">[root@db01 mysql]<span class="hljs-comment"><code class="language-hljs bash">[root@db01 mysql]<span class="hljs-comment"># innobackupex --user=root --password=123456 --defaults-file=/application/mysql/my.cnf /data/mysql/backup/</span>
+<h3 id="innobackupex-命令出错"><a href="#innobackupex-命令出错" class="headerlink" title="innobackupex 命令出错"></a>innobackupex 命令出错</h3><div class="code-wrapper"><pre><code class="hljs bash">[root@db01 mysql]<span class="hljs-comment"># innobackupex --user=root --password=123456 --defaults-file=/application/mysql/my.cnf /data/mysql/backup/</span>
 xtrabackup: Error: --defaults-file must be specified first on the <span class="hljs-built_in">command</span> line
 [root@db01 mysql]<span class="hljs-comment"># innobackupex --defaults-file=/application/mysql/my.cnf --user=root --password=123456 /data/mysql/backup/</span>
 190817 09:07:47 innobackupex: Starting the backup operation</code></pre></div>
 
 <p>需要把–defaults-file 作为第一个参数</p>
 <h3 id="docker-mysql无法被innobackupex备份"><a href="#docker-mysql无法被innobackupex备份" class="headerlink" title="docker-mysql无法被innobackupex备份"></a>docker-mysql无法被innobackupex备份</h3><p>使用过程中出现这个错误，这里做下记录</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 如果mysql是挂在docker里面的 需要指定IP和端口 本机也需要</span>
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 如果mysql是挂在docker里面的 需要指定IP和端口 本机也需要</span>
 innobackup --user=root --password=123456 --host=10.0.6.55 --port=3303 ./db_backup/</code></pre></div>
 
 <h2 id="docker-mysql重启数据库"><a href="#docker-mysql重启数据库" class="headerlink" title="docker-mysql重启数据库"></a>docker-mysql重启数据库</h2><p>因为mysql的配置文件会根据需求去更改，所以最好把配置文件从本地挂载进去</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">docker run -p 3306:3306 --name mysql-master -v /root/hzj/hzj/mysql/master.cnf:/etc/mysql/conf.d/master.cnf -e MYSQL_ROOT_PASSWORD=upyun123 -itd mysql:5.7
+<div class="code-wrapper"><pre><code class="hljs bash">docker run -p 3306:3306 --name mysql-master -v /root/hzj/hzj/mysql/master.cnf:/etc/mysql/conf.d/master.cnf -e MYSQL_ROOT_PASSWORD=upyun123 -itd mysql:5.7
 
->c8328f40cfcb</code></pre></div>
+&gt;c8328f40cfcb</code></pre></div>
 <p>修改配置文件重启数据库—&gt; 重启docekr容器</p>
-<div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">docker restart c8328f40cfcb</code></pre></div>
+<div class="code-wrapper"><pre><code class="hljs bash">docker restart c8328f40cfcb</code></pre></div>
 
-<h2 id="docker-mysql运行"><a href="#docker-mysql运行" class="headerlink" title="docker-mysql运行"></a>docker-mysql运行</h2><div class="code-wrapper"><pre class=" language-hljs bash"><span class="hljs-comment"><code class="language-hljs bash"><span class="hljs-comment"># 挂在日志 数据和配置</span>
+<h2 id="docker-mysql运行"><a href="#docker-mysql运行" class="headerlink" title="docker-mysql运行"></a>docker-mysql运行</h2><div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 挂在日志 数据和配置</span>
 docker run -p 3308:3306 --name mysql-slave \
 -v /mydata/mysql-slave/<span class="hljs-built_in">log</span>:/var/<span class="hljs-built_in">log</span>/mysql \
 -v /mydata/mysql-slave/data:/var/lib/mysql \
@@ -667,7 +667,7 @@ docker run -p 3308:3306 --name mysql-slave \
 </code></pre></div>
 
 
-<h2 id="mysql-一键脚本"><a href="#mysql-一键脚本" class="headerlink" title="mysql 一键脚本"></a>mysql 一键脚本</h2><div class="code-wrapper"><pre class=" language-hljs bash"><code class="language-hljs bash">
+<h2 id="mysql-一键脚本"><a href="#mysql-一键脚本" class="headerlink" title="mysql 一键脚本"></a>mysql 一键脚本</h2><div class="code-wrapper"><pre><code class="hljs bash">
 ALTER USER <span class="hljs-string">&#x27;root&#x27;</span>@<span class="hljs-string">&#x27;localhost&#x27;</span> IDENTIFIED BY <span class="hljs-string">&#x27;upyun123&#x27;</span>;
 CREATE USER <span class="hljs-string">&#x27;hzj&#x27;</span>@<span class="hljs-string">&#x27;%&#x27;</span> IDENTIFIED WITH mysql_native_password BY <span class="hljs-string">&#x27;upyun123&#x27;</span>;
 GRANT ALL PRIVILEGES ON *.* TO <span class="hljs-string">&#x27;hzj&#x27;</span>@<span class="hljs-string">&#x27;%&#x27;</span>;
@@ -722,7 +722,7 @@ INSERT INTO `datafordata`.`t_temp` (`id`, `comment`, `create_time`, `update_time
                       <a href="/2020/07/08/blog_back_new/fastapi/fastapi%E5%AE%9A%E6%97%B6%E5%99%A8%E5%AE%9E%E8%B7%B5/">
                         <i class="iconfont icon-arrowleft"></i>
                         <span class="hidden-mobile">fastapi定时器实践</span>
-                        <span class="visible-mobile">Vorheriger</span>
+                        <span class="visible-mobile">上一篇</span>
                       </a>
                     
                   </article>
@@ -731,7 +731,7 @@ INSERT INTO `datafordata`.`t_temp` (`id`, `comment`, `create_time`, `update_time
                     
                       <a href="/2020/06/03/blog_back_new/fastapi/%E4%B8%9A%E5%8A%A1%E8%BF%81%E7%A7%BB%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/">
                         <span class="hidden-mobile">业务迁移解决方案</span>
-                        <span class="visible-mobile">Nächster</span>
+                        <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
                     
@@ -748,7 +748,7 @@ INSERT INTO `datafordata`.`t_temp` (`id`, `comment`, `create_time`, `update_time
     
       <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
         <div id="toc">
-  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
   <div class="toc-body" id="toc-body"></div>
 </div>
 
@@ -774,7 +774,7 @@ INSERT INTO `datafordata`.`t_temp` (`id`, `comment`, `create_time`, `update_time
   <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">Suchen</h4>
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
         <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -783,7 +783,7 @@ INSERT INTO `datafordata`.`t_temp` (`id`, `comment`, `create_time`, `update_time
         <div class="md-form mb-5">
           <input type="text" id="local-search-input" class="form-control validate">
           <label data-error="x" data-success="v"
-                 for="local-search-input">Stichwort</label>
+                 for="local-search-input">关键词</label>
         </div>
         <div class="list-group" id="local-search-result"></div>
       </div>

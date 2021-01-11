@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html lang="cn" data-default-color-scheme=&#34;auto&#34;>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
 
 
 
@@ -61,7 +61,7 @@
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
 
 <body>
@@ -88,7 +88,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/">
                 <i class="iconfont icon-home-fill"></i>
-                Startseite
+                首页
               </a>
             </li>
           
@@ -100,7 +100,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/archives/">
                 <i class="iconfont icon-archive-fill"></i>
-                Archiv
+                归档
               </a>
             </li>
           
@@ -112,7 +112,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/categories/">
                 <i class="iconfont icon-category-fill"></i>
-                Kategorie
+                分类
               </a>
             </li>
           
@@ -124,7 +124,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/tags/">
                 <i class="iconfont icon-tags-fill"></i>
-                Etiketten
+                标签
               </a>
             </li>
           
@@ -136,7 +136,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/about/">
                 <i class="iconfont icon-user-fill"></i>
-                Über mich
+                关于
               </a>
             </li>
           
@@ -175,7 +175,7 @@
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
       <time datetime="2020-09-15 17:22" pubdate>
-        September 15, 2020 pm
+        2020年9月15日 下午
       </time>
     </span>
   
@@ -186,7 +186,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      395 字
+      469 字
     </span>
   
 
@@ -196,7 +196,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      6
+      7
        分钟
     </span>
   
@@ -230,106 +230,106 @@
             
             <div class="markdown-body">
               <a id="more"></a>
-<h1 id="go库socket"><a href="#go库socket" class="headerlink" title="go库socket"></a>go库socket</h1><div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">package</span> main
+<h1 id="go库socket"><a href="#go库socket" class="headerlink" title="go库socket"></a>go库socket</h1><div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main
 
 <span class="hljs-keyword">import</span> (
-	<span class="hljs-string">"bufio"</span>
-	<span class="hljs-string">"fmt"</span>
-	<span class="hljs-string">"net"</span>
+	<span class="hljs-string">&quot;bufio&quot;</span>
+	<span class="hljs-string">&quot;fmt&quot;</span>
+	<span class="hljs-string">&quot;net&quot;</span>
 )
 
 
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">process</span> <span class="hljs-params">(conn net.Conn)</span></span>{
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">process</span> <span class="hljs-params">(conn net.Conn)</span></span>&#123;
 	<span class="hljs-comment">// 关闭连接</span>
 	<span class="hljs-keyword">defer</span> conn.Close()
 	<span class="hljs-comment">// 针对当前连接做发送和接受操作</span>
-	<span class="hljs-keyword">for</span> {
+	<span class="hljs-keyword">for</span> &#123;
 		reader := bufio.NewReader(conn) <span class="hljs-comment">// 创建缓冲区对象</span>
 		<span class="hljs-keyword">var</span> buf [<span class="hljs-number">128</span>]<span class="hljs-keyword">byte</span> <span class="hljs-comment">// 创建缓冲区大小</span>
 		n,err := reader.Read(buf[:]) <span class="hljs-comment">// 将内容写入到buf缓冲区</span>
-		<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span>{
-			fmt.Printf(<span class="hljs-string">"read from conn faild,err:%v\n"</span>,err)
+		<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span>&#123;
+			fmt.Printf(<span class="hljs-string">&quot;read from conn faild,err:%v\n&quot;</span>,err)
 			<span class="hljs-keyword">break</span>
-		}
+		&#125;
 		recv := <span class="hljs-keyword">string</span>(buf[:n]) <span class="hljs-comment">// 取出接收到的内容</span>
-		fmt.Printf(<span class="hljs-string">"收到数据:%v\n"</span>,recv)
+		fmt.Printf(<span class="hljs-string">&quot;收到数据:%v\n&quot;</span>,recv)
 
 		<span class="hljs-comment">// 将接收到的数据返回给客户端</span>
-		_,err = conn.Write([]<span class="hljs-keyword">byte</span>(<span class="hljs-string">"ok"</span>)) <span class="hljs-comment">// 将ok写入缓存</span>
-		<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span>{
-			fmt.Printf(<span class="hljs-string">"write from conn faild,err %v"</span>,err)
+		_,err = conn.Write([]<span class="hljs-keyword">byte</span>(<span class="hljs-string">&quot;ok&quot;</span>)) <span class="hljs-comment">// 将ok写入缓存</span>
+		<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span>&#123;
+			fmt.Printf(<span class="hljs-string">&quot;write from conn faild,err %v&quot;</span>,err)
 			<span class="hljs-keyword">break</span>
-		}
-	}
+		&#125;
+	&#125;
 
-}
+&#125;
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
 	<span class="hljs-comment">// 创建监听节点</span>
-	listen,err := net.Listen(<span class="hljs-string">"tcp"</span>,<span class="hljs-string">"127.0.0.1:9090"</span>)
-	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span>{
-		fmt.Printf(<span class="hljs-string">"listen faild,err : %v"</span>,err)
+	listen,err := net.Listen(<span class="hljs-string">&quot;tcp&quot;</span>,<span class="hljs-string">&quot;127.0.0.1:9090&quot;</span>)
+	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span>&#123;
+		fmt.Printf(<span class="hljs-string">&quot;listen faild,err : %v&quot;</span>,err)
 		<span class="hljs-keyword">return</span>
-	}
+	&#125;
 
-	<span class="hljs-keyword">for</span> {
+	<span class="hljs-keyword">for</span> &#123;
 		<span class="hljs-comment">// 节点接受监听，返回连接节点</span>
 		conn,err := listen.Accept()
-		<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span>{
-			fmt.Printf(<span class="hljs-string">"accept faild,err%v\n"</span>,err)
+		<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span>&#123;
+			fmt.Printf(<span class="hljs-string">&quot;accept faild,err%v\n&quot;</span>,err)
 			<span class="hljs-keyword">continue</span>
-		}
+		&#125;
 		<span class="hljs-comment">// 传入节点</span>
 		<span class="hljs-keyword">go</span> process(conn)
-	}
-}
+	&#125;
+&#125;
 </code></pre></div>
 
 
 <p>client </p>
-<div class="code-wrapper"><pre class=" language-hljs go"><span class="hljs-keyword"><code class="language-hljs go"><span class="hljs-keyword">package</span> main
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main
 
 <span class="hljs-keyword">import</span> (
-	<span class="hljs-string">"bufio"</span>
-	<span class="hljs-string">"fmt"</span>
-	<span class="hljs-string">"net"</span>
-	<span class="hljs-string">"os"</span>
-	<span class="hljs-string">"strings"</span>
+	<span class="hljs-string">&quot;bufio&quot;</span>
+	<span class="hljs-string">&quot;fmt&quot;</span>
+	<span class="hljs-string">&quot;net&quot;</span>
+	<span class="hljs-string">&quot;os&quot;</span>
+	<span class="hljs-string">&quot;strings&quot;</span>
 )
 
-<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
 	<span class="hljs-comment">// 主动发起请求与服务端产生连接</span>
-	conn,err := net.Dial(<span class="hljs-string">"tcp"</span>,<span class="hljs-string">"127.0.0.1:9090"</span>)
-	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span>{
-		fmt.Printf(<span class="hljs-string">"conn server faild,err: %v"</span>,err)
+	conn,err := net.Dial(<span class="hljs-string">&quot;tcp&quot;</span>,<span class="hljs-string">&quot;127.0.0.1:9090&quot;</span>)
+	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span>&#123;
+		fmt.Printf(<span class="hljs-string">&quot;conn server faild,err: %v&quot;</span>,err)
 		<span class="hljs-keyword">return</span>
-	}
+	&#125;
 	input := bufio.NewReader(os.Stdin) <span class="hljs-comment">// 创建一个缓存 将写入的内容写到缓冲中区</span>
-	<span class="hljs-keyword">for</span> {
+	<span class="hljs-keyword">for</span> &#123;
 		s,_ := input.ReadString(<span class="hljs-string">&#x27;\n&#x27;</span>) <span class="hljs-comment">// 每次遍历读取一遍回车</span>
 		s = strings.TrimSpace(s) <span class="hljs-comment">// 去除空格</span>
-		<span class="hljs-keyword">if</span> strings.ToUpper(s) == <span class="hljs-string">"Q"</span>{  <span class="hljs-comment">// 如果是q 直接跳出</span>
+		<span class="hljs-keyword">if</span> strings.ToUpper(s) == <span class="hljs-string">&quot;Q&quot;</span>&#123;  <span class="hljs-comment">// 如果是q 直接跳出</span>
 			<span class="hljs-keyword">return</span>
-		}
+		&#125;
 		_,err = conn.Write([]<span class="hljs-keyword">byte</span>(s))  <span class="hljs-comment">// 将数据写入发送到server端</span>
-		<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span>{
-			fmt.Println(<span class="hljs-string">"error"</span>)
+		<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span>&#123;
+			fmt.Println(<span class="hljs-string">&quot;error&quot;</span>)
 			<span class="hljs-keyword">return</span>
-		}
+		&#125;
 
 		<span class="hljs-comment">// 从服务端收回消息</span>
 		<span class="hljs-keyword">var</span> buf [<span class="hljs-number">1024</span>]<span class="hljs-keyword">byte</span>   <span class="hljs-comment">// 从服务端接收消息</span>
 		n,err := conn.Read(buf[:])  <span class="hljs-comment">// 将消息写入</span>
-		<span class="hljs-keyword">if</span> err !=<span class="hljs-literal">nil</span>{
-			fmt.Println(<span class="hljs-string">"error"</span>)
+		<span class="hljs-keyword">if</span> err !=<span class="hljs-literal">nil</span>&#123;
+			fmt.Println(<span class="hljs-string">&quot;error&quot;</span>)
 			<span class="hljs-keyword">return</span>
-		}
-		fmt.Println(<span class="hljs-string">"收到服务器消息"</span>,<span class="hljs-keyword">string</span>(buf[:n])) <span class="hljs-comment">// string 格式化</span>
-	}
+		&#125;
+		fmt.Println(<span class="hljs-string">&quot;收到服务器消息&quot;</span>,<span class="hljs-keyword">string</span>(buf[:n])) <span class="hljs-comment">// string 格式化</span>
+	&#125;
 
 
-}</code></pre></div>
+&#125;</code></pre></div>
             </div>
             <hr>
             <div>
@@ -362,7 +362,7 @@
                       <a href="/2020/09/17/blog_back_new/golang/golang%E8%81%8A%E5%A4%A9%E5%AE%A4%E9%A1%B9%E7%9B%AE/">
                         <i class="iconfont icon-arrowleft"></i>
                         <span class="hidden-mobile">golang聊天室项目</span>
-                        <span class="visible-mobile">Vorheriger</span>
+                        <span class="visible-mobile">上一篇</span>
                       </a>
                     
                   </article>
@@ -371,7 +371,7 @@
                     
                       <a href="/2020/09/15/blog_back_new/NetWord/4OSI%E6%A8%A1%E5%9E%8B%E6%95%B0%E6%8D%AE%E9%93%BE%E8%B7%AF%E5%B1%82/">
                         <span class="hidden-mobile"></span>
-                        <span class="visible-mobile">Nächster</span>
+                        <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
                     
@@ -388,7 +388,7 @@
     
       <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
         <div id="toc">
-  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
   <div class="toc-body" id="toc-body"></div>
 </div>
 
@@ -414,7 +414,7 @@
   <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">Suchen</h4>
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
         <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -423,7 +423,7 @@
         <div class="md-form mb-5">
           <input type="text" id="local-search-input" class="form-control validate">
           <label data-error="x" data-success="v"
-                 for="local-search-input">Stichwort</label>
+                 for="local-search-input">关键词</label>
         </div>
         <div class="list-group" id="local-search-result"></div>
       </div>

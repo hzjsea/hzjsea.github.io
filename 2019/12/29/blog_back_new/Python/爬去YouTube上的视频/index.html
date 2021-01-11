@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html lang="cn" data-default-color-scheme=&#34;auto&#34;>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
 
 
 
@@ -61,7 +61,7 @@
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
 
 <body>
@@ -88,7 +88,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/">
                 <i class="iconfont icon-home-fill"></i>
-                Startseite
+                首页
               </a>
             </li>
           
@@ -100,7 +100,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/archives/">
                 <i class="iconfont icon-archive-fill"></i>
-                Archiv
+                归档
               </a>
             </li>
           
@@ -112,7 +112,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/categories/">
                 <i class="iconfont icon-category-fill"></i>
-                Kategorie
+                分类
               </a>
             </li>
           
@@ -124,7 +124,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/tags/">
                 <i class="iconfont icon-tags-fill"></i>
-                Etiketten
+                标签
               </a>
             </li>
           
@@ -136,7 +136,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/about/">
                 <i class="iconfont icon-user-fill"></i>
-                Über mich
+                关于
               </a>
             </li>
           
@@ -175,7 +175,7 @@
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
       <time datetime="2019-12-29 20:39" pubdate>
-        December 29, 2019 pm
+        2019年12月29日 晚上
       </time>
     </span>
   
@@ -186,7 +186,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      903 字
+      960 字
     </span>
   
 
@@ -196,7 +196,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      12
+      13
        分钟
     </span>
   
@@ -254,7 +254,7 @@
 <h2 id="获取uid"><a href="#获取uid" class="headerlink" title="获取uid"></a>获取uid</h2><p>既然不会发生改变，那么我们就用爬虫来获取这些uid把<br><strong>注意</strong></p>
 <p><img src="http://img.noback.top/youtobe%E7%88%AC%E8%99%AB.png" srcset="/img/loading.gif"><br>像这样的页面虽然在他的右侧出现了列表，但这样的情况在当我们使用爬虫+正则的时，会被下方的视频连接干扰，因此最好先进入播放列表后再爬取<br><img src="http://img.noback.top/190909youtobe%E7%88%AC%E8%99%AB2.png" srcset="/img/loading.gif"><br>像当前页面这样，我们所获取出来的uid就相对于完整一些<br><img src="http://img.noback.top/190909youtobe%E7%88%AC%E8%99%AB2.png" srcset="/img/loading.gif"></p>
 <h2 id="整理循环下载"><a href="#整理循环下载" class="headerlink" title="整理循环下载"></a>整理循环下载</h2><p>OK,有了uid再加上之前我们发现的不变的元素，那么一条条完整的视频链接就有了</p>
-<h2 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h2><div class="code-wrapper"><pre class=" language-hljs python"><span class="hljs-comment"><code class="language-hljs python"><span class="hljs-comment">#!/usr/bin/python3</span>
+<h2 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h2><div class="code-wrapper"><pre><code class="hljs python"><span class="hljs-comment">#!/usr/bin/python3</span>
 <span class="hljs-keyword">from</span> you_get <span class="hljs-keyword">import</span> common <span class="hljs-keyword">as</span> you_get
 <span class="hljs-keyword">import</span> sys
 <span class="hljs-keyword">import</span> os
@@ -262,13 +262,13 @@
 <span class="hljs-keyword">import</span> requests
 <span class="hljs-keyword">import</span> re
 
-static_url = <span class="hljs-string">"https://www.youtube.com{0}list=PLAyxoOmo7O7eoz-Wkii_bwtBEbPwCWQzD"</span>
-file_path = <span class="hljs-string">"D:\\video\youtobe_nginx_mooc"</span>
-<span class="hljs-comment"># file_path = "F:\\video\youtobe_nginx_mooc"</span>
+static_url = <span class="hljs-string">&quot;https://www.youtube.com&#123;0&#125;list=PLAyxoOmo7O7eoz-Wkii_bwtBEbPwCWQzD&quot;</span>
+file_path = <span class="hljs-string">&quot;D:\\video\youtobe_nginx_mooc&quot;</span>
+<span class="hljs-comment"># file_path = &quot;F:\\video\youtobe_nginx_mooc&quot;</span>
 
 
-resp = requests.get(<span class="hljs-string">"https://www.youtube.com/playlist?list=PLAyxoOmo7O7eoz-Wkii_bwtBEbPwCWQzD"</span>)
-pattern = <span class="hljs-string">"\/watch\?v=[0-9a-zA-Z_-]{11}&"</span>
+resp = requests.get(<span class="hljs-string">&quot;https://www.youtube.com/playlist?list=PLAyxoOmo7O7eoz-Wkii_bwtBEbPwCWQzD&quot;</span>)
+pattern = <span class="hljs-string">&quot;\/watch\?v=[0-9a-zA-Z_-]&#123;11&#125;&amp;&quot;</span>
 video_url_lists = re.findall(pattern,resp.text)
 <span class="hljs-comment"># 去重</span>
 video_url_lists = <span class="hljs-built_in">list</span>(<span class="hljs-built_in">set</span>(video_url_lists))
@@ -276,36 +276,36 @@ print(<span class="hljs-built_in">len</span>(video_url_lists))
 <span class="hljs-keyword">for</span> <span class="hljs-built_in">list</span> <span class="hljs-keyword">in</span> video_url_lists:
     format_url = static_url.<span class="hljs-built_in">format</span>(<span class="hljs-built_in">list</span>)
     print(format_url)
-    print(<span class="hljs-string">"start get video from YouTobe"</span>)
+    print(<span class="hljs-string">&quot;start get video from YouTobe&quot;</span>)
     sys.argv = [<span class="hljs-string">&#x27;you-get&#x27;</span>,<span class="hljs-string">&#x27;-o&#x27;</span>,file_path,format_url]
     you_get.main()
     time.sleep(<span class="hljs-number">1</span>)
-print(<span class="hljs-string">"download finished"</span>)
+print(<span class="hljs-string">&quot;download finished&quot;</span>)
 
-<span class="hljs-comment"># print(type(resp)) ## 由于这是返回的类型是 <class &#x27;requests.models.Response&#x27;></span>
+<span class="hljs-comment"># print(type(resp)) ## 由于这是返回的类型是 &lt;class &#x27;requests.models.Response&#x27;&gt;</span>
 <span class="hljs-comment"># 但是在正则表达式中，要求是为str类型，因此如果我们使用pattern = re.findall(&#x27;index&#x27; resp)时候就会报错</span>
 <span class="hljs-comment"># 报错内容为TypeError: expected string or bytes-like object</span>
 <span class="hljs-comment"># 修改 pattern = re.findall(&#x27;index=&#x27;,str(resp))</span>
 <span class="hljs-comment"># 或者使用pattern = re.findall(&#x27;index=&#x27;,resp.text)</span>
 
-<span class="hljs-string">""""</span>
+<span class="hljs-string">&quot;&quot;&quot;&quot;</span>
 <span class="hljs-string">https://www.bilibili.com/read/cv4360/</span>
 <span class="hljs-string">https://www.jianshu.com/p/e323cf85bd3d</span>
 <span class="hljs-string"></span>
-<span class="hljs-string">"""</span>
+<span class="hljs-string">&quot;&quot;&quot;</span>
 
-<span class="hljs-string">"""</span>
-<span class="hljs-string">https://www.youtube.com/watch?v=5i9Ce9vzGxE&list=PLAyxoOmo7O7eoz-Wkii_bwtBEbPwCWQzD&index=1</span>
-<span class="hljs-string">https://www.youtube.com/watch?v=Do1Opl6DbvM&list=PLAyxoOmo7O7eoz-Wkii_bwtBEbPwCWQzD&index=1</span>
-<span class="hljs-string">https://www.youtube.com/watch?v=R4p7xxd3BTo&list=PLAyxoOmo7O7eoz-Wkii_bwtBEbPwCWQzD&index=4</span>
-<span class="hljs-string">https://www.youtube.com/watch?v=Do1Opl6DbvM&list=PLAyxoOmo7O7eoz-Wkii_bwtBEbPwCWQzD&index=1</span>
-<span class="hljs-string">https://www.youtube.com/watch?v=Do1Opl6DbvM&list=PLAyxoOmo7O7eoz-Wkii_bwtBEbPwCWQzD&index=1</span>
-<span class="hljs-string">/watch?v=Do1Opl6DbvM&list=PLAyxoOmo7O7eoz-Wkii_bwtBEbPwCWQzD&index=1</span>
-<span class="hljs-string">https://www.youtube.com/watch?v=0JwSFgWUUQE&list=PLAyxoOmo7O7eoz-Wkii_bwtBEbPwCWQzD</span>
+<span class="hljs-string">&quot;&quot;&quot;</span>
+<span class="hljs-string">https://www.youtube.com/watch?v=5i9Ce9vzGxE&amp;list=PLAyxoOmo7O7eoz-Wkii_bwtBEbPwCWQzD&amp;index=1</span>
+<span class="hljs-string">https://www.youtube.com/watch?v=Do1Opl6DbvM&amp;list=PLAyxoOmo7O7eoz-Wkii_bwtBEbPwCWQzD&amp;index=1</span>
+<span class="hljs-string">https://www.youtube.com/watch?v=R4p7xxd3BTo&amp;list=PLAyxoOmo7O7eoz-Wkii_bwtBEbPwCWQzD&amp;index=4</span>
+<span class="hljs-string">https://www.youtube.com/watch?v=Do1Opl6DbvM&amp;list=PLAyxoOmo7O7eoz-Wkii_bwtBEbPwCWQzD&amp;index=1</span>
+<span class="hljs-string">https://www.youtube.com/watch?v=Do1Opl6DbvM&amp;list=PLAyxoOmo7O7eoz-Wkii_bwtBEbPwCWQzD&amp;index=1</span>
+<span class="hljs-string">/watch?v=Do1Opl6DbvM&amp;list=PLAyxoOmo7O7eoz-Wkii_bwtBEbPwCWQzD&amp;index=1</span>
+<span class="hljs-string">https://www.youtube.com/watch?v=0JwSFgWUUQE&amp;list=PLAyxoOmo7O7eoz-Wkii_bwtBEbPwCWQzD</span>
 <span class="hljs-string"></span>
-<span class="hljs-string">https://www.youtube.com/watch?v=fvxAQsRy8Kk&list=PLAyxoOmo7O7eoz-Wkii_bwtBEbPwCWQzD&index=8</span>
-<span class="hljs-string">https://www.youtube.com/watch?v=R4p7xxd3BTo&list=PLAyxoOmo7O7eoz-Wkii_bwtBEbPwCWQzD&index=4</span>
-<span class="hljs-string">"""</span></code></pre></div>
+<span class="hljs-string">https://www.youtube.com/watch?v=fvxAQsRy8Kk&amp;list=PLAyxoOmo7O7eoz-Wkii_bwtBEbPwCWQzD&amp;index=8</span>
+<span class="hljs-string">https://www.youtube.com/watch?v=R4p7xxd3BTo&amp;list=PLAyxoOmo7O7eoz-Wkii_bwtBEbPwCWQzD&amp;index=4</span>
+<span class="hljs-string">&quot;&quot;&quot;</span></code></pre></div>
             </div>
             <hr>
             <div>
@@ -338,7 +338,7 @@ print(<span class="hljs-string">"download finished"</span>)
                       <a href="/2019/12/29/blog_back_new/git/git%E5%9F%BA%E7%A1%803/">
                         <i class="iconfont icon-arrowleft"></i>
                         <span class="hidden-mobile">git基础2</span>
-                        <span class="visible-mobile">Vorheriger</span>
+                        <span class="visible-mobile">上一篇</span>
                       </a>
                     
                   </article>
@@ -347,7 +347,7 @@ print(<span class="hljs-string">"download finished"</span>)
                     
                       <a href="/2019/12/29/blog_back_new/%E9%94%99%E8%AF%AF%E6%80%BB%E7%BB%93/%E5%8F%88%E6%8B%8D%E4%BA%91/">
                         <span class="hidden-mobile">内容记录</span>
-                        <span class="visible-mobile">Nächster</span>
+                        <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
                     
@@ -364,7 +364,7 @@ print(<span class="hljs-string">"download finished"</span>)
     
       <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
         <div id="toc">
-  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
   <div class="toc-body" id="toc-body"></div>
 </div>
 
@@ -390,7 +390,7 @@ print(<span class="hljs-string">"download finished"</span>)
   <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">Suchen</h4>
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
         <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -399,7 +399,7 @@ print(<span class="hljs-string">"download finished"</span>)
         <div class="md-form mb-5">
           <input type="text" id="local-search-input" class="form-control validate">
           <label data-error="x" data-success="v"
-                 for="local-search-input">Stichwort</label>
+                 for="local-search-input">关键词</label>
         </div>
         <div class="list-group" id="local-search-result"></div>
       </div>

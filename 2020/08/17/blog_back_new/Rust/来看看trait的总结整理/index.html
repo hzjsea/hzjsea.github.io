@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html lang="cn" data-default-color-scheme=&#34;auto&#34;>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
 
 
 
@@ -61,7 +61,7 @@
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
 
 <body>
@@ -88,7 +88,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/">
                 <i class="iconfont icon-home-fill"></i>
-                Startseite
+                首页
               </a>
             </li>
           
@@ -100,7 +100,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/archives/">
                 <i class="iconfont icon-archive-fill"></i>
-                Archiv
+                归档
               </a>
             </li>
           
@@ -112,7 +112,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/categories/">
                 <i class="iconfont icon-category-fill"></i>
-                Kategorie
+                分类
               </a>
             </li>
           
@@ -124,7 +124,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/tags/">
                 <i class="iconfont icon-tags-fill"></i>
-                Etiketten
+                标签
               </a>
             </li>
           
@@ -136,7 +136,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/about/">
                 <i class="iconfont icon-user-fill"></i>
-                Über mich
+                关于
               </a>
             </li>
           
@@ -175,7 +175,7 @@
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
       <time datetime="2020-08-17 10:32" pubdate>
-        August 17, 2020 am
+        2020年8月17日 上午
       </time>
     </span>
   
@@ -186,7 +186,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      748 字
+      1k 字
     </span>
   
 
@@ -196,7 +196,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      12
+      17
        分钟
     </span>
   
@@ -234,254 +234,257 @@
 
 <h1 id="来看看trait的总结整理"><a href="#来看看trait的总结整理" class="headerlink" title="来看看trait的总结整理"></a>来看看trait的总结整理</h1><p>trait是服务于变量类型的，他规定了类型必须提供哪些功能语言特性</p>
 <p>比如在之前要计算一个圆的面积，可以单独使用一个方法来解决，在得到圆的各个参数后，调用此方法就可以得出最后的结论</p>
-<div class="code-wrapper"><pre class=" language-hljs rust"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title"><code class="language-hljs rust"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">circle</span></span>{
+<div class="code-wrapper"><pre><code class="hljs rust">
+<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">circle</span></span>&#123;
     x: <span class="hljs-built_in">f64</span>,
     y: <span class="hljs-built_in">f64</span>,
     radius: <span class="hljs-built_in">f64</span>,
-}
+&#125;
 
-<span class="hljs-keyword">impl</span> circle {
-    <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">area</span></span>(&<span class="hljs-keyword">self</span>) -> <span class="hljs-built_in">f64</span>{
+<span class="hljs-keyword">impl</span> circle &#123;
+    <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">area</span></span>(&amp;<span class="hljs-keyword">self</span>) -&gt; <span class="hljs-built_in">f64</span>&#123;
         std::<span class="hljs-built_in">f64</span>::consts::PI * (<span class="hljs-keyword">self</span>.radius * <span class="hljs-keyword">self</span>.radius)
-    }
-}
+    &#125;
+&#125;
 
 
-<span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>() {
-   <span class="hljs-keyword">let</span> c1 = circle{x:<span class="hljs-number">32.1</span>,y:<span class="hljs-number">32.1</span>, radius: <span class="hljs-number">0.0</span> };
-    <span class="hljs-built_in">println!</span>(<span class="hljs-string">"{}"</span>,c1.area());
-}
+<span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>() &#123;
+   <span class="hljs-keyword">let</span> c1 = circle&#123;x:<span class="hljs-number">32.1</span>,y:<span class="hljs-number">32.1</span>, radius: <span class="hljs-number">0.0</span> &#125;;
+    <span class="hljs-built_in">println!</span>(<span class="hljs-string">&quot;&#123;&#125;&quot;</span>,c1.area());
+&#125;
 </code></pre></div>
 <p>但是同样的我们也可以使用trait来实现这个原理，原理就是对circle来类型来创建一个trait</p>
-<div class="code-wrapper"><pre class=" language-hljs rust"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title"><code class="language-hljs rust"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">circle</span></span>{
+<div class="code-wrapper"><pre><code class="hljs rust">
+<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">circle</span></span>&#123;
     x: <span class="hljs-built_in">f64</span>,
     y: <span class="hljs-built_in">f64</span>,
     radius: <span class="hljs-built_in">f64</span>,
-}
+&#125;
 
-<span class="hljs-class"><span class="hljs-keyword">trait</span> <span class="hljs-title">HasArea</span></span> {
-    <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">area</span></span>(&<span class="hljs-keyword">self</span>) -> <span class="hljs-built_in">f64</span>;
-}
+<span class="hljs-class"><span class="hljs-keyword">trait</span> <span class="hljs-title">HasArea</span></span> &#123;
+    <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">area</span></span>(&amp;<span class="hljs-keyword">self</span>) -&gt; <span class="hljs-built_in">f64</span>;
+&#125;
 
-<span class="hljs-keyword">impl</span> HasArea <span class="hljs-keyword">for</span> circle {
-    <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">area</span></span>(&<span class="hljs-keyword">self</span>) -> <span class="hljs-built_in">f64</span>{
+<span class="hljs-keyword">impl</span> HasArea <span class="hljs-keyword">for</span> circle &#123;
+    <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">area</span></span>(&amp;<span class="hljs-keyword">self</span>) -&gt; <span class="hljs-built_in">f64</span>&#123;
         std::<span class="hljs-built_in">f64</span>::consts::PI * (<span class="hljs-keyword">self</span>.radius * <span class="hljs-keyword">self</span>.radius)
-    }
-}
+    &#125;
+&#125;
 
-<span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>() {
-   <span class="hljs-keyword">let</span> c1 = circle{x:<span class="hljs-number">32.1</span>,y:<span class="hljs-number">32.1</span>, radius: <span class="hljs-number">1.0</span> };
-    <span class="hljs-built_in">println!</span>(<span class="hljs-string">"{}"</span>,c1.area());
-}
+<span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>() &#123;
+   <span class="hljs-keyword">let</span> c1 = circle&#123;x:<span class="hljs-number">32.1</span>,y:<span class="hljs-number">32.1</span>, radius: <span class="hljs-number">1.0</span> &#125;;
+    <span class="hljs-built_in">println!</span>(<span class="hljs-string">&quot;&#123;&#125;&quot;</span>,c1.area());
+&#125;
 </code></pre></div>
 
 <p>乍一看感觉都差不多，并且trait的代码还多一点。但其实trait并不止这些</p>
-<div class="code-wrapper"><pre class=" language-hljs rust"><span class="hljs-class"><span class="hljs-keyword">trait</span> <span class="hljs-title"><code class="language-hljs rust"><span class="hljs-class"><span class="hljs-keyword">trait</span> <span class="hljs-title">Animal</span></span> {
-   <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">talk</span></span>(&<span class="hljs-keyword">self</span>);
-}
-<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">Cat</span></span> {}
-<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">Dog</span></span> {}
-<span class="hljs-keyword">impl</span> Animal <span class="hljs-keyword">for</span> Cat {
-  <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">talk</span></span>(&<span class="hljs-keyword">self</span>) {
+<div class="code-wrapper"><pre><code class="hljs rust">
+<span class="hljs-class"><span class="hljs-keyword">trait</span> <span class="hljs-title">Animal</span></span> &#123;
+   <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">talk</span></span>(&amp;<span class="hljs-keyword">self</span>);
+&#125;
+<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">Cat</span></span> &#123;&#125;
+<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">Dog</span></span> &#123;&#125;
+<span class="hljs-keyword">impl</span> Animal <span class="hljs-keyword">for</span> Cat &#123;
+  <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">talk</span></span>(&amp;<span class="hljs-keyword">self</span>) &#123;
     <span class="hljs-built_in">println!</span>(“meow”);
-  }
-}
-<span class="hljs-keyword">impl</span> Animal <span class="hljs-keyword">for</span> Dog {
-  <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">talk</span></span>(&<span class="hljs-keyword">self</span>) {
+  &#125;
+&#125;
+<span class="hljs-keyword">impl</span> Animal <span class="hljs-keyword">for</span> Dog &#123;
+  <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">talk</span></span>(&amp;<span class="hljs-keyword">self</span>) &#123;
     <span class="hljs-built_in">println!</span>(“bark”);
-  }
-}
-<span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">animal_talk</span></span>(a: &<span class="hljs-keyword">dyn</span> Animal) {
+  &#125;
+&#125;
+<span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">animal_talk</span></span>(a: &amp;<span class="hljs-keyword">dyn</span> Animal) &#123;
   a.talk();
-}
-<span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>() {
-  <span class="hljs-keyword">let</span> d = Dog {};
-  <span class="hljs-keyword">let</span> c = Cat {};
-  animal_talk(&d);
-  animal_talk(&c);
-}</code></pre></div>
+&#125;
+<span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>() &#123;
+  <span class="hljs-keyword">let</span> d = Dog &#123;&#125;;
+  <span class="hljs-keyword">let</span> c = Cat &#123;&#125;;
+  animal_talk(&amp;d);
+  animal_talk(&amp;c);
+&#125;</code></pre></div>
 <p>这里面用dyn来告诉rust不要去确定Animal的类型</p>
-<div class="code-wrapper"><pre class=" language-hljs rust"><code class="language-hljs rust">
+<div class="code-wrapper"><pre><code class="hljs rust">
 <span class="hljs-meta">#![allow(unused)]</span>
 
 <span class="hljs-keyword">use</span> std::fmt::Display;
 <span class="hljs-keyword">use</span> std::path::Iter;
 
-<span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>() {
-    <span class="hljs-class"><span class="hljs-keyword">trait</span> <span class="hljs-title">Summary</span></span> {
-        <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">summarize</span></span>(&<span class="hljs-keyword">self</span>) -> <span class="hljs-built_in">String</span>;
-    }
+<span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>() &#123;
+    <span class="hljs-class"><span class="hljs-keyword">trait</span> <span class="hljs-title">Summary</span></span> &#123;
+        <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">summarize</span></span>(&amp;<span class="hljs-keyword">self</span>) -&gt; <span class="hljs-built_in">String</span>;
+    &#125;
 
-    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">NewsArticle</span></span> {
+    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">NewsArticle</span></span> &#123;
         <span class="hljs-keyword">pub</span> headline: <span class="hljs-built_in">String</span>,
         <span class="hljs-keyword">pub</span> location: <span class="hljs-built_in">String</span>,
         <span class="hljs-keyword">pub</span> author: <span class="hljs-built_in">String</span>,
         <span class="hljs-keyword">pub</span> content: <span class="hljs-built_in">String</span>,
-    }
+    &#125;
 
-    <span class="hljs-keyword">impl</span> Summary <span class="hljs-keyword">for</span> NewsArticle {
-        <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">summarize</span></span>(&<span class="hljs-keyword">self</span>) -> <span class="hljs-built_in">String</span> {
-            <span class="hljs-built_in">format!</span>(<span class="hljs-string">"{}, by {} ({})"</span>, <span class="hljs-keyword">self</span>.headline, <span class="hljs-keyword">self</span>.author, <span class="hljs-keyword">self</span>.location)
-        }
-    }
+    <span class="hljs-keyword">impl</span> Summary <span class="hljs-keyword">for</span> NewsArticle &#123;
+        <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">summarize</span></span>(&amp;<span class="hljs-keyword">self</span>) -&gt; <span class="hljs-built_in">String</span> &#123;
+            <span class="hljs-built_in">format!</span>(<span class="hljs-string">&quot;&#123;&#125;, by &#123;&#125; (&#123;&#125;)&quot;</span>, <span class="hljs-keyword">self</span>.headline, <span class="hljs-keyword">self</span>.author, <span class="hljs-keyword">self</span>.location)
+        &#125;
+    &#125;
 
-    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">Tweet</span></span> {
+    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">Tweet</span></span> &#123;
         <span class="hljs-keyword">pub</span> username: <span class="hljs-built_in">String</span>,
         <span class="hljs-keyword">pub</span> content: <span class="hljs-built_in">String</span>,
         <span class="hljs-keyword">pub</span> reply: <span class="hljs-built_in">bool</span>,
         <span class="hljs-keyword">pub</span> retweet: <span class="hljs-built_in">bool</span>,
-    }
+    &#125;
 
-    <span class="hljs-keyword">impl</span> Summary <span class="hljs-keyword">for</span> Tweet {
-        <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">summarize</span></span>(&<span class="hljs-keyword">self</span>) -> <span class="hljs-built_in">String</span> {
-            <span class="hljs-built_in">format!</span>(<span class="hljs-string">"{}: {}"</span>, <span class="hljs-keyword">self</span>.username, <span class="hljs-keyword">self</span>.content)
-        }
-    }
+    <span class="hljs-keyword">impl</span> Summary <span class="hljs-keyword">for</span> Tweet &#123;
+        <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">summarize</span></span>(&amp;<span class="hljs-keyword">self</span>) -&gt; <span class="hljs-built_in">String</span> &#123;
+            <span class="hljs-built_in">format!</span>(<span class="hljs-string">&quot;&#123;&#125;: &#123;&#125;&quot;</span>, <span class="hljs-keyword">self</span>.username, <span class="hljs-keyword">self</span>.content)
+        &#125;
+    &#125;
 
     <span class="hljs-comment">// 实现了Summary trait的变量</span>
-    <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">notify</span></span>(item: <span class="hljs-keyword">impl</span> Summary) {
-        <span class="hljs-built_in">println!</span>(<span class="hljs-string">"Breaking news! {}"</span>, item.summarize());
-    }
+    <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">notify</span></span>(item: <span class="hljs-keyword">impl</span> Summary) &#123;
+        <span class="hljs-built_in">println!</span>(<span class="hljs-string">&quot;Breaking news! &#123;&#125;&quot;</span>, item.summarize());
+    &#125;
     <span class="hljs-comment">// trait bound</span>
-    <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">notify2</span></span><T:Summary>(item: T){
-        <span class="hljs-built_in">println!</span>(<span class="hljs-string">"Breaking news! {}"</span>, item.summarize());
-    }
+    <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">notify2</span></span>&lt;T:Summary&gt;(item: T)&#123;
+        <span class="hljs-built_in">println!</span>(<span class="hljs-string">&quot;Breaking news! &#123;&#125;&quot;</span>, item.summarize());
+    &#125;
     <span class="hljs-comment">// 绑定多个trait Display是官方已经实现的一个trait</span>
-    <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">notify3</span></span><T: Summary+Display>(item: T){
-        <span class="hljs-built_in">println!</span>(<span class="hljs-string">"Breaking news! {}"</span>, item.summarize());
-    }
+    <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">notify3</span></span>&lt;T: Summary+Display&gt;(item: T)&#123;
+        <span class="hljs-built_in">println!</span>(<span class="hljs-string">&quot;Breaking news! &#123;&#125;&quot;</span>, item.summarize());
+    &#125;
     <span class="hljs-comment">// 简化trait bound</span>
-    <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">some_function</span></span><T, U>(t: T, u: U) -> <span class="hljs-built_in">i32</span>
+    <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">some_function</span></span>&lt;T, U&gt;(t: T, u: U) -&gt; <span class="hljs-built_in">i32</span>
         <span class="hljs-keyword">where</span> T: Display + <span class="hljs-built_in">Clone</span>,
               U: <span class="hljs-built_in">Clone</span> + <span class="hljs-built_in">Debug</span>
-    {
+    &#123;
 
-    }
+    &#125;
 
     <span class="hljs-comment">// 在返回值中使用trait</span>
-    <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">returns_summarizable</span></span>() -> <span class="hljs-keyword">impl</span> Summary {
-        Tweet {
-            username: <span class="hljs-built_in">String</span>::from(<span class="hljs-string">"horse_ebooks"</span>),
-            content: <span class="hljs-built_in">String</span>::from(<span class="hljs-string">"of course, as you probably already know, people"</span>),
+    <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">returns_summarizable</span></span>() -&gt; <span class="hljs-keyword">impl</span> Summary &#123;
+        Tweet &#123;
+            username: <span class="hljs-built_in">String</span>::from(<span class="hljs-string">&quot;horse_ebooks&quot;</span>),
+            content: <span class="hljs-built_in">String</span>::from(<span class="hljs-string">&quot;of course, as you probably already know, people&quot;</span>),
             reply: <span class="hljs-literal">false</span>,
             retweet: <span class="hljs-literal">false</span>,
-        }
-    }
-}
+        &#125;
+    &#125;
+&#125;
 </code></pre></div>
 
-<div class="code-wrapper"><pre class=" language-hljs rust"><span class="hljs-comment"><code class="language-hljs rust"><span class="hljs-comment">// 定义通用接口</span>
+<div class="code-wrapper"><pre><code class="hljs rust"><span class="hljs-comment">// 定义通用接口</span>
 
-<span class="hljs-class"><span class="hljs-keyword">trait</span> <span class="hljs-title">Show</span></span>{
+<span class="hljs-class"><span class="hljs-keyword">trait</span> <span class="hljs-title">Show</span></span>&#123;
     <span class="hljs-comment">// 定义接口中的方法</span>
-    <span class="hljs-function"><span class="hljs-keyword">fn</span>  <span class="hljs-title">show</span></span>(&<span class="hljs-keyword">self</span>) -> <span class="hljs-built_in">String</span>;
-}
+    <span class="hljs-function"><span class="hljs-keyword">fn</span>  <span class="hljs-title">show</span></span>(&amp;<span class="hljs-keyword">self</span>) -&gt; <span class="hljs-built_in">String</span>;
+&#125;
 
-<span class="hljs-keyword">impl</span> Show <span class="hljs-keyword">for</span> <span class="hljs-built_in">i32</span>{
-    <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">show</span></span>(&<span class="hljs-keyword">self</span>) -> <span class="hljs-built_in">String</span>{
-        <span class="hljs-built_in">format!</span>(<span class="hljs-string">"creat i32 type datestuct {}"</span>,<span class="hljs-keyword">self</span>)
-    }
-}
+<span class="hljs-keyword">impl</span> Show <span class="hljs-keyword">for</span> <span class="hljs-built_in">i32</span>&#123;
+    <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">show</span></span>(&amp;<span class="hljs-keyword">self</span>) -&gt; <span class="hljs-built_in">String</span>&#123;
+        <span class="hljs-built_in">format!</span>(<span class="hljs-string">&quot;creat i32 type datestuct &#123;&#125;&quot;</span>,<span class="hljs-keyword">self</span>)
+    &#125;
+&#125;
 
-<span class="hljs-keyword">impl</span> Show <span class="hljs-keyword">for</span> <span class="hljs-built_in">f64</span>{
-    <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">show</span></span>(&<span class="hljs-keyword">self</span>) -> <span class="hljs-built_in">String</span>{
-        <span class="hljs-built_in">format!</span>(<span class="hljs-string">"create f64 type datestruct{}"</span>,<span class="hljs-keyword">self</span>)
-    }
-}
+<span class="hljs-keyword">impl</span> Show <span class="hljs-keyword">for</span> <span class="hljs-built_in">f64</span>&#123;
+    <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">show</span></span>(&amp;<span class="hljs-keyword">self</span>) -&gt; <span class="hljs-built_in">String</span>&#123;
+        <span class="hljs-built_in">format!</span>(<span class="hljs-string">&quot;create f64 type datestruct&#123;&#125;&quot;</span>,<span class="hljs-keyword">self</span>)
+    &#125;
+&#125;
 
 
 
-<span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>() {
+<span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>() &#123;
     <span class="hljs-keyword">let</span> num1 = <span class="hljs-number">32</span>;
     <span class="hljs-keyword">let</span> num2 = <span class="hljs-number">32.9</span>;
-    <span class="hljs-keyword">let</span> v1:<span class="hljs-built_in">Vec</span><&Show> = <span class="hljs-built_in">vec!</span>[&num1,&num2];  <span class="hljs-comment">// 这里引用的是实现了  Show tarit的类型</span>
-    <span class="hljs-keyword">for</span> d <span class="hljs-keyword">in</span> v1.iter(){
-        <span class="hljs-built_in">println!</span>(<span class="hljs-string">"{}"</span>,d.show());
-    }
-}
+    <span class="hljs-keyword">let</span> v1:<span class="hljs-built_in">Vec</span>&lt;&amp;Show&gt; = <span class="hljs-built_in">vec!</span>[&amp;num1,&amp;num2];  <span class="hljs-comment">// 这里引用的是实现了  Show tarit的类型</span>
+    <span class="hljs-keyword">for</span> d <span class="hljs-keyword">in</span> v1.iter()&#123;
+        <span class="hljs-built_in">println!</span>(<span class="hljs-string">&quot;&#123;&#125;&quot;</span>,d.show());
+    &#125;
+&#125;
 </code></pre></div>
 
-<div class="code-wrapper"><pre class=" language-hljs rust"><span class="hljs-comment"><code class="language-hljs rust"><span class="hljs-comment">// 定义通用接口</span>
+<div class="code-wrapper"><pre><code class="hljs rust"><span class="hljs-comment">// 定义通用接口</span>
 
-<span class="hljs-class"><span class="hljs-keyword">trait</span> <span class="hljs-title">Show</span></span>{
+<span class="hljs-class"><span class="hljs-keyword">trait</span> <span class="hljs-title">Show</span></span>&#123;
     <span class="hljs-comment">// 定义接口中的方法</span>
-    <span class="hljs-function"><span class="hljs-keyword">fn</span>  <span class="hljs-title">show</span></span>(&<span class="hljs-keyword">self</span>) -> <span class="hljs-built_in">String</span>;
-}
+    <span class="hljs-function"><span class="hljs-keyword">fn</span>  <span class="hljs-title">show</span></span>(&amp;<span class="hljs-keyword">self</span>) -&gt; <span class="hljs-built_in">String</span>;
+&#125;
 
-<span class="hljs-keyword">impl</span> Show <span class="hljs-keyword">for</span> <span class="hljs-built_in">i32</span>{
-    <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">show</span></span>(&<span class="hljs-keyword">self</span>) -> <span class="hljs-built_in">String</span>{
-        <span class="hljs-built_in">format!</span>(<span class="hljs-string">"creat i32 type datestuct {}"</span>,<span class="hljs-keyword">self</span>)
-    }
-}
+<span class="hljs-keyword">impl</span> Show <span class="hljs-keyword">for</span> <span class="hljs-built_in">i32</span>&#123;
+    <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">show</span></span>(&amp;<span class="hljs-keyword">self</span>) -&gt; <span class="hljs-built_in">String</span>&#123;
+        <span class="hljs-built_in">format!</span>(<span class="hljs-string">&quot;creat i32 type datestuct &#123;&#125;&quot;</span>,<span class="hljs-keyword">self</span>)
+    &#125;
+&#125;
 
-<span class="hljs-keyword">impl</span> Show <span class="hljs-keyword">for</span> <span class="hljs-built_in">f64</span>{
-    <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">show</span></span>(&<span class="hljs-keyword">self</span>) -> <span class="hljs-built_in">String</span>{
-        <span class="hljs-built_in">format!</span>(<span class="hljs-string">"create f64 type datestruct{}"</span>,<span class="hljs-keyword">self</span>)
-    }
-}
+<span class="hljs-keyword">impl</span> Show <span class="hljs-keyword">for</span> <span class="hljs-built_in">f64</span>&#123;
+    <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">show</span></span>(&amp;<span class="hljs-keyword">self</span>) -&gt; <span class="hljs-built_in">String</span>&#123;
+        <span class="hljs-built_in">format!</span>(<span class="hljs-string">&quot;create f64 type datestruct&#123;&#125;&quot;</span>,<span class="hljs-keyword">self</span>)
+    &#125;
+&#125;
 
 
 
-<span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>() {
+<span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>() &#123;
     <span class="hljs-keyword">let</span> num1 = <span class="hljs-number">32</span>;
     <span class="hljs-keyword">let</span> num2 = <span class="hljs-number">32.9</span>;
-    <span class="hljs-keyword">let</span> v1:<span class="hljs-built_in">Vec</span><&Show> = <span class="hljs-built_in">vec!</span>[&num1,&num2];  <span class="hljs-comment">// 这里引用的是实现了  Show tarit的类型</span>
-    <span class="hljs-keyword">for</span> d <span class="hljs-keyword">in</span> v1.iter(){
-        <span class="hljs-built_in">println!</span>(<span class="hljs-string">"{}"</span>,d.show());
-    }
+    <span class="hljs-keyword">let</span> v1:<span class="hljs-built_in">Vec</span>&lt;&amp;Show&gt; = <span class="hljs-built_in">vec!</span>[&amp;num1,&amp;num2];  <span class="hljs-comment">// 这里引用的是实现了  Show tarit的类型</span>
+    <span class="hljs-keyword">for</span> d <span class="hljs-keyword">in</span> v1.iter()&#123;
+        <span class="hljs-built_in">println!</span>(<span class="hljs-string">&quot;&#123;&#125;&quot;</span>,d.show());
+    &#125;
 
 
     <span class="hljs-keyword">let</span> bo1 = <span class="hljs-built_in">Box</span>::new(<span class="hljs-number">1</span>); <span class="hljs-comment">//创建堆上内容</span>
     <span class="hljs-keyword">let</span> bo2 = <span class="hljs-built_in">Box</span>::new(<span class="hljs-number">2</span>);
-    <span class="hljs-keyword">let</span> v2:<span class="hljs-built_in">Vec</span><<span class="hljs-built_in">Box</span><Show>> = <span class="hljs-built_in">vec!</span>[bo2,bo1];
-    <span class="hljs-keyword">for</span> d <span class="hljs-keyword">in</span> v2.iter(){
-        <span class="hljs-built_in">println!</span>(<span class="hljs-string">"{}"</span>,d.show());
-    }
-}
+    <span class="hljs-keyword">let</span> v2:<span class="hljs-built_in">Vec</span>&lt;<span class="hljs-built_in">Box</span>&lt;Show&gt;&gt; = <span class="hljs-built_in">vec!</span>[bo2,bo1];
+    <span class="hljs-keyword">for</span> d <span class="hljs-keyword">in</span> v2.iter()&#123;
+        <span class="hljs-built_in">println!</span>(<span class="hljs-string">&quot;&#123;&#125;&quot;</span>,d.show());
+    &#125;
+&#125;
 </code></pre></div>
 
-<div class="code-wrapper"><pre class=" language-hljs rust"><code class="language-hljs rust">
+<div class="code-wrapper"><pre><code class="hljs rust">
 <span class="hljs-meta">#![allow(unused_variables)]</span>
-<span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>() {
-    <span class="hljs-class"><span class="hljs-keyword">trait</span> <span class="hljs-title">Quack</span></span> {
-        <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">quack</span></span>(&<span class="hljs-keyword">self</span>);
-    }
+<span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>() &#123;
+    <span class="hljs-class"><span class="hljs-keyword">trait</span> <span class="hljs-title">Quack</span></span> &#123;
+        <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">quack</span></span>(&amp;<span class="hljs-keyword">self</span>);
+    &#125;
 
     <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">Duck</span></span> ();
 
-    <span class="hljs-keyword">impl</span> Quack <span class="hljs-keyword">for</span> Duck {
-        <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">quack</span></span>(&<span class="hljs-keyword">self</span>) {
-            <span class="hljs-built_in">println!</span>(<span class="hljs-string">"quack!"</span>);
-        }
-    }
+    <span class="hljs-keyword">impl</span> Quack <span class="hljs-keyword">for</span> Duck &#123;
+        <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">quack</span></span>(&amp;<span class="hljs-keyword">self</span>) &#123;
+            <span class="hljs-built_in">println!</span>(<span class="hljs-string">&quot;quack!&quot;</span>);
+        &#125;
+    &#125;
 
-    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">RandomBird</span></span> {
+    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">RandomBird</span></span> &#123;
         is_a_parrot: <span class="hljs-built_in">bool</span>
-    }
+    &#125;
 
-    <span class="hljs-keyword">impl</span> Quack <span class="hljs-keyword">for</span> RandomBird {
-        <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">quack</span></span>(&<span class="hljs-keyword">self</span>) {
-            <span class="hljs-keyword">if</span> ! <span class="hljs-keyword">self</span>.is_a_parrot {
-                <span class="hljs-built_in">println!</span>(<span class="hljs-string">"quack!"</span>);
-            } <span class="hljs-keyword">else</span> {
-                <span class="hljs-built_in">println!</span>(<span class="hljs-string">"squawk!"</span>);
-            }
-        }
-    }
+    <span class="hljs-keyword">impl</span> Quack <span class="hljs-keyword">for</span> RandomBird &#123;
+        <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">quack</span></span>(&amp;<span class="hljs-keyword">self</span>) &#123;
+            <span class="hljs-keyword">if</span> ! <span class="hljs-keyword">self</span>.is_a_parrot &#123;
+                <span class="hljs-built_in">println!</span>(<span class="hljs-string">&quot;quack!&quot;</span>);
+            &#125; <span class="hljs-keyword">else</span> &#123;
+                <span class="hljs-built_in">println!</span>(<span class="hljs-string">&quot;squawk!&quot;</span>);
+            &#125;
+        &#125;
+    &#125;
 
     <span class="hljs-keyword">let</span> duck1 = Duck();
-    <span class="hljs-keyword">let</span> duck2 = RandomBird{is_a_parrot: <span class="hljs-literal">false</span>};
-    <span class="hljs-keyword">let</span> parrot = RandomBird{is_a_parrot: <span class="hljs-literal">true</span>};
+    <span class="hljs-keyword">let</span> duck2 = RandomBird&#123;is_a_parrot: <span class="hljs-literal">false</span>&#125;;
+    <span class="hljs-keyword">let</span> parrot = RandomBird&#123;is_a_parrot: <span class="hljs-literal">true</span>&#125;;
 
-    <span class="hljs-keyword">let</span> ducks: <span class="hljs-built_in">Vec</span><&Quack> = <span class="hljs-built_in">vec!</span>[&duck1,&duck2,&parrot];
+    <span class="hljs-keyword">let</span> ducks: <span class="hljs-built_in">Vec</span>&lt;&amp;Quack&gt; = <span class="hljs-built_in">vec!</span>[&amp;duck1,&amp;duck2,&amp;parrot];
 
-    <span class="hljs-keyword">for</span> d <span class="hljs-keyword">in</span> &ducks {
+    <span class="hljs-keyword">for</span> d <span class="hljs-keyword">in</span> &amp;ducks &#123;
         d.quack();
-    }
+    &#125;
 <span class="hljs-comment">// quack!</span>
 <span class="hljs-comment">// quack!</span>
 <span class="hljs-comment">// squawk!</span>
-}</code></pre></div>
+&#125;</code></pre></div>
 
 
             </div>
@@ -516,7 +519,7 @@
                       <a href="/2020/08/21/blog_back_new/golang/go%E5%BA%93%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%A4%84%E7%90%86/">
                         <i class="iconfont icon-arrowleft"></i>
                         <span class="hidden-mobile">flag库</span>
-                        <span class="visible-mobile">Vorheriger</span>
+                        <span class="visible-mobile">上一篇</span>
                       </a>
                     
                   </article>
@@ -525,7 +528,7 @@
                     
                       <a href="/2020/08/14/blog_back_new/Rust/%E6%9D%A5%E7%9C%8B%E7%9C%8Bhashmap%E7%9A%84%E5%AE%98%E6%96%B9%E5%BA%93/">
                         <span class="hidden-mobile">来看看hashmap的官方库</span>
-                        <span class="visible-mobile">Nächster</span>
+                        <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
                     
@@ -542,7 +545,7 @@
     
       <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
         <div id="toc">
-  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
   <div class="toc-body" id="toc-body"></div>
 </div>
 
@@ -568,7 +571,7 @@
   <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">Suchen</h4>
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
         <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -577,7 +580,7 @@
         <div class="md-form mb-5">
           <input type="text" id="local-search-input" class="form-control validate">
           <label data-error="x" data-success="v"
-                 for="local-search-input">Stichwort</label>
+                 for="local-search-input">关键词</label>
         </div>
         <div class="list-group" id="local-search-result"></div>
       </div>
