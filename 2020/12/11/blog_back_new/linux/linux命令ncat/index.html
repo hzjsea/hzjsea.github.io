@@ -186,7 +186,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      23 字
+      120 字
     </span>
   
 
@@ -232,7 +232,16 @@
               <a id="more"></a>
 
 <h1 id="linux命令ncat"><a href="#linux命令ncat" class="headerlink" title="linux命令ncat"></a>linux命令ncat</h1><p><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1432599">https://cloud.tencent.com/developer/article/1432599</a><br><a target="_blank" rel="noopener" href="https://www.cnblogs.com/chengd/p/7565280.html">https://www.cnblogs.com/chengd/p/7565280.html</a><br><a target="_blank" rel="noopener" href="https://www.sqlsec.com/2019/10/nc.html">https://www.sqlsec.com/2019/10/nc.html</a></p>
+<h2 id="ncat加密传输文件"><a href="#ncat加密传输文件" class="headerlink" title="ncat加密传输文件"></a>ncat加密传输文件</h2><div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 服务端，使用 mcrypt 工具加密数据，需要输入密码</span>
+nc localhost 1567 | mcrypt –flush –bare -F -q -d -m ecb &gt; file.txt
 
+<span class="hljs-comment"># 客户端，使用 mcrypt 工具解密数据，需要输入密码</span>
+mcrypt –flush –bare -F -q -m ecb &lt; file.txt | nc -l 1567</code></pre></div>
+
+<h2 id="ncat-传输文件"><a href="#ncat-传输文件" class="headerlink" title="ncat 传输文件"></a>ncat 传输文件</h2><div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 接收端</span>
+nc -l -p 8080 &gt; test.txt
+<span class="hljs-comment"># 发送端</span>
+nc 192.168.1.8 8080 &lt; test.txt</code></pre></div>
             </div>
             <hr>
             <div>
@@ -275,7 +284,7 @@
                     
                     
                       <a href="/2020/12/11/blog_back_new/linux/linux%E5%91%BD%E4%BB%A4tcpdump/">
-                        <span class="hidden-mobile">linux命令tcpdump</span>
+                        <span class="hidden-mobile">linux命令tcpdump以及wireshark</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>

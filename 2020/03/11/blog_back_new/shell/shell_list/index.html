@@ -186,7 +186,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      1.6k 字
+      1.8k 字
     </span>
   
 
@@ -196,7 +196,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      30
+      33
        分钟
     </span>
   
@@ -241,6 +241,7 @@
 <li><a href="#%E5%A4%84%E7%90%86inventory%E4%B8%8A%E7%9A%84%E5%86%85%E5%AE%B9">处理Inventory上的内容</a></li>
 <li><a href="#%E6%90%AD%E5%BB%BA%E4%BD%BF%E7%94%A8supervisor%E7%AE%A1%E7%90%86%E7%9A%84redis%E5%8D%95%E6%9C%BA%E5%AE%9E%E4%BE%8B">搭建使用supervisor管理的redis单机实例</a></li>
 <li><a href="#%E4%BA%A4%E6%8D%A2%E6%9C%BA%E7%94%9F%E6%88%90%E8%81%9A%E5%90%88%E5%8F%A3%E8%84%9A%E6%9C%AC">交换机生成聚合口脚本</a></li>
+<li><a href="#shell%E8%8E%B7%E5%8F%96%E5%BD%93%E5%89%8D%E6%96%87%E4%BB%B6%E7%9B%AE%E5%BD%95%E4%B8%8B%E9%9D%A2%E7%9A%84%E6%89%80%E6%9C%89%E6%96%87%E4%BB%B6">shell获取当前文件目录下面的所有文件</a></li>
 </ul>
 </li>
 </ul>
@@ -496,7 +497,7 @@ cat <span class="hljs-variable">$target_file</span> | grep <span class="hljs-str
 <span class="hljs-comment"># 准备supervisor</span>
 <span class="hljs-function"><span class="hljs-title">_supervisor</span></span>() &#123;
     [ -d chenyuecc ] &amp;&amp; (rm -r chenyuecc)
-    git <span class="hljs-built_in">clone</span> -b supervisor https://gitee.com/Alpaca-H/chenyuecc.git &amp;&amp; <span class="hljs-built_in">cd</span> /root/chenyuecc/ &amp;&amp; sh ./run.sh 2&gt;/dev/null
+    git <span class="hljs-built_in">clone</span> -b supervisor https://gitee.com/Alpaca-H/chenyuecc.git &amp;&amp; <span class="hljs-built_in">cd</span> /root/chenyuecc/ &amp;&amp; sh ./run.sh init 2&gt;/dev/null
 &#125;
 
 <span class="hljs-comment"># 准备redis</span>
@@ -591,6 +592,24 @@ end_port=24
     <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;port link-aggregation group <span class="hljs-variable">$&#123;i&#125;</span>&quot;</span>
     <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;interface <span class="hljs-variable">$&#123;portName&#125;</span><span class="hljs-variable">$&#123;portType&#125;</span>/0/<span class="hljs-subst">$(($i*2)</span>)&quot;</span>
     <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;port link-aggregation group <span class="hljs-variable">$&#123;i&#125;</span>&quot;</span>
+<span class="hljs-keyword">done</span></code></pre></div>
+
+
+<h2 id="shell获取当前文件目录下面的所有文件"><a href="#shell获取当前文件目录下面的所有文件" class="headerlink" title="shell获取当前文件目录下面的所有文件"></a>shell获取当前文件目录下面的所有文件</h2><div class="code-wrapper"><pre><code class="hljs angelscript"># 文件格式如下
+-rw-r--r-- <span class="hljs-number">1</span> root root <span class="hljs-number">780</span>M Jan <span class="hljs-number">13</span> <span class="hljs-number">00</span>:<span class="hljs-number">52</span> _00000_20210109012317
+-rw-r--r-- <span class="hljs-number">1</span> root root <span class="hljs-number">844</span>M Jan <span class="hljs-number">13</span> <span class="hljs-number">00</span>:<span class="hljs-number">52</span> _00001_20210109012417
+-rw-r--r-- <span class="hljs-number">1</span> root root <span class="hljs-number">852</span>M Jan <span class="hljs-number">13</span> <span class="hljs-number">00</span>:<span class="hljs-number">52</span> _00002_20210109012517
+-rw-r--r-- <span class="hljs-number">1</span> root root <span class="hljs-number">851</span>M Jan <span class="hljs-number">13</span> <span class="hljs-number">00</span>:<span class="hljs-number">52</span> _00003_20210109012617
+-rw-r--r-- <span class="hljs-number">1</span> root root <span class="hljs-number">832</span>M Jan <span class="hljs-number">13</span> <span class="hljs-number">00</span>:<span class="hljs-number">52</span> _00004_20210109012717
+-rw-r--r-- <span class="hljs-number">1</span> root root <span class="hljs-number">782</span>M Jan <span class="hljs-number">13</span> <span class="hljs-number">00</span>:<span class="hljs-number">52</span> _00005_20210109012817
+-rw-r--r-- <span class="hljs-number">1</span> root root <span class="hljs-number">797</span>M Jan <span class="hljs-number">13</span> <span class="hljs-number">00</span>:<span class="hljs-number">52</span> _00006_20210109012917
+-rw-r--r-- <span class="hljs-number">1</span> root root <span class="hljs-number">708</span>M Jan <span class="hljs-number">13</span> <span class="hljs-number">00</span>:<span class="hljs-number">52</span> _00007_20210109013017
+-rw-r--r-- <span class="hljs-number">1</span> root root <span class="hljs-number">722</span>M Jan <span class="hljs-number">13</span> <span class="hljs-number">00</span>:<span class="hljs-number">52</span> _00008_20210109013117
+-rw-r--r-- <span class="hljs-number">1</span> root root <span class="hljs-number">680</span>M Jan <span class="hljs-number">13</span> <span class="hljs-number">00</span>:<span class="hljs-number">52</span> _00009_20210109013217
+-rw-r--r-- <span class="hljs-number">1</span> root root  <span class="hljs-number">174</span> Jan <span class="hljs-number">13</span> <span class="hljs-number">01</span>:<span class="hljs-number">05</span> xx.sh</code></pre></div>
+
+<div class="code-wrapper"><pre><code class="hljs bash">find . -<span class="hljs-built_in">type</span> f -size +500M  | cut -c 3- | <span class="hljs-keyword">while</span> <span class="hljs-built_in">read</span> line;<span class="hljs-keyword">do</span>
+        tshark -r <span class="hljs-variable">$line</span>  -Y <span class="hljs-string">&#x27;http.request.uri matches &quot;1eecb132-e1ff-406e-9788-5b92339284f8&quot;&#x27;</span> &gt; <span class="hljs-variable">$&#123;num:1:5&#125;</span>.<span class="hljs-built_in">log</span>
 <span class="hljs-keyword">done</span></code></pre></div>
             </div>
             <hr>

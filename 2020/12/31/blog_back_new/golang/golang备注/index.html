@@ -186,7 +186,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      9k 字
+      12k 字
     </span>
   
 
@@ -196,7 +196,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      140
+      198
        分钟
     </span>
   
@@ -547,7 +547,7 @@
 <p>带着上面的内容再来看几个库的使用</p>
 </blockquote>
 <p>实现是<code>os.file</code><br>这个库是用来做和文件有关的动作的<br><img src="http://img.noback.top/2021-01-02-21-36-19.png" srcset="/img/loading.gif" alt="2021-01-02-21-36-19"></p>
-<h2 id="研究一下net库"><a href="#研究一下net库" class="headerlink" title="研究一下net库"></a>研究一下net库</h2><p>这个库很多大佬都推荐阅读,应该是里面涉及的内容比较全,代码也写的比较好</p>
+<h2 id="lib-net"><a href="#lib-net" class="headerlink" title="lib_net"></a>lib_net</h2><p>这个库很多大佬都推荐阅读,应该是里面涉及的内容比较全,代码也写的比较好</p>
 <h3 id="定义一些基础变量"><a href="#定义一些基础变量" class="headerlink" title="定义一些基础变量"></a>定义一些基础变量</h3><div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-comment">// 常量</span>
 <span class="hljs-keyword">const</span> (
     IPv4len = <span class="hljs-number">4</span>
@@ -581,9 +581,11 @@
 )
 
 <span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
+	<span class="hljs-comment">// JoinHostPort</span>
 	<span class="hljs-comment">// 组合ip+port 类型</span>
 	addr_port:=net.JoinHostPort(<span class="hljs-string">&quot;127.0.0.1&quot;</span>,<span class="hljs-string">&quot;80&quot;</span>)
 	fmt.Println(addr_port)
+	<span class="hljs-comment">// SplitHostPort</span>
 	<span class="hljs-comment">// 拆分组合</span>
 	addr,port,err:= net.SplitHostPort(addr_port)
 	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span>&#123;
@@ -980,6 +982,7 @@ fmt.Println(brd.Size()</code></pre></div>
 	<span class="hljs-keyword">return</span> r
 &#125;</code></pre></div>
 
+
 <h3 id="bufio-Read的思路"><a href="#bufio-Read的思路" class="headerlink" title="bufio.Read的思路"></a>bufio.Read的思路</h3><p><img src="http://img.noback.top/2021-01-04-18-07-05.png" srcset="/img/loading.gif" alt="2021-01-04-18-07-05"></p>
 <div class="code-wrapper"><pre><code class="hljs go">brd= bufio.NewReader(strings.NewReader(<span class="hljs-string">&quot;helloworld&quot;</span>))
 p:=<span class="hljs-built_in">make</span>([]<span class="hljs-keyword">byte</span>,<span class="hljs-number">10</span>)
@@ -1144,6 +1147,522 @@ fmt.Println(s)
 
 
 
+
+<h3 id="bufio-scanner"><a href="#bufio-scanner" class="headerlink" title="bufio.scanner"></a>bufio.scanner</h3><p>golang中提供扫描的字段 很多字符串或者是文件都是一大串的字符串，其中也包含了很多的delim分隔符，比如像这样</p>
+<div class="code-wrapper"><pre><code class="hljs go">ss:= bufio.NewReader(strings.NewReader(<span class="hljs-string">&quot;helloworld&quot;</span>))
+ss.ReadBytes()</code></pre></div>
+<p>如果解决这个内容google在之后go版本中加入了scanner的内容，他同样是先把内容读取到缓存当中，然后根据不同的分隔符进行切割后输出<br>Scanner是一种复杂的结构，并且它嵌入了一个缓冲区。缓冲区可以动态增长(取决于scan函数的请求)，最大可达64kB(MaxScanTokenSize)。</p>
+<p>先来看看整个数据结构</p>
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">type</span> Scanner <span class="hljs-keyword">struct</span> &#123;
+	r            io.Reader <span class="hljs-comment">// 底层io</span>
+	split        SplitFunc <span class="hljs-comment">// 切割方法， 使用*Scanner.Split(split SplitFunc) 调用</span>
+	maxTokenSize <span class="hljs-keyword">int</span>      <span class="hljs-comment">// 最大切割值</span>
+	token        []<span class="hljs-keyword">byte</span>    <span class="hljs-comment">// 返回切割后的数组</span>
+	buf          []<span class="hljs-keyword">byte</span>    <span class="hljs-comment">// buff数组</span>
+	start        <span class="hljs-keyword">int</span>       <span class="hljs-comment">// First non-processed byte in buf.</span>
+	end          <span class="hljs-keyword">int</span>       <span class="hljs-comment">// End of data in buf.</span>
+	err          error     <span class="hljs-comment">// Sticky error.</span>
+	empties      <span class="hljs-keyword">int</span>       <span class="hljs-comment">// Count of successive empty tokens.</span>
+	scanCalled   <span class="hljs-keyword">bool</span>      <span class="hljs-comment">// Scan has been called; buffer is in use.</span>
+	done         <span class="hljs-keyword">bool</span>      <span class="hljs-comment">// Scan has finished.</span>
+&#125;</code></pre></div>
+
+<p>使用方法如下</p>
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> (
+	<span class="hljs-string">&quot;bufio&quot;</span>
+	<span class="hljs-string">&quot;fmt&quot;</span>
+	<span class="hljs-string">&quot;strings&quot;</span>
+)
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
+	<span class="hljs-comment">// 将底层io的内容放到缓存区到中去</span>
+	scanner:=bufio.NewScanner(
+		strings.NewReader(<span class="hljs-string">&quot;ABCDEFG\nHIJKELM&quot;</span>),
+	)
+
+	<span class="hljs-comment">// 默认情况下按照\n为分隔符</span>
+	<span class="hljs-keyword">for</span> scanner.Scan()&#123;
+		fmt.Println(scanner.Text()) <span class="hljs-comment">// 返回分割后的数组并转换成string</span>
+		fmt.Println(scanner.Bytes()) <span class="hljs-comment">// 返回分割后的数组，直接返回bytes数组</span>
+	&#125;
+
+	scanner=bufio.NewScanner(
+		strings.NewReader(<span class="hljs-string">&quot;ABCDEFG\ndsds&quot;</span>),
+	)
+	scanner.Split(bufio.ScanBytes) <span class="hljs-comment">// 按照字节返回</span>
+	<span class="hljs-keyword">for</span> scanner.Scan()&#123;
+		fmt.Println(scanner.Text())
+	&#125;
+
+	scanner=bufio.NewScanner(
+		strings.NewReader(<span class="hljs-string">&quot;dsds&quot;</span> +
+			<span class="hljs-string">&quot;dsds&quot;</span> +
+			<span class="hljs-string">&quot;dsds&quot;</span> +
+			<span class="hljs-string">&quot;dsds&quot;</span> +
+			<span class="hljs-string">&quot;dsds&quot;</span>),
+			)
+
+	scanner.Split(bufio.ScanLines) <span class="hljs-comment">//按照行来分割</span>
+	<span class="hljs-keyword">for</span> scanner.Scan()&#123;
+		fmt.Println(scanner.Text()) <span class="hljs-comment">//</span>
+	&#125;
+
+
+	scanner = bufio.NewScanner(strings.NewReader(<span class="hljs-string">&quot;hello world&quot;</span>))
+
+	scanner.Split(bufio.ScanWords)
+	<span class="hljs-keyword">for</span> scanner.Scan()&#123;
+		fmt.Println(scanner.Text())
+	&#125;
+
+
+	fmt.Println(<span class="hljs-string">&quot;cutsom-func\n&quot;</span>)
+	scanner = bufio.NewScanner(
+		strings.NewReader(<span class="hljs-string">&quot;hello-world&quot;</span>))
+
+	cutsom_split_func := <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(data []<span class="hljs-keyword">byte</span>, atEOF <span class="hljs-keyword">bool</span>)</span> <span class="hljs-params">(advance <span class="hljs-keyword">int</span>, token []<span class="hljs-keyword">byte</span>, err error)</span></span>&#123;
+		fmt.Printf(<span class="hljs-string">&quot;%t\t%d\t%s\n&quot;</span>, atEOF, <span class="hljs-built_in">len</span>(data), data)
+		<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>,<span class="hljs-literal">nil</span>,<span class="hljs-literal">nil</span>
+	&#125;
+	scanner.Split(cutsom_split_func)
+	buf := <span class="hljs-built_in">make</span>([]<span class="hljs-keyword">byte</span>,<span class="hljs-number">2</span>) <span class="hljs-comment">// buffer区默认为4096 这里定义为2 当第一次没有读取完所有数据的时候，他会翻倍</span>
+	<span class="hljs-comment">// 知道读取完之后，他会返回atEOF = true</span>
+	scanner.Buffer(buf,bufio.MaxScanTokenSize)
+	<span class="hljs-keyword">for</span> scanner.Scan()&#123;
+		fmt.Println(scanner.Text())
+	&#125;
+	<span class="hljs-keyword">if</span> scanner.Err() != <span class="hljs-literal">nil</span> &#123;
+		fmt.Printf(<span class="hljs-string">&quot;error: %s\n&quot;</span>, scanner.Err())  <span class="hljs-comment">//当EOF == true的时候表示读取完了，这个时候scanner.Err() != nil</span>
+    &#125;
+	<span class="hljs-comment">// res</span>
+	<span class="hljs-comment">// false	2	he</span>
+	<span class="hljs-comment">// false	4	hell</span>
+	<span class="hljs-comment">// false	8	hello-wo</span>
+	<span class="hljs-comment">// false	11	hello-world</span>
+	<span class="hljs-comment">// true	11	hello-world</span>
+	<span class="hljs-comment">// error: bad luck</span>
+
+&#125;</code></pre></div>
+
+<p>源码分析阶段</p>
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-comment">// Copyright 2013 The Go Authors. All rights reserved.</span>
+<span class="hljs-comment">// Use of this source code is governed by a BSD-style</span>
+<span class="hljs-comment">// license that can be found in the LICENSE file.</span>
+
+<span class="hljs-keyword">package</span> bufio
+
+<span class="hljs-keyword">import</span> (
+	<span class="hljs-string">&quot;bytes&quot;</span>
+	<span class="hljs-string">&quot;errors&quot;</span>
+	<span class="hljs-string">&quot;io&quot;</span>
+	<span class="hljs-string">&quot;unicode/utf8&quot;</span>
+)
+
+<span class="hljs-comment">// Scanner provides a convenient interface for reading data such as</span>
+<span class="hljs-comment">// a file of newline-delimited lines of text. Successive calls to</span>
+<span class="hljs-comment">// the Scan method will step through the &#x27;tokens&#x27; of a file, skipping</span>
+<span class="hljs-comment">// the bytes between the tokens. The specification of a token is</span>
+<span class="hljs-comment">// defined by a split function of type SplitFunc; the default split</span>
+<span class="hljs-comment">// function breaks the input into lines with line termination stripped. Split</span>
+<span class="hljs-comment">// functions are defined in this package for scanning a file into</span>
+<span class="hljs-comment">// lines, bytes, UTF-8-encoded runes, and space-delimited words. The</span>
+<span class="hljs-comment">// client may instead provide a custom split function.</span>
+<span class="hljs-comment">//</span>
+<span class="hljs-comment">// Scanning stops unrecoverably at EOF, the first I/O error, or a token too</span>
+<span class="hljs-comment">// large to fit in the buffer. When a scan stops, the reader may have</span>
+<span class="hljs-comment">// advanced arbitrarily far past the last token. Programs that need more</span>
+<span class="hljs-comment">// control over error handling or large tokens, or must run sequential scans</span>
+<span class="hljs-comment">// on a reader, should use bufio.Reader instead.</span>
+<span class="hljs-comment">//</span>
+<span class="hljs-keyword">type</span> Scanner <span class="hljs-keyword">struct</span> &#123;
+	r            io.Reader <span class="hljs-comment">// The reader provided by the client.</span>
+	split        SplitFunc <span class="hljs-comment">// The function to split the tokens.</span>
+	maxTokenSize <span class="hljs-keyword">int</span>       <span class="hljs-comment">// Maximum size of a token; modified by tests.</span>
+	token        []<span class="hljs-keyword">byte</span>    <span class="hljs-comment">// Last token returned by split.</span>
+	buf          []<span class="hljs-keyword">byte</span>    <span class="hljs-comment">// Buffer used as argument to split.</span>
+	start        <span class="hljs-keyword">int</span>       <span class="hljs-comment">// First non-processed byte in buf.</span>
+	end          <span class="hljs-keyword">int</span>       <span class="hljs-comment">// End of data in buf.</span>
+	err          error     <span class="hljs-comment">// Sticky error.</span>
+	empties      <span class="hljs-keyword">int</span>       <span class="hljs-comment">// Count of successive empty tokens.</span>
+	scanCalled   <span class="hljs-keyword">bool</span>      <span class="hljs-comment">// Scan has been called; buffer is in use.</span>
+	done         <span class="hljs-keyword">bool</span>      <span class="hljs-comment">// Scan has finished.</span>
+&#125;
+
+<span class="hljs-comment">// SplitFunc is the signature of the split function used to tokenize the</span>
+<span class="hljs-comment">// input. The arguments are an initial substring of the remaining unprocessed</span>
+<span class="hljs-comment">// data and a flag, atEOF, that reports whether the Reader has no more data</span>
+<span class="hljs-comment">// to give. The return values are the number of bytes to advance the input</span>
+<span class="hljs-comment">// and the next token to return to the user, if any, plus an error, if any.</span>
+<span class="hljs-comment">//</span>
+<span class="hljs-comment">// Scanning stops if the function returns an error, in which case some of</span>
+<span class="hljs-comment">// the input may be discarded.</span>
+<span class="hljs-comment">//</span>
+<span class="hljs-comment">// Otherwise, the Scanner advances the input. If the token is not nil,</span>
+<span class="hljs-comment">// the Scanner returns it to the user. If the token is nil, the</span>
+<span class="hljs-comment">// Scanner reads more data and continues scanning; if there is no more</span>
+<span class="hljs-comment">// data--if atEOF was true--the Scanner returns. If the data does not</span>
+<span class="hljs-comment">// yet hold a complete token, for instance if it has no newline while</span>
+<span class="hljs-comment">// scanning lines, a SplitFunc can return (0, nil, nil) to signal the</span>
+<span class="hljs-comment">// Scanner to read more data into the slice and try again with a</span>
+<span class="hljs-comment">// longer slice starting at the same point in the input.</span>
+<span class="hljs-comment">//</span>
+<span class="hljs-comment">// The function is never called with an empty data slice unless atEOF</span>
+<span class="hljs-comment">// is true. If atEOF is true, however, data may be non-empty and,</span>
+<span class="hljs-comment">// as always, holds unprocessed text.</span>
+<span class="hljs-keyword">type</span> SplitFunc <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(data []<span class="hljs-keyword">byte</span>, atEOF <span class="hljs-keyword">bool</span>)</span> <span class="hljs-params">(advance <span class="hljs-keyword">int</span>, token []<span class="hljs-keyword">byte</span>, err error)</span></span>
+
+<span class="hljs-comment">// Errors returned by Scanner.</span>
+<span class="hljs-keyword">var</span> (
+	ErrTooLong         = errors.New(<span class="hljs-string">&quot;bufio.Scanner: token too long&quot;</span>)
+	ErrNegativeAdvance = errors.New(<span class="hljs-string">&quot;bufio.Scanner: SplitFunc returns negative advance count&quot;</span>)
+	ErrAdvanceTooFar   = errors.New(<span class="hljs-string">&quot;bufio.Scanner: SplitFunc returns advance count beyond input&quot;</span>)
+)
+
+<span class="hljs-keyword">const</span> (
+	<span class="hljs-comment">// MaxScanTokenSize is the maximum size used to buffer a token</span>
+	<span class="hljs-comment">// unless the user provides an explicit buffer with Scanner.Buffer.</span>
+	<span class="hljs-comment">// The actual maximum token size may be smaller as the buffer</span>
+	<span class="hljs-comment">// may need to include, for instance, a newline.</span>
+	MaxScanTokenSize = <span class="hljs-number">64</span> * <span class="hljs-number">1024</span>
+
+	startBufSize = <span class="hljs-number">4096</span> <span class="hljs-comment">// Size of initial allocation for buffer.</span>
+)
+
+<span class="hljs-comment">// NewScanner returns a new Scanner to read from r.</span>
+<span class="hljs-comment">// The split function defaults to ScanLines.</span>
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">NewScanner</span><span class="hljs-params">(r io.Reader)</span> *<span class="hljs-title">Scanner</span></span> &#123;
+	<span class="hljs-keyword">return</span> &amp;Scanner&#123;
+		r:            r,
+		split:        ScanLines,
+		maxTokenSize: MaxScanTokenSize,
+	&#125;
+&#125;
+
+<span class="hljs-comment">// Err returns the first non-EOF error that was encountered by the Scanner.</span>
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(s *Scanner)</span> <span class="hljs-title">Err</span><span class="hljs-params">()</span> <span class="hljs-title">error</span></span> &#123;
+	<span class="hljs-keyword">if</span> s.err == io.EOF &#123;
+		<span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span>
+	&#125;
+	<span class="hljs-keyword">return</span> s.err
+&#125;
+
+<span class="hljs-comment">// Bytes returns the most recent token generated by a call to Scan.</span>
+<span class="hljs-comment">// The underlying array may point to data that will be overwritten</span>
+<span class="hljs-comment">// by a subsequent call to Scan. It does no allocation.</span>
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(s *Scanner)</span> <span class="hljs-title">Bytes</span><span class="hljs-params">()</span> []<span class="hljs-title">byte</span></span> &#123;
+	<span class="hljs-keyword">return</span> s.token
+&#125;
+
+<span class="hljs-comment">// Text returns the most recent token generated by a call to Scan</span>
+<span class="hljs-comment">// as a newly allocated string holding its bytes.</span>
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(s *Scanner)</span> <span class="hljs-title">Text</span><span class="hljs-params">()</span> <span class="hljs-title">string</span></span> &#123;
+	<span class="hljs-keyword">return</span> <span class="hljs-keyword">string</span>(s.token)
+&#125;
+
+<span class="hljs-comment">// ErrFinalToken is a special sentinel error value. It is intended to be</span>
+<span class="hljs-comment">// returned by a Split function to indicate that the token being delivered</span>
+<span class="hljs-comment">// with the error is the last token and scanning should stop after this one.</span>
+<span class="hljs-comment">// After ErrFinalToken is received by Scan, scanning stops with no error.</span>
+<span class="hljs-comment">// The value is useful to stop processing early or when it is necessary to</span>
+<span class="hljs-comment">// deliver a final empty token. One could achieve the same behavior</span>
+<span class="hljs-comment">// with a custom error value but providing one here is tidier.</span>
+<span class="hljs-comment">// See the emptyFinalToken example for a use of this value.</span>
+<span class="hljs-keyword">var</span> ErrFinalToken = errors.New(<span class="hljs-string">&quot;final token&quot;</span>)
+
+<span class="hljs-comment">// Scan advances the Scanner to the next token, which will then be</span>
+<span class="hljs-comment">// available through the Bytes or Text method. It returns false when the</span>
+<span class="hljs-comment">// scan stops, either by reaching the end of the input or an error.</span>
+<span class="hljs-comment">// After Scan returns false, the Err method will return any error that</span>
+<span class="hljs-comment">// occurred during scanning, except that if it was io.EOF, Err</span>
+<span class="hljs-comment">// will return nil.</span>
+<span class="hljs-comment">// Scan panics if the split function returns too many empty</span>
+<span class="hljs-comment">// tokens without advancing the input. This is a common error mode for</span>
+<span class="hljs-comment">// scanners.</span>
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(s *Scanner)</span> <span class="hljs-title">Scan</span><span class="hljs-params">()</span> <span class="hljs-title">bool</span></span> &#123;
+	<span class="hljs-keyword">if</span> s.done &#123;
+		<span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>
+	&#125;
+	s.scanCalled = <span class="hljs-literal">true</span>
+	<span class="hljs-comment">// Loop until we have a token.</span>
+	<span class="hljs-keyword">for</span> &#123;
+		<span class="hljs-comment">// See if we can get a token with what we already have.</span>
+		<span class="hljs-comment">// If we&#x27;ve run out of data but have an error, give the split function</span>
+		<span class="hljs-comment">// a chance to recover any remaining, possibly empty token.</span>
+		<span class="hljs-keyword">if</span> s.end &gt; s.start || s.err != <span class="hljs-literal">nil</span> &#123;
+			advance, token, err := s.split(s.buf[s.start:s.end], s.err != <span class="hljs-literal">nil</span>)
+			<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;
+				<span class="hljs-keyword">if</span> err == ErrFinalToken &#123;
+					s.token = token
+					s.done = <span class="hljs-literal">true</span>
+					<span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>
+				&#125;
+				s.setErr(err)
+				<span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>
+			&#125;
+			<span class="hljs-keyword">if</span> !s.advance(advance) &#123;
+				<span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>
+			&#125;
+			s.token = token
+			<span class="hljs-keyword">if</span> token != <span class="hljs-literal">nil</span> &#123;
+				<span class="hljs-keyword">if</span> s.err == <span class="hljs-literal">nil</span> || advance &gt; <span class="hljs-number">0</span> &#123;
+					s.empties = <span class="hljs-number">0</span>
+				&#125; <span class="hljs-keyword">else</span> &#123;
+					<span class="hljs-comment">// Returning tokens not advancing input at EOF.</span>
+					s.empties++
+					<span class="hljs-keyword">if</span> s.empties &gt; maxConsecutiveEmptyReads &#123;
+						<span class="hljs-built_in">panic</span>(<span class="hljs-string">&quot;bufio.Scan: too many empty tokens without progressing&quot;</span>)
+					&#125;
+				&#125;
+				<span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>
+			&#125;
+		&#125;
+		<span class="hljs-comment">// We cannot generate a token with what we are holding.</span>
+		<span class="hljs-comment">// If we&#x27;ve already hit EOF or an I/O error, we are done.</span>
+		<span class="hljs-keyword">if</span> s.err != <span class="hljs-literal">nil</span> &#123;
+			<span class="hljs-comment">// Shut it down.</span>
+			s.start = <span class="hljs-number">0</span>
+			s.end = <span class="hljs-number">0</span>
+			<span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>
+		&#125;
+		<span class="hljs-comment">// Must read more data.</span>
+		<span class="hljs-comment">// First, shift data to beginning of buffer if there&#x27;s lots of empty space</span>
+		<span class="hljs-comment">// or space is needed.</span>
+		<span class="hljs-keyword">if</span> s.start &gt; <span class="hljs-number">0</span> &amp;&amp; (s.end == <span class="hljs-built_in">len</span>(s.buf) || s.start &gt; <span class="hljs-built_in">len</span>(s.buf)/<span class="hljs-number">2</span>) &#123;
+			<span class="hljs-built_in">copy</span>(s.buf, s.buf[s.start:s.end])
+			s.end -= s.start
+			s.start = <span class="hljs-number">0</span>
+		&#125;
+		<span class="hljs-comment">// Is the buffer full? If so, resize.</span>
+		<span class="hljs-keyword">if</span> s.end == <span class="hljs-built_in">len</span>(s.buf) &#123;
+			<span class="hljs-comment">// Guarantee no overflow in the multiplication below.</span>
+			<span class="hljs-keyword">const</span> maxInt = <span class="hljs-keyword">int</span>(^<span class="hljs-keyword">uint</span>(<span class="hljs-number">0</span>) &gt;&gt; <span class="hljs-number">1</span>)
+			<span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(s.buf) &gt;= s.maxTokenSize || <span class="hljs-built_in">len</span>(s.buf) &gt; maxInt/<span class="hljs-number">2</span> &#123;
+				s.setErr(ErrTooLong)
+				<span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>
+			&#125;
+			newSize := <span class="hljs-built_in">len</span>(s.buf) * <span class="hljs-number">2</span>
+			<span class="hljs-keyword">if</span> newSize == <span class="hljs-number">0</span> &#123;
+				newSize = startBufSize
+			&#125;
+			<span class="hljs-keyword">if</span> newSize &gt; s.maxTokenSize &#123;
+				newSize = s.maxTokenSize
+			&#125;
+			newBuf := <span class="hljs-built_in">make</span>([]<span class="hljs-keyword">byte</span>, newSize)
+			<span class="hljs-built_in">copy</span>(newBuf, s.buf[s.start:s.end])
+			s.buf = newBuf
+			s.end -= s.start
+			s.start = <span class="hljs-number">0</span>
+		&#125;
+		<span class="hljs-comment">// Finally we can read some input. Make sure we don&#x27;t get stuck with</span>
+		<span class="hljs-comment">// a misbehaving Reader. Officially we don&#x27;t need to do this, but let&#x27;s</span>
+		<span class="hljs-comment">// be extra careful: Scanner is for safe, simple jobs.</span>
+		<span class="hljs-keyword">for</span> loop := <span class="hljs-number">0</span>; ; &#123;
+			n, err := s.r.Read(s.buf[s.end:<span class="hljs-built_in">len</span>(s.buf)])
+			s.end += n
+			<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;
+				s.setErr(err)
+				<span class="hljs-keyword">break</span>
+			&#125;
+			<span class="hljs-keyword">if</span> n &gt; <span class="hljs-number">0</span> &#123;
+				s.empties = <span class="hljs-number">0</span>
+				<span class="hljs-keyword">break</span>
+			&#125;
+			loop++
+			<span class="hljs-keyword">if</span> loop &gt; maxConsecutiveEmptyReads &#123;
+				s.setErr(io.ErrNoProgress)
+				<span class="hljs-keyword">break</span>
+			&#125;
+		&#125;
+	&#125;
+&#125;
+
+<span class="hljs-comment">// advance consumes n bytes of the buffer. It reports whether the advance was legal.</span>
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(s *Scanner)</span> <span class="hljs-title">advance</span><span class="hljs-params">(n <span class="hljs-keyword">int</span>)</span> <span class="hljs-title">bool</span></span> &#123;
+	<span class="hljs-keyword">if</span> n &lt; <span class="hljs-number">0</span> &#123;
+		s.setErr(ErrNegativeAdvance)
+		<span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>
+	&#125;
+	<span class="hljs-keyword">if</span> n &gt; s.end-s.start &#123;
+		s.setErr(ErrAdvanceTooFar)
+		<span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>
+	&#125;
+	s.start += n
+	<span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>
+&#125;
+
+<span class="hljs-comment">// setErr records the first error encountered.</span>
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(s *Scanner)</span> <span class="hljs-title">setErr</span><span class="hljs-params">(err error)</span></span> &#123;
+	<span class="hljs-keyword">if</span> s.err == <span class="hljs-literal">nil</span> || s.err == io.EOF &#123;
+		s.err = err
+	&#125;
+&#125;
+
+<span class="hljs-comment">// Buffer sets the initial buffer to use when scanning and the maximum</span>
+<span class="hljs-comment">// size of buffer that may be allocated during scanning. The maximum</span>
+<span class="hljs-comment">// token size is the larger of max and cap(buf). If max &lt;= cap(buf),</span>
+<span class="hljs-comment">// Scan will use this buffer only and do no allocation.</span>
+<span class="hljs-comment">//</span>
+<span class="hljs-comment">// By default, Scan uses an internal buffer and sets the</span>
+<span class="hljs-comment">// maximum token size to MaxScanTokenSize.</span>
+<span class="hljs-comment">//</span>
+<span class="hljs-comment">// Buffer panics if it is called after scanning has started.</span>
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(s *Scanner)</span> <span class="hljs-title">Buffer</span><span class="hljs-params">(buf []<span class="hljs-keyword">byte</span>, max <span class="hljs-keyword">int</span>)</span></span> &#123;
+	<span class="hljs-keyword">if</span> s.scanCalled &#123;
+		<span class="hljs-built_in">panic</span>(<span class="hljs-string">&quot;Buffer called after Scan&quot;</span>)
+	&#125;
+	s.buf = buf[<span class="hljs-number">0</span>:<span class="hljs-built_in">cap</span>(buf)]
+	s.maxTokenSize = max
+&#125;
+
+<span class="hljs-comment">// Split sets the split function for the Scanner.</span>
+<span class="hljs-comment">// The default split function is ScanLines.</span>
+<span class="hljs-comment">//</span>
+<span class="hljs-comment">// Split panics if it is called after scanning has started.</span>
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(s *Scanner)</span> <span class="hljs-title">Split</span><span class="hljs-params">(split SplitFunc)</span></span> &#123;
+	<span class="hljs-keyword">if</span> s.scanCalled &#123;
+		<span class="hljs-built_in">panic</span>(<span class="hljs-string">&quot;Split called after Scan&quot;</span>)
+	&#125;
+	s.split = split
+&#125;
+
+<span class="hljs-comment">// Split functions</span>
+
+<span class="hljs-comment">// ScanBytes is a split function for a Scanner that returns each byte as a token.</span>
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">ScanBytes</span><span class="hljs-params">(data []<span class="hljs-keyword">byte</span>, atEOF <span class="hljs-keyword">bool</span>)</span> <span class="hljs-params">(advance <span class="hljs-keyword">int</span>, token []<span class="hljs-keyword">byte</span>, err error)</span></span> &#123;
+	<span class="hljs-keyword">if</span> atEOF &amp;&amp; <span class="hljs-built_in">len</span>(data) == <span class="hljs-number">0</span> &#123;
+		<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>, <span class="hljs-literal">nil</span>, <span class="hljs-literal">nil</span>
+	&#125;
+	<span class="hljs-keyword">return</span> <span class="hljs-number">1</span>, data[<span class="hljs-number">0</span>:<span class="hljs-number">1</span>], <span class="hljs-literal">nil</span>
+&#125;
+
+<span class="hljs-keyword">var</span> errorRune = []<span class="hljs-keyword">byte</span>(<span class="hljs-keyword">string</span>(utf8.RuneError))
+
+<span class="hljs-comment">// ScanRunes is a split function for a Scanner that returns each</span>
+<span class="hljs-comment">// UTF-8-encoded rune as a token. The sequence of runes returned is</span>
+<span class="hljs-comment">// equivalent to that from a range loop over the input as a string, which</span>
+<span class="hljs-comment">// means that erroneous UTF-8 encodings translate to U+FFFD = &quot;\xef\xbf\xbd&quot;.</span>
+<span class="hljs-comment">// Because of the Scan interface, this makes it impossible for the client to</span>
+<span class="hljs-comment">// distinguish correctly encoded replacement runes from encoding errors.</span>
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">ScanRunes</span><span class="hljs-params">(data []<span class="hljs-keyword">byte</span>, atEOF <span class="hljs-keyword">bool</span>)</span> <span class="hljs-params">(advance <span class="hljs-keyword">int</span>, token []<span class="hljs-keyword">byte</span>, err error)</span></span> &#123;
+	<span class="hljs-keyword">if</span> atEOF &amp;&amp; <span class="hljs-built_in">len</span>(data) == <span class="hljs-number">0</span> &#123;
+		<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>, <span class="hljs-literal">nil</span>, <span class="hljs-literal">nil</span>
+	&#125;
+
+	<span class="hljs-comment">// Fast path 1: ASCII.</span>
+	<span class="hljs-keyword">if</span> data[<span class="hljs-number">0</span>] &lt; utf8.RuneSelf &#123;
+		<span class="hljs-keyword">return</span> <span class="hljs-number">1</span>, data[<span class="hljs-number">0</span>:<span class="hljs-number">1</span>], <span class="hljs-literal">nil</span>
+	&#125;
+
+	<span class="hljs-comment">// Fast path 2: Correct UTF-8 decode without error.</span>
+	_, width := utf8.DecodeRune(data)
+	<span class="hljs-keyword">if</span> width &gt; <span class="hljs-number">1</span> &#123;
+		<span class="hljs-comment">// It&#x27;s a valid encoding. Width cannot be one for a correctly encoded</span>
+		<span class="hljs-comment">// non-ASCII rune.</span>
+		<span class="hljs-keyword">return</span> width, data[<span class="hljs-number">0</span>:width], <span class="hljs-literal">nil</span>
+	&#125;
+
+	<span class="hljs-comment">// We know it&#x27;s an error: we have width==1 and implicitly r==utf8.RuneError.</span>
+	<span class="hljs-comment">// Is the error because there wasn&#x27;t a full rune to be decoded?</span>
+	<span class="hljs-comment">// FullRune distinguishes correctly between erroneous and incomplete encodings.</span>
+	<span class="hljs-keyword">if</span> !atEOF &amp;&amp; !utf8.FullRune(data) &#123;
+		<span class="hljs-comment">// Incomplete; get more bytes.</span>
+		<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>, <span class="hljs-literal">nil</span>, <span class="hljs-literal">nil</span>
+	&#125;
+
+	<span class="hljs-comment">// We have a real UTF-8 encoding error. Return a properly encoded error rune</span>
+	<span class="hljs-comment">// but advance only one byte. This matches the behavior of a range loop over</span>
+	<span class="hljs-comment">// an incorrectly encoded string.</span>
+	<span class="hljs-keyword">return</span> <span class="hljs-number">1</span>, errorRune, <span class="hljs-literal">nil</span>
+&#125;
+
+<span class="hljs-comment">// dropCR drops a terminal \r from the data.</span>
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">dropCR</span><span class="hljs-params">(data []<span class="hljs-keyword">byte</span>)</span> []<span class="hljs-title">byte</span></span> &#123;
+	<span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(data) &gt; <span class="hljs-number">0</span> &amp;&amp; data[<span class="hljs-built_in">len</span>(data)<span class="hljs-number">-1</span>] == <span class="hljs-string">&#x27;\r&#x27;</span> &#123;
+		<span class="hljs-keyword">return</span> data[<span class="hljs-number">0</span> : <span class="hljs-built_in">len</span>(data)<span class="hljs-number">-1</span>]
+	&#125;
+	<span class="hljs-keyword">return</span> data
+&#125;
+
+<span class="hljs-comment">// ScanLines is a split function for a Scanner that returns each line of</span>
+<span class="hljs-comment">// text, stripped of any trailing end-of-line marker. The returned line may</span>
+<span class="hljs-comment">// be empty. The end-of-line marker is one optional carriage return followed</span>
+<span class="hljs-comment">// by one mandatory newline. In regular expression notation, it is `\r?\n`.</span>
+<span class="hljs-comment">// The last non-empty line of input will be returned even if it has no</span>
+<span class="hljs-comment">// newline.</span>
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">ScanLines</span><span class="hljs-params">(data []<span class="hljs-keyword">byte</span>, atEOF <span class="hljs-keyword">bool</span>)</span> <span class="hljs-params">(advance <span class="hljs-keyword">int</span>, token []<span class="hljs-keyword">byte</span>, err error)</span></span> &#123;
+	<span class="hljs-keyword">if</span> atEOF &amp;&amp; <span class="hljs-built_in">len</span>(data) == <span class="hljs-number">0</span> &#123;
+		<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>, <span class="hljs-literal">nil</span>, <span class="hljs-literal">nil</span>
+	&#125;
+	<span class="hljs-keyword">if</span> i := bytes.IndexByte(data, <span class="hljs-string">&#x27;\n&#x27;</span>); i &gt;= <span class="hljs-number">0</span> &#123;
+		<span class="hljs-comment">// We have a full newline-terminated line.</span>
+		<span class="hljs-keyword">return</span> i + <span class="hljs-number">1</span>, dropCR(data[<span class="hljs-number">0</span>:i]), <span class="hljs-literal">nil</span>
+	&#125;
+	<span class="hljs-comment">// If we&#x27;re at EOF, we have a final, non-terminated line. Return it.</span>
+	<span class="hljs-keyword">if</span> atEOF &#123;
+		<span class="hljs-keyword">return</span> <span class="hljs-built_in">len</span>(data), dropCR(data), <span class="hljs-literal">nil</span>
+	&#125;
+	<span class="hljs-comment">// Request more data.</span>
+	<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>, <span class="hljs-literal">nil</span>, <span class="hljs-literal">nil</span>
+&#125;
+
+<span class="hljs-comment">// isSpace reports whether the character is a Unicode white space character.</span>
+<span class="hljs-comment">// We avoid dependency on the unicode package, but check validity of the implementation</span>
+<span class="hljs-comment">// in the tests.</span>
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">isSpace</span><span class="hljs-params">(r <span class="hljs-keyword">rune</span>)</span> <span class="hljs-title">bool</span></span> &#123;
+	<span class="hljs-keyword">if</span> r &lt;= <span class="hljs-string">&#x27;\u00FF&#x27;</span> &#123;
+		<span class="hljs-comment">// Obvious ASCII ones: \t through \r plus space. Plus two Latin-1 oddballs.</span>
+		<span class="hljs-keyword">switch</span> r &#123;
+		<span class="hljs-keyword">case</span> <span class="hljs-string">&#x27; &#x27;</span>, <span class="hljs-string">&#x27;\t&#x27;</span>, <span class="hljs-string">&#x27;\n&#x27;</span>, <span class="hljs-string">&#x27;\v&#x27;</span>, <span class="hljs-string">&#x27;\f&#x27;</span>, <span class="hljs-string">&#x27;\r&#x27;</span>:
+			<span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>
+		<span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;\u0085&#x27;</span>, <span class="hljs-string">&#x27;\u00A0&#x27;</span>:
+			<span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>
+		&#125;
+		<span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>
+	&#125;
+	<span class="hljs-comment">// High-valued ones.</span>
+	<span class="hljs-keyword">if</span> <span class="hljs-string">&#x27;\u2000&#x27;</span> &lt;= r &amp;&amp; r &lt;= <span class="hljs-string">&#x27;\u200a&#x27;</span> &#123;
+		<span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>
+	&#125;
+	<span class="hljs-keyword">switch</span> r &#123;
+	<span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;\u1680&#x27;</span>, <span class="hljs-string">&#x27;\u2028&#x27;</span>, <span class="hljs-string">&#x27;\u2029&#x27;</span>, <span class="hljs-string">&#x27;\u202f&#x27;</span>, <span class="hljs-string">&#x27;\u205f&#x27;</span>, <span class="hljs-string">&#x27;\u3000&#x27;</span>:
+		<span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>
+	&#125;
+	<span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>
+&#125;
+
+<span class="hljs-comment">// ScanWords is a split function for a Scanner that returns each</span>
+<span class="hljs-comment">// space-separated word of text, with surrounding spaces deleted. It will</span>
+<span class="hljs-comment">// never return an empty string. The definition of space is set by</span>
+<span class="hljs-comment">// unicode.IsSpace.</span>
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">ScanWords</span><span class="hljs-params">(data []<span class="hljs-keyword">byte</span>, atEOF <span class="hljs-keyword">bool</span>)</span> <span class="hljs-params">(advance <span class="hljs-keyword">int</span>, token []<span class="hljs-keyword">byte</span>, err error)</span></span> &#123;
+	<span class="hljs-comment">// Skip leading spaces.</span>
+	start := <span class="hljs-number">0</span>
+	<span class="hljs-keyword">for</span> width := <span class="hljs-number">0</span>; start &lt; <span class="hljs-built_in">len</span>(data); start += width &#123;
+		<span class="hljs-keyword">var</span> r <span class="hljs-keyword">rune</span>
+		r, width = utf8.DecodeRune(data[start:])
+		<span class="hljs-keyword">if</span> !isSpace(r) &#123;
+			<span class="hljs-keyword">break</span>
+		&#125;
+	&#125;
+	<span class="hljs-comment">// Scan until space, marking end of word.</span>
+	<span class="hljs-keyword">for</span> width, i := <span class="hljs-number">0</span>, start; i &lt; <span class="hljs-built_in">len</span>(data); i += width &#123;
+		<span class="hljs-keyword">var</span> r <span class="hljs-keyword">rune</span>
+		r, width = utf8.DecodeRune(data[i:])
+		<span class="hljs-keyword">if</span> isSpace(r) &#123;
+			<span class="hljs-keyword">return</span> i + width, data[start:i], <span class="hljs-literal">nil</span>
+		&#125;
+	&#125;
+	<span class="hljs-comment">// If we&#x27;re at EOF, we have a final, non-empty, non-terminated word. Return it.</span>
+	<span class="hljs-keyword">if</span> atEOF &amp;&amp; <span class="hljs-built_in">len</span>(data) &gt; start &#123;
+		<span class="hljs-keyword">return</span> <span class="hljs-built_in">len</span>(data), data[start:], <span class="hljs-literal">nil</span>
+	&#125;
+	<span class="hljs-comment">// Request more data.</span>
+	<span class="hljs-keyword">return</span> start, <span class="hljs-literal">nil</span>, <span class="hljs-literal">nil</span>
+&#125;
+
+</code></pre></div>
 
 <h2 id="lib-time"><a href="#lib-time" class="headerlink" title="lib_time"></a>lib_time</h2><div class="code-wrapper"><pre><code class="hljs go">
 <span class="hljs-keyword">package</span> main
@@ -1644,7 +2163,7 @@ fmt.Println(res)</code></pre></div>
 <span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
 	cmd := <span class="hljs-string">&quot;cat /proc/cpuinfo | egrep &#x27;^model name&#x27; | uniq | awk &#x27;&#123;print substr($0, index($0,$4))&#125;&#x27;&quot;</span>
 	out, err := exec.Command(<span class="hljs-string">&quot;bash&quot;</span>, <span class="hljs-string">&quot;-c&quot;</span>, cmd).Output()
-	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;
+<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;
 		fmt.Printf(<span class="hljs-string">&quot;Failed to execute command: %s&quot;</span>, cmd)
 	&#125;
 	fmt.Println(<span class="hljs-keyword">string</span>(out))

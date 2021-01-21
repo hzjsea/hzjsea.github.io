@@ -1,0 +1,972 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="hzjsea">
+  <meta name="keywords" content="">
+  <title>golang协程 - hzjsea</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"www.baidu.com","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
+
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>hzjsea</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="golang协程">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-09-14 12:07" pubdate>
+        2020年9月14日 中午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      3k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      42
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">golang协程</h1>
+            
+            <div class="markdown-body">
+              <a id="more"></a>
+
+<h1 id="golang协程"><a href="#golang协程" class="headerlink" title="golang协程"></a>golang协程</h1><h2 id="进程线程协程"><a href="#进程线程协程" class="headerlink" title="进程线程协程"></a>进程线程协程</h2><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/lxmhhy/p/6041001.html">https://www.cnblogs.com/lxmhhy/p/6041001.html</a><br>CPU密集型与IO密集型<br><a target="_blank" rel="noopener" href="https://blog.csdn.net/youanyyou/article/details/78990156">https://blog.csdn.net/youanyyou/article/details/78990156</a><br><a target="_blank" rel="noopener" href="https://juejin.cn/post/6844904056918376456#heading-3">https://juejin.cn/post/6844904056918376456#heading-3</a></p>
+<p>总的结果就是每个程序会产生一个或多个进程，进程的调度是很消耗内存的，如果每一个程序之间的通信是在进程间完成的,那么进程的产生与销毁就能够消耗大量的内存了，于是后面产生了线程，一个进程会有多个线程，同一个进程之间线程是共享变量的，线程的缺点是啥，后面再补充<br>在后面就是协程 ，协程是一种用户态拟线程，是交给程序来调度的</p>
+<h2 id="golang协程示例"><a href="#golang协程示例" class="headerlink" title="golang协程示例"></a>golang协程示例</h2><p>协程是通过程序来调度的，因此也被叫做用户态线程，比如现在有如下一个程序</p>
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> (
+	<span class="hljs-string">&quot;fmt&quot;</span>
+	<span class="hljs-string">&quot;time&quot;</span>
+)
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
+	echoMessage()
+	end()
+&#125;
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">end</span><span class="hljs-params">()</span></span>  &#123;
+	fmt.Println(<span class="hljs-string">&quot;end process&quot;</span>)
+&#125;
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">echoMessage</span><span class="hljs-params">()</span></span>  &#123;
+	<span class="hljs-comment">// 一共睡眠20s</span>
+	<span class="hljs-keyword">for</span> i:=<span class="hljs-number">0</span>;i&lt;<span class="hljs-number">20</span>;i++&#123;
+		fmt.Println(<span class="hljs-string">&quot;sleep...&quot;</span>)
+		time.Sleep(time.Second*<span class="hljs-number">1</span>)
+	&#125;
+&#125;
+</code></pre></div>
+<p>如上程序，这个程序会在先执行<code>echoMessage</code>这个方法，等全部结束之后，才会执行<code>end()</code>这个程序如下<br><img src="http://img.noback.top/2021-01-20-14-54-59.png" srcset="/img/loading.gif" alt="2021-01-20-14-54-59"></p>
+<p>现在给<code>end</code>加一个询问,代码如下</p>
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> (
+	<span class="hljs-string">&quot;fmt&quot;</span>
+	<span class="hljs-string">&quot;time&quot;</span>
+)
+
+<span class="hljs-keyword">var</span> flag <span class="hljs-keyword">bool</span> = <span class="hljs-literal">false</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
+	echoMessage()
+	end()
+&#125;
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">end</span><span class="hljs-params">()</span></span>  &#123;
+
+	<span class="hljs-keyword">for</span> !flag &#123;
+		fmt.Println(<span class="hljs-string">&quot;end?&quot;</span>)
+		time.Sleep(time.Second*<span class="hljs-number">2</span>)
+	&#125;
+	fmt.Println(<span class="hljs-string">&quot;end process&quot;</span>)
+&#125;
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">echoMessage</span><span class="hljs-params">()</span></span>  &#123;
+	<span class="hljs-comment">// 一共睡眠20s</span>
+	<span class="hljs-keyword">for</span> i:=<span class="hljs-number">0</span>;i&lt;<span class="hljs-number">20</span>;i++&#123;
+		fmt.Println(<span class="hljs-string">&quot;sleep...&quot;</span>)
+		time.Sleep(time.Second*<span class="hljs-number">1</span>)
+	&#125;
+	flag = <span class="hljs-literal">true</span>
+&#125;
+</code></pre></div>
+<p><img src="http://img.noback.top/2021-01-20-15-01-11.png" srcset="/img/loading.gif" alt="2021-01-20-15-01-11"><br>依旧是会先去执行<code>echoMessage()</code> 等运行结束之后才会去运行end,现在继续优化，希望在执行<code>echoMessage()</code>的时候回去执行<code>end</code>询问是否结束,只需要把<code>echoMessage</code>变成协程调用就可以了，调用的方式是如下 <code>go echoMessage</code>,golang会把他放到放把一个线程分为多个协程，然后取一个去调用这个<code>echoMessage</code>,如下</p>
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> (
+	<span class="hljs-string">&quot;fmt&quot;</span>
+	<span class="hljs-string">&quot;time&quot;</span>
+)
+
+<span class="hljs-keyword">var</span> flag <span class="hljs-keyword">bool</span> = <span class="hljs-literal">false</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
+	<span class="hljs-keyword">go</span> echoMessage()
+	end()
+&#125;
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">end</span><span class="hljs-params">()</span></span>  &#123;
+
+	<span class="hljs-keyword">for</span> !flag &#123;
+		fmt.Println(<span class="hljs-string">&quot;end?&quot;</span>)
+		time.Sleep(time.Second*<span class="hljs-number">2</span>)
+	&#125;
+	fmt.Println(<span class="hljs-string">&quot;end process&quot;</span>)
+&#125;
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">echoMessage</span><span class="hljs-params">()</span></span>  &#123;
+	<span class="hljs-comment">// 一共睡眠20s</span>
+	<span class="hljs-keyword">for</span> i:=<span class="hljs-number">0</span>;i&lt;<span class="hljs-number">20</span>;i++&#123;
+		fmt.Println(<span class="hljs-string">&quot;sleep...&quot;</span>)
+		time.Sleep(time.Second*<span class="hljs-number">1</span>)
+	&#125;
+	flag = <span class="hljs-literal">true</span>
+&#125;
+</code></pre></div>
+<p><img src="http://img.noback.top/2021-01-20-15-04-44.png" srcset="/img/loading.gif" alt="2021-01-20-15-04-44"></p>
+<h2 id="golang-channel"><a href="#golang-channel" class="headerlink" title="golang channel"></a>golang channel</h2><p>如上，在golang中我们可以创建一个协程来完成异步的工作,channel可以保证在异步协程的同时在多个协程之间完成通信</p>
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-comment">// 创建通信</span>
+cc := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">chan</span> <span class="hljs-keyword">int</span>) <span class="hljs-comment">// 无缓冲通道</span>
+ccc := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">chan</span> <span class="hljs-keyword">int</span> ,<span class="hljs-number">3</span> ) <span class="hljs-comment">// 缓冲通道</span></code></pre></div>
+
+<h3 id="无缓冲通道-同步通道"><a href="#无缓冲通道-同步通道" class="headerlink" title="无缓冲通道(同步通道)"></a>无缓冲通道(同步通道)</h3><p>默认情况下，通信通道是无缓冲的，这种特性导致通道的发送/接收操作，在对方准备好之前是阻塞的，因此无缓冲通道很容易出现以下的错误</p>
+<blockquote>
+<p>all goroutines are asleep - deadlock!</p>
+</blockquote>
+<ul>
+<li>对于同一个通道，发送操作在接收者准备好之前是阻塞的。如果通道中的数据无人接收，就无法再给通道传入其他数据。新的输入无法在通道非空的情况下传入，所以发送操作会等待channel再次变为可用状态，即通道值被接收后。</li>
+<li>对于同一个通道，接收操作是阻塞的，直到发送者可用。如果通道中没有数据，接收者就阻塞了<br>如下就会出现死锁<div class="code-wrapper"><pre><code class="hljs go">cc := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">chan</span> <span class="hljs-keyword">int</span>)
+cc &lt;- <span class="hljs-number">20</span></code></pre></div>
+解决方法就是给他一个接受者,注意这里的阻塞和非阻塞，可以理解为这个通道是否有缓冲区，如果没有缓冲区，则需要建立一个协程来异步执行，如果没有异步执行，依旧还会出现死锁，如下<div class="code-wrapper"><pre><code class="hljs go">cc := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">chan</span> <span class="hljs-keyword">int</span>)
+cc &lt;- <span class="hljs-number">20</span>
+fmt.Println(&lt;-cc)</code></pre></div>
+添加到协程之后就可以正常使用了,如下<div class="code-wrapper"><pre><code class="hljs go">cc := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">chan</span> <span class="hljs-keyword">int</span>)
+<span class="hljs-keyword">go</span> <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span></span> &#123;
+	cc &lt;- <span class="hljs-number">20</span>
+&#125;()
+fmt.Println(&lt;-cc</code></pre></div>
+另外一种解决方法就是给channel添加缓冲区<div class="code-wrapper"><pre><code class="hljs go">cc := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">chan</span> <span class="hljs-keyword">int</span>,<span class="hljs-number">1</span>)
+cc &lt;- <span class="hljs-number">20</span>
+fmt.Println(&lt;-cc)</code></pre></div>
+
+</li>
+</ul>
+<blockquote>
+<p>再举一个会出现死锁的状况</p>
+</blockquote>
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
+
+	cc := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">chan</span> <span class="hljs-keyword">int</span>)
+	<span class="hljs-keyword">go</span> <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span></span> &#123;
+		<span class="hljs-keyword">for</span> i:=<span class="hljs-number">0</span>;i&lt;<span class="hljs-number">20</span>;i++&#123;
+			cc &lt;- i
+		&#125;
+	&#125;()
+
+	<span class="hljs-keyword">for</span> value := <span class="hljs-keyword">range</span>  cc&#123;
+		time.Sleep(time.Second*<span class="hljs-number">2</span>)
+		fmt.Println(value)
+	&#125;</code></pre></div>
+<p>出现死锁的原因是因为，协程里面输完0-19就结束了，但是外面的for还一直在从通道中拿数据，于是就出现死锁了,解决方法如下</p>
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
+
+	cc := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">chan</span> <span class="hljs-keyword">int</span>,<span class="hljs-number">19</span>)
+	<span class="hljs-keyword">go</span> <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span></span> &#123;
+		<span class="hljs-keyword">for</span> i:=<span class="hljs-number">0</span>;i&lt;<span class="hljs-number">20</span>;i++&#123;
+			cc &lt;- i
+		&#125;
+	&#125;()
+
+	<span class="hljs-keyword">go</span> <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span></span> &#123;
+		<span class="hljs-keyword">for</span> value := <span class="hljs-keyword">range</span> cc &#123;
+			fmt.Println(value)
+		&#125;
+	&#125;()
+
+	time.Sleep(<span class="hljs-number">3</span> * <span class="hljs-number">1e9</span>)
+
+&#125;</code></pre></div>
+
+<h3 id="channel中的变量类型"><a href="#channel中的变量类型" class="headerlink" title="channel中的变量类型"></a>channel中的变量类型</h3><p>上面有讲到创建不同类别的channel的两种通用方法，但是都需要指定变量类型，假设想要指定一个自定义的变量类型，可以使用struct 重新构造一个,如下</p>
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">type</span> IntString <span class="hljs-keyword">struct</span> &#123;
+	str <span class="hljs-keyword">string</span>
+&#125;
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
+
+	cc := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">chan</span> IntString)
+	<span class="hljs-keyword">go</span> <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span></span> &#123;
+		cc &lt;- IntString&#123;<span class="hljs-string">&quot;helloworld&quot;</span>&#125;
+		cc &lt;- IntString&#123;<span class="hljs-string">&quot;helloworld&quot;</span>&#125;
+		cc &lt;- IntString&#123;<span class="hljs-string">&quot;helloworld&quot;</span>&#125;
+		cc &lt;- IntString&#123;<span class="hljs-string">&quot;helloworld&quot;</span>&#125;
+		cc &lt;- IntString&#123;<span class="hljs-string">&quot;helloworld&quot;</span>&#125;
+		cc &lt;- IntString&#123;<span class="hljs-string">&quot;helloworld&quot;</span>&#125;
+	&#125;()
+	fmt.Println(&lt;-cc)
+&#125;</code></pre></div>
+
+<blockquote>
+<p>channel零值为nil</p>
+</blockquote>
+<h2 id="单向通道与管道"><a href="#单向通道与管道" class="headerlink" title="单向通道与管道"></a>单向通道与管道</h2><p>单向通道与管道很好的证明了 协程中channel可以进行通信</p>
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
+	<span class="hljs-comment">// 管道 也就是单向通道</span>
+
+	<span class="hljs-comment">// chan</span>
+	in := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">chan</span> <span class="hljs-keyword">int</span>)
+	in_level2 := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">chan</span> <span class="hljs-keyword">int</span>)
+	<span class="hljs-comment">// in</span>
+	<span class="hljs-keyword">go</span> <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span></span> &#123;
+		<span class="hljs-keyword">for</span>  &#123;
+			in &lt;- <span class="hljs-number">20</span>
+		&#125;
+	&#125;()
+
+	<span class="hljs-keyword">go</span> <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span></span> &#123;
+		<span class="hljs-keyword">for</span> &#123;
+			<span class="hljs-comment">// 从上一个channel取出来</span>
+			x := &lt;- in
+			<span class="hljs-comment">// 修改后进入另一个channel</span>
+			in_level2 &lt;- x*x
+		&#125;
+	&#125;()
+
+	<span class="hljs-comment">// 从in_level2中取出</span>
+	<span class="hljs-keyword">for</span> x := <span class="hljs-keyword">range</span> in_level2 &#123;
+		fmt.Println(x)
+	&#125;
+
+&#125;
+</code></pre></div>
+
+<p>使用close来关闭channel</p>
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
+	<span class="hljs-comment">// 管道 也就是单向通道</span>
+
+	<span class="hljs-comment">// chan</span>
+	in := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">chan</span> <span class="hljs-keyword">int</span>)
+	in_level2 := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">chan</span> <span class="hljs-keyword">int</span>)
+
+	flag := <span class="hljs-literal">true</span>
+	<span class="hljs-comment">// in</span>
+	<span class="hljs-keyword">go</span> <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span></span> &#123;
+		<span class="hljs-keyword">for</span> i:=<span class="hljs-number">0</span>;i&lt;<span class="hljs-number">20</span>;i++ &#123;
+			<span class="hljs-keyword">if</span> i &gt; <span class="hljs-number">10</span>&#123;
+				flag = <span class="hljs-literal">false</span>
+				<span class="hljs-keyword">break</span>
+			&#125;
+			in &lt;- i
+		&#125;
+		<span class="hljs-built_in">close</span>(in)
+	&#125;()
+
+	<span class="hljs-keyword">go</span> <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span></span> &#123;
+		<span class="hljs-keyword">for</span> &#123;
+			<span class="hljs-comment">// 从上一个channel取出来</span>
+			x := &lt;- in
+			<span class="hljs-comment">// 修改后进入另一个channel</span>
+			in_level2 &lt;- x*x
+			<span class="hljs-keyword">if</span> !flag&#123;
+				<span class="hljs-keyword">break</span>
+			&#125;
+		&#125;
+		<span class="hljs-built_in">close</span>(in_level2)
+	&#125;()
+
+	<span class="hljs-comment">// 从in_level2中取出</span>
+	<span class="hljs-keyword">for</span> x := <span class="hljs-keyword">range</span> in_level2 &#123;
+		fmt.Println(x)
+	&#125;
+
+&#125;</code></pre></div>
+
+<blockquote>
+<p>单向channel改写</p>
+</blockquote>
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> (
+	<span class="hljs-string">&quot;fmt&quot;</span>
+)
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
+	<span class="hljs-comment">// 管道 也就是单向通道</span>
+
+	<span class="hljs-comment">// chan</span>
+	in := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">chan</span> <span class="hljs-keyword">int</span>)
+	in_level2 := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">chan</span> <span class="hljs-keyword">int</span>)
+
+	<span class="hljs-keyword">go</span> Channelleve1(in)
+	<span class="hljs-keyword">go</span> Channelleve2(in,in_level2)
+	echoMessage(in_level2)
+
+&#125;
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">Channelleve1</span><span class="hljs-params">(c <span class="hljs-keyword">chan</span> &lt;-<span class="hljs-keyword">int</span>)</span></span>  &#123;
+	<span class="hljs-keyword">for</span> i:=<span class="hljs-number">0</span>;i&lt;<span class="hljs-number">100</span>;i++&#123;
+		c&lt;-i
+	&#125;
+	<span class="hljs-built_in">close</span>(c)
+&#125;
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">Channelleve2</span><span class="hljs-params">(in &lt;-<span class="hljs-keyword">chan</span> <span class="hljs-keyword">int</span>,out <span class="hljs-keyword">chan</span>&lt;- <span class="hljs-keyword">int</span>)</span></span>  &#123;
+	<span class="hljs-keyword">for</span> value := <span class="hljs-keyword">range</span> in &#123;
+		out &lt;- value
+	&#125;
+	<span class="hljs-built_in">close</span>(out)
+&#125;
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">echoMessage</span><span class="hljs-params">(out &lt;-<span class="hljs-keyword">chan</span> <span class="hljs-keyword">int</span>)</span></span>  &#123;
+	<span class="hljs-keyword">for</span> value := <span class="hljs-keyword">range</span> out&#123;
+		fmt.Println(value)
+	&#125;
+&#125;</code></pre></div>
+<h2 id="缓冲通道"><a href="#缓冲通道" class="headerlink" title="缓冲通道"></a>缓冲通道</h2><div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
+	in := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">chan</span> <span class="hljs-keyword">int</span>,<span class="hljs-number">3</span>)
+	<span class="hljs-keyword">for</span> i:=<span class="hljs-number">0</span>;i&lt;<span class="hljs-number">3</span>;i++&#123;
+		in&lt;-i
+	&#125;
+	fmt.Println(<span class="hljs-built_in">cap</span>(in)) <span class="hljs-comment">//3</span>
+	fmt.Println(<span class="hljs-built_in">len</span>(in)) <span class="hljs-comment">//3</span>
+	in &lt;- <span class="hljs-number">3</span> <span class="hljs-comment">// fatal error: all goroutines are asleep - deadlock!</span>
+&#125;</code></pre></div>
+<p>如上创建了一个缓冲区为3的通道,再往里面加就会出现死锁</p>
+<blockquote>
+<p>channel竞速</p>
+</blockquote>
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> (
+	<span class="hljs-string">&quot;fmt&quot;</span>
+	<span class="hljs-string">&quot;time&quot;</span>
+)
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
+	cc := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">chan</span> <span class="hljs-keyword">string</span>,<span class="hljs-number">3</span> )
+	<span class="hljs-comment">// 竞速</span>
+	<span class="hljs-keyword">go</span> EchoMessage(<span class="hljs-number">20</span>,cc,<span class="hljs-string">&quot;sleep 20s&quot;</span>)
+	<span class="hljs-keyword">go</span> EchoMessage(<span class="hljs-number">5</span>,cc,<span class="hljs-string">&quot;sleep 5s&quot;</span>)
+	<span class="hljs-keyword">go</span> EchoMessage(<span class="hljs-number">5</span>,cc,<span class="hljs-string">&quot;sleep 5s,so fast&quot;</span>)
+	fmt.Println(&lt;-cc)
+&#125;
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">EchoMessage</span><span class="hljs-params">( duration time.Duration ,cc <span class="hljs-keyword">chan</span>&lt;- <span class="hljs-keyword">string</span>,message <span class="hljs-keyword">string</span>)</span></span>  &#123;
+	time.Sleep(duration*time.Second)
+	cc &lt;- message
+&#125;</code></pre></div>
+<p>官方文档中有些，如果使用的是一个无缓冲的通道的话，两个较慢的goroutime将被卡主，因为他们发送响应结果到通道的时候没有goroutine来接收，这个情况叫做goroutine泄露，属于一个bug</p>
+<h2 id="多路复用"><a href="#多路复用" class="headerlink" title="多路复用"></a>多路复用</h2><p>多路复用的本质，是对channel的动作以及channel通信的内容做识别，并执行对应的动作，比如</p>
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> (
+	<span class="hljs-string">&quot;fmt&quot;</span>
+	<span class="hljs-string">&quot;os&quot;</span>
+	<span class="hljs-string">&quot;time&quot;</span>
+)
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
+	fmt.Println(<span class="hljs-string">&quot;cc&quot;</span>)
+	tick := time.Tick(<span class="hljs-number">1</span>*time.Second)
+	<span class="hljs-keyword">go</span> <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span></span>&#123;
+	<span class="hljs-keyword">for</span> countdown := <span class="hljs-number">10</span>; countdown &gt;<span class="hljs-number">0</span> ;countdown-- &#123;
+		fmt.Println(countdown)
+		&lt;-tick
+	&#125;
+	&#125;()
+
+	abort := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">chan</span> <span class="hljs-keyword">struct</span>&#123;&#125;)
+	<span class="hljs-keyword">go</span> <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span></span> &#123;
+		os.Stdin.Read(<span class="hljs-built_in">make</span>([]<span class="hljs-keyword">byte</span>,<span class="hljs-number">1</span>))
+		abort &lt;- <span class="hljs-keyword">struct</span>&#123;&#125;&#123;&#125;
+		<span class="hljs-comment">// &lt;- abort 这个注释取消掉就不会中断</span>
+	&#125;()
+
+	<span class="hljs-keyword">select</span> &#123;
+	<span class="hljs-keyword">case</span> &lt;-time.After(<span class="hljs-number">10</span> * time.Second):
+	<span class="hljs-keyword">case</span> &lt;-abort:
+		fmt.Println(<span class="hljs-string">&quot;xx&quot;</span>)
+		<span class="hljs-keyword">return</span>
+	&#125;
+
+&#125;</code></pre></div>
+<p>上面的程序中，执行了两个协程，并且都往channel中写入了数据，使用select进行处理,如果是等待10s 则不执行任何操作那个，如果是abort这个channel中有内容输入 则case 为true，则输出”xx” 并返回终止，上面的注释部分取消掉就不会终止，这是因为他内容输入后就被输出了 则case为false</p>
+<blockquote>
+<p>缓冲select</p>
+</blockquote>
+<div class="code-wrapper"><pre><code class="hljs go">
+<span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
+
+	ch := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">chan</span> <span class="hljs-keyword">int</span>,<span class="hljs-number">1</span>)
+	<span class="hljs-keyword">for</span> i:=<span class="hljs-number">0</span>;i&lt;<span class="hljs-number">10</span>;i++&#123;
+		<span class="hljs-keyword">select</span> &#123;
+		<span class="hljs-keyword">case</span> x:= &lt;- ch:
+			fmt.Println(x)
+		<span class="hljs-keyword">case</span> ch &lt;-i:
+		&#125;
+	&#125;
+&#125;</code></pre></div>
+<p>如上，执行顺序为<br>i等于0的时候，x=0 输出0<br>i等于1的时候 ch接收1 ，此时len=1<br>i等于2的时候， x=1 ，输出1</p>
+<h2 id="多线程抢占执行"><a href="#多线程抢占执行" class="headerlink" title="多线程抢占执行"></a>多线程抢占执行</h2><p>在多线程环境下，多个线程并发抢占会使得打印不是按照顺序来，那么我们如何确保子线程全部结束完之后主线程再停止呢？主要有两种方式</p>
+<h3 id="一使用阻塞channel"><a href="#一使用阻塞channel" class="headerlink" title="一使用阻塞channel"></a>一使用阻塞channel</h3><div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> (
+	<span class="hljs-string">&quot;fmt&quot;</span>
+	<span class="hljs-string">&quot;runtime&quot;</span>
+)
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
+	<span class="hljs-comment">// 输出当前系统的CPU数量</span>
+	fmt.Println(runtime.NumCPU())
+	<span class="hljs-comment">// 设置当前程序执行使用的CPU数量</span>
+	runtime.GOMAXPROCS(runtime.NumCPU()/<span class="hljs-number">2</span>)
+
+	<span class="hljs-comment">// 创建一个channel</span>
+	c1 := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">chan</span>  <span class="hljs-keyword">bool</span>)
+
+	<span class="hljs-keyword">for</span> i:=<span class="hljs-number">0</span>;i&lt;<span class="hljs-number">10</span>;i++&#123;
+		<span class="hljs-keyword">go</span> goRun(c1,i)
+	&#125;
+	<span class="hljs-keyword">for</span> i := <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">10</span>; i++ &#123;
+		&lt;- c1
+	&#125;
+&#125;
+
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">goRun</span><span class="hljs-params">(c <span class="hljs-keyword">chan</span> <span class="hljs-keyword">bool</span>,index <span class="hljs-keyword">int</span> )</span></span> &#123;
+	sum := <span class="hljs-number">0</span>
+	<span class="hljs-keyword">for</span> i:=<span class="hljs-number">0</span>;i&lt;<span class="hljs-number">100000000</span>;i++&#123;
+		sum+=i
+	&#125;
+	fmt.Println(<span class="hljs-string">&quot;线程序号:&quot;</span>, index, sum)
+	c &lt;- <span class="hljs-literal">true</span>
+&#125;
+</code></pre></div>
+<p>输出结果</p>
+<div class="code-wrapper"><pre><code class="hljs angelscript"><span class="hljs-number">8</span>
+线程序号: <span class="hljs-number">1</span> <span class="hljs-number">4999999950000000</span>
+线程序号: <span class="hljs-number">4</span> <span class="hljs-number">4999999950000000</span>
+线程序号: <span class="hljs-number">0</span> <span class="hljs-number">4999999950000000</span>
+线程序号: <span class="hljs-number">9</span> <span class="hljs-number">4999999950000000</span>
+线程序号: <span class="hljs-number">6</span> <span class="hljs-number">4999999950000000</span>
+线程序号: <span class="hljs-number">2</span> <span class="hljs-number">4999999950000000</span>
+线程序号: <span class="hljs-number">5</span> <span class="hljs-number">4999999950000000</span>
+线程序号: <span class="hljs-number">7</span> <span class="hljs-number">4999999950000000</span>
+线程序号: <span class="hljs-number">3</span> <span class="hljs-number">4999999950000000</span>
+线程序号: <span class="hljs-number">8</span> <span class="hljs-number">4999999950000000</span></code></pre></div>
+
+<p>从打印结果可以看出，多线程环境下运行代码打印和顺序没有关系，由 CPU 调度自己决定，多运行几次打印结果一定不会一样，就是这个道理。</p>
+<h3 id="二使用同步机制"><a href="#二使用同步机制" class="headerlink" title="二使用同步机制"></a>二使用同步机制</h3><div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> (
+	<span class="hljs-string">&quot;fmt&quot;</span>
+	<span class="hljs-string">&quot;runtime&quot;</span>
+	<span class="hljs-string">&quot;sync&quot;</span>
+)
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
+	fmt.Println(<span class="hljs-string">&quot;当前系统核数：&quot;</span>, runtime.NumCPU())
+	runtime.GOMAXPROCS(runtime.NumCPU()) <span class="hljs-comment">//设置当前程序执行使用的并发数</span>
+	<span class="hljs-comment">/**</span>
+<span class="hljs-comment">	  waitGroup即任务组，它的最要作用就是用来添加需要工作的任务，没完成一次任务就标记一次Done，这样任务组的待完成量会随之减1</span>
+<span class="hljs-comment">	  那么主线程就是来判断任务组内是否还有未完成任务，当没有未完成当任务之后主线程就可以结束运行，从而实现了与阻塞队列类似的同步功能</span>
+<span class="hljs-comment">	  这里创建了一个空的waitGroup(任务组)</span>
+<span class="hljs-comment">	*/</span>
+	wg := sync.WaitGroup&#123;&#125;
+	wg.Add(<span class="hljs-number">10</span>)  <span class="hljs-comment">//添加10个任务到任务组中</span>
+	<span class="hljs-comment">//这里启动10个线程运行</span>
+	<span class="hljs-keyword">for</span> i :=<span class="hljs-number">0</span>; i &lt; <span class="hljs-number">10</span>; i++ &#123;
+		<span class="hljs-keyword">go</span> goRun(&amp;wg, i)
+	&#125;
+	wg.Wait()
+&#125;
+
+<span class="hljs-comment">/**</span>
+<span class="hljs-comment">这里需要传入引用类型不能传入值拷贝，因为在子线程中是需要执行Done操作，类似与我们修改结构体中的int变量主词递减，如果是只拷贝的话是不会影响原类型内的数据</span>
+<span class="hljs-comment">这样就会发生死循环导致死锁程序奔溃，报错异常为：fatal error: all goroutines are asleep - deadlock!</span>
+<span class="hljs-comment">*/</span>
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">goRun</span><span class="hljs-params">(wg *sync.WaitGroup, index <span class="hljs-keyword">int</span>)</span></span> &#123;
+	a := <span class="hljs-number">1</span>
+	<span class="hljs-comment">//循环叠加1千万次并返回最终结果</span>
+	<span class="hljs-keyword">for</span> i := <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">10000000</span>; i++ &#123;
+		a += i
+	&#125;
+	fmt.Println(<span class="hljs-string">&quot;线程序号:&quot;</span>, index, a)
+
+	wg.Done()
+&#125;</code></pre></div>
+
+<h2 id="使用Select处理多个channel"><a href="#使用Select处理多个channel" class="headerlink" title="使用Select处理多个channel"></a>使用Select处理多个channel</h2><div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">&quot;fmt&quot;</span>
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;
+	<span class="hljs-comment">// 创建多个channel</span>
+	c1,c2 := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">chan</span> <span class="hljs-keyword">int</span>),<span class="hljs-built_in">make</span>(<span class="hljs-keyword">chan</span>  <span class="hljs-keyword">string</span>)
+	<span class="hljs-keyword">go</span> <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span></span> &#123;
+		<span class="hljs-comment">/**</span>
+<span class="hljs-comment">		  创建一个无限循环语句,使用select进行处理</span>
+<span class="hljs-comment">		  我们一般都是使用这种方式来处理不断的消息发送和处理</span>
+<span class="hljs-comment">		*/</span>
+		<span class="hljs-keyword">for</span> &#123;
+			<span class="hljs-keyword">select</span> &#123;
+			<span class="hljs-keyword">case</span> v, ok := &lt;- c1:
+				<span class="hljs-keyword">if</span> !ok &#123;
+					<span class="hljs-keyword">break</span>
+				&#125;
+				fmt.Println(<span class="hljs-string">&quot;c1:&quot;</span>, v)
+			<span class="hljs-keyword">case</span> v, ok := &lt;- c2:
+				<span class="hljs-keyword">if</span> !ok &#123;
+					<span class="hljs-keyword">break</span>
+				&#125;
+				fmt.Println(<span class="hljs-string">&quot;c2:&quot;</span>, v)
+			&#125;
+		&#125;
+	&#125;()
+
+	c1 &lt;- <span class="hljs-number">1</span>
+	c2 &lt;- <span class="hljs-string">&quot;liang&quot;</span>
+	c1 &lt;- <span class="hljs-number">2</span>
+	c2 &lt;- <span class="hljs-string">&quot;xuli&quot;</span>
+
+	<span class="hljs-comment">//关闭channel</span>
+	<span class="hljs-built_in">close</span>(c1)
+	<span class="hljs-built_in">close</span>(c2)
+&#125;</code></pre></div>
+
+
+
+
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/golang/">golang</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/golang/">golang</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/09/14/blog_back_new/golang/golang%E5%B8%B8%E7%94%A8%E5%8A%9F%E8%83%BD%E4%BB%A5%E5%8F%8A%E8%BD%AC%E6%8D%A2/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">golang常用功能以及转换</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/09/10/blog_back_new/leetcode/Strings/28-%E5%AE%9E%E7%8E%B0strStr/">
+                        <span class="hidden-mobile">实现strStr</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a rel="nofollow noopener"><span>Hzjsea</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+
+
+</body>
+</html>

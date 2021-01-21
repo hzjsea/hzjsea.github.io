@@ -19,7 +19,7 @@
   <meta name="description" content="">
   <meta name="author" content="hzjsea">
   <meta name="keywords" content="">
-  <title>linux命令tcpdump - hzjsea</title>
+  <title>linux命令tcpdump以及wireshark - hzjsea</title>
 
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
 
@@ -164,7 +164,7 @@
       <div class="full-bg-img">
         <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
           <div class="page-header text-center fade-in-up">
-            <span class="h2" id="subtitle" title="linux命令tcpdump">
+            <span class="h2" id="subtitle" title="linux命令tcpdump以及wireshark">
               
             </span>
 
@@ -186,7 +186,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      211 字
+      593 字
     </span>
   
 
@@ -196,7 +196,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      3
+      8
        分钟
     </span>
   
@@ -226,7 +226,7 @@
         <div class="py-5" id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">linux命令tcpdump</h1>
+            <h1 style="display: none">linux命令tcpdump以及wireshark</h1>
             
             <div class="markdown-body">
               <a id="more"></a>
@@ -239,7 +239,7 @@
 </blockquote>
 <p>学习tcpdump 建议搭配hping3 一起使用, hping3可以自己定制数据包<br>测试如下</p>
 <div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 接收端</span>
-tcpdump <span class="hljs-string">&#x27;((tcp) and (src host 10.0.6.41) and (tcp[tcpflags] = tcp-syn)) &#x27;</span>
+tcpdump <span class="hljs-string">&#x27;((tcp) and (src host 10.0.6.41) and (tcp[tcpflags] = tcp-syn))&#x27;</span>
 <span class="hljs-comment"># 发送端</span>
 hping3 -I eth0  -S 10.0.6.55</code></pre></div>
 
@@ -249,7 +249,31 @@ hping3 -I eth0  -S 10.0.6.55</code></pre></div>
 <p>tcpdump没有设定延时关闭, 可以使用timeout来控制,比如<br>抓10秒的包</p>
 <div class="code-wrapper"><pre><code class="hljs bash">timeout 10 tcpdump tcp and src host 10.0.6.41</code></pre></div>
 
+<blockquote>
+<p>指定head头部包,减少抓下来的包</p>
+</blockquote>
 <p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/ggjucheng/archive/2012/01/14/2322659.html">https://www.cnblogs.com/ggjucheng/archive/2012/01/14/2322659.html</a><br><a target="_blank" rel="noopener" href="https://www.cnblogs.com/chyingp/p/linux-command-tcpdump.html">https://www.cnblogs.com/chyingp/p/linux-command-tcpdump.html</a><br><a target="_blank" rel="noopener" href="https://cizixs.com/2015/03/12/tcpdump-introduction/">https://cizixs.com/2015/03/12/tcpdump-introduction/</a></p>
+<h2 id="wireshark"><a href="#wireshark" class="headerlink" title="wireshark"></a>wireshark</h2><p>wireshark有linux的命令版本， 叫做tshark。<br>这次做了抓包的分析的实验，在量小的情况下 全量大概500M 一分钟只抓128head字节 也有将近300M大小的包，测试需要1个小时<br>实际抓取过程中 1个小时大概抓了31G的包，但只有一个错误，错误内容如下</p>
+<div class="code-wrapper"><pre><code class="hljs bash">Jan 8, 2021 @ 17:30:35.000	10.31.196.2	1eecb132-e1ff-406e-9788-5b92339284f8	GET	timeout</code></pre></div>
+<p>如果单纯的去分析，这可以看好久，所以先截取某一段时间的包，切分的工具使用的是<code>editcap</code></p>
+<div class="code-wrapper"><pre><code class="hljs bash">editcap -A <span class="hljs-string">&quot;2021-01-08 17:20:35.000&quot;</span> -B <span class="hljs-string">&quot;2021-01-08 17:50:35.000&quot;</span> bod0_time60_128bytes_4.cap  -F pcap bond0.pcap</code></pre></div>
+<p>但这样貌似是因为包太大了，会报错，所以采用按秒来分包</p>
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 每10分钟一个包</span>
+editcap -i 600 bod0_time60_128bytes_4.cap bond0/
+<span class="hljs-comment"># 再每分钟分，往后推 推到时间点</span>
+editcap -i 60 _00004_20210109012317 per</code></pre></div>
+<p>也可以按照包的大小来分</p>
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 100个包 这里太大了也不好用</span>
+editcap -c 100 bod0_time60_128bytes_4.cap out.pcap</code></pre></div>
+
+<p>写一个脚本 用来分析子包中出现的内容</p>
+<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 匹配http请求中uri有 1eecb132-e1ff-406e-9788-5b92339284f8 的内容</span>
+find . -<span class="hljs-built_in">type</span> f -size +500M  | cut -c 3- | <span class="hljs-keyword">while</span> <span class="hljs-built_in">read</span> line;<span class="hljs-keyword">do</span>
+        tshark -r <span class="hljs-variable">$line</span>  -Y <span class="hljs-string">&#x27;http.request.uri matches &quot;1eecb132-e1ff-406e-9788-5b92339284f8&quot;&#x27;</span> &gt; ./<span class="hljs-variable">$&#123;line:1:5&#125;</span>.<span class="hljs-built_in">log</span>
+<span class="hljs-keyword">done</span></code></pre></div>
+<p>匹配到以后 再把这个小文件传到电脑上用wireshark分析</p>
+<p>wireshark 时间更新<br><a target="_blank" rel="noopener" href="https://www.cnblogs.com/LiuYanYGZ/p/13039202.html">https://www.cnblogs.com/LiuYanYGZ/p/13039202.html</a></p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="http://codeshold.me/2017/08/tcpdump_tshark_note.html">http://codeshold.me/2017/08/tcpdump_tshark_note.html</a></p>
 
             </div>
             <hr>

@@ -186,7 +186,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      2.4k 字
+      2.6k 字
     </span>
   
 
@@ -196,7 +196,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      37
+      40
        分钟
     </span>
   
@@ -412,12 +412,41 @@ runCmd.Flags().IntVar(&amp;split,<span class="hljs-string">&quot;split&quot;</sp
 
 <h2 id="TAB的静态补全与动态补全"><a href="#TAB的静态补全与动态补全" class="headerlink" title="TAB的静态补全与动态补全"></a>TAB的静态补全与动态补全</h2><p>cobra支持静态补全与动态补全</p>
 <p>静态补全就是 在之前就在数组中设置好值<br>动态补全就是 可以动态的获取值到数组中</p>
-<h3 id="静态名称补全"><a href="#静态名称补全" class="headerlink" title="静态名称补全"></a>静态名称补全</h3><p>静态名称补全比较简单，只要在想要自动补全的子命令中加入 ValidArgs 字段，传入一组包含预期结果的字符串数组即可，代码如下：</p>
-<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-comment">// 创建一个kubectCmd</span>
-cobra add kubect
-<span class="hljs-comment">// 加入补全参数列表</span>
-<span class="hljs-keyword">var</span> valids []<span class="hljs-keyword">string</span> = []<span class="hljs-keyword">string</span>&#123; <span class="hljs-string">&quot;pod&quot;</span>, <span class="hljs-string">&quot;node&quot;</span>, <span class="hljs-string">&quot;service&quot;</span>, <span class="hljs-string">&quot;replicationcontroller&quot;</span> &#125;
+<h3 id="静态名称补全"><a href="#静态名称补全" class="headerlink" title="静态名称补全"></a>静态名称补全</h3><p>创建如下项目<br><img src="http://img.noback.top/2021-01-21-10-17-38.png" srcset="/img/loading.gif" alt="2021-01-21-10-17-38"></p>
+<p>静态名称补全比较简单，只要在想要自动补全的子命令中加入 ValidArgs 字段，传入一组包含预期结果的字符串数组即可，代码如下：</p>
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-comment">// desc.go </span>
+<span class="hljs-keyword">package</span> cmd
 
+<span class="hljs-keyword">import</span> (
+	<span class="hljs-string">&quot;fmt&quot;</span>
+
+	<span class="hljs-string">&quot;github.com/spf13/cobra&quot;</span>
+)
+
+<span class="hljs-keyword">var</span> valids []<span class="hljs-keyword">string</span> = []<span class="hljs-keyword">string</span>&#123; <span class="hljs-string">&quot;pod&quot;</span>, <span class="hljs-string">&quot;node&quot;</span>, <span class="hljs-string">&quot;service&quot;</span>, <span class="hljs-string">&quot;replicationcontroller&quot;</span> &#125;  <span class="hljs-comment">// 添加的补全内容</span>
+
+<span class="hljs-comment">// descCmd represents the desc command</span>
+<span class="hljs-keyword">var</span> descCmd = &amp;cobra.Command&#123;
+	Use:   <span class="hljs-string">&quot;desc&quot;</span>,
+	Short: <span class="hljs-string">&quot;A brief description of your command&quot;</span>,
+	Long: <span class="hljs-string">`A longer description that spans multiple lines and likely contains examples</span>
+<span class="hljs-string">and usage of using your command. For example:</span>
+<span class="hljs-string"></span>
+<span class="hljs-string">Cobra is a CLI library for Go that empowers applications.</span>
+<span class="hljs-string">This application is a tool to generate the needed files</span>
+<span class="hljs-string">to quickly create a Cobra application.`</span>,
+	ValidArgs:  valids,
+	Run: <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(cmd *cobra.Command, args []<span class="hljs-keyword">string</span>)</span></span> &#123;
+		fmt.Println(<span class="hljs-string">&quot;desc called&quot;</span>)
+	&#125;,
+&#125;
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">init</span><span class="hljs-params">()</span></span> &#123;
+	rootCmd.AddCommand(descCmd)
+&#125;
+</code></pre></div>
+
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-comment">// completion.go</span>
 <span class="hljs-comment">// 创建一个completionCmd</span>
 cobra add completion
 <span class="hljs-comment">// 复制粘贴 这是cobra官方提供的</span>
@@ -476,6 +505,16 @@ cobra add completion
 <span class="hljs-comment">// 比如bash</span>
 source &lt;(<span class="hljs-keyword">go</span> run main.<span class="hljs-keyword">go</span> completion bash)
 <span class="hljs-comment">// 重启终端就OK了</span></code></pre></div>
+<p>completion这个命令其实就是生成了一份补全命令的脚本，可以直接run一下看看</p>
+<div class="code-wrapper"><pre><code class="hljs go"><span class="hljs-keyword">go</span> run main.<span class="hljs-keyword">go</span> completion bash</code></pre></div>
+
+<blockquote>
+<p>kubectl ge-bash: _get_comp_words_by_ref: command not found</p>
+</blockquote>
+<p>报错内容如上，这个是因为linux系统里面没有bash_completion，需要安装一下</p>
+<div class="code-wrapper"><pre><code class="hljs bash">yum install -y bash-completion
+<span class="hljs-built_in">source</span> /usr/share/bash-completion/bash_completion
+<span class="hljs-built_in">source</span> &lt;(kubectl completion bash)</code></pre></div>
 
 
 <h2 id="cobra源码分析"><a href="#cobra源码分析" class="headerlink" title="cobra源码分析"></a>cobra源码分析</h2><p>第一次分析源码，会有点乱</p>
