@@ -1,235 +1,2213 @@
-
-
 <!DOCTYPE html>
-<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
-
-
-
+<html>
 <head>
-  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
-  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
-  <link rel="icon" type="image/png" href="/img/favicon.png">
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
-  
-    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
-  
-  <meta name="theme-color" content="#2f4154">
-  <meta name="description" content="">
-  <meta name="author" content="hzjsea">
-  <meta name="keywords" content="">
-  <title>mysql主从备份 - hzjsea</title>
-
-  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
-
-
-  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
-  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
-
-  
-    
-    
-      
-      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
-    
-  
-
-  
-    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
-  
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+  <title>mysql主从备份 | hzjsea</title>
+  <meta name="keywords" content=" mysql ">
+  <meta name="description" content="mysql主从备份 | hzjsea">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="&quot;emosewA sI kniL&quot; 		 	 	 	 	    [touch-action&#x3D;&quot;none&quot;]{ -ms-touch-action: none; touch-action: none; } 	    [touch-action&#x3D;&quot;pan-x&quot;]{ -ms-touch-action: pan-x; touch-action: pan-x; } 	    [touch">
+<meta property="og:type" content="website">
+<meta property="og:title" content="hzjsea">
+<meta property="og:url" content="http://www.baidu.com/about/about.html">
+<meta property="og:site_name" content="hzjsea">
+<meta property="og:description" content="&quot;emosewA sI kniL&quot; 		 	 	 	 	    [touch-action&#x3D;&quot;none&quot;]{ -ms-touch-action: none; touch-action: none; } 	    [touch-action&#x3D;&quot;pan-x&quot;]{ -ms-touch-action: pan-x; touch-action: pan-x; } 	    [touch">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-12-02T03:03:40.820Z">
+<meta property="article:modified_time" content="2020-12-02T03:03:40.820Z">
+<meta property="article:author" content="hzjsea">
+<meta name="twitter:card" content="summary">
 
 
+<link rel="icon" href="/img/head.jpeg">
 
-<!-- 主题依赖的图标库，不要自行修改 -->
+<link href="/css/style.css?v=1.1.0" rel="stylesheet">
 
-<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+<link href="/css/hl_theme/atom-dark.css?v=1.1.0" rel="stylesheet">
+
+<link href="//cdn.jsdelivr.net/npm/animate.css@4.1.0/animate.min.css" rel="stylesheet">
+
+<script src="//cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+<script src="/js/titleTip.js?v=1.1.0" ></script>
+
+<script src="//cdn.jsdelivr.net/npm/highlightjs@9.16.2/highlight.pack.min.js"></script>
+<script>
+    hljs.initHighlightingOnLoad();
+</script>
+
+<script src="//cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js"></script>
 
 
 
-<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+<script src="//cdn.jsdelivr.net/npm/jquery.cookie@1.4.1/jquery.cookie.min.js" ></script>
 
+<script src="/js/iconfont.js?v=1.1.0" ></script>
 
-<link  rel="stylesheet" href="/css/main.css" />
-
-<!-- 自定义样式保持在最底部 -->
-
-
-  <script id="fluid-configs">
-    var Fluid = window.Fluid || {};
-    var CONFIG = {"hostname":"www.baidu.com","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
-  </script>
-  <script  src="/js/utils.js" ></script>
-  <script  src="/js/color-schema.js" ></script>
 <meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
+<div style="display: none">
+  <input class="theme_disqus_on" value="false">
+  <input class="theme_preload_comment" value="">
+  <input class="theme_blog_path" value="">
+  <input id="theme_shortcut" value="true" />
+  <input id="theme_highlight_on" value="true" />
+  <input id="theme_code_copy" value="true" />
+</div>
+
 
 
 <body>
-  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header style="height: 70vh;">
-    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
-  <div class="container">
-    <a class="navbar-brand"
-       href="/">&nbsp;<strong>hzjsea</strong>&nbsp;</a>
-
-    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
-            data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <div class="animated-icon"><span></span><span></span><span></span></div>
-    </button>
-
-    <!-- Collapsible content -->
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav ml-auto text-center">
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/">
-                <i class="iconfont icon-home-fill"></i>
-                首页
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/archives/">
-                <i class="iconfont icon-archive-fill"></i>
-                归档
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/categories/">
-                <i class="iconfont icon-category-fill"></i>
-                分类
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/tags/">
-                <i class="iconfont icon-tags-fill"></i>
-                标签
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/about/">
-                <i class="iconfont icon-user-fill"></i>
-                关于
-              </a>
-            </li>
-          
-        
-        
-          <li class="nav-item" id="search-btn">
-            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
-                class="iconfont icon-search"></i>&nbsp;</a>
-          </li>
-        
-        
-          <li class="nav-item" id="color-toggle-btn">
-            <a class="nav-link" href="javascript:">&nbsp;<i
-                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
-          </li>
-        
-      </ul>
-    </div>
-  </div>
-</nav>
-
-    <div class="banner" id="banner" parallax=true
-         style="background: url('/img/default.png') no-repeat center center;
-           background-size: cover;">
-      <div class="full-bg-img">
-        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
-          <div class="page-header text-center fade-in-up">
-            <span class="h2" id="subtitle" title="mysql主从备份">
-              
-            </span>
-
-            
-              <div class="mt-3">
-  
-  
-    <span class="post-meta">
-      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-      <time datetime="2020-06-05 15:10" pubdate>
-        2020年6月5日 下午
-      </time>
-    </span>
-  
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><aside class="nav">
+    <div class="nav-left">
+        <a href="/"
+   class="avatar_target">
+    <img class="avatar"
+         src="/img/head.jpeg"/>
+</a>
+<div class="author">
+    <span>hzjsea</span>
 </div>
 
-<div class="mt-1">
-  
+<div class="icon">
     
-    <span class="post-meta mr-2">
-      <i class="iconfont icon-chart"></i>
-      6k 字
-    </span>
-  
-
-  
-    
-    <span class="post-meta mr-2">
-      <i class="iconfont icon-clock-fill"></i>
-      
-      
-      78
-       分钟
-    </span>
-  
-
-  
-  
 </div>
 
-            
-          </div>
 
-          
+
+
+<ul>
+    <li>
+        <div class="all active" data-rel="全部文章">全部文章
+            
+                <small>(198)</small>
+            
         </div>
-      </div>
-    </div>
-  </header>
-
-  <main>
+    </li>
     
-      
-
-<div class="container-fluid nopadding-x">
-  <div class="row nomargin-x">
-    <div class="d-none d-lg-block col-lg-2"></div>
-    <div class="col-lg-8 nopadding-x-md">
-      <div class="container nopadding-x-md" id="board-ctn">
-        <div class="py-5" id="board">
-          <article class="post-content mx-auto">
-            <!-- SEO header -->
-            <h1 style="display: none">mysql主从备份</h1>
+        
+            <li>
+                <div data-rel="高级特性">高级特性
+                    <small>(3)</small>
+                    
+                </div>
+            </li>
+        
+    
+        
+            <li>
+                <div data-rel="全栈">全栈
+                    <small>(4)</small>
+                    
+                </div>
+            </li>
+        
+    
+        
+            <li>
+                <div data-rel="网络">网络
+                    <small>(16)</small>
+                    
+                </div>
+            </li>
+        
+    
+        
+            <li>
+                <div data-rel="ansible">ansible
+                    <small>(8)</small>
+                    
+                </div>
+            </li>
+        
+    
+        
+            <li>
+                <div data-rel="docker">docker
+                    <small>(16)</small>
+                    
+                </div>
+            </li>
+        
+    
+        
+            <li>
+                <div data-rel="fastapi">fastapi
+                    <small>(11)</small>
+                    
+                </div>
+            </li>
+        
+    
+        
+            <li>
+                <div data-rel="git">git
+                    <small>(3)</small>
+                    
+                </div>
+            </li>
+        
+    
+        
+            <li>
+                <div data-rel="golang">golang
+                    <small>(33)</small>
+                    
+                </div>
+            </li>
+        
+    
+        
+            <li>
+                <div data-rel="java">java
+                    <small>(4)</small>
+                    
+                </div>
+            </li>
+        
+    
+        
+            <li>
+                <div data-rel="js">js
+                    <small>(4)</small>
+                    
+                </div>
+            </li>
+        
+    
+        
+            <li>
+                <div data-rel="leetcode">leetcode
+                    <small>(15)</small>
+                    
+                </div>
+            </li>
+        
+    
+        
+            <li>
+                <div data-rel="linux">linux
+                    <small>(12)</small>
+                    
+                </div>
+            </li>
+        
+    
+        
+            <li>
+                <div data-rel="machine">machine
+                    <small>(3)</small>
+                    
+                </div>
+            </li>
+        
+    
+        
+            <li>
+                <div data-rel="mysql">mysql
+                    <small>(7)</small>
+                    
+                </div>
+            </li>
+        
+    
+        
+            <li>
+                <div data-rel="net">net
+                    <small>(1)</small>
+                    
+                </div>
+            </li>
+        
+    
+        
+            <li>
+                <div data-rel="nginx">nginx
+                    <small>(4)</small>
+                    
+                </div>
+            </li>
+        
+    
+        
+            <li>
+                <div data-rel="ppgod">ppgod
+                    <small>(1)</small>
+                    
+                </div>
+            </li>
+        
+    
+        
+            <li>
+                <div data-rel="python">python
+                    <small>(25)</small>
+                    
+                </div>
+            </li>
+        
+    
+        
+            <li>
+                <div data-rel="redis">redis
+                    <small>(9)</small>
+                    
+                </div>
+            </li>
+        
+    
+        
+            <li>
+                <div data-rel="Regex">Regex
+                    <small>(1)</small>
+                    
+                </div>
+            </li>
+        
+    
+        
+            <li>
+                <div data-rel="rust">rust
+                    <small>(7)</small>
+                    
+                </div>
+            </li>
+        
+    
+        
+            <li>
+                <div data-rel="shell">shell
+                    <small>(6)</small>
+                    
+                </div>
+            </li>
+        
+    
+        
+            <li>
+                <div data-rel="vue">vue
+                    <small>(1)</small>
+                    
+                </div>
+            </li>
+        
+    
+        
+            <li>
+                <div data-rel="web">web
+                    <small>(1)</small>
+                    
+                </div>
+            </li>
+        
+    
+</ul>
+<div class="left-bottom">
+    <div class="menus">
+        
             
-            <div class="markdown-body">
-              <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+            
+            
+    </div>
+    <div>
+        
+        
+    </div>
+</div>
+<input type="hidden" id="yelog_site_posts_number" value="198">
+
+<div style="display: none">
+    <span id="busuanzi_value_site_uv"></span>
+    <span id="busuanzi_value_site_pv"></span>
+</div>
+
+    </div>
+    <div class="nav-right">
+        <div class="friends-area">
+    <div class="friends-title">
+        友情链接
+        <i class="iconfont icon-left"></i>
+    </div>
+    <div class="friends-content">
+        <ul>
+            
+            <li><a target="_blank" href="http://www.baidu.com">百度</a></li>
+            
+        </ul>
+    </div>
+</div>
+        <div class="title-list">
+    <div class="right-top">
+        <div id="default-panel">
+            <i class="iconfont icon-search" data-title="搜索 快捷键 i"></i>
+            <div class="right-title">全部文章</div>
+            <i class="iconfont icon-file-tree" data-title="切换到大纲视图 快捷键 w"></i>
+        </div>
+        <div id="search-panel">
+            <i class="iconfont icon-left" data-title="返回"></i>
+            <input id="local-search-input" />
+            <label class="border-line" for="input"></label>
+            <i class="iconfont icon-case-sensitive" data-title="大小写敏感"></i>
+            <i class="iconfont icon-tag" data-title="标签"></i>
+        </div>
+        <div id="outline-panel" style="display: none">
+            <div class="right-title">大纲</div>
+            <i class="iconfont icon-list" data-title="切换到文章列表"></i>
+        </div>
+    </div>
+
+    <div class="tags-list">
+    <input id="tag-search" />
+    <div class="tag-wrapper">
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>高级特性</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>链表</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>网络</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>协议</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>ansible</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>CD</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>CDN</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>chrome</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>CI</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>command</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>docker</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>echart</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>fastapi</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>gin</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>git</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>go</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>go-library</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>golang</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>golibrary</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>goweb</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>java</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>js</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>leetcode</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>linux</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>linux系统</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>linuxcc</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>machine</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>mysql</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>net</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>nginx</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>orm</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>plugin</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>ppgod</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>pyredis</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>python</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>redis</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>Regex</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>rust</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>shell</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>sqlalchemy</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>switch</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>vue</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>web</a>
+            </li>
+        
+    </div>
+
+</div>
+
+    
+    <div id="local-search-result">
+
+    </div>
+    
+    <nav id="title-list-nav">
+        
+        <a id="top" class="全部文章 golang "
+           href="/2021/02/05/blog_back_new/golang/golang%E9%99%B7%E9%98%B1/"
+           data-tag="golang"
+           data-author="" >
+            <span class="post-title" title="golang陷阱">golang陷阱</span>
+            <span class="post-date" title="2021-02-05 14:08:15">2021/02/05</span>
+        </a>
+        
+        <a  class="全部文章 golang "
+           href="/2021/02/20/blog_back_new/golang/golangWeb%E5%BA%93gin3/"
+           data-tag="golang,gin"
+           data-author="" >
+            <span class="post-title" title="golangWeb库gin3">golangWeb库gin3</span>
+            <span class="post-date" title="2021-02-20 16:17:55">2021/02/20</span>
+        </a>
+        
+        <a  class="全部文章 python "
+           href="/2021/02/16/blog_back_new/Python/ProPython3/"
+           data-tag="python"
+           data-author="" >
+            <span class="post-title" title="ProPython3">ProPython3</span>
+            <span class="post-date" title="2021-02-16 18:57:52">2021/02/16</span>
+        </a>
+        
+        <a  class="全部文章 golang "
+           href="/2021/02/07/blog_back_new/golang/golang%E6%A0%87%E5%87%86%E5%BA%93path/"
+           data-tag="golang,golibrary"
+           data-author="" >
+            <span class="post-title" title="golang标准库path">golang标准库path</span>
+            <span class="post-date" title="2021-02-07 13:41:10">2021/02/07</span>
+        </a>
+        
+        <a  class="全部文章 golang "
+           href="/2021/02/06/blog_back_new/golang/golang%E6%A0%87%E5%87%86%E5%BA%93exec/"
+           data-tag="golang,golibrary"
+           data-author="" >
+            <span class="post-title" title="golang标准库exec">golang标准库exec</span>
+            <span class="post-date" title="2021-02-06 16:03:11">2021/02/06</span>
+        </a>
+        
+        <a  class="全部文章 golang "
+           href="/2021/02/05/blog_back_new/golang/golang%E6%A0%87%E5%87%86%E5%BA%93flag/"
+           data-tag="golang"
+           data-author="" >
+            <span class="post-title" title="golang标准库flag.md">golang标准库flag.md</span>
+            <span class="post-date" title="2021-02-05 11:10:15">2021/02/05</span>
+        </a>
+        
+        <a  class="全部文章 python "
+           href="/2021/01/31/blog_back_new/Python/%5Epython%E5%86%85%E7%BD%AE%E5%87%BD%E6%95%B0/"
+           data-tag="python"
+           data-author="" >
+            <span class="post-title" title="^python内置函数">^python内置函数</span>
+            <span class="post-date" title="2021-01-31 22:09:52">2021/01/31</span>
+        </a>
+        
+        <a  class="全部文章 python "
+           href="/2021/01/29/blog_back_new/Python/%5Epython%E8%A3%85%E9%A5%B0%E5%99%A8%E4%BB%A5%E5%8F%8A%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF/"
+           data-tag="python"
+           data-author="" >
+            <span class="post-title" title="^python装饰器以及使用场景">^python装饰器以及使用场景</span>
+            <span class="post-date" title="2021-01-29 16:55:43">2021/01/29</span>
+        </a>
+        
+        <a  class="全部文章 golang "
+           href="/2021/01/29/blog_back_new/golang/golang%E6%A0%87%E5%87%86%E5%BA%93log/"
+           data-tag="golang,golibrary"
+           data-author="" >
+            <span class="post-title" title="golang标准库log">golang标准库log</span>
+            <span class="post-date" title="2021-01-29 12:24:00">2021/01/29</span>
+        </a>
+        
+        <a  class="全部文章 golang "
+           href="/2021/01/27/blog_back_new/golang/golang%E5%BA%93netHttp/"
+           data-tag="golang"
+           data-author="" >
+            <span class="post-title" title="golang库netHttp库">golang库netHttp库</span>
+            <span class="post-date" title="2021-01-27 16:12:52">2021/01/27</span>
+        </a>
+        
+        <a  class="全部文章 golang "
+           href="/2021/01/27/blog_back_new/golang/golang%E6%A0%87%E5%87%86%E5%BA%93re/"
+           data-tag="golang,golibrary"
+           data-author="" >
+            <span class="post-title" title="golang标准库re">golang标准库re</span>
+            <span class="post-date" title="2021-01-27 10:58:20">2021/01/27</span>
+        </a>
+        
+        <a  class="全部文章 Regex "
+           href="/2021/01/26/blog_back_new/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/"
+           data-tag="Regex"
+           data-author="" >
+            <span class="post-title" title="正则表达式">正则表达式</span>
+            <span class="post-date" title="2021-01-26 15:56:16">2021/01/26</span>
+        </a>
+        
+        <a  class="全部文章 golang "
+           href="/2021/01/22/blog_back_new/golang/golangWeb%E5%BA%93gin%E6%BA%90%E7%A0%81/"
+           data-tag="golang,gin,goweb"
+           data-author="" >
+            <span class="post-title" title="golangWeb库gin源码">golangWeb库gin源码</span>
+            <span class="post-date" title="2021-01-22 03:17:10">2021/01/22</span>
+        </a>
+        
+        <a  class="全部文章 python "
+           href="/2021/01/19/blog_back_new/Python/python%E5%8D%8F%E7%A8%8B/"
+           data-tag="python"
+           data-author="" >
+            <span class="post-title" title="python协程">python协程</span>
+            <span class="post-date" title="2021-01-19 11:01:44">2021/01/19</span>
+        </a>
+        
+        <a  class="全部文章 ppgod "
+           href="/2021/01/12/blog_back_new/ppgod/%E9%82%AE%E4%BB%B6%E7%BD%91%E5%85%B3/"
+           data-tag="ppgod"
+           data-author="" >
+            <span class="post-title" title="邮件网关">邮件网关</span>
+            <span class="post-date" title="2021-01-12 14:12:45">2021/01/12</span>
+        </a>
+        
+        <a  class="全部文章 golang "
+           href="/2021/01/11/blog_back_new/golang/golangRuntime/"
+           data-tag="golang"
+           data-author="" >
+            <span class="post-title" title="golangRuntime">golangRuntime</span>
+            <span class="post-date" title="2021-01-11 14:48:32">2021/01/11</span>
+        </a>
+        
+        <a  class="全部文章 rust "
+           href="/2021/01/07/blog_back_new/Rust/rust%E5%8C%85%E7%AE%A1%E7%90%86/"
+           data-tag="rust"
+           data-author="" >
+            <span class="post-title" title="rust包管理">rust包管理</span>
+            <span class="post-date" title="2021-01-07 17:11:02">2021/01/07</span>
+        </a>
+        
+        <a  class="全部文章 web "
+           href="/2021/01/05/blog_back_new/NetWord/http%E4%B8%8Ews%E5%8D%8F%E8%AE%AE/"
+           data-tag="网络,web,协议"
+           data-author="" >
+            <span class="post-title" title="http与ws协议">http与ws协议</span>
+            <span class="post-date" title="2021-01-05 15:23:13">2021/01/05</span>
+        </a>
+        
+        <a  class="全部文章 golang "
+           href="/2020/12/31/blog_back_new/golang/golang%E5%A4%87%E6%B3%A8/"
+           data-tag="golang"
+           data-author="" >
+            <span class="post-title" title="golang备注">golang备注</span>
+            <span class="post-date" title="2020-12-31 14:48:40">2020/12/31</span>
+        </a>
+        
+        <a  class="全部文章 vue "
+           href="/2020/12/22/blog_back_new/%E6%8A%80%E6%9C%AF%E8%A1%A5%E8%B6%B3/vue-chrome-plugin/"
+           data-tag="vue,chrome,plugin"
+           data-author="" >
+            <span class="post-title" title="vue-chrome-plugin">vue-chrome-plugin</span>
+            <span class="post-date" title="2020-12-22 16:11:34">2020/12/22</span>
+        </a>
+        
+        <a  class="全部文章 python "
+           href="/2020/12/18/blog_back_new/Python/python%E6%89%93%E5%8C%85/"
+           data-tag="python"
+           data-author="" >
+            <span class="post-title" title="python打包的几种形式">python打包的几种形式</span>
+            <span class="post-date" title="2020-12-18 09:26:14">2020/12/18</span>
+        </a>
+        
+        <a  class="全部文章 net "
+           href="/2020/12/17/blog_back_new/NetWord/%E4%BA%A4%E6%8D%A2%E6%9C%BA/%E4%BA%A4%E6%8D%A2%E6%9C%BA%E5%A0%86%E5%8F%A0/"
+           data-tag="switch,net"
+           data-author="" >
+            <span class="post-title" title="交换机irf堆叠">交换机irf堆叠</span>
+            <span class="post-date" title="2020-12-17 11:36:37">2020/12/17</span>
+        </a>
+        
+        <a  class="全部文章 golang "
+           href="/2020/12/16/blog_back_new/golang/golang%E6%A0%87%E5%87%86%E5%BA%93os/"
+           data-tag="golang,golibrary"
+           data-author="" >
+            <span class="post-title" title="golang标准库os">golang标准库os</span>
+            <span class="post-date" title="2020-12-16 18:28:38">2020/12/16</span>
+        </a>
+        
+        <a  class="全部文章 golang "
+           href="/2020/12/16/blog_back_new/golang/golang%E6%A0%87%E5%87%86%E5%BA%93iobase/"
+           data-tag="golang,go-library"
+           data-author="" >
+            <span class="post-title" title="golang标准库iobase">golang标准库iobase</span>
+            <span class="post-date" title="2020-12-16 16:50:31">2020/12/16</span>
+        </a>
+        
+        <a  class="全部文章 golang "
+           href="/2020/12/16/blog_back_new/golang/golang%E6%A0%87%E5%87%86%E5%BA%93ioutil/"
+           data-tag="golang,go-library"
+           data-author="" >
+            <span class="post-title" title="golang标准库ioutil">golang标准库ioutil</span>
+            <span class="post-date" title="2020-12-16 16:50:31">2020/12/16</span>
+        </a>
+        
+        <a  class="全部文章 golang "
+           href="/2020/12/15/blog_back_new/golang/go%E5%BA%93net-http/"
+           data-tag="golang,go-library"
+           data-author="" >
+            <span class="post-title" title="go库net-http">go库net-http</span>
+            <span class="post-date" title="2020-12-15 15:46:14">2020/12/15</span>
+        </a>
+        
+        <a  class="全部文章 golang "
+           href="/2020/12/11/blog_back_new/golang/golang%E6%A0%87%E5%87%86%E5%BA%93net/"
+           data-tag="go-library,go"
+           data-author="" >
+            <span class="post-title" title="golang标准库net">golang标准库net</span>
+            <span class="post-date" title="2020-12-11 11:57:08">2020/12/11</span>
+        </a>
+        
+        <a  class="全部文章 linux "
+           href="/2020/12/11/blog_back_new/linux/linux%E5%91%BD%E4%BB%A4ncat/"
+           data-tag="linux,linuxcc"
+           data-author="" >
+            <span class="post-title" title="linux命令ncat">linux命令ncat</span>
+            <span class="post-date" title="2020-12-11 10:56:41">2020/12/11</span>
+        </a>
+        
+        <a  class="全部文章 linux "
+           href="/2020/12/11/blog_back_new/linux/linux%E5%91%BD%E4%BB%A4tcpdump/"
+           data-tag="linux,linuxcc"
+           data-author="" >
+            <span class="post-title" title="linux命令tcpdump以及wireshark">linux命令tcpdump以及wireshark</span>
+            <span class="post-date" title="2020-12-11 10:50:23">2020/12/11</span>
+        </a>
+        
+        <a  class="全部文章 linux "
+           href="/2020/12/11/blog_back_new/linux/linux%E5%91%BD%E4%BB%A4hping3/"
+           data-tag="linux,linuxcc"
+           data-author="" >
+            <span class="post-title" title="linux命令hping3">linux命令hping3</span>
+            <span class="post-date" title="2020-12-11 10:08:06">2020/12/11</span>
+        </a>
+        
+        <a  class="全部文章 linux "
+           href="/2020/12/09/blog_back_new/linux/linux%E5%91%BD%E4%BB%A4crond/"
+           data-tag="linux,linuxcc"
+           data-author="" >
+            <span class="post-title" title="linux命令crond">linux命令crond</span>
+            <span class="post-date" title="2020-12-09 14:19:42">2020/12/09</span>
+        </a>
+        
+        <a  class="全部文章 linux "
+           href="/2020/12/09/blog_back_new/linux/linux%E5%91%BD%E4%BB%A4curl/"
+           data-tag="linux,linuxcc"
+           data-author="" >
+            <span class="post-title" title="linux命令curl">linux命令curl</span>
+            <span class="post-date" title="2020-12-09 14:00:24">2020/12/09</span>
+        </a>
+        
+        <a  class="全部文章 linux "
+           href="/2020/12/09/blog_back_new/linux/linux%E4%B8%BB%E6%9C%BA%E5%90%8D/"
+           data-tag="linux,linux系统"
+           data-author="" >
+            <span class="post-title" title="linux主机名">linux主机名</span>
+            <span class="post-date" title="2020-12-09 11:26:42">2020/12/09</span>
+        </a>
+        
+        <a  class="全部文章 linux "
+           href="/2020/12/08/blog_back_new/linux/linux%E7%B3%BB%E7%BB%9F%E6%97%B6%E9%97%B4/"
+           data-tag="linux,linux系统"
+           data-author="" >
+            <span class="post-title" title="linux系统时间">linux系统时间</span>
+            <span class="post-date" title="2020-12-08 15:47:00">2020/12/08</span>
+        </a>
+        
+        <a  class="全部文章 docker "
+           href="/2020/12/07/blog_back_new/docker/docker/"
+           data-tag="docker"
+           data-author="" >
+            <span class="post-title" title="docker">docker</span>
+            <span class="post-date" title="2020-12-07 11:23:15">2020/12/07</span>
+        </a>
+        
+        <a  class="全部文章 python "
+           href="/2020/12/07/blog_back_new/Python/python%E5%90%84%E7%A7%8D%E9%97%AE%E9%A2%98/"
+           data-tag="python"
+           data-author="" >
+            <span class="post-title" title="python各种问题">python各种问题</span>
+            <span class="post-date" title="2020-12-07 11:17:20">2020/12/07</span>
+        </a>
+        
+        <a  class="全部文章 git "
+           href="/2020/12/02/blog_back_new/git/git%E5%9F%BA%E7%A1%80/"
+           data-tag="git"
+           data-author="" >
+            <span class="post-title" title="git基础">git基础</span>
+            <span class="post-date" title="2020-12-02 13:39:14">2020/12/02</span>
+        </a>
+        
+        <a  class="全部文章 docker "
+           href="/2020/11/30/blog_back_new/docker/docker%E5%AE%89%E8%A3%85%E4%BB%A5%E5%8F%8A%E6%8E%92%E7%96%91/"
+           data-tag="docker"
+           data-author="" >
+            <span class="post-title" title="docker安装">docker安装</span>
+            <span class="post-date" title="2020-11-30 14:47:04">2020/11/30</span>
+        </a>
+        
+        <a  class="全部文章 linux "
+           href="/2020/11/30/blog_back_new/linux/linux%E5%91%BD%E4%BB%A4firewalld/"
+           data-tag="linux,linuxcc"
+           data-author="" >
+            <span class="post-title" title="linux命令firewalld">linux命令firewalld</span>
+            <span class="post-date" title="2020-11-30 11:35:40">2020/11/30</span>
+        </a>
+        
+        <a  class="全部文章 linux "
+           href="/2020/11/30/blog_back_new/linux/linux%E5%91%BD%E4%BB%A4ip/"
+           data-tag="linux,linuxcc"
+           data-author="" >
+            <span class="post-title" title="linux命令iprouter">linux命令iprouter</span>
+            <span class="post-date" title="2020-11-30 10:21:45">2020/11/30</span>
+        </a>
+        
+        <a  class="全部文章 linux "
+           href="/2020/11/26/blog_back_new/linux/linux%E5%91%BD%E4%BB%A4iptables/"
+           data-tag="linux,linuxcc"
+           data-author="" >
+            <span class="post-title" title="linux命令iptables">linux命令iptables</span>
+            <span class="post-date" title="2020-11-26 09:53:25">2020/11/26</span>
+        </a>
+        
+        <a  class="全部文章 shell "
+           href="/2020/11/16/blog_back_new/shell/%E5%85%B3%E4%BA%8Eshell/"
+           data-tag="shell"
+           data-author="" >
+            <span class="post-title" title="关于shell">关于shell</span>
+            <span class="post-date" title="2020-11-16 10:03:48">2020/11/16</span>
+        </a>
+        
+        <a  class="全部文章 ansible "
+           href="/2020/11/12/blog_back_new/ansible/ansible%E5%B8%B8%E7%94%A8%E6%A8%A1%E5%9D%97/"
+           data-tag="ansible"
+           data-author="" >
+            <span class="post-title" title="ansible常用模块">ansible常用模块</span>
+            <span class="post-date" title="2020-11-12 15:25:01">2020/11/12</span>
+        </a>
+        
+        <a  class="全部文章 redis "
+           href="/2020/11/09/blog_back_new/redis/redis%E4%BC%98%E5%8C%96/"
+           data-tag="redis"
+           data-author="" >
+            <span class="post-title" title="redis优化">redis优化</span>
+            <span class="post-date" title="2020-11-09 17:19:39">2020/11/09</span>
+        </a>
+        
+        <a  class="全部文章 redis "
+           href="/2020/11/09/blog_back_new/redis/redis%E5%A4%8D%E5%88%B6/"
+           data-tag="redis"
+           data-author="" >
+            <span class="post-title" title="redis复制">redis复制</span>
+            <span class="post-date" title="2020-11-09 16:21:31">2020/11/09</span>
+        </a>
+        
+        <a  class="全部文章 redis "
+           href="/2020/11/05/blog_back_new/redis/redis%E6%8C%81%E4%B9%85%E5%8C%96/"
+           data-tag="redis"
+           data-author="" >
+            <span class="post-title" title="redis持久化">redis持久化</span>
+            <span class="post-date" title="2020-11-05 15:38:35">2020/11/05</span>
+        </a>
+        
+        <a  class="全部文章 redis "
+           href="/2020/11/02/blog_back_new/redis/redis%E5%9F%BA%E7%A1%80/"
+           data-tag="redis"
+           data-author="" >
+            <span class="post-title" title="redis基础">redis基础</span>
+            <span class="post-date" title="2020-11-02 10:24:45">2020/11/02</span>
+        </a>
+        
+        <a  class="全部文章 redis "
+           href="/2020/10/30/blog_back_new/redis/redis%E9%9B%86%E7%BE%A4%E5%AE%9E%E8%B7%B5/"
+           data-tag="redis"
+           data-author="" >
+            <span class="post-title" title="redis集群实践">redis集群实践</span>
+            <span class="post-date" title="2020-10-30 18:04:01">2020/10/30</span>
+        </a>
+        
+        <a  class="全部文章 redis "
+           href="/2020/10/29/blog_back_new/redis/redis%E5%93%A8%E5%85%B5%E5%AE%9E%E8%B7%B5/"
+           data-tag="redis"
+           data-author="" >
+            <span class="post-title" title="redis哨兵实践">redis哨兵实践</span>
+            <span class="post-date" title="2020-10-29 16:11:28">2020/10/29</span>
+        </a>
+        
+        <a  class="全部文章 golang "
+           href="/2020/10/27/blog_back_new/golang/go%E7%AC%AC%E4%B8%89%E6%96%B9%E5%BA%93homedir/"
+           data-tag="golang"
+           data-author="" >
+            <span class="post-title" title="go第三方库homedir">go第三方库homedir</span>
+            <span class="post-date" title="2020-10-27 15:29:39">2020/10/27</span>
+        </a>
+        
+        <a  class="全部文章 java "
+           href="/2020/10/27/blog_back_new/java/java%E5%AE%B9%E5%99%A8/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="java容器">java容器</span>
+            <span class="post-date" title="2020-10-27 11:19:49">2020/10/27</span>
+        </a>
+        
+        <a  class="全部文章 golang "
+           href="/2020/10/23/blog_back_new/golang/golang%E6%A0%87%E5%87%86%E5%BA%93IO2/"
+           data-tag="golang,golibrary"
+           data-author="" >
+            <span class="post-title" title="golang标准库IO">golang标准库IO</span>
+            <span class="post-date" title="2020-10-23 11:42:02">2020/10/23</span>
+        </a>
+        
+        <a  class="全部文章 leetcode "
+           href="/2020/10/21/blog_back_new/leetcode/Strings/5-%E6%9C%80%E9%95%BF%E5%9B%9E%E6%96%87%E5%AD%97%E7%AC%A6%E4%B8%B2/"
+           data-tag="leetcode"
+           data-author="" >
+            <span class="post-title" title="最长回文字符串">最长回文字符串</span>
+            <span class="post-date" title="2020-10-21 15:53:10">2020/10/21</span>
+        </a>
+        
+        <a  class="全部文章 mysql "
+           href="/2020/10/21/blog_back_new/mysql/mysqlUP/"
+           data-tag="mysql"
+           data-author="" >
+            <span class="post-title" title="MysqlUP">MysqlUP</span>
+            <span class="post-date" title="2020-10-21 11:29:59">2020/10/21</span>
+        </a>
+        
+        <a  class="全部文章 leetcode "
+           href="/2020/10/20/blog_back_new/leetcode/Strings/3-%E4%B8%8D%E9%87%8D%E5%A4%8D%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%9C%80%E5%A4%A7%E9%95%BF%E5%BA%A6/"
+           data-tag="leetcode"
+           data-author="" >
+            <span class="post-title" title="不重复字符串最大长度">不重复字符串最大长度</span>
+            <span class="post-date" title="2020-10-20 17:39:51">2020/10/20</span>
+        </a>
+        
+        <a  class="全部文章 leetcode "
+           href="/2020/10/20/blog_back_new/leetcode/Strings/76-%E6%9C%80%E5%B0%8F%E8%A6%86%E7%9B%96%E5%AD%90%E4%B8%B2/"
+           data-tag="leetcode"
+           data-author="" >
+            <span class="post-title" title="最小覆盖子串">最小覆盖子串</span>
+            <span class="post-date" title="2020-10-20 15:33:31">2020/10/20</span>
+        </a>
+        
+        <a  class="全部文章 java "
+           href="/2020/10/19/blog_back_new/java/java%E5%B8%B8%E7%94%A8%E5%BA%93/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="Java常用库">Java常用库</span>
+            <span class="post-date" title="2020-10-19 14:23:59">2020/10/19</span>
+        </a>
+        
+        <a  class="全部文章 java "
+           href="/2020/10/12/blog_back_new/java/java%E9%AB%98%E7%BA%A7/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="java高级">java高级</span>
+            <span class="post-date" title="2020-10-12 15:00:01">2020/10/12</span>
+        </a>
+        
+        <a  class="全部文章 java "
+           href="/2020/10/09/blog_back_new/java/java%E5%9F%BA%E7%A1%80/"
+           data-tag="java"
+           data-author="" >
+            <span class="post-title" title="java基础">java基础</span>
+            <span class="post-date" title="2020-10-09 08:24:53">2020/10/09</span>
+        </a>
+        
+        <a  class="全部文章 网络 "
+           href="/2020/09/30/blog_back_new/NetWord/1OSI%E6%A8%A1%E5%9E%8B%E5%BA%94%E7%94%A8%E5%B1%82/"
+           data-tag="网络"
+           data-author="" >
+            <span class="post-title" title="OSI模型应用层">OSI模型应用层</span>
+            <span class="post-date" title="2020-09-30 10:18:28">2020/09/30</span>
+        </a>
+        
+        <a  class="全部文章 网络 "
+           href="/2020/09/29/blog_back_new/NetWord/5OSI%E6%A8%A1%E5%9E%8B%E7%89%A9%E7%90%86%E5%B1%82/"
+           data-tag="网络"
+           data-author="" >
+            <span class="post-title" title="OSI模型物理层">OSI模型物理层</span>
+            <span class="post-date" title="2020-09-29 17:40:09">2020/09/29</span>
+        </a>
+        
+        <a  class="全部文章 golang "
+           href="/2020/09/29/blog_back_new/golang/golang%E6%B5%8B%E8%AF%95testing/"
+           data-tag="golang"
+           data-author="" >
+            <span class="post-title" title="golang测试testing">golang测试testing</span>
+            <span class="post-date" title="2020-09-29 17:00:40">2020/09/29</span>
+        </a>
+        
+        <a  class="全部文章 "
+           href="/2020/09/29/blog_back_new/leetcode/%E8%AF%AD%E8%A8%80%E9%AB%98%E7%BA%A7%E7%89%B9%E6%80%A7/golang%E7%94%9F%E4%BA%A7%E8%80%85%E6%B6%88%E8%B4%B9%E8%80%85%E6%A8%A1%E5%BC%8F/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title=""></span>
+            <span class="post-date" title="2020-09-29 14:07:27">2020/09/29</span>
+        </a>
+        
+        <a  class="全部文章 高级特性 "
+           href="/2020/09/29/blog_back_new/leetcode/%E8%AF%AD%E8%A8%80%E9%AB%98%E7%BA%A7%E7%89%B9%E6%80%A7/%E7%A8%8B%E5%BA%8F%E7%9A%84%E5%81%A5%E5%A3%AE%E6%80%A7%E5%92%8C%E9%B2%81%E6%A3%92%E6%80%A7/"
+           data-tag="高级特性"
+           data-author="" >
+            <span class="post-title" title="程序的健壮性和鲁棒性">程序的健壮性和鲁棒性</span>
+            <span class="post-date" title="2020-09-29 13:56:55">2020/09/29</span>
+        </a>
+        
+        <a  class="全部文章 高级特性 "
+           href="/2020/09/29/blog_back_new/leetcode/%E8%AF%AD%E8%A8%80%E9%AB%98%E7%BA%A7%E7%89%B9%E6%80%A7/%E8%BF%9B%E7%A8%8B%E7%BA%BF%E7%A8%8B%E5%8D%8F%E7%A8%8B%E5%B9%B6%E5%8F%91%E5%B9%B6%E8%A1%8C%E7%9A%84%E5%85%B3%E7%B3%BB/"
+           data-tag="高级特性"
+           data-author="" >
+            <span class="post-title" title="进程线程协程的关系">进程线程协程的关系</span>
+            <span class="post-date" title="2020-09-29 10:32:12">2020/09/29</span>
+        </a>
+        
+        <a  class="全部文章 高级特性 "
+           href="/2020/09/28/blog_back_new/leetcode/%E8%AF%AD%E8%A8%80%E9%AB%98%E7%BA%A7%E7%89%B9%E6%80%A7/python%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/"
+           data-tag="高级特性"
+           data-author="" >
+            <span class="post-title" title="python并发编程">python并发编程</span>
+            <span class="post-date" title="2020-09-28 18:10:37">2020/09/28</span>
+        </a>
+        
+        <a  class="全部文章 leetcode "
+           href="/2020/09/23/blog_back_new/leetcode/%E5%A0%86%E6%A0%88%E9%98%9F%E5%88%97/"
+           data-tag="leetcode"
+           data-author="" >
+            <span class="post-title" title="堆栈队列">堆栈队列</span>
+            <span class="post-date" title="2020-09-23 12:02:40">2020/09/23</span>
+        </a>
+        
+        <a  class="全部文章 golang "
+           href="/2020/09/21/blog_back_new/golang/golangWeb%E5%BA%93gin/"
+           data-tag="golang,gin,goweb"
+           data-author="" >
+            <span class="post-title" title="golangWeb库gin">golangWeb库gin</span>
+            <span class="post-date" title="2020-09-21 12:05:07">2020/09/21</span>
+        </a>
+        
+        <a  class="全部文章 golang "
+           href="/2020/09/17/blog_back_new/golang/golang%E8%81%8A%E5%A4%A9%E5%AE%A4%E9%A1%B9%E7%9B%AE/"
+           data-tag="golang"
+           data-author="" >
+            <span class="post-title" title="golang聊天室项目">golang聊天室项目</span>
+            <span class="post-date" title="2020-09-17 10:55:11">2020/09/17</span>
+        </a>
+        
+        <a  class="全部文章 golang "
+           href="/2020/09/15/blog_back_new/golang/golang%E6%A0%87%E5%87%86%E5%BA%93socket/"
+           data-tag="golang"
+           data-author="" >
+            <span class="post-title" title="golang标准库socket">golang标准库socket</span>
+            <span class="post-date" title="2020-09-15 17:22:21">2020/09/15</span>
+        </a>
+        
+        <a  class="全部文章 "
+           href="/2020/09/15/blog_back_new/NetWord/4OSI%E6%A8%A1%E5%9E%8B%E6%95%B0%E6%8D%AE%E9%93%BE%E8%B7%AF%E5%B1%82/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title=""></span>
+            <span class="post-date" title="2020-09-15 15:18:57">2020/09/15</span>
+        </a>
+        
+        <a  class="全部文章 golang "
+           href="/2020/09/15/blog_back_new/golang/go%E7%AC%AC%E4%B8%89%E6%96%B9%E5%BA%93cobra/"
+           data-tag="golang"
+           data-author="" >
+            <span class="post-title" title="go第三方库cobra">go第三方库cobra</span>
+            <span class="post-date" title="2020-09-15 10:03:23">2020/09/15</span>
+        </a>
+        
+        <a  class="全部文章 golang "
+           href="/2020/09/14/blog_back_new/golang/golang%E5%9F%BA%E7%A1%80/"
+           data-tag="golang"
+           data-author="" >
+            <span class="post-title" title="golang基础">golang基础</span>
+            <span class="post-date" title="2020-09-14 17:31:54">2020/09/14</span>
+        </a>
+        
+        <a  class="全部文章 golang "
+           href="/2020/09/14/blog_back_new/golang/golang%E5%8D%8F%E7%A8%8B/"
+           data-tag="golang"
+           data-author="" >
+            <span class="post-title" title="golang协程">golang协程</span>
+            <span class="post-date" title="2020-09-14 12:07:47">2020/09/14</span>
+        </a>
+        
+        <a  class="全部文章 leetcode "
+           href="/2020/09/10/blog_back_new/leetcode/Strings/28-%E5%AE%9E%E7%8E%B0strStr/"
+           data-tag="leetcode"
+           data-author="" >
+            <span class="post-title" title="实现strStr">实现strStr</span>
+            <span class="post-date" title="2020-09-10 15:16:05">2020/09/10</span>
+        </a>
+        
+        <a  class="全部文章 leetcode "
+           href="/2020/09/10/blog_back_new/leetcode/Strings/20-%E6%9C%89%E6%95%88%E7%9A%84%E6%8B%AC%E5%8F%B7/"
+           data-tag="leetcode"
+           data-author="" >
+            <span class="post-title" title="有效的括号">有效的括号</span>
+            <span class="post-date" title="2020-09-10 15:11:03">2020/09/10</span>
+        </a>
+        
+        <a  class="全部文章 leetcode "
+           href="/2020/09/10/blog_back_new/leetcode/Strings/13-%E7%BD%97%E9%A9%AC%E6%95%B0%E5%AD%97%E8%BD%AC%E6%95%B4%E6%95%B0/"
+           data-tag="leetcode"
+           data-author="" >
+            <span class="post-title" title="罗马数字转整数">罗马数字转整数</span>
+            <span class="post-date" title="2020-09-10 13:48:34">2020/09/10</span>
+        </a>
+        
+        <a  class="全部文章 golang "
+           href="/2020/09/07/blog_back_new/golang/StringsBytesRunesCharacters/"
+           data-tag="golang"
+           data-author="" >
+            <span class="post-title" title="Strings, bytes, runes and characters in Go">Strings, bytes, runes and characters in Go</span>
+            <span class="post-date" title="2020-09-07 14:27:31">2020/09/07</span>
+        </a>
+        
+        <a  class="全部文章 golang "
+           href="/2020/09/07/blog_back_new/golang/golang%E6%A0%87%E5%87%86%E5%BA%93Io/"
+           data-tag="golang,golibrary"
+           data-author="" >
+            <span class="post-title" title="golang标准库io">golang标准库io</span>
+            <span class="post-date" title="2020-09-07 14:13:59">2020/09/07</span>
+        </a>
+        
+        <a  class="全部文章 golang "
+           href="/2020/09/07/blog_back_new/golang/golang%E6%A0%87%E5%87%86%E5%BA%93strings/"
+           data-tag="golang,golibrary"
+           data-author="" >
+            <span class="post-title" title="golang标准库strings">golang标准库strings</span>
+            <span class="post-date" title="2020-09-07 14:13:59">2020/09/07</span>
+        </a>
+        
+        <a  class="全部文章 golang "
+           href="/2020/09/07/blog_back_new/golang/go%E5%BA%93log&&os/"
+           data-tag="golang"
+           data-author="" >
+            <span class="post-title" title="go库shell">go库shell</span>
+            <span class="post-date" title="2020-09-07 09:56:22">2020/09/07</span>
+        </a>
+        
+        <a  class="全部文章 golang "
+           href="/2020/08/23/blog_back_new/golang/golang%E6%A0%87%E5%87%86%E5%BA%93json/"
+           data-tag="golang"
+           data-author="" >
+            <span class="post-title" title="golang标准库json">golang标准库json</span>
+            <span class="post-date" title="2020-08-23 21:31:27">2020/08/23</span>
+        </a>
+        
+        <a  class="全部文章 rust "
+           href="/2020/08/17/blog_back_new/Rust/%E6%9D%A5%E7%9C%8B%E7%9C%8Btrait%E7%9A%84%E6%80%BB%E7%BB%93%E6%95%B4%E7%90%86/"
+           data-tag="rust"
+           data-author="" >
+            <span class="post-title" title="来看看trait的总结整理">来看看trait的总结整理</span>
+            <span class="post-date" title="2020-08-17 10:32:46">2020/08/17</span>
+        </a>
+        
+        <a  class="全部文章 rust "
+           href="/2020/08/14/blog_back_new/Rust/%E6%9D%A5%E7%9C%8B%E7%9C%8Bhashmap%E7%9A%84%E5%AE%98%E6%96%B9%E5%BA%93/"
+           data-tag="rust"
+           data-author="" >
+            <span class="post-title" title="来看看hashmap的官方库">来看看hashmap的官方库</span>
+            <span class="post-date" title="2020-08-14 14:58:27">2020/08/14</span>
+        </a>
+        
+        <a  class="全部文章 rust "
+           href="/2020/08/13/blog_back_new/Rust/%E6%9D%A5%E7%9C%8B%E7%9C%8BString%E7%9A%84%E5%AE%98%E6%96%B9%E5%BA%93/"
+           data-tag="rust"
+           data-author="" >
+            <span class="post-title" title="String的官方库">String的官方库</span>
+            <span class="post-date" title="2020-08-13 18:26:35">2020/08/13</span>
+        </a>
+        
+        <a  class="全部文章 rust "
+           href="/2020/08/13/blog_back_new/Rust/%E6%9D%A5%E7%9C%8B%E7%9C%8Bvec%E7%9A%84%E5%AE%98%E6%96%B9%E5%BA%93/"
+           data-tag="rust"
+           data-author="" >
+            <span class="post-title" title="vec的官方库">vec的官方库</span>
+            <span class="post-date" title="2020-08-13 15:31:41">2020/08/13</span>
+        </a>
+        
+        <a  class="全部文章 python "
+           href="/2020/08/11/blog_back_new/Python/Python%E9%AD%94%E6%B3%95%E6%96%B9%E6%B3%95/"
+           data-tag="python"
+           data-author="" >
+            <span class="post-title" title="Python魔法方法">Python魔法方法</span>
+            <span class="post-date" title="2020-08-11 10:19:04">2020/08/11</span>
+        </a>
+        
+        <a  class="全部文章 "
+           href="/2020/07/27/blog_back_new/question/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="question">question</span>
+            <span class="post-date" title="2020-07-27 17:20:09">2020/07/27</span>
+        </a>
+        
+        <a  class="全部文章 leetcode "
+           href="/2020/07/26/blog_back_new/leetcode/LinkList/leetcode%E5%89%91%E6%8C%8718_%E5%88%A0%E9%99%A4%E9%93%BE%E8%A1%A8%E4%B8%AD%E7%9A%84%E8%8A%82%E7%82%B9/"
+           data-tag="leetcode"
+           data-author="" >
+            <span class="post-title" title="leetcode剑指18_删除链表中的节点">leetcode剑指18_删除链表中的节点</span>
+            <span class="post-date" title="2020-07-26 09:57:46">2020/07/26</span>
+        </a>
+        
+        <a  class="全部文章 leetcode "
+           href="/2020/07/26/blog_back_new/leetcode/LinkList/leetcode%E5%89%91%E6%8C%8722_%E9%93%BE%E8%A1%A8%E4%B8%AD%E5%80%92%E6%95%B0%E7%AC%ACk%E4%B8%AA%E8%8A%82%E7%82%B9/"
+           data-tag="leetcode"
+           data-author="" >
+            <span class="post-title" title="leetcode22_链表中倒数第k个节点">leetcode22_链表中倒数第k个节点</span>
+            <span class="post-date" title="2020-07-26 09:57:46">2020/07/26</span>
+        </a>
+        
+        <a  class="全部文章 leetcode "
+           href="/2020/07/26/blog_back_new/leetcode/LinkList/leetcode%E5%89%91%E6%8C%8724_%E5%8F%8D%E8%BD%AC%E9%93%BE%E8%A1%A8/"
+           data-tag="leetcode"
+           data-author="" >
+            <span class="post-title" title="leetcode剑指18_删除链表中的节点">leetcode剑指18_删除链表中的节点</span>
+            <span class="post-date" title="2020-07-26 09:57:46">2020/07/26</span>
+        </a>
+        
+        <a  class="全部文章 网络 "
+           href="/2020/07/23/blog_back_new/NetWord/3OSI%E6%A8%A1%E5%9E%8B%E7%BD%91%E7%BB%9C%E5%B1%82/"
+           data-tag="网络"
+           data-author="" >
+            <span class="post-title" title="OSI模型网络层">OSI模型网络层</span>
+            <span class="post-date" title="2020-07-23 15:21:51">2020/07/23</span>
+        </a>
+        
+        <a  class="全部文章 网络 "
+           href="/2020/07/22/blog_back_new/NetWord/2OSI%E6%A8%A1%E5%9E%8B%E4%BC%A0%E8%BE%93%E5%B1%82/"
+           data-tag="网络"
+           data-author="" >
+            <span class="post-title" title="OSI模型运输层">OSI模型运输层</span>
+            <span class="post-date" title="2020-07-22 18:32:21">2020/07/22</span>
+        </a>
+        
+        <a  class="全部文章 leetcode "
+           href="/2020/07/21/blog_back_new/leetcode/LinkList/letcode83_%E5%88%A0%E9%99%A4%E6%8E%92%E5%BA%8F%E9%93%BE%E8%A1%A8%E4%B8%AD%E7%9A%84%E9%87%8D%E5%A4%8D%E5%85%83%E7%B4%A0/"
+           data-tag="leetcode"
+           data-author="" >
+            <span class="post-title" title="leetcode_删除排序链表中的重复元素">leetcode_删除排序链表中的重复元素</span>
+            <span class="post-date" title="2020-07-21 09:57:46">2020/07/21</span>
+        </a>
+        
+        <a  class="全部文章 网络 "
+           href="/2020/07/20/blog_back_new/NetWord/Lacp%E9%9D%99%E6%80%81%E6%B1%87%E8%81%9A%E4%B8%8E%E5%8A%A8%E6%80%81%E6%B1%87%E8%81%9A/"
+           data-tag="网络"
+           data-author="" >
+            <span class="post-title" title="交换机端口动态汇聚和静态汇聚的优缺点对比">交换机端口动态汇聚和静态汇聚的优缺点对比</span>
+            <span class="post-date" title="2020-07-20 10:48:24">2020/07/20</span>
+        </a>
+        
+        <a  class="全部文章 网络 "
+           href="/2020/07/20/blog_back_new/NetWord/%E7%BD%91%E7%BB%9Cgraphviz%E5%9B%BE/"
+           data-tag="网络"
+           data-author="" >
+            <span class="post-title" title="网络graphviz图">网络graphviz图</span>
+            <span class="post-date" title="2020-07-20 08:56:53">2020/07/20</span>
+        </a>
+        
+        <a  class="全部文章 leetcode "
+           href="/2020/07/19/blog_back_new/leetcode/LinkList/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84graphviz%E5%9B%BE/"
+           data-tag="leetcode"
+           data-author="" >
+            <span class="post-title" title="数据结构graphviz图片">数据结构graphviz图片</span>
+            <span class="post-date" title="2020-07-19 18:17:06">2020/07/19</span>
+        </a>
+        
+        <a  class="全部文章 leetcode "
+           href="/2020/07/19/blog_back_new/leetcode/LinkList/%E9%93%BE%E8%A1%A8/"
+           data-tag="leetcode,链表"
+           data-author="" >
+            <span class="post-title" title="链表">链表</span>
+            <span class="post-date" title="2020-07-19 12:29:27">2020/07/19</span>
+        </a>
+        
+        <a  class="全部文章 网络 "
+           href="/2020/07/19/blog_back_new/NetWord/%E7%BD%91%E7%BB%9C%E7%9F%A5%E8%AF%86%E6%B5%8B%E8%AF%95/"
+           data-tag="网络"
+           data-author="" >
+            <span class="post-title" title="网络知识测试">网络知识测试</span>
+            <span class="post-date" title="2020-07-19 12:14:02">2020/07/19</span>
+        </a>
+        
+        <a  class="全部文章 python "
+           href="/2020/07/15/blog_back_new/Python/subprocess%E6%A8%A1%E5%9D%97/"
+           data-tag="python"
+           data-author="" >
+            <span class="post-title" title="subprocess模块">subprocess模块</span>
+            <span class="post-date" title="2020-07-15 18:18:34">2020/07/15</span>
+        </a>
+        
+        <a  class="全部文章 网络 "
+           href="/2020/07/12/blog_back_new/NetWord/TCP%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E4%B8%8E%E5%9B%9B%E6%AC%A1%E6%8C%A5%E6%89%8B/"
+           data-tag="网络"
+           data-author="" >
+            <span class="post-title" title="TCP/IP的三次握手与四次挥手">TCP/IP的三次握手与四次挥手</span>
+            <span class="post-date" title="2020-07-12 10:20:27">2020/07/12</span>
+        </a>
+        
+        <a  class="全部文章 js "
+           href="/2020/07/11/blog_back_new/%E6%8A%80%E6%9C%AF%E8%A1%A5%E8%B6%B3/vuepress%E4%BD%BF%E7%94%A8/"
+           data-tag="js"
+           data-author="" >
+            <span class="post-title" title="vue-press使用">vue-press使用</span>
+            <span class="post-date" title="2020-07-11 15:08:11">2020/07/11</span>
+        </a>
+        
+        <a  class="全部文章 js "
+           href="/2020/07/10/blog_back_new/%E6%8A%80%E6%9C%AF%E8%A1%A5%E8%B6%B3/js-vue/"
+           data-tag="js"
+           data-author="" >
+            <span class="post-title" title="js技能补足">js技能补足</span>
+            <span class="post-date" title="2020-07-10 18:29:34">2020/07/10</span>
+        </a>
+        
+        <a  class="全部文章 rust "
+           href="/2020/07/08/blog_back_new/Rust/rustv2/"
+           data-tag="rust"
+           data-author="" >
+            <span class="post-title" title="rustv2">rustv2</span>
+            <span class="post-date" title="2020-07-08 22:57:05">2020/07/08</span>
+        </a>
+        
+        <a  class="全部文章 rust "
+           href="/2020/07/08/blog_back_new/Rust/rust%E5%9F%BA%E7%A1%80/"
+           data-tag="rust"
+           data-author="" >
+            <span class="post-title" title="rust">rust</span>
+            <span class="post-date" title="2020-07-08 22:57:05">2020/07/08</span>
+        </a>
+        
+        <a  class="全部文章 fastapi "
+           href="/2020/07/08/blog_back_new/fastapi/fastapi%E5%AE%9A%E6%97%B6%E5%99%A8%E5%AE%9E%E8%B7%B5/"
+           data-tag="fastapi"
+           data-author="" >
+            <span class="post-title" title="fastapi定时器实践">fastapi定时器实践</span>
+            <span class="post-date" title="2020-07-08 12:54:19">2020/07/08</span>
+        </a>
+        
+        <a  class="全部文章 mysql "
+           href="/2020/06/05/blog_back_new/mysql/mysql%E4%B8%BB%E4%BB%8E%E5%A4%87%E4%BB%BD/"
+           data-tag="mysql"
+           data-author="" >
+            <span class="post-title" title="mysql主从备份">mysql主从备份</span>
+            <span class="post-date" title="2020-06-05 15:10:44">2020/06/05</span>
+        </a>
+        
+        <a  class="全部文章 fastapi "
+           href="/2020/06/03/blog_back_new/fastapi/%E4%B8%9A%E5%8A%A1%E8%BF%81%E7%A7%BB%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/"
+           data-tag="fastapi"
+           data-author="" >
+            <span class="post-title" title="业务迁移解决方案">业务迁移解决方案</span>
+            <span class="post-date" title="2020-06-03 17:23:32">2020/06/03</span>
+        </a>
+        
+        <a  class="全部文章 js "
+           href="/2020/06/03/blog_back_new/vue/vue%E4%B8%AD%E5%86%85%E5%B5%8Cechart%E5%9B%BE%E6%96%B9%E6%A1%88/"
+           data-tag="echart,vue"
+           data-author="" >
+            <span class="post-title" title="vue中内嵌echart图方案">vue中内嵌echart图方案</span>
+            <span class="post-date" title="2020-06-03 10:25:42">2020/06/03</span>
+        </a>
+        
+        <a  class="全部文章 redis "
+           href="/2020/06/01/blog_back_new/redis/pyredis/"
+           data-tag="python,redis,pyredis"
+           data-author="" >
+            <span class="post-title" title="pyredis使用">pyredis使用</span>
+            <span class="post-date" title="2020-06-01 10:44:08">2020/06/01</span>
+        </a>
+        
+        <a  class="全部文章 网络 "
+           href="/2020/05/28/blog_back_new/NetWord/%E4%BA%8C%E5%B1%82%E4%B8%8E%E4%B8%89%E5%B1%82%E4%BA%A4%E6%8D%A2%E6%9C%BA%E9%85%8D%E7%BD%AE/"
+           data-tag="网络"
+           data-author="" >
+            <span class="post-title" title="二层与三层">二层与三层</span>
+            <span class="post-date" title="2020-05-28 18:13:05">2020/05/28</span>
+        </a>
+        
+        <a  class="全部文章 全栈 "
+           href="/2020/05/27/blog_back_new/CDN/cdn/"
+           data-tag="CDN"
+           data-author="" >
+            <span class="post-title" title="cdn学习">cdn学习</span>
+            <span class="post-date" title="2020-05-27 15:05:13">2020/05/27</span>
+        </a>
+        
+        <a  class="全部文章 python "
+           href="/2020/05/22/blog_back_new/Python/python%E5%86%85%E5%AE%B9%E8%AE%B0%E5%BD%95/"
+           data-tag="python"
+           data-author="" >
+            <span class="post-title" title="python内容记录">python内容记录</span>
+            <span class="post-date" title="2020-05-22 00:27:22">2020/05/22</span>
+        </a>
+        
+        <a  class="全部文章 js "
+           href="/2020/05/22/blog_back_new/vue/vue%E5%86%85%E5%AE%B9%E8%AE%B0%E5%BD%95/"
+           data-tag="js"
+           data-author="" >
+            <span class="post-title" title="vue内容记录">vue内容记录</span>
+            <span class="post-date" title="2020-05-22 00:20:49">2020/05/22</span>
+        </a>
+        
+        <a  class="全部文章 redis "
+           href="/2020/05/21/blog_back_new/redis/redis%E8%BF%9B%E9%98%B6/"
+           data-tag="redis"
+           data-author="" >
+            <span class="post-title" title="redis进阶">redis进阶</span>
+            <span class="post-date" title="2020-05-21 00:22:58">2020/05/21</span>
+        </a>
+        
+        <a  class="全部文章 redis "
+           href="/2020/05/18/blog_back_new/redis/redis%E5%AE%89%E8%A3%85/"
+           data-tag="redis"
+           data-author="" >
+            <span class="post-title" title="redis安装">redis安装</span>
+            <span class="post-date" title="2020-05-18 11:13:34">2020/05/18</span>
+        </a>
+        
+        <a  class="全部文章 golang "
+           href="/2020/05/17/blog_back_new/golang/golangWeb%E5%BA%93gin2/"
+           data-tag="golang,gin,goweb"
+           data-author="" >
+            <span class="post-title" title="gin">gin</span>
+            <span class="post-date" title="2020-05-17 12:40:29">2020/05/17</span>
+        </a>
+        
+        <a  class="全部文章 golang "
+           href="/2020/05/17/blog_back_new/golang/golang%E5%8C%85%E7%AE%A1%E7%90%86/"
+           data-tag="golang"
+           data-author="" >
+            <span class="post-title" title="golang包管理">golang包管理</span>
+            <span class="post-date" title="2020-05-17 01:18:04">2020/05/17</span>
+        </a>
+        
+        <a  class="全部文章 网络 "
+           href="/2020/05/15/blog_back_new/NetWord/%E9%9D%99%E6%80%81%E8%B7%AF%E7%94%B1-%E5%8A%A8%E6%80%81%E8%B7%AF%E7%94%B1-%E7%AD%96%E7%95%A5%E8%B7%AF%E7%94%B1/"
+           data-tag="网络"
+           data-author="" >
+            <span class="post-title" title="静态路由-动态路由-策略路由">静态路由-动态路由-策略路由</span>
+            <span class="post-date" title="2020-05-15 01:08:07">2020/05/15</span>
+        </a>
+        
+        <a  class="全部文章 nginx "
+           href="/2020/05/12/blog_back_new/nginx/nginx%E7%BC%96%E8%AF%91%E5%AE%89%E8%A3%85/"
+           data-tag="nginx"
+           data-author="" >
+            <span class="post-title" title="nginx编译安装">nginx编译安装</span>
+            <span class="post-date" title="2020-05-12 13:53:31">2020/05/12</span>
+        </a>
+        
+        <a  class="全部文章 ansible "
+           href="/2020/05/11/blog_back_new/ansible/ansible-playbook2/"
+           data-tag="ansible"
+           data-author="" >
+            <span class="post-title" title="ansible-playbook合集">ansible-playbook合集</span>
+            <span class="post-date" title="2020-05-11 18:05:15">2020/05/11</span>
+        </a>
+        
+        <a  class="全部文章 golang "
+           href="/2020/05/09/blog_back_new/golang/golang%E8%BF%9B%E9%98%B6/"
+           data-tag="golang"
+           data-author="" >
+            <span class="post-title" title="golang进阶">golang进阶</span>
+            <span class="post-date" title="2020-05-09 23:43:33">2020/05/09</span>
+        </a>
+        
+        <a  class="全部文章 fastapi "
+           href="/2020/05/09/blog_back_new/fastapi/fastapi-start/"
+           data-tag="fastapi"
+           data-author="" >
+            <span class="post-title" title="fastapi">fastapi</span>
+            <span class="post-date" title="2020-05-09 10:24:17">2020/05/09</span>
+        </a>
+        
+        <a  class="全部文章 全栈 "
+           href="/2020/05/05/blog_back_new/CDN/%E5%8F%88%E6%8B%8D%E4%BA%91CDN%E5%85%A8%E7%AB%99%E5%8A%A0%E9%80%9F/"
+           data-tag="CDN"
+           data-author="" >
+            <span class="post-title" title="又拍云CDN全站加速的问题">又拍云CDN全站加速的问题</span>
+            <span class="post-date" title="2020-05-05 13:30:07">2020/05/05</span>
+        </a>
+        
+        <a  class="全部文章 fastapi "
+           href="/2020/05/05/blog_back_new/fastapi/fastapi%E8%87%AA%E5%BB%BA%E6%96%87%E4%BB%B6%E5%88%86%E4%BA%AB%E6%9C%8D%E5%8A%A1%E5%99%A8/"
+           data-tag="fastapi"
+           data-author="" >
+            <span class="post-title" title="fastapi自建文件分享服务器">fastapi自建文件分享服务器</span>
+            <span class="post-date" title="2020-05-05 13:25:25">2020/05/05</span>
+        </a>
+        
+        <a  class="全部文章 python "
+           href="/2020/05/05/blog_back_new/Python/openpyxl%E6%A8%A1%E5%9D%97/"
+           data-tag="python"
+           data-author="" >
+            <span class="post-title" title="openPyXL模块">openPyXL模块</span>
+            <span class="post-date" title="2020-05-05 13:15:58">2020/05/05</span>
+        </a>
+        
+        <a  class="全部文章 python "
+           href="/2020/05/04/blog_back_new/Python/date%E6%97%B6%E9%97%B4%E6%A8%A1%E5%9D%97/"
+           data-tag="python"
+           data-author="" >
+            <span class="post-title" title="date时间模块">date时间模块</span>
+            <span class="post-date" title="2020-05-04 20:12:10">2020/05/04</span>
+        </a>
+        
+        <a  class="全部文章 python "
+           href="/2020/05/04/blog_back_new/Python/os%E6%A8%A1%E5%9D%97/"
+           data-tag="python"
+           data-author="" >
+            <span class="post-title" title="python使用os模块">python使用os模块</span>
+            <span class="post-date" title="2020-05-04 19:54:36">2020/05/04</span>
+        </a>
+        
+        <a  class="全部文章 网络 "
+           href="/2020/05/01/blog_back_new/NetWord/%E6%9C%BA%E6%88%BF%E5%89%B2%E6%8E%A5%E6%B5%81%E7%A8%8B%E4%BB%A5%E5%8F%8A%E4%BA%8B%E9%A1%B9%E5%9B%9E%E6%BA%AF/"
+           data-tag="网络"
+           data-author="" >
+            <span class="post-title" title="机房割接流程以及事项回溯">机房割接流程以及事项回溯</span>
+            <span class="post-date" title="2020-05-01 13:22:08">2020/05/01</span>
+        </a>
+        
+        <a  class="全部文章 fastapi "
+           href="/2020/04/29/blog_back_new/fastapi/gunicorn/"
+           data-tag="fastapi"
+           data-author="" >
+            <span class="post-title" title="gunicorn使用">gunicorn使用</span>
+            <span class="post-date" title="2020-04-29 18:27:12">2020/04/29</span>
+        </a>
+        
+        <a  class="全部文章 git "
+           href="/2020/04/17/blog_back_new/git/git%E5%AE%9E%E6%88%98%E4%BB%A5%E5%8F%8A%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86/"
+           data-tag="git"
+           data-author="" >
+            <span class="post-title" title="git实战以及错误处理">git实战以及错误处理</span>
+            <span class="post-date" title="2020-04-17 12:05:21">2020/04/17</span>
+        </a>
+        
+        <a  class="全部文章 mysql "
+           href="/2020/04/15/blog_back_new/mysql/mysql%E6%8C%87%E4%BB%A4/"
+           data-tag="mysql"
+           data-author="" >
+            <span class="post-title" title="mysql指令">mysql指令</span>
+            <span class="post-date" title="2020-04-15 18:31:17">2020/04/15</span>
+        </a>
+        
+        <a  class="全部文章 shell "
+           href="/2020/04/12/blog_back_new/shell/shell%E8%84%9A%E6%9C%AC/"
+           data-tag="shell"
+           data-author="" >
+            <span class="post-title" title="一些额外的笔记">一些额外的笔记</span>
+            <span class="post-date" title="2020-04-12 20:36:52">2020/04/12</span>
+        </a>
+        
+        <a  class="全部文章 全栈 "
+           href="/2020/04/10/blog_back_new/CDN/CDN%E6%B5%81%E7%A8%8B/"
+           data-tag="CDN"
+           data-author="" >
+            <span class="post-title" title="CDN流程">CDN流程</span>
+            <span class="post-date" title="2020-04-10 10:56:04">2020/04/10</span>
+        </a>
+        
+        <a  class="全部文章 fastapi "
+           href="/2020/04/02/blog_back_new/backup/fastapi%E5%AE%8C%E6%95%B4%E7%A4%BA%E4%BE%8B/"
+           data-tag="fastapi"
+           data-author="" >
+            <span class="post-title" title="fastapi完整示例">fastapi完整示例</span>
+            <span class="post-date" title="2020-04-02 13:41:17">2020/04/02</span>
+        </a>
+        
+        <a  class="全部文章 网络 "
+           href="/2020/04/01/blog_back_new/NetWord/hybrid%E5%AE%9E%E8%B7%B5/"
+           data-tag="网络"
+           data-author="" >
+            <span class="post-title" title="hybrid实践">hybrid实践</span>
+            <span class="post-date" title="2020-04-01 15:57:43">2020/04/01</span>
+        </a>
+        
+        <a  class="全部文章 fastapi "
+           href="/2020/04/01/blog_back_new/backup/fastapiCORS/"
+           data-tag="fastapi"
+           data-author="" >
+            <span class="post-title" title="fastapi CORS">fastapi CORS</span>
+            <span class="post-date" title="2020-04-01 13:41:30">2020/04/01</span>
+        </a>
+        
+        <a  class="全部文章 fastapi "
+           href="/2020/04/01/blog_back_new/backup/fastapi%E7%8A%B6%E6%80%81%E7%A0%81/"
+           data-tag="fastapi"
+           data-author="" >
+            <span class="post-title" title="fastapi状态码">fastapi状态码</span>
+            <span class="post-date" title="2020-04-01 13:41:30">2020/04/01</span>
+        </a>
+        
+        <a  class="全部文章 python "
+           href="/2020/03/30/blog_back_new/Python/passlib%E6%A8%A1%E5%9D%97/"
+           data-tag="python"
+           data-author="" >
+            <span class="post-title" title="python使用passlib模块">python使用passlib模块</span>
+            <span class="post-date" title="2020-03-30 11:30:14">2020/03/30</span>
+        </a>
+        
+        <a  class="全部文章 linux "
+           href="/2020/03/26/blog_back_new/shell/linuxtr%E5%91%BD%E4%BB%A4%E4%BD%BF%E7%94%A8/"
+           data-tag="linux,command"
+           data-author="" >
+            <span class="post-title" title="tr命令">tr命令</span>
+            <span class="post-date" title="2020-03-26 11:20:05">2020/03/26</span>
+        </a>
+        
+        <a  class="全部文章 shell "
+           href="/2020/03/25/blog_back_new/shell/bash_completion%E5%91%BD%E4%BB%A4%E8%A1%8C%E8%87%AA%E5%8A%A8%E8%A1%A5%E5%85%A8/"
+           data-tag="shell"
+           data-author="" >
+            <span class="post-title" title="手动编写bash-completion">手动编写bash-completion</span>
+            <span class="post-date" title="2020-03-25 11:37:02">2020/03/25</span>
+        </a>
+        
+        <a  class="全部文章 python "
+           href="/2020/03/23/blog_back_new/Python/vscode%E4%B8%AD%E6%B7%BB%E5%8A%A0python%E8%99%9A%E6%8B%9F%E7%8E%AF%E5%A2%83/"
+           data-tag="python"
+           data-author="" >
+            <span class="post-title" title="vscode中添加python虚拟环境">vscode中添加python虚拟环境</span>
+            <span class="post-date" title="2020-03-23 13:53:21">2020/03/23</span>
+        </a>
+        
+        <a  class="全部文章 python "
+           href="/2020/03/21/blog_back_new/Python/file%E6%A8%A1%E5%9D%97/"
+           data-tag="python"
+           data-author="" >
+            <span class="post-title" title="python使用file模块">python使用file模块</span>
+            <span class="post-date" title="2020-03-21 18:01:32">2020/03/21</span>
+        </a>
+        
+        <a  class="全部文章 python "
+           href="/2020/03/21/blog_back_new/Python/pyjwt%E6%A8%A1%E5%9D%97/"
+           data-tag="python"
+           data-author="" >
+            <span class="post-title" title="python使用pyjwt模块">python使用pyjwt模块</span>
+            <span class="post-date" title="2020-03-21 18:01:32">2020/03/21</span>
+        </a>
+        
+        <a  class="全部文章 python "
+           href="/2020/03/20/blog_back_new/backup/fastapi%E4%B8%AD%E6%9B%B4%E6%96%B0%E6%95%B0%E6%8D%AE/"
+           data-tag="python"
+           data-author="" >
+            <span class="post-title" title="fastapi中更新数据">fastapi中更新数据</span>
+            <span class="post-date" title="2020-03-20 14:03:58">2020/03/20</span>
+        </a>
+        
+        <a  class="全部文章 python "
+           href="/2020/03/20/blog_back_new/backup/fastapi%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5/"
+           data-tag="python"
+           data-author="" >
+            <span class="post-title" title="fastapi依赖注入">fastapi依赖注入</span>
+            <span class="post-date" title="2020-03-20 14:03:58">2020/03/20</span>
+        </a>
+        
+        <a  class="全部文章 python "
+           href="/2020/03/20/blog_back_new/backup/fastapi%E4%B8%AD%E7%9A%84%E5%BA%8F%E5%88%97%E5%8C%96/"
+           data-tag="python"
+           data-author="" >
+            <span class="post-title" title="python中的序列化">python中的序列化</span>
+            <span class="post-date" title="2020-03-20 14:03:58">2020/03/20</span>
+        </a>
+        
+        <a  class="全部文章 python "
+           href="/2020/03/20/blog_back_new/backup/fastapi%E5%AE%89%E5%85%A8/"
+           data-tag="python"
+           data-author="" >
+            <span class="post-title" title="fastapi安全">fastapi安全</span>
+            <span class="post-date" title="2020-03-20 14:03:58">2020/03/20</span>
+        </a>
+        
+        <a  class="全部文章 python "
+           href="/2020/03/20/blog_back_new/backup/python%E4%B8%AD%E7%9A%84%E5%BA%8F%E5%88%97%E5%8C%96/"
+           data-tag="python"
+           data-author="" >
+            <span class="post-title" title="python中的序列化">python中的序列化</span>
+            <span class="post-date" title="2020-03-20 14:03:58">2020/03/20</span>
+        </a>
+        
+        <a  class="全部文章 fastapi "
+           href="/2020/03/20/blog_back_new/backup/jwtForFastapi/"
+           data-tag="fastapi"
+           data-author="" >
+            <span class="post-title" title="jwtForFastapi">jwtForFastapi</span>
+            <span class="post-date" title="2020-03-20 13:51:06">2020/03/20</span>
+        </a>
+        
+        <a  class="全部文章 python "
+           href="/2020/03/20/blog_back_new/backup/start/"
+           data-tag="sqlalchemy,orm"
+           data-author="" >
+            <span class="post-title" title="sqlalchemy使用方法">sqlalchemy使用方法</span>
+            <span class="post-date" title="2020-03-20 10:37:09">2020/03/20</span>
+        </a>
+        
+        <a  class="全部文章 nginx "
+           href="/2020/03/19/blog_back_new/nginx/nginx%E4%BC%98%E5%8C%96/"
+           data-tag="nginx"
+           data-author="" >
+            <span class="post-title" title="nginx优化配置">nginx优化配置</span>
+            <span class="post-date" title="2020-03-19 03:31:05">2020/03/19</span>
+        </a>
+        
+        <a  class="全部文章 ansible "
+           href="/2020/03/18/blog_back_new/ansible/3.ansible%E6%A8%A1%E5%9D%97%E5%90%88%E9%9B%86/"
+           data-tag="ansible"
+           data-author="" >
+            <span class="post-title" title="ansible模块合集">ansible模块合集</span>
+            <span class="post-date" title="2020-03-18 15:49:13">2020/03/18</span>
+        </a>
+        
+        <a  class="全部文章 ansible "
+           href="/2020/03/17/blog_back_new/ansible/8.%E5%BC%80%E5%8F%91ansible%E6%A8%A1%E5%9D%97/"
+           data-tag="ansible"
+           data-author="" >
+            <span class="post-title" title="开发ansible模块">开发ansible模块</span>
+            <span class="post-date" title="2020-03-17 11:17:28">2020/03/17</span>
+        </a>
+        
+        <a  class="全部文章 网络 "
+           href="/2020/03/17/blog_back_new/NetWord/%E4%BA%A4%E6%8D%A2%E6%9C%BA%E6%97%A5%E5%B8%B8%E7%BB%B4%E6%8A%A4/"
+           data-tag="网络"
+           data-author="" >
+            <span class="post-title" title="h3c交换机实例">h3c交换机实例</span>
+            <span class="post-date" title="2020-03-17 11:01:27">2020/03/17</span>
+        </a>
+        
+        <a  class="全部文章 shell "
+           href="/2020/03/11/blog_back_new/shell/shell_list/"
+           data-tag="shell"
+           data-author="" >
+            <span class="post-title" title="shell实战">shell实战</span>
+            <span class="post-date" title="2020-03-11 13:29:59">2020/03/11</span>
+        </a>
+        
+        <a  class="全部文章 ansible "
+           href="/2020/03/11/blog_back_new/ansible/4.ansible-playbook/"
+           data-tag="ansible"
+           data-author="" >
+            <span class="post-title" title="ansible-playbook">ansible-playbook</span>
+            <span class="post-date" title="2020-03-11 10:45:53">2020/03/11</span>
+        </a>
+        
+        <a  class="全部文章 ansible "
+           href="/2020/03/10/blog_back_new/ansible/3.yaml%E6%96%87%E4%BB%B6/"
+           data-tag="ansible"
+           data-author="" >
+            <span class="post-title" title="yaml格式入门">yaml格式入门</span>
+            <span class="post-date" title="2020-03-10 17:36:40">2020/03/10</span>
+        </a>
+        
+        <a  class="全部文章 ansible "
+           href="/2020/03/08/blog_back_new/ansible/2.ansible%E5%9F%BA%E7%A1%80/"
+           data-tag="ansible"
+           data-author="" >
+            <span class="post-title" title="ansible基础">ansible基础</span>
+            <span class="post-date" title="2020-03-08 19:46:58">2020/03/08</span>
+        </a>
+        
+        <a  class="全部文章 fastapi "
+           href="/2020/03/08/blog_back_new/backup/fastapi%E5%93%8D%E5%BA%94%E4%BD%93/"
+           data-tag="fastapi"
+           data-author="" >
+            <span class="post-title" title="fastapi响应体">fastapi响应体</span>
+            <span class="post-date" title="2020-03-08 19:37:17">2020/03/08</span>
+        </a>
+        
+        <a  class="全部文章 fastapi "
+           href="/2020/03/08/blog_back_new/backup/fastapi/"
+           data-tag="fastapi"
+           data-author="" >
+            <span class="post-title" title="fastapi基础">fastapi基础</span>
+            <span class="post-date" title="2020-03-08 19:37:17">2020/03/08</span>
+        </a>
+        
+        <a  class="全部文章 ansible "
+           href="/2020/03/08/blog_back_new/ansible/1.%E5%AE%89%E8%A3%85ansible/"
+           data-tag="ansible"
+           data-author="" >
+            <span class="post-title" title="ansible安装">ansible安装</span>
+            <span class="post-date" title="2020-03-08 19:01:36">2020/03/08</span>
+        </a>
+        
+        <a  class="全部文章 网络 "
+           href="/2020/03/04/blog_back_new/NetWord/%E4%BA%A4%E6%8D%A2%E6%9C%BA%E5%8D%87%E7%BA%A7%E6%AD%A5%E9%AA%A4/"
+           data-tag="网络"
+           data-author="" >
+            <span class="post-title" title="交换机升级步骤">交换机升级步骤</span>
+            <span class="post-date" title="2020-03-04 15:31:56">2020/03/04</span>
+        </a>
+        
+        <a  class="全部文章 docker "
+           href="/2020/02/25/blog_back_new/docker/docker-k8s%E5%9F%BA%E7%A1%80/"
+           data-tag="docker"
+           data-author="" >
+            <span class="post-title" title="docker-k8s 基础">docker-k8s 基础</span>
+            <span class="post-date" title="2020-02-25 15:52:22">2020/02/25</span>
+        </a>
+        
+        <a  class="全部文章 mysql "
+           href="/2020/02/25/blog_back_new/mysql/mysql%E5%AE%89%E8%A3%85/"
+           data-tag="mysql"
+           data-author="" >
+            <span class="post-title" title="mysql安装">mysql安装</span>
+            <span class="post-date" title="2020-02-25 00:26:03">2020/02/25</span>
+        </a>
+        
+        <a  class="全部文章 mysql "
+           href="/2020/02/24/blog_back_new/mysql/mysql%E9%94%99%E8%AF%AF%E5%90%88%E9%9B%86/"
+           data-tag="mysql"
+           data-author="" >
+            <span class="post-title" title="mysql错误">mysql错误</span>
+            <span class="post-date" title="2020-02-24 16:29:33">2020/02/24</span>
+        </a>
+        
+        <a  class="全部文章 mysql "
+           href="/2020/02/23/blog_back_new/mysql/mysql%E4%BD%BF%E7%94%A8/"
+           data-tag="mysql"
+           data-author="" >
+            <span class="post-title" title="mysql基础">mysql基础</span>
+            <span class="post-date" title="2020-02-23 15:58:49">2020/02/23</span>
+        </a>
+        
+        <a  class="全部文章 machine "
+           href="/2020/02/14/blog_back_new/%E9%94%99%E8%AF%AF%E6%80%BB%E7%BB%93/new-word/"
+           data-tag="machine"
+           data-author="" >
+            <span class="post-title" title="new-world">new-world</span>
+            <span class="post-date" title="2020-02-14 15:35:13">2020/02/14</span>
+        </a>
+        
+        <a  class="全部文章 全栈 "
+           href="/2020/02/14/blog_back_new/docker/CI-CD%E5%AE%9E%E8%B7%B5/"
+           data-tag="docker,CI,CD"
+           data-author="" >
+            <span class="post-title" title="CI-CD实践">CI-CD实践</span>
+            <span class="post-date" title="2020-02-14 03:29:41">2020/02/14</span>
+        </a>
+        
+        <a  class="全部文章 docker "
+           href="/2020/02/10/blog_back_new/docker/swarm%E4%B8%8Ek8s/"
+           data-tag="docker"
+           data-author="" >
+            <span class="post-title" title="swarm与k8s的区别">swarm与k8s的区别</span>
+            <span class="post-date" title="2020-02-10 14:49:28">2020/02/10</span>
+        </a>
+        
+        <a  class="全部文章 docker "
+           href="/2020/02/10/blog_back_new/docker/k8s%E5%B8%B8%E8%A7%81%E9%94%99%E8%AF%AF/"
+           data-tag="docker"
+           data-author="" >
+            <span class="post-title" title="k8s常见错误">k8s常见错误</span>
+            <span class="post-date" title="2020-02-10 14:04:28">2020/02/10</span>
+        </a>
+        
+        <a  class="全部文章 docker "
+           href="/2020/02/10/blog_back_new/docker/docker-ks8/"
+           data-tag="docker"
+           data-author="" >
+            <span class="post-title" title="docker-k8s">docker-k8s</span>
+            <span class="post-date" title="2020-02-10 03:55:11">2020/02/10</span>
+        </a>
+        
+        <a  class="全部文章 docker "
+           href="/2020/02/09/blog_back_new/docker/docker-swarm-wordpress/"
+           data-tag="docker"
+           data-author="" >
+            <span class="post-title" title="docker-swarm-wordpress">docker-swarm-wordpress</span>
+            <span class="post-date" title="2020-02-09 17:35:49">2020/02/09</span>
+        </a>
+        
+        <a  class="全部文章 docker "
+           href="/2020/02/07/blog_back_new/docker/docker-swarm/"
+           data-tag="docker"
+           data-author="" >
+            <span class="post-title" title="docker-swarm">docker-swarm</span>
+            <span class="post-date" title="2020-02-07 15:38:32">2020/02/07</span>
+        </a>
+        
+        <a  class="全部文章 docker "
+           href="/2020/02/07/blog_back_new/docker/docker-compose/"
+           data-tag="docker"
+           data-author="" >
+            <span class="post-title" title="docker-compose">docker-compose</span>
+            <span class="post-date" title="2020-02-07 14:18:36">2020/02/07</span>
+        </a>
+        
+        <a  class="全部文章 docker "
+           href="/2020/02/07/blog_back_new/docker/docker+wordpress/"
+           data-tag="docker"
+           data-author="" >
+            <span class="post-title" title="docker搭建wordpress">docker搭建wordpress</span>
+            <span class="post-date" title="2020-02-07 13:26:31">2020/02/07</span>
+        </a>
+        
+        <a  class="全部文章 docker "
+           href="/2020/02/06/blog_back_new/docker/docker%E7%BD%91%E7%BB%9C/"
+           data-tag="docker"
+           data-author="" >
+            <span class="post-title" title="docker网络">docker网络</span>
+            <span class="post-date" title="2020-02-06 22:11:37">2020/02/06</span>
+        </a>
+        
+        <a  class="全部文章 docker "
+           href="/2020/02/06/blog_back_new/docker/docker%E5%AE%B9%E5%99%A8%E7%9A%84%E8%B5%84%E6%BA%90%E9%99%90%E5%88%B6/"
+           data-tag="docker"
+           data-author="" >
+            <span class="post-title" title="docker容器的资源限制">docker容器的资源限制</span>
+            <span class="post-date" title="2020-02-06 21:54:42">2020/02/06</span>
+        </a>
+        
+        <a  class="全部文章 docker "
+           href="/2020/02/05/blog_back_new/docker/docker-file/"
+           data-tag="docker"
+           data-author="" >
+            <span class="post-title" title="docker-DokcerFile">docker-DokcerFile</span>
+            <span class="post-date" title="2020-02-05 13:56:09">2020/02/05</span>
+        </a>
+        
+        <a  class="全部文章 docker "
+           href="/2020/02/05/blog_back_new/docker/docker%E5%AE%B9%E5%99%A8%E6%95%B0%E6%8D%AE%E5%8D%B7/"
+           data-tag="docker"
+           data-author="" >
+            <span class="post-title" title="docker容器数据卷">docker容器数据卷</span>
+            <span class="post-date" title="2020-02-05 12:35:48">2020/02/05</span>
+        </a>
+        
+        <a  class="全部文章 docker "
+           href="/2020/02/05/blog_back_new/docker/docker%E9%95%9C%E5%83%8F%E5%88%86%E5%B1%82%E5%8E%9F%E7%90%86/"
+           data-tag="docker"
+           data-author="" >
+            <span class="post-title" title="docker镜像分层原理">docker镜像分层原理</span>
+            <span class="post-date" title="2020-02-05 11:09:43">2020/02/05</span>
+        </a>
+        
+        <a  class="全部文章 docker "
+           href="/2020/02/04/blog_back_new/docker/docker%E5%9F%BA%E7%A1%80/"
+           data-tag="docker"
+           data-author="" >
+            <span class="post-title" title="docker基础">docker基础</span>
+            <span class="post-date" title="2020-02-04 17:26:54">2020/02/04</span>
+        </a>
+        
+        <a  class="全部文章 nginx "
+           href="/2020/02/03/blog_back_new/nginx/nginx%E5%9F%BA%E7%A1%80/"
+           data-tag="nginx"
+           data-author="" >
+            <span class="post-title" title="nginx基础">nginx基础</span>
+            <span class="post-date" title="2020-02-03 14:27:43">2020/02/03</span>
+        </a>
+        
+        <a  class="全部文章 nginx "
+           href="/2020/02/03/blog_back_new/nginx/nginx%E9%85%8D%E7%BD%AE%E5%AE%9E%E4%BE%8B/"
+           data-tag="nginx"
+           data-author="" >
+            <span class="post-title" title="nginx配置实例">nginx配置实例</span>
+            <span class="post-date" title="2020-02-03 14:03:46">2020/02/03</span>
+        </a>
+        
+        <a  class="全部文章 shell "
+           href="/2020/01/29/blog_back_new/shell/linux%E6%96%87%E6%9C%AC%E7%BC%96%E8%BE%91%E4%B8%89%E5%89%91%E5%AE%A2/"
+           data-tag="shell"
+           data-author="" >
+            <span class="post-title" title="linux文本编辑三剑客">linux文本编辑三剑客</span>
+            <span class="post-date" title="2020-01-29 22:09:25">2020/01/29</span>
+        </a>
+        
+        <a  class="全部文章 shell "
+           href="/2020/01/15/blog_back_new/shell/linux%E5%88%9D%E5%A7%8B%E5%8C%96/"
+           data-tag="shell"
+           data-author="" >
+            <span class="post-title" title="linux初始化">linux初始化</span>
+            <span class="post-date" title="2020-01-15 10:30:41">2020/01/15</span>
+        </a>
+        
+        <a  class="全部文章 网络 "
+           href="/2020/01/12/blog_back_new/NetWord/%E4%BA%A4%E6%8D%A2%E6%9C%BA%E4%BA%8C%E5%B1%82%E4%B8%8E%E4%B8%89%E5%B1%82/"
+           data-tag="网络"
+           data-author="" >
+            <span class="post-title" title="交换机二层与三层">交换机二层与三层</span>
+            <span class="post-date" title="2020-01-12 19:11:22">2020/01/12</span>
+        </a>
+        
+        <a  class="全部文章 python "
+           href="/2020/01/04/blog_back_new/Python/python%E5%9F%BA%E7%A1%80/"
+           data-tag="python"
+           data-author="" >
+            <span class="post-title" title="python 基础">python 基础</span>
+            <span class="post-date" title="2020-01-04 15:39:26">2020/01/04</span>
+        </a>
+        
+        <a  class="全部文章 网络 "
+           href="/2020/01/04/blog_back_new/NetWord/%E7%BD%91%E7%BB%9C%E9%83%A8%E7%BD%B2%E9%9C%80%E6%B1%82%E5%88%86%E6%9E%90/"
+           data-tag="网络"
+           data-author="" >
+            <span class="post-title" title="网络部署需求分析">网络部署需求分析</span>
+            <span class="post-date" title="2020-01-04 10:22:09">2020/01/04</span>
+        </a>
+        
+        <a  class="全部文章 mysql "
+           href="/2019/12/29/blog_back_new/mysql/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%86%85%E5%AE%B9%E6%80%BB%E7%BB%93/"
+           data-tag="mysql"
+           data-author="" >
+            <span class="post-title" title="数据库总结">数据库总结</span>
+            <span class="post-date" title="2019-12-29 20:52:59">2019/12/29</span>
+        </a>
+        
+        <a  class="全部文章 git "
+           href="/2019/12/29/blog_back_new/git/git%E5%9F%BA%E7%A1%803/"
+           data-tag="git"
+           data-author="" >
+            <span class="post-title" title="git基础2">git基础2</span>
+            <span class="post-date" title="2019-12-29 20:50:50">2019/12/29</span>
+        </a>
+        
+        <a  class="全部文章 python "
+           href="/2019/12/29/blog_back_new/Python/%E7%88%AC%E5%8E%BBYouTube%E4%B8%8A%E7%9A%84%E8%A7%86%E9%A2%91/"
+           data-tag="python"
+           data-author="" >
+            <span class="post-title" title="Python爬YouTube视频">Python爬YouTube视频</span>
+            <span class="post-date" title="2019-12-29 20:39:12">2019/12/29</span>
+        </a>
+        
+        <a  class="全部文章 machine "
+           href="/2019/12/29/blog_back_new/%E9%94%99%E8%AF%AF%E6%80%BB%E7%BB%93/%E5%8F%88%E6%8B%8D%E4%BA%91/"
+           data-tag="machine"
+           data-author="" >
+            <span class="post-title" title="内容记录">内容记录</span>
+            <span class="post-date" title="2019-12-29 13:13:50">2019/12/29</span>
+        </a>
+        
+        <a  class="全部文章 linux "
+           href="/2019/12/29/blog_back_new/%E9%94%99%E8%AF%AF%E6%80%BB%E7%BB%93/linux%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98/"
+           data-tag="linux"
+           data-author="" >
+            <span class="post-title" title="常见错误">常见错误</span>
+            <span class="post-date" title="2019-12-29 13:13:35">2019/12/29</span>
+        </a>
+        
+        <a  class="全部文章 machine "
+           href="/2019/12/29/blog_back_new/%E9%94%99%E8%AF%AF%E6%80%BB%E7%BB%93/%E8%BD%AF%E4%BB%B6%E9%85%8D%E7%BD%AE/"
+           data-tag="machine"
+           data-author="" >
+            <span class="post-title" title="软件配置">软件配置</span>
+            <span class="post-date" title="2019-12-29 13:11:16">2019/12/29</span>
+        </a>
+        
+        <a  class="全部文章 leetcode "
+           href="/2019/12/29/blog_back_new/leetcode/LinkList/%E5%9B%BE%E8%A7%A3%E7%AE%97%E6%B3%95/"
+           data-tag="leetcode"
+           data-author="" >
+            <span class="post-title" title="图解算法">图解算法</span>
+            <span class="post-date" title="2019-12-29 13:07:36">2019/12/29</span>
+        </a>
+        
+        <a  class="全部文章 python "
+           href="/2019/12/27/blog_back_new/Python/python%E5%B8%B8%E7%94%A8%E6%96%B9%E6%B3%951/"
+           data-tag="python"
+           data-author="" >
+            <span class="post-title" title="Python Book">Python Book</span>
+            <span class="post-date" title="2019-12-27 17:36:31">2019/12/27</span>
+        </a>
+        
+        <a  class="全部文章 leetcode "
+           href="/2019/12/27/blog_back_new/leetcode/LinkList/%E6%B7%B1%E6%8B%B7%E8%B4%9D%E4%B8%8E%E6%B5%85%E6%8B%B7%E8%B4%9D/"
+           data-tag="leetcode"
+           data-author="" >
+            <span class="post-title" title="深拷贝与浅拷贝">深拷贝与浅拷贝</span>
+            <span class="post-date" title="2019-12-27 17:33:42">2019/12/27</span>
+        </a>
+        
+        <div id="no-item-tips">
+
+        </div>
+    </nav>
+    <div id="outline-list">
+    </div>
+</div>
+    </div>
+    <div class="hide-list">
+        <div class="semicircle" data-title="切换全屏 快捷键 s">
+            <div class="brackets first"><</div>
+            <div class="brackets">&gt;</div>
+        </div>
+    </div>
+</aside>
+<div id="post">
+    <div class="pjax">
+        <article id="post-blog_back_new/mysql/mysql主从备份" class="article article-type-post" itemscope itemprop="blogPost">
+    
+        <h1 class="article-title">mysql主从备份</h1>
+    
+    <div class="article-meta">
+        
+        
+        
+        <span class="book">
+            <i class="iconfont icon-category"></i>
+            
+            
+            <a  data-rel="mysql">mysql</a>
+            
+        </span>
+        
+        
+        <span class="tag">
+            <i class="iconfont icon-tag"></i>
+            
+            <a class="color1">mysql</a>
+            
+        </span>
+        
+    </div>
+    <div class="article-meta">
+        
+            发布时间 : <time class="date" title='最后更新: 2020-06-08 16:29:34'>2020-06-05 15:10</time>
+        
+    </div>
+    <div class="article-meta">
+        
+        
+        <span id="busuanzi_container_page_pv">
+            阅读 :<span id="busuanzi_value_page_pv">
+                <span class="count-comment">
+                    <span class="spinner">
+                      <div class="cube1"></div>
+                      <div class="cube2"></div>
+                    </span>
+                </span>
+            </span>
+        </span>
+        
+        
+    </div>
+    
+    <div class="toc-ref">
+    
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#mysql%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6"><span class="toc-text">mysql主从复制</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E%E4%BA%8C%E8%BF%9B%E5%88%B6%E6%97%A5%E5%BF%97%E7%82%B9%E7%9A%84%E5%BC%82%E6%AD%A5%E5%A4%8D%E5%88%B6%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="toc-text">基于二进制日志点的异步复制解决方案</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BB%E4%BB%8E%E5%90%8C%E6%AD%A5%E8%BF%9B%E9%98%B6%E7%89%88%E2%80%93%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB"><span class="toc-text">主从同步进阶版–读写分离</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#master%E5%92%8Csalve%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E6%95%B0%E6%8D%AE%E4%B8%8D%E4%B8%80%E8%87%B4%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="toc-text">master和salve数据库的数据不一致解决方案</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#mysqldump-%E5%86%B7%E5%A4%87%E4%BB%BD"><span class="toc-text">mysqldump 冷备份</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Xtrabackup-%E7%83%AD%E5%A4%87%E4%BB%BD"><span class="toc-text">Xtrabackup 热备份</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8xtrabackup%E5%85%A8%E9%87%8F%E5%A4%87%E4%BB%BD"><span class="toc-text">使用xtrabackup全量备份</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8xtrabackup%E5%A2%9E%E9%87%8F%E5%A4%87%E4%BB%BD"><span class="toc-text">使用xtrabackup增量备份</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#xtrabackup-%E6%B5%81%E5%BC%8F%E5%A4%87%E4%BB%BD"><span class="toc-text">xtrabackup 流式备份</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A4%87%E4%BB%BD%E6%81%A2%E5%A4%8D"><span class="toc-text">备份恢复</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8C%BA%E5%88%AB"><span class="toc-text">区别</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#xtrabackup%E8%AF%A6%E8%A7%A3"><span class="toc-text">xtrabackup详解</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%94%99%E8%AF%AF"><span class="toc-text">错误</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#docker-mysql"><span class="toc-text">docker mysql</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#innobackupex-%E5%91%BD%E4%BB%A4%E5%87%BA%E9%94%99"><span class="toc-text">innobackupex 命令出错</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#docker-mysql%E6%97%A0%E6%B3%95%E8%A2%ABinnobackupex%E5%A4%87%E4%BB%BD"><span class="toc-text">docker-mysql无法被innobackupex备份</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#docker-mysql%E9%87%8D%E5%90%AF%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="toc-text">docker-mysql重启数据库</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#docker-mysql%E8%BF%90%E8%A1%8C"><span class="toc-text">docker-mysql运行</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#mysql-%E4%B8%80%E9%94%AE%E8%84%9A%E6%9C%AC"><span class="toc-text">mysql 一键脚本</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#extra"><span class="toc-text">extra</span></a></li></ol></li></ol>
+    
+<style>
+    .left-col .switch-btn,
+    .left-col .switch-area {
+        display: none;
+    }
+    .toc-level-3 i,
+    .toc-level-3 ol {
+        display: none !important;
+    }
+</style>
+</div>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <!-- @import "<div class='inner-toc'><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#mysql%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6"><span class="toc-text">mysql主从复制</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E%E4%BA%8C%E8%BF%9B%E5%88%B6%E6%97%A5%E5%BF%97%E7%82%B9%E7%9A%84%E5%BC%82%E6%AD%A5%E5%A4%8D%E5%88%B6%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="toc-text">基于二进制日志点的异步复制解决方案</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BB%E4%BB%8E%E5%90%8C%E6%AD%A5%E8%BF%9B%E9%98%B6%E7%89%88%E2%80%93%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB"><span class="toc-text">主从同步进阶版–读写分离</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#master%E5%92%8Csalve%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E6%95%B0%E6%8D%AE%E4%B8%8D%E4%B8%80%E8%87%B4%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="toc-text">master和salve数据库的数据不一致解决方案</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#mysqldump-%E5%86%B7%E5%A4%87%E4%BB%BD"><span class="toc-text">mysqldump 冷备份</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Xtrabackup-%E7%83%AD%E5%A4%87%E4%BB%BD"><span class="toc-text">Xtrabackup 热备份</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8xtrabackup%E5%85%A8%E9%87%8F%E5%A4%87%E4%BB%BD"><span class="toc-text">使用xtrabackup全量备份</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8xtrabackup%E5%A2%9E%E9%87%8F%E5%A4%87%E4%BB%BD"><span class="toc-text">使用xtrabackup增量备份</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#xtrabackup-%E6%B5%81%E5%BC%8F%E5%A4%87%E4%BB%BD"><span class="toc-text">xtrabackup 流式备份</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A4%87%E4%BB%BD%E6%81%A2%E5%A4%8D"><span class="toc-text">备份恢复</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8C%BA%E5%88%AB"><span class="toc-text">区别</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#xtrabackup%E8%AF%A6%E8%A7%A3"><span class="toc-text">xtrabackup详解</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%94%99%E8%AF%AF"><span class="toc-text">错误</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#docker-mysql"><span class="toc-text">docker mysql</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#innobackupex-%E5%91%BD%E4%BB%A4%E5%87%BA%E9%94%99"><span class="toc-text">innobackupex 命令出错</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#docker-mysql%E6%97%A0%E6%B3%95%E8%A2%ABinnobackupex%E5%A4%87%E4%BB%BD"><span class="toc-text">docker-mysql无法被innobackupex备份</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#docker-mysql%E9%87%8D%E5%90%AF%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="toc-text">docker-mysql重启数据库</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#docker-mysql%E8%BF%90%E8%A1%8C"><span class="toc-text">docker-mysql运行</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#mysql-%E4%B8%80%E9%94%AE%E8%84%9A%E6%9C%AC"><span class="toc-text">mysql 一键脚本</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#extra"><span class="toc-text">extra</span></a></li></ol></li></ol></div>" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 
 <!-- code_chunk_output -->
 
@@ -283,9 +2261,9 @@
 </ol>
 <p>mysql复制的几种形式</p>
 <ol>
-<li><strong>基于语句的复制</strong>：在主服务器上执行的SQL语句，在从服务器上执行同样的语句。MySQL默认采用基于语句的复制，效率比较高。 一旦发现没法精确复制时，会自动选着基于行的复制<div class="code-wrapper"><pre><code class="hljs bash">binlog_format=Statement</code></pre></div></li>
-<li><strong>基于行的复制</strong>：把改变的内容复制过去，而不是把命令在从服务器上执行一遍. 从mysql5.0开始支持<div class="code-wrapper"><pre><code class="hljs bash">binlog_format=Row</code></pre></div></li>
-<li><strong>混合类型的复制</strong>：默认采用基于语句的复制，一旦发现基于语句的无法精确的复制时，就会采用基于行的复制。<div class="code-wrapper"><pre><code class="hljs bash">binlog_format=Mixed</code></pre></div>
+<li><strong>基于语句的复制</strong>：在主服务器上执行的SQL语句，在从服务器上执行同样的语句。MySQL默认采用基于语句的复制，效率比较高。 一旦发现没法精确复制时，会自动选着基于行的复制<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token assign-left variable">binlog_format</span><span class="token operator">=</span>Statement</code></pre></li>
+<li><strong>基于行的复制</strong>：把改变的内容复制过去，而不是把命令在从服务器上执行一遍. 从mysql5.0开始支持<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token assign-left variable">binlog_format</span><span class="token operator">=</span>Row</code></pre></li>
+<li><strong>混合类型的复制</strong>：默认采用基于语句的复制，一旦发现基于语句的无法精确的复制时，就会采用基于行的复制。<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token assign-left variable">binlog_format</span><span class="token operator">=</span>Mixed</code></pre>
 
 </li>
 </ol>
@@ -295,130 +2273,130 @@
 <li>slave 将 master 的 binary log events 拷贝到它的中继日志(relay log)</li>
 <li>slave 重做中继日志中的事件，将改变反映它自己的数据。</li>
 </ul>
-<p><img src="http://img.noback.top/2020-06-08-08-51-22.png" srcset="/img/loading.gif" alt="2020-06-08-08-51-22"></p>
+<p><img src="http://img.noback.top/2020-06-08-08-51-22.png" alt="2020-06-08-08-51-22"></p>
 <p>两个线程的主要作用</p>
 <ul>
 <li>I/O线程：该线程链接到master机器，master机器的binlog发送到slave的时候，IO线程会将该日志内容写在本地的中继日志（Relay log）中。</li>
 <li>SQL线程：该线程读取中继日志中的内容，并且根据中继日志中的内容对Slave数据库做相应的操作。<br>可能造成的问题：在写请求相当多的情况下，可能会造成Slave数据和Master数据不一致的情况，这是因为日志传输过程中的短暂延迟、或者写命令较多，系统速度不匹配造成的。<br>这大致就是MySQL主从同步的原理，真正在其中起到作用的实际上就是这两个日志文件，binlog和中继日志（Relay log）。</li>
 </ul>
 <p>创建两个mysql容器 因为配置文件我们后面要做修改，所以需要外面挂载进去<br>设置配置文件</p>
-<div class="code-wrapper"><pre><code class="hljs bash">mkdir /hzj/mysql
-[mysqld]
-datadir=/var/lib/mysql
-socket=/var/lib/mysql/mysql.sock
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">mkdir</span> /hzj/mysql
+<span class="token punctuation">[</span>mysqld<span class="token punctuation">]</span>
+<span class="token assign-left variable">datadir</span><span class="token operator">=</span>/var/lib/mysql
+<span class="token assign-left variable">socket</span><span class="token operator">=</span>/var/lib/mysql/mysql.sock
 
-<span class="hljs-comment"># ====== 主从复制配置文件</span>
+<span class="token comment"># ====== 主从复制配置文件</span>
 
-server-id = 1            <span class="hljs-comment"># 服务器 id 号，不要和其他服务器重复</span>
-log-bin=mysql-bin     <span class="hljs-comment"># 开启二进制日志</span>
-log_bin_index = mysql-bin.index    <span class="hljs-comment"># 索引二进制日志的文件名</span>
-sync_binlog = 1      <span class="hljs-comment"># 设为1就是把MySql每次发生的修改和事件的日志即时同步到硬盘上</span>
-binlog_format = Row     <span class="hljs-comment"># 复制模式 Statement, Row, mixed 这里是基于行的复制</span>
-skip_slave_start = 1     <span class="hljs-comment"># 防止从服务器在崩溃后自动开启，以给你足够的时间修复。</span>
-max_binlog_size = 200M     <span class="hljs-comment"># 指定二进制日志的大小</span>
+server-id <span class="token operator">=</span> <span class="token number">1</span>            <span class="token comment"># 服务器 id 号，不要和其他服务器重复</span>
+log-bin<span class="token operator">=</span>mysql-bin     <span class="token comment"># 开启二进制日志</span>
+log_bin_index <span class="token operator">=</span> mysql-bin.index    <span class="token comment"># 索引二进制日志的文件名</span>
+sync_binlog <span class="token operator">=</span> <span class="token number">1</span>      <span class="token comment"># 设为1就是把MySql每次发生的修改和事件的日志即时同步到硬盘上</span>
+binlog_format <span class="token operator">=</span> Row     <span class="token comment"># 复制模式 Statement, Row, mixed 这里是基于行的复制</span>
+skip_slave_start <span class="token operator">=</span> <span class="token number">1</span>     <span class="token comment"># 防止从服务器在崩溃后自动开启，以给你足够的时间修复。</span>
+max_binlog_size <span class="token operator">=</span> 200M     <span class="token comment"># 指定二进制日志的大小</span>
 
-binlog-do-db = datafordata
-<span class="hljs-comment"># Disabling symbolic-links is recommended to prevent assorted security risks</span>
-symbolic-links=0
+binlog-do-db <span class="token operator">=</span> datafordata
+<span class="token comment"># Disabling symbolic-links is recommended to prevent assorted security risks</span>
+symbolic-links<span class="token operator">=</span><span class="token number">0</span>
 
-<span class="hljs-comment"># Recommended in standard MySQL setup</span>
-sql-mode=NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION
+<span class="token comment"># Recommended in standard MySQL setup</span>
+sql-mode<span class="token operator">=</span>NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION
 
-[mysqld_safe]
-log-error=/var/<span class="hljs-built_in">log</span>/mysqld.log
-pid-file=/var/run/mysqld/mysqld.pid
+<span class="token punctuation">[</span>mysqld_safe<span class="token punctuation">]</span>
+log-error<span class="token operator">=</span>/var/log/mysqld.log
+pid-file<span class="token operator">=</span>/var/run/mysqld/mysqld.pid
 
 
-<span class="hljs-comment"># slave.cnf</span>
-[mysqld]
-<span class="hljs-comment"># read_rnd_buffer_size = 2M</span>
-datadir=/var/lib/mysql
-socket=/var/lib/mysql/mysql.sock
+<span class="token comment"># slave.cnf</span>
+<span class="token punctuation">[</span>mysqld<span class="token punctuation">]</span>
+<span class="token comment"># read_rnd_buffer_size = 2M</span>
+<span class="token assign-left variable">datadir</span><span class="token operator">=</span>/var/lib/mysql
+<span class="token assign-left variable">socket</span><span class="token operator">=</span>/var/lib/mysql/mysql.sock
 
-<span class="hljs-comment"># ======= 主从赋值配置文件</span>
-server-id = 2  <span class="hljs-comment"># 服务器 id 号，不要和其他服务器重复</span>
-read_only = 1  <span class="hljs-comment"># 让从服务器只读，可以防止有人误从服务器插入数据，导致主从数据不一致。·</span>
-log-bin=mysql-bin <span class="hljs-comment"># 开启二进制日志</span>
-log_bin_index = mysql-bin.index<span class="hljs-comment"># 索引二进制日志的文件名</span>
-log_slave_updates = 1
-relay_log = mysql-relay-bin  <span class="hljs-comment"># 中继日志·</span>
-relay_log_index = mysql-relay-bin.index
-skip_slave_start = 1  <span class="hljs-comment"># 防止从服务器在崩溃后自动开启，以给你足够的时间修复。·</span>
-max_binlog_size = 200M   <span class="hljs-comment"># 指定二进制日志的大小</span>
+<span class="token comment"># ======= 主从赋值配置文件</span>
+server-id <span class="token operator">=</span> <span class="token number">2</span>  <span class="token comment"># 服务器 id 号，不要和其他服务器重复</span>
+read_only <span class="token operator">=</span> <span class="token number">1</span>  <span class="token comment"># 让从服务器只读，可以防止有人误从服务器插入数据，导致主从数据不一致。·</span>
+log-bin<span class="token operator">=</span>mysql-bin <span class="token comment"># 开启二进制日志</span>
+log_bin_index <span class="token operator">=</span> mysql-bin.index<span class="token comment"># 索引二进制日志的文件名</span>
+log_slave_updates <span class="token operator">=</span> <span class="token number">1</span>
+relay_log <span class="token operator">=</span> mysql-relay-bin  <span class="token comment"># 中继日志·</span>
+relay_log_index <span class="token operator">=</span> mysql-relay-bin.index
+skip_slave_start <span class="token operator">=</span> <span class="token number">1</span>  <span class="token comment"># 防止从服务器在崩溃后自动开启，以给你足够的时间修复。·</span>
+max_binlog_size <span class="token operator">=</span> 200M   <span class="token comment"># 指定二进制日志的大小</span>
 
-binlog-do-db = datafordata
-<span class="hljs-comment"># Disabling symbolic-links is recommended to prevent assorted security risks</span>
-symbolic-links=0
+binlog-do-db <span class="token operator">=</span> datafordata
+<span class="token comment"># Disabling symbolic-links is recommended to prevent assorted security risks</span>
+symbolic-links<span class="token operator">=</span><span class="token number">0</span>
 
-<span class="hljs-comment"># Recommended in standard MySQL setup</span>
-sql-mode=NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION
+<span class="token comment"># Recommended in standard MySQL setup</span>
+sql-mode<span class="token operator">=</span>NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION
 
-[mysqld_safe]
-log-error=/var/<span class="hljs-built_in">log</span>/mysqld.log
-pid-file=/var/run/mysqld/mysqld.pid
+<span class="token punctuation">[</span>mysqld_safe<span class="token punctuation">]</span>
+log-error<span class="token operator">=</span>/var/log/mysqld.log
+pid-file<span class="token operator">=</span>/var/run/mysqld/mysqld.pid
 
-<span class="hljs-comment"># 1. 主从备份相关配置 - 从服务器</span>
-<span class="hljs-comment"># 不在这里配置主服务器信息，而是通过命令来配置</span>
-server-id = 2 <span class="hljs-comment"># 服务器 id 号，不要和其他服务器重复</span>
-read_only = 1 <span class="hljs-comment"># 让从服务器只读，可以防止有人误从服务器插入数据，导致主从数据不一致。·</span>
-log-bin=mysql-bin <span class="hljs-comment"># 开启二进制日志</span>
-log_bin_index = mysql-bin.index<span class="hljs-comment"># 索引二进制日志的文件名</span>
-log_slave_updates = 1
-relay_log = mysql-relay-bin <span class="hljs-comment"># 中继日志·</span>
-relay_log_index = mysql-relay-bin.index
-skip_slave_start = 1 <span class="hljs-comment"># 防止从服务器在崩溃后自动开启，以给你足够的时间修复。·</span>
-max_binlog_size = 200M  <span class="hljs-comment"># 指定二进制日志的大小</span>
+<span class="token comment"># 1. 主从备份相关配置 - 从服务器</span>
+<span class="token comment"># 不在这里配置主服务器信息，而是通过命令来配置</span>
+server-id <span class="token operator">=</span> <span class="token number">2</span> <span class="token comment"># 服务器 id 号，不要和其他服务器重复</span>
+read_only <span class="token operator">=</span> <span class="token number">1</span> <span class="token comment"># 让从服务器只读，可以防止有人误从服务器插入数据，导致主从数据不一致。·</span>
+log-bin<span class="token operator">=</span>mysql-bin <span class="token comment"># 开启二进制日志</span>
+log_bin_index <span class="token operator">=</span> mysql-bin.index<span class="token comment"># 索引二进制日志的文件名</span>
+log_slave_updates <span class="token operator">=</span> <span class="token number">1</span>
+relay_log <span class="token operator">=</span> mysql-relay-bin <span class="token comment"># 中继日志·</span>
+relay_log_index <span class="token operator">=</span> mysql-relay-bin.index
+skip_slave_start <span class="token operator">=</span> <span class="token number">1</span> <span class="token comment"># 防止从服务器在崩溃后自动开启，以给你足够的时间修复。·</span>
+max_binlog_size <span class="token operator">=</span> 200M  <span class="token comment"># 指定二进制日志的大小</span>
 
-<span class="hljs-comment"># 以下配置是为了方便以后，从库切换为主库</span>
-<span class="hljs-comment"># 1.1 需要同步的二进制数据库名</span>
-binlog-do-db = datafordata
-<span class="hljs-comment"># 1.2 不同步的二进制数据库名,如果不设置可以将其注释掉</span>
-<span class="hljs-comment"># binlog-ignore-db = information_schema</span>
-<span class="hljs-comment"># binlog-ignore-db = mysql</span>
-</code></pre></div>
-<div class="code-wrapper"><pre><code class="hljs bash">docker pull mysql:5.7
-docker run -p 3305:3306 --name mysql-slave -v /root/hzj/hzj/mysql/slave.cnf:/etc/mysql/conf.d/slave.cnf -e MYSQL_ROOT_PASSWORD=upyun123 -itd mysql:5.7
-docker run -p 3306:3306 --name mysql-master -v /root/hzj/hzj/mysql/master.cnf:/etc/mysql/conf.d/master.cnf -e MYSQL_ROOT_PASSWORD=upyun123 -itd mysql:5.7</code></pre></div>
+<span class="token comment"># 以下配置是为了方便以后，从库切换为主库</span>
+<span class="token comment"># 1.1 需要同步的二进制数据库名</span>
+binlog-do-db <span class="token operator">=</span> datafordata
+<span class="token comment"># 1.2 不同步的二进制数据库名,如果不设置可以将其注释掉</span>
+<span class="token comment"># binlog-ignore-db = information_schema</span>
+<span class="token comment"># binlog-ignore-db = mysql</span>
+</code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash">docker pull mysql:5.7
+docker run -p <span class="token number">3305</span>:3306 --name mysql-slave -v /root/hzj/hzj/mysql/slave.cnf:/etc/mysql/conf.d/slave.cnf -e <span class="token assign-left variable">MYSQL_ROOT_PASSWORD</span><span class="token operator">=</span>upyun123 -itd mysql:5.7
+docker run -p <span class="token number">3306</span>:3306 --name mysql-master -v /root/hzj/hzj/mysql/master.cnf:/etc/mysql/conf.d/master.cnf -e <span class="token assign-left variable">MYSQL_ROOT_PASSWORD</span><span class="token operator">=</span>upyun123 -itd mysql:5.7</code></pre>
 
 <p>进入容器配置远程用户</p>
-<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 主机</span>
-docker <span class="hljs-built_in">exec</span> -it mysql-master /bin/bash
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 主机</span>
+docker <span class="token builtin class-name">exec</span> -it mysql-master /bin/bash
 
-&gt; mysql -u root -p
-<span class="hljs-comment"># 修改本地root密码</span>
-&gt; ALTER USER <span class="hljs-string">&#x27;root&#x27;</span>@<span class="hljs-string">&#x27;localhost&#x27;</span> IDENTIFIED BY <span class="hljs-string">&#x27;upyun123&#x27;</span>;
-<span class="hljs-comment"># 创建远程登录用户</span>
-&gt; CREATE USER <span class="hljs-string">&#x27;hzj&#x27;</span>@<span class="hljs-string">&#x27;%&#x27;</span> IDENTIFIED WITH mysql_native_password BY <span class="hljs-string">&#x27;upyun123&#x27;</span>;
-&gt; GRANT ALL PRIVILEGES ON *.* TO <span class="hljs-string">&#x27;hzj&#x27;</span>@<span class="hljs-string">&#x27;%&#x27;</span>;
+<span class="token operator">></span> mysql -u root -p
+<span class="token comment"># 修改本地root密码</span>
+<span class="token operator">></span> ALTER <span class="token environment constant">USER</span> <span class="token string">'root'</span>@<span class="token string">'localhost'</span> IDENTIFIED BY <span class="token string">'upyun123'</span><span class="token punctuation">;</span>
+<span class="token comment"># 创建远程登录用户</span>
+<span class="token operator">></span> CREATE <span class="token environment constant">USER</span> <span class="token string">'hzj'</span>@<span class="token string">'%'</span> IDENTIFIED WITH mysql_native_password BY <span class="token string">'upyun123'</span><span class="token punctuation">;</span>
+<span class="token operator">></span> GRANT ALL PRIVILEGES ON *.* TO <span class="token string">'hzj'</span>@<span class="token string">'%'</span><span class="token punctuation">;</span>
 
-<span class="hljs-comment"># 备机</span>
-docker <span class="hljs-built_in">exec</span> -it mysql-slave /bin/bash
+<span class="token comment"># 备机</span>
+docker <span class="token builtin class-name">exec</span> -it mysql-slave /bin/bash
 
-&gt; mysql -u root -p
-<span class="hljs-comment"># 修改本地root密码</span>
-&gt; ALTER USER <span class="hljs-string">&#x27;root&#x27;</span>@<span class="hljs-string">&#x27;localhost&#x27;</span> IDENTIFIED BY <span class="hljs-string">&#x27;upyun123&#x27;</span>;
-<span class="hljs-comment"># 创建远程登录用户</span>
-&gt; CREATE USER <span class="hljs-string">&#x27;hzj&#x27;</span>@<span class="hljs-string">&#x27;%&#x27;</span> IDENTIFIED WITH mysql_native_password BY <span class="hljs-string">&#x27;upyun123&#x27;</span>;
-&gt; GRANT ALL PRIVILEGES ON *.* TO <span class="hljs-string">&#x27;hzj&#x27;</span>@<span class="hljs-string">&#x27;%&#x27;</span>;</code></pre></div>
-<p><img src="http://img.noback.top/2020-06-05-15-30-18.png" srcset="/img/loading.gif" alt="2020-06-05-15-30-18"></p>
+<span class="token operator">></span> mysql -u root -p
+<span class="token comment"># 修改本地root密码</span>
+<span class="token operator">></span> ALTER <span class="token environment constant">USER</span> <span class="token string">'root'</span>@<span class="token string">'localhost'</span> IDENTIFIED BY <span class="token string">'upyun123'</span><span class="token punctuation">;</span>
+<span class="token comment"># 创建远程登录用户</span>
+<span class="token operator">></span> CREATE <span class="token environment constant">USER</span> <span class="token string">'hzj'</span>@<span class="token string">'%'</span> IDENTIFIED WITH mysql_native_password BY <span class="token string">'upyun123'</span><span class="token punctuation">;</span>
+<span class="token operator">></span> GRANT ALL PRIVILEGES ON *.* TO <span class="token string">'hzj'</span>@<span class="token string">'%'</span><span class="token punctuation">;</span></code></pre>
+<p><img src="http://img.noback.top/2020-06-05-15-30-18.png" alt="2020-06-05-15-30-18"></p>
 <p>初始化主机上的内容，并插入内容，模拟需要备份的内容</p>
-<div class="code-wrapper"><pre><code class="hljs sql">
-<span class="hljs-keyword">create</span> <span class="hljs-keyword">database</span> datafordata  <span class="hljs-built_in">character</span> <span class="hljs-keyword">set</span> utf8mb4;
+<pre class="language-sql" data-language="sql"><code class="language-sql">
+<span class="token keyword">create</span> <span class="token keyword">database</span> datafordata  <span class="token keyword">character</span> <span class="token keyword">set</span> utf8mb4<span class="token punctuation">;</span>
 
-<span class="hljs-keyword">use</span> datafordata;
+<span class="token keyword">use</span> datafordata<span class="token punctuation">;</span>
 
-<span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span> <span class="hljs-string">`t_temp`</span> (
-	<span class="hljs-string">`id`</span> <span class="hljs-built_in">bigint</span>(<span class="hljs-number">20</span>) <span class="hljs-keyword">NOT</span> <span class="hljs-literal">NULL</span> AUTO_INCREMENT <span class="hljs-keyword">COMMENT</span> <span class="hljs-string">&#x27;主键ID&#x27;</span>,
-	<span class="hljs-string">`comment`</span> <span class="hljs-built_in">varchar</span>(<span class="hljs-number">10</span>) <span class="hljs-keyword">NOT</span> <span class="hljs-literal">NULL</span> <span class="hljs-keyword">DEFAULT</span> <span class="hljs-string">&#x27;&#x27;</span> <span class="hljs-keyword">COMMENT</span> <span class="hljs-string">&#x27;备注&#x27;</span>,
-	<span class="hljs-string">`create_time`</span> <span class="hljs-built_in">bigint</span>(<span class="hljs-number">20</span>) <span class="hljs-keyword">NOT</span> <span class="hljs-literal">NULL</span> ,
-	<span class="hljs-string">`update_time`</span> <span class="hljs-built_in">bigint</span>(<span class="hljs-number">20</span>) <span class="hljs-keyword">NOT</span> <span class="hljs-literal">NULL</span> ,
-	PRIMARY <span class="hljs-keyword">KEY</span> (<span class="hljs-string">`id`</span>)
-) <span class="hljs-keyword">ENGINE</span>=<span class="hljs-keyword">InnoDB</span> AUTO_INCREMENT=<span class="hljs-number">1</span> <span class="hljs-keyword">DEFAULT</span> <span class="hljs-keyword">CHARSET</span>=utf8mb4;
+<span class="token keyword">CREATE</span> <span class="token keyword">TABLE</span> <span class="token punctuation">`</span>t_temp<span class="token punctuation">`</span> <span class="token punctuation">(</span>
+	<span class="token punctuation">`</span>id<span class="token punctuation">`</span> <span class="token keyword">bigint</span><span class="token punctuation">(</span><span class="token number">20</span><span class="token punctuation">)</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span> <span class="token keyword">AUTO_INCREMENT</span> <span class="token keyword">COMMENT</span> <span class="token string">'主键ID'</span><span class="token punctuation">,</span>
+	<span class="token punctuation">`</span><span class="token keyword">comment</span><span class="token punctuation">`</span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">)</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span> <span class="token keyword">DEFAULT</span> <span class="token string">''</span> <span class="token keyword">COMMENT</span> <span class="token string">'备注'</span><span class="token punctuation">,</span>
+	<span class="token punctuation">`</span>create_time<span class="token punctuation">`</span> <span class="token keyword">bigint</span><span class="token punctuation">(</span><span class="token number">20</span><span class="token punctuation">)</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span> <span class="token punctuation">,</span>
+	<span class="token punctuation">`</span>update_time<span class="token punctuation">`</span> <span class="token keyword">bigint</span><span class="token punctuation">(</span><span class="token number">20</span><span class="token punctuation">)</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span> <span class="token punctuation">,</span>
+	<span class="token keyword">PRIMARY</span> <span class="token keyword">KEY</span> <span class="token punctuation">(</span><span class="token punctuation">`</span>id<span class="token punctuation">`</span><span class="token punctuation">)</span>
+<span class="token punctuation">)</span> <span class="token keyword">ENGINE</span><span class="token operator">=</span><span class="token keyword">InnoDB</span> <span class="token keyword">AUTO_INCREMENT</span><span class="token operator">=</span><span class="token number">1</span> <span class="token keyword">DEFAULT</span> <span class="token keyword">CHARSET</span><span class="token operator">=</span>utf8mb4<span class="token punctuation">;</span>
 
-<span class="hljs-comment"># 插入数据</span>
-<span class="hljs-keyword">INSERT</span> <span class="hljs-keyword">INTO</span> <span class="hljs-string">`datafordata`</span>.<span class="hljs-string">`t_temp`</span> (<span class="hljs-string">`id`</span>, <span class="hljs-string">`comment`</span>, <span class="hljs-string">`create_time`</span>, <span class="hljs-string">`update_time`</span>) <span class="hljs-keyword">VALUES</span> (<span class="hljs-string">&#x27;1&#x27;</span>, <span class="hljs-string">&#x27;helloworld&#x27;</span>, <span class="hljs-string">&#x27;1&#x27;</span>, <span class="hljs-string">&#x27;1&#x27;</span>);</code></pre></div>
-<p><img src="http://img.noback.top/2020-06-05-15-39-52.png" srcset="/img/loading.gif" alt="2020-06-05-15-39-52"></p>
-<p>更新完毕以后，查看主从机器中主机的状态<br><img src="http://img.noback.top/2020-06-05-17-02-43.png" srcset="/img/loading.gif" alt="2020-06-05-17-02-43"><br><img src="http://img.noback.top/2020-06-05-18-21-19.png" srcset="/img/loading.gif" alt="2020-06-05-18-21-19"></p>
+<span class="token comment"># 插入数据</span>
+<span class="token keyword">INSERT</span> <span class="token keyword">INTO</span> <span class="token punctuation">`</span>datafordata<span class="token punctuation">`</span><span class="token punctuation">.</span><span class="token punctuation">`</span>t_temp<span class="token punctuation">`</span> <span class="token punctuation">(</span><span class="token punctuation">`</span>id<span class="token punctuation">`</span><span class="token punctuation">,</span> <span class="token punctuation">`</span><span class="token keyword">comment</span><span class="token punctuation">`</span><span class="token punctuation">,</span> <span class="token punctuation">`</span>create_time<span class="token punctuation">`</span><span class="token punctuation">,</span> <span class="token punctuation">`</span>update_time<span class="token punctuation">`</span><span class="token punctuation">)</span> <span class="token keyword">VALUES</span> <span class="token punctuation">(</span><span class="token string">'1'</span><span class="token punctuation">,</span> <span class="token string">'helloworld'</span><span class="token punctuation">,</span> <span class="token string">'1'</span><span class="token punctuation">,</span> <span class="token string">'1'</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p><img src="http://img.noback.top/2020-06-05-15-39-52.png" alt="2020-06-05-15-39-52"></p>
+<p>更新完毕以后，查看主从机器中主机的状态<br><img src="http://img.noback.top/2020-06-05-17-02-43.png" alt="2020-06-05-17-02-43"><br><img src="http://img.noback.top/2020-06-05-18-21-19.png" alt="2020-06-05-18-21-19"></p>
 <p>参数介绍</p>
 <ul>
 <li>File: mysql-bin.000033 #当前记录的日志</li>
@@ -427,461 +2405,273 @@ docker <span class="hljs-built_in">exec</span> -it mysql-slave /bin/bash
 <li>Binlog_Ignore_DB: </li>
 </ul>
 <p>在从机上设置同步目标</p>
-<div class="code-wrapper"><pre><code class="hljs bash">change  master to master_host=<span class="hljs-string">&#x27;10.0.6.55&#x27;</span>,MASTER_PORT=3306,master_user=<span class="hljs-string">&#x27;root&#x27;</span>,master_password=<span class="hljs-string">&#x27;upyun123&#x27;</span>,master_log_file=<span class="hljs-string">&#x27;mysql-bin.000003&#x27;</span>,master_log_pos=4210;</code></pre></div>
+<pre class="language-bash" data-language="bash"><code class="language-bash">change  master to <span class="token assign-left variable">master_host</span><span class="token operator">=</span><span class="token string">'10.0.6.55'</span>,MASTER_PORT<span class="token operator">=</span><span class="token number">3306</span>,master_user<span class="token operator">=</span><span class="token string">'root'</span>,master_password<span class="token operator">=</span><span class="token string">'upyun123'</span>,master_log_file<span class="token operator">=</span><span class="token string">'mysql-bin.000003'</span>,master_log_pos<span class="token operator">=</span><span class="token number">4210</span><span class="token punctuation">;</span></code></pre>
 <p>其中master_log_pos和master_log_file是在主机上面使用<code>show master status </code> 查看对应的log名字和log大小<br>开启同步</p>
-<div class="code-wrapper"><pre><code class="hljs bash">start slave;
-<span class="hljs-comment"># 查看同步状态</span>
-show slave status\G;
-<span class="hljs-comment">#</span></code></pre></div>
-<p><img src="http://img.noback.top/2020-06-05-18-28-14.png" srcset="/img/loading.gif" alt="2020-06-05-18-28-14"><br>这里面如果是yes表示正在同步了，如果是no则表示没有同步</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash">start slave<span class="token punctuation">;</span>
+<span class="token comment"># 查看同步状态</span>
+show slave status<span class="token punctuation">\</span>G<span class="token punctuation">;</span>
+<span class="token comment">#</span></code></pre>
+<p><img src="http://img.noback.top/2020-06-05-18-28-14.png" alt="2020-06-05-18-28-14"><br>这里面如果是yes表示正在同步了，如果是no则表示没有同步</p>
 <p><font color='red'>主从备份的时候要保证两个数据库的数据结构是一一致的</font></p>
-<h2 id="主从同步进阶版–读写分离"><a href="#主从同步进阶版–读写分离" class="headerlink" title="主从同步进阶版–读写分离"></a>主从同步进阶版–读写分离</h2><p><img src="http://img.noback.top/2020-06-08-08-53-53.png" srcset="/img/loading.gif" alt="2020-06-08-08-53-53"></p>
+<h2 id="主从同步进阶版–读写分离"><a href="#主从同步进阶版–读写分离" class="headerlink" title="主从同步进阶版–读写分离"></a>主从同步进阶版–读写分离</h2><p><img src="http://img.noback.top/2020-06-08-08-53-53.png" alt="2020-06-08-08-53-53"></p>
 <h2 id="master和salve数据库的数据不一致解决方案"><a href="#master和salve数据库的数据不一致解决方案" class="headerlink" title="master和salve数据库的数据不一致解决方案"></a>master和salve数据库的数据不一致解决方案</h2><p>主从数据库的数据要保持一致，不然主从同步会出现bug..<br>如果主数据库中已经存在数据，有两种解决方案.</p>
 <ul>
 <li>第一种方案是选择忽略主库之前的数据，不做处理。这种方案只适用于不重要的可有可无的数据，并且业务上能够容忍主从库数据不一致的场景。</li>
 <li>第二种方案是对主库的数据进行备份，然后将主数据库中导出的数据导入到从数据库，然后再开启主从复制，以此来保证主从数据库数据一致</li>
 </ul>
 <h3 id="mysqldump-冷备份"><a href="#mysqldump-冷备份" class="headerlink" title="mysqldump 冷备份"></a>mysqldump 冷备份</h3><p>在之前就备份好数据库，使用mysqldump备份数据库<br>mysqldump是mysql原生自带很好用的逻辑备份工具<br>备份的基本流程如下</p>
-<div class="code-wrapper"><pre><code class="hljs bash">1.调用FTWRL(flush tables with <span class="hljs-built_in">read</span> lock)，全局禁止读写
-2.开启快照读，获取此时的快照(仅对innodb表起作用)
-3.备份非innodb表数据(*.frm,*.myi,*.myd等)
-4.非innodb表备份完毕后，释放FTWRL锁
-5.逐一备份innodb表数据
-6.备份完成</code></pre></div>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token number">1</span>.调用FTWRL<span class="token punctuation">(</span>flush tables with <span class="token builtin class-name">read</span> lock<span class="token punctuation">)</span>，全局禁止读写
+<span class="token number">2</span>.开启快照读，获取此时的快照<span class="token punctuation">(</span>仅对innodb表起作用<span class="token punctuation">)</span>
+<span class="token number">3</span>.备份非innodb表数据<span class="token punctuation">(</span>*.frm,*.myi,*.myd等<span class="token punctuation">)</span>
+<span class="token number">4</span>.非innodb表备份完毕后，释放FTWRL锁
+<span class="token number">5</span>.逐一备份innodb表数据
+<span class="token number">6</span>.备份完成</code></pre>
 
 
 <p>常用备份参数</p>
-<div class="code-wrapper"><pre><code class="hljs bash">-A <span class="hljs-comment">#备份全库</span>
--B <span class="hljs-comment">#备某一个数据库下的所有表</span>
--R <span class="hljs-comment">#备份存储过程和函数数据</span>
---triggers <span class="hljs-comment"># 备份触发器数据</span>
---master-data = &#123;1|2&#125; <span class="hljs-comment"># 告诉你备份后时刻的binlog位置 ,如果等于1，则将其打印为CHANGE MASTER命令; 如果等于2，那么该命令将以注释符号为前缀。</span>
---single-transaction <span class="hljs-comment"># 对innodb引擎进行热备</span>
--F, --flush-logs <span class="hljs-comment"># 刷新binlog日志</span>
--x, --lock-all-tables <span class="hljs-comment"># 锁定所有数据库的所有表。这是通过在整个转储期间采用全局读锁来实现的</span>
--l, --lock-tables <span class="hljs-comment"># 锁定所有表以供读取</span>
--d,  <span class="hljs-comment"># 仅表结构</span>
--t, <span class="hljs-comment"># 仅数据</span>
---compact <span class="hljs-comment">#减少无用数据输出(调试)</span>
+<pre class="language-bash" data-language="bash"><code class="language-bash">-A <span class="token comment">#备份全库</span>
+-B <span class="token comment">#备某一个数据库下的所有表</span>
+-R <span class="token comment">#备份存储过程和函数数据</span>
+--triggers <span class="token comment"># 备份触发器数据</span>
+--master-data <span class="token operator">=</span> <span class="token punctuation">&#123;</span><span class="token number">1</span><span class="token operator">|</span><span class="token number">2</span><span class="token punctuation">&#125;</span> <span class="token comment"># 告诉你备份后时刻的binlog位置 ,如果等于1，则将其打印为CHANGE MASTER命令; 如果等于2，那么该命令将以注释符号为前缀。</span>
+--single-transaction <span class="token comment"># 对innodb引擎进行热备</span>
+-F, --flush-logs <span class="token comment"># 刷新binlog日志</span>
+-x, --lock-all-tables <span class="token comment"># 锁定所有数据库的所有表。这是通过在整个转储期间采用全局读锁来实现的</span>
+-l, --lock-tables <span class="token comment"># 锁定所有表以供读取</span>
+-d,  <span class="token comment"># 仅表结构</span>
+-t, <span class="token comment"># 仅数据</span>
+--compact <span class="token comment">#减少无用数据输出(调试)</span>
 
-mysqldump -A -R --triggers --master-data=2 --single-transaction |gzip &gt;/opt/all_$(date +%F).sql.gz</code></pre></div>
+mysqldump -A -R --triggers --master-data<span class="token operator">=</span><span class="token number">2</span> --single-transaction <span class="token operator">|</span><span class="token function">gzip</span> <span class="token operator">></span>/opt/all_<span class="token variable"><span class="token variable">$(</span><span class="token function">date</span> +%F<span class="token variable">)</span></span>.sql.gz </code></pre>
 
-<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 1.锁定数据库，保证在同步的过程中不会有新的数据插入</span>
-flush tables with <span class="hljs-built_in">read</span> lock;
-<span class="hljs-comment"># 2. 使用mysqldump备份数据库</span>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 1.锁定数据库，保证在同步的过程中不会有新的数据插入</span>
+flush tables with <span class="token builtin class-name">read</span> lock<span class="token punctuation">;</span>
+<span class="token comment"># 2. 使用mysqldump备份数据库</span>
 
-[root@localhost data]<span class="hljs-comment"># cd /data/db_backup/</span>
-[root@localhost db_backup]<span class="hljs-comment">#  mysqldump -uroot -p --master-data=1 --single-transaction --routines --triggers --events  --all-databases &gt; all.sql</span>
+<span class="token punctuation">[</span>root@localhost data<span class="token punctuation">]</span><span class="token comment"># cd /data/db_backup/</span>
+<span class="token punctuation">[</span>root@localhost db_backup<span class="token punctuation">]</span><span class="token comment">#  mysqldump -uroot -p --master-data=1 --single-transaction --routines --triggers --events  --all-databases > all.sql</span>
 Enter password
 
-<span class="hljs-comment"># 3.解除主数据库的锁定</span>
-unlock tables;
+<span class="token comment"># 3.解除主数据库的锁定</span>
+unlock tables<span class="token punctuation">;</span>
 
-<span class="hljs-comment"># 4. 把数据全量导入slave数据库，保证主从数据一致</span></code></pre></div>
+<span class="token comment"># 4. 把数据全量导入slave数据库，保证主从数据一致</span></code></pre>
 
 
 <h3 id="Xtrabackup-热备份"><a href="#Xtrabackup-热备份" class="headerlink" title="Xtrabackup 热备份"></a>Xtrabackup 热备份</h3><p>Xtrabackup是一个开源的免费的热备工具，在Xtrabackup包中主要有Xtrabackup和innobackupex两个工具。xtrabackup 是用来备份 InnoDB 表的，不能备份非 InnoDB 表，和 mysqld server 没有交互；innobackupex 脚本用来备份非 InnoDB 表，同时会调用 xtrabackup 命令来备份 InnoDB 表，还会和 mysqld server 发送命令进行交互，如加读锁（FTWRL）、获取位点（SHOW SLAVE STATUS）等。简单来说，innobackupex 在 xtrabackup 之上做了一层封装。</p>
 <p>安装完成xtarbackup之后，会有下面4个工具</p>
-<div class="code-wrapper"><pre><code class="hljs bash">usr
+<pre class="language-bash" data-language="bash"><code class="language-bash">usr
 ├── bin
-│   ├── innobackupex  <span class="hljs-comment"># 备份innodb表</span>
-│   ├── xbcrypt  <span class="hljs-comment"># 备份加密</span>
-│   ├── xbstream  <span class="hljs-comment"># 流式备份</span>
-│   └── xtrabackup  <span class="hljs-comment"># 备份非innodb表</span>
-``` 
+│   ├── innobackupex  <span class="token comment"># 备份innodb表</span>
+│   ├── xbcrypt  <span class="token comment"># 备份加密</span>
+│   ├── xbstream  <span class="token comment"># 流式备份</span>
+│   └── xtrabackup  <span class="token comment"># 备份非innodb表</span>
+``<span class="token variable"><span class="token variable">`</span> 
 
-<span class="hljs-comment">#### 备份流程</span>
-![2020-06-08-10-54-05](http://img.noback.top/2020-06-08-10-54-05.png)
+<span class="token comment">#### 备份流程</span>
+<span class="token operator">!</span><span class="token punctuation">[</span><span class="token number">2020</span>-06-08-10-54-05<span class="token punctuation">]</span><span class="token punctuation">(</span>http://img.noback.top/2020-06-08-10-54-05.png<span class="token punctuation">)</span>
 备份过程
-![2020-06-08-10-55-13](http://img.noback.top/2020-06-08-10-55-13.png)
+<span class="token operator">!</span><span class="token punctuation">[</span><span class="token number">2020</span>-06-08-10-55-13<span class="token punctuation">]</span><span class="token punctuation">(</span>http://img.noback.top/2020-06-08-10-55-13.png<span class="token punctuation">)</span>
 恢复过程
-![2020-06-08-10-44-07](http://img.noback.top/2020-06-08-10-44-07.png)
+<span class="token operator">!</span><span class="token punctuation">[</span><span class="token number">2020</span>-06-08-10-44-07<span class="token punctuation">]</span><span class="token punctuation">(</span>http://img.noback.top/2020-06-08-10-44-07.png<span class="token punctuation">)</span>
 
 
-1. innobackupex 在启动后，会先 fork 一个进程，启动 xtrabackup进程，然后就等待 xtrabackup 备份完 ibd 数据文件；
-2. xtrabackup 在备份 InnoDB 相关数据时，是有2种线程的，1种是 redo 拷贝线程，负责拷贝 redo 文件，1种是 ibd 拷贝线程，负责拷贝 ibd 文件；redo 拷贝线程只有一个，在 ibd 拷贝线程之前启动，在 ibd 线程结束后结束。xtrabackup 进程开始执行后，先启动 redo 拷贝线程，从最新的 checkpoint 点开始顺序拷贝 redo 日志；然后再启动 ibd 数据拷贝线程，在 xtrabackup 拷贝 ibd 过程中，innobackupex 进程一直处于等待状态（等待文件被创建）
-3. xtrabackup 拷贝完成idb后，通知 innobackupex（通过创建文件），同时自己进入等待（redo 线程仍然继续拷贝）;
-4. innobackupex 收到 xtrabackup 通知后，执行FLUSH TABLES WITH READ LOCK (FTWRL)，取得一致性位点，然后开始备份非 InnoDB 文件（包括 frm、MYD、MYI、CSV、opt、par等）。拷贝非 InnoDB 文件过程中，因为数据库处于全局只读状态，如果在业务的主库备份的话，要特别小心，非 InnoDB 表（主要是MyISAM）比较多的话整库只读时间就会比较长，这个影响一定要评估到。
-5. 当 innobackupex 拷贝完所有非 InnoDB 表文件后，通知 xtrabackup（通过删文件） ，同时自己进入等待（等待另一个文件被创建）；
-6. xtrabackup 收到 innobackupex 备份完非 InnoDB 通知后，就停止 redo 拷贝线程，然后通知 innobackupex redo <span class="hljs-built_in">log</span> 拷贝完成（通过创建文件）；
-7. innobackupex 收到 redo 备份完成通知后，就开始解锁，执行 UNLOCK TABLES；
-8. 最后 innobackupex 和 xtrabackup 进程各自完成收尾工作，如资源的释放、写备份元数据信息等，innobackupex 等待 xtrabackup 子进程结束后退出。
+<span class="token number">1</span>. innobackupex 在启动后，会先 fork 一个进程，启动 xtrabackup进程，然后就等待 xtrabackup 备份完 ibd 数据文件；
+<span class="token number">2</span>. xtrabackup 在备份 InnoDB 相关数据时，是有2种线程的，1种是 redo 拷贝线程，负责拷贝 redo 文件，1种是 ibd 拷贝线程，负责拷贝 ibd 文件；redo 拷贝线程只有一个，在 ibd 拷贝线程之前启动，在 ibd 线程结束后结束。xtrabackup 进程开始执行后，先启动 redo 拷贝线程，从最新的 checkpoint 点开始顺序拷贝 redo 日志；然后再启动 ibd 数据拷贝线程，在 xtrabackup 拷贝 ibd 过程中，innobackupex 进程一直处于等待状态（等待文件被创建）
+<span class="token number">3</span>. xtrabackup 拷贝完成idb后，通知 innobackupex（通过创建文件），同时自己进入等待（redo 线程仍然继续拷贝）<span class="token punctuation">;</span>
+<span class="token number">4</span>. innobackupex 收到 xtrabackup 通知后，执行FLUSH TABLES WITH READ LOCK <span class="token punctuation">(</span>FTWRL<span class="token punctuation">)</span>，取得一致性位点，然后开始备份非 InnoDB 文件（包括 frm、MYD、MYI、CSV、opt、par等）。拷贝非 InnoDB 文件过程中，因为数据库处于全局只读状态，如果在业务的主库备份的话，要特别小心，非 InnoDB 表（主要是MyISAM）比较多的话整库只读时间就会比较长，这个影响一定要评估到。
+<span class="token number">5</span>. 当 innobackupex 拷贝完所有非 InnoDB 表文件后，通知 xtrabackup（通过删文件） ，同时自己进入等待（等待另一个文件被创建）；
+<span class="token number">6</span>. xtrabackup 收到 innobackupex 备份完非 InnoDB 通知后，就停止 redo 拷贝线程，然后通知 innobackupex redo log 拷贝完成（通过创建文件）；
+<span class="token number">7</span>. innobackupex 收到 redo 备份完成通知后，就开始解锁，执行 UNLOCK TABLES；
+<span class="token number">8</span>. 最后 innobackupex 和 xtrabackup 进程各自完成收尾工作，如资源的释放、写备份元数据信息等，innobackupex 等待 xtrabackup 子进程结束后退出。
 
 在上面描述的文件拷贝，都是备份进程直接通过操作系统读取数据文件的，只在执行 SQL 命令时和数据库有交互，基本不影响数据库的运行，在备份非 InnoDB 时会有一段时间只读（如果没有MyISAM表的话，只读时间在几秒左右），在备份 InnoDB 数据文件时，对数据库完全没有影响，是真正的热备。
 
-InnoDB 和非 InnoDB 文件的备份都是通过拷贝文件来做的，但是实现的方式不同，前者是以page为粒度做的(xtrabackup)，后者是 cp 或者 tar 命令(innobackupex)，xtrabackup 在读取每个page时会校验 checksum 值，保证数据块是一致的，而 innobackupex 在 cp MyISAM 文件时已经做了flush（FTWRL），磁盘上的文件也是完整的，所以最终备份集里的数据文件都是写入完整的。
+InnoDB 和非 InnoDB 文件的备份都是通过拷贝文件来做的，但是实现的方式不同，前者是以page为粒度做的<span class="token punctuation">(</span>xtrabackup<span class="token punctuation">)</span>，后者是 <span class="token function">cp</span> 或者 <span class="token function">tar</span> 命令<span class="token punctuation">(</span>innobackupex<span class="token punctuation">)</span>，xtrabackup 在读取每个page时会校验 checksum 值，保证数据块是一致的，而 innobackupex 在 <span class="token function">cp</span> MyISAM 文件时已经做了flush（FTWRL），磁盘上的文件也是完整的，所以最终备份集里的数据文件都是写入完整的。
 
  --- http://mysql.taobao.org/monthly/2016/03/07/
 
 
-<span class="hljs-comment">#### 安装xtrabackup</span>
+<span class="token comment">#### 安装xtrabackup</span>
 - 下载安装包
 网址是https://www.percona.com/downloads/ 我这里使用的是2.4.14版本。
 - 下载依赖包
 然后下载依赖包，网址是http://rpmfind.net/linux/atrpms/el6-x86_64/atrpms/stable/libev-4.04-2.el6.x86_64.rpm。
 
-```bash
-mdkir /root/package &amp;&amp; <span class="hljs-built_in">cd</span> /root/package
-wget Percona-XtraBackup-2.4.14-ref675d4-el7-x86_64-bundle.tar
-wget http://rpmfind.net/linux/atrpms/el6-x86_64/atrpms/stable/libev-4.04-2.el6.x86_64.rpm
+<span class="token variable">`</span></span>``bash
+mdkir /root/package <span class="token operator">&amp;&amp;</span> <span class="token builtin class-name">cd</span> /root/package
+<span class="token function">wget</span> Percona-XtraBackup-2.4.14-ref675d4-el7-x86_64-bundle.tar
+<span class="token function">wget</span> http://rpmfind.net/linux/atrpms/el6-x86_64/atrpms/stable/libev-4.04-2.el6.x86_64.rpm
 
-rpm -ivh libev-4.04-2.el6.x86_64.rpm
-tar -xf Percona-XtraBackup-2.4.14-ref675d4-el7-x86_64-bundle.tar
-yum -y install percona-xtrabackup-24-2.4.14-1.el7.x86_64.rpm</code></pre></div>
+<span class="token function">rpm</span> -ivh libev-4.04-2.el6.x86_64.rpm
+<span class="token function">tar</span> -xf Percona-XtraBackup-2.4.14-ref675d4-el7-x86_64-bundle.tar
+yum -y <span class="token function">install</span> percona-xtrabackup-24-2.4.14-1.el7.x86_64.rpm</code></pre>
 
 <p><font color='red'>xtrabackup是根据数据库的配置文件来查找数据库的，默认情况下指向/etc/my.cnf</font></p>
 <h4 id="使用xtrabackup全量备份"><a href="#使用xtrabackup全量备份" class="headerlink" title="使用xtrabackup全量备份"></a>使用xtrabackup全量备份</h4><p>在备份数据库时会涉及到两个用户：系统用户与数据库内部的用户。<br>　　系统用户需要在datadir（配置文件内设置的目录）上具有读写执行权限（rwx）。而数据库内部用户需要：RELOAD和LOCK TABLES权限，为了执行FLUSH TABLES WITH READ LOCK；REPLICATION CLIENT权限，为了获取binary log（二进制日志文件）位置；CREATE TABLESPACE权限，为了导入表，用户表级别的恢复；SUPER权限，为了在slave环境下备份用来启动和关闭slave线程。</p>
 <p>常用参数</p>
-<div class="code-wrapper"><pre><code class="hljs bash">--user=[数据库用户]    以什么用户身份进行操作
---password=[密码]    数据库用户的密码
---port=[端口号]    数据库的端口号，默认3306
---stream=[tar|xbstream]　　打包（数据流）
---defaults-file=[配置文件]　　指定默认配置文件，默认读取/etc/my.cnf
+<pre class="language-bash" data-language="bash"><code class="language-bash">--user<span class="token operator">=</span><span class="token punctuation">[</span>数据库用户<span class="token punctuation">]</span>    以什么用户身份进行操作
+--password<span class="token operator">=</span><span class="token punctuation">[</span>密码<span class="token punctuation">]</span>    数据库用户的密码
+--port<span class="token operator">=</span><span class="token punctuation">[</span>端口号<span class="token punctuation">]</span>    数据库的端口号，默认3306
+--stream<span class="token operator">=</span><span class="token punctuation">[</span>tar<span class="token operator">|</span>xbstream<span class="token punctuation">]</span>　　打包（数据流）
+--defaults-file<span class="token operator">=</span><span class="token punctuation">[</span>配置文件<span class="token punctuation">]</span>　　指定默认配置文件，默认读取/etc/my.cnf
 --no-timestamp　　不创建时间戳文件，而改用目的地址（可以自动创建）
 --copy-back　　备份还原的主要选项
 --incremental　　使用增量备份，默认使用的完整备份
 --apply-log 应用数据
---incremental-basedir=[地址]　　与--incremental选项联合使用，该参数指定上一级备份的地址来做增量备份</code></pre></div>
+--incremental-basedir<span class="token operator">=</span><span class="token punctuation">[</span>地址<span class="token punctuation">]</span>　　与--incremental选项联合使用，该参数指定上一级备份的地址来做增量备份</code></pre>
 
 <p>使用</p>
-<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 复制数据库中的内容</span>
-innobackupex --user=root --password=123456 ./db_backup/  <span class="hljs-comment"># 会打印每一个备份的步骤</span>
-innobackupex --user=root --password=123456 ./db_backup/ 2&gt;&gt;./db_backup/backup.log　　<span class="hljs-comment"># 将输出内容丢到黑洞如果不想要输出信息，可以将输出信息重定向到指定文件或黑洞文件中 </span>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 复制数据库中的内容</span>
+innobackupex --user<span class="token operator">=</span>root --password<span class="token operator">=</span><span class="token number">123456</span> ./db_backup/  <span class="token comment"># 会打印每一个备份的步骤</span>
+innobackupex --user<span class="token operator">=</span>root --password<span class="token operator">=</span><span class="token number">123456</span> ./db_backup/ <span class="token operator"><span class="token file-descriptor important">2</span>>></span>./db_backup/backup.log　　<span class="token comment"># 将输出内容丢到黑洞如果不想要输出信息，可以将输出信息重定向到指定文件或黑洞文件中 </span>
 
-<span class="hljs-comment"># 如果mysql是挂在docker里面的 需要指定IP和端口 本机也需要</span>
-innobackupex --user=root --password=123456 --host=10.0.6.55 --port=3303 ./db_backup/
+<span class="token comment"># 如果mysql是挂在docker里面的 需要指定IP和端口 本机也需要</span>
+innobackupex --user<span class="token operator">=</span>root --password<span class="token operator">=</span><span class="token number">123456</span> --host<span class="token operator">=</span><span class="token number">10.0</span>.6.55 --port<span class="token operator">=</span><span class="token number">3303</span> ./db_backup/
 
-<span class="hljs-comment"># ==== nc方法 </span>
-<span class="hljs-comment"># 流式备份，完成远程主机间的全量备份</span>
-<span class="hljs-comment"># master端</span>
-innobackupex --user=root --password=123456 --host=10.0.6.55 --port=3303 --stream=tar ./ | nc 10.0.6.35 9998
-<span class="hljs-comment"># slave 端</span>
-nc -l 9998 | tar -ixvf -
-
-
-<span class="hljs-comment"># ==== 官方的xbstream</span>
-innobackupex  --user=root --password=<span class="hljs-string">&quot;upyun123&quot;</span> --port=3303 --host=10.0.6.55 --slave-info --parallel=16  --stream=xbstream ./ 2&gt;/data/xtrabackup_log.txt | pv -q -L40m | ssh lily@172.26.1.245 <span class="hljs-string">&quot; cat - |  xbstream -x -C /data/innobackup&quot;</span>
+<span class="token comment"># ==== nc方法 </span>
+<span class="token comment"># 流式备份，完成远程主机间的全量备份</span>
+<span class="token comment"># master端</span>
+innobackupex --user<span class="token operator">=</span>root --password<span class="token operator">=</span><span class="token number">123456</span> --host<span class="token operator">=</span><span class="token number">10.0</span>.6.55 --port<span class="token operator">=</span><span class="token number">3303</span> --stream<span class="token operator">=</span>tar ./ <span class="token operator">|</span> <span class="token function">nc</span> <span class="token number">10.0</span>.6.35 <span class="token number">9998</span>
+<span class="token comment"># slave 端</span>
+<span class="token function">nc</span> -l <span class="token number">9998</span> <span class="token operator">|</span> <span class="token function">tar</span> -ixvf -
 
 
-<span class="hljs-comment"># 备份完成后会在/db_backup文件夹下面产生一个根据日期来创建的备份文件夹</span>
-<span class="hljs-comment"># 自定义备份文件名</span>
-innobackupex --user=root --password=123456 --no-timestamp ./db_backup/<span class="hljs-built_in">test</span>/ 2&gt;&gt;./db_backup/backup.log
+<span class="token comment"># ==== 官方的xbstream</span>
+innobackupex  --user<span class="token operator">=</span>root --password<span class="token operator">=</span><span class="token string">"upyun123"</span> --port<span class="token operator">=</span><span class="token number">3303</span> --host<span class="token operator">=</span><span class="token number">10.0</span>.6.55 --slave-info --parallel<span class="token operator">=</span><span class="token number">16</span>  --stream<span class="token operator">=</span>xbstream ./ <span class="token operator"><span class="token file-descriptor important">2</span>></span>/data/xtrabackup_log.txt <span class="token operator">|</span> <span class="token function">pv</span> -q -L40m <span class="token operator">|</span> <span class="token function">ssh</span> lily@172.26.1.245 <span class="token string">" cat - |  xbstream -x -C /data/innobackup"</span>
 
-<span class="hljs-comment"># 需要清除数据，不然出现报错</span>
+
+<span class="token comment"># 备份完成后会在/db_backup文件夹下面产生一个根据日期来创建的备份文件夹</span>
+<span class="token comment"># 自定义备份文件名</span>
+innobackupex --user<span class="token operator">=</span>root --password<span class="token operator">=</span><span class="token number">123456</span> --no-timestamp ./db_backup/test/ <span class="token operator"><span class="token file-descriptor important">2</span>>></span>./db_backup/backup.log
+
+<span class="token comment"># 需要清除数据，不然出现报错</span>
 systemctl stop mysqld
-rm -rf /var/lib/mysql/*　　<span class="hljs-comment">#危险操作，请在测试环境测试</span>
-innobackupex --apply-log ./db_backup/ --use-memory=16G  
-chown -R mysql:mysql /var/lib/mysql　<span class="hljs-comment"># 重新授权</span>
-systemctl start mysqld</code></pre></div>
+<span class="token function">rm</span> -rf /var/lib/mysql/*　　<span class="token comment">#危险操作，请在测试环境测试</span>
+innobackupex --apply-log ./db_backup/ --use-memory<span class="token operator">=</span>16G  
+<span class="token function">chown</span> -R mysql:mysql /var/lib/mysql　<span class="token comment"># 重新授权</span>
+systemctl start mysqld</code></pre>
 
 
 <h4 id="使用xtrabackup增量备份"><a href="#使用xtrabackup增量备份" class="headerlink" title="使用xtrabackup增量备份"></a>使用xtrabackup增量备份</h4><p>待填<br><a target="_blank" rel="noopener" href="https://www.centos.bz/2017/09/xtrabackup-backup-mysql-innodb/">https://www.centos.bz/2017/09/xtrabackup-backup-mysql-innodb/</a><br>cnblogs.com/zhoujinyi/p/4088866.html<br><a target="_blank" rel="noopener" href="https://www.cnblogs.com/gaogao67/p/10980642.html">https://www.cnblogs.com/gaogao67/p/10980642.html</a></p>
 <h4 id="xtrabackup-流式备份"><a href="#xtrabackup-流式备份" class="headerlink" title="xtrabackup 流式备份"></a>xtrabackup 流式备份</h4><p>如果需要将 机器上面的备份数据发送到远程机器，或者快速搭建主从，可以采用流式备份。<br>例如：这里将172.26.1.3的数据发送到 172.26.1.245 并做成主从同步。  master: 172.26.1.3  slave:172.26.1.245<br>172.26.1.3 备份之前需要先关闭多线程复制，否则会报错</p>
-<div class="code-wrapper"><pre><code class="hljs bash">mysql&gt; show variables like <span class="hljs-string">&#x27;%worker%&#x27;</span>
-    -&gt; ;
+<pre class="language-bash" data-language="bash"><code class="language-bash">mysql<span class="token operator">></span> show variables like <span class="token string">'%worker%'</span>
+    -<span class="token operator">></span> <span class="token punctuation">;</span>
 +------------------------+-------+
-| Variable_name          | Value |
+<span class="token operator">|</span> Variable_name          <span class="token operator">|</span> Value <span class="token operator">|</span>
 +------------------------+-------+
-| slave_parallel_workers | 0     |
+<span class="token operator">|</span> slave_parallel_workers <span class="token operator">|</span> <span class="token number">0</span>     <span class="token operator">|</span>
 +------------------------+-------+
-1 row <span class="hljs-keyword">in</span> <span class="hljs-built_in">set</span> (0.00 sec)
+<span class="token number">1</span> row <span class="token keyword">in</span> <span class="token builtin class-name">set</span> <span class="token punctuation">(</span><span class="token number">0.00</span> sec<span class="token punctuation">)</span>
 
-mysql&gt; <span class="hljs-built_in">set</span> global slave_parallel_workers=0;
-Query OK, 0 rows affected (0.00 sec)</code></pre></div>
+mysql<span class="token operator">></span> <span class="token builtin class-name">set</span> global <span class="token assign-left variable">slave_parallel_workers</span><span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span>
+Query OK, <span class="token number">0</span> rows affected <span class="token punctuation">(</span><span class="token number">0.00</span> sec<span class="token punctuation">)</span></code></pre>
 
-<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># master端 </span>
-<span class="hljs-comment"># 主要操作就是打包本地的数据，使用xbstream传输到对端机器，然后使用ssh登录对端 并且接收</span>
-innobackupex  --user=root --password=<span class="hljs-string">&quot;upyun123&quot;</span> --port=3303 --host=10.0.6.55 --slave-info --parallel=16  --stream=xbstream ./ 2&gt;/data/xtrabackup_log.txt | pv -q -L40m | ssh lily@172.26.1.245 <span class="hljs-string">&quot; cat - |  xbstream -x -C /data/innobackup&quot;</span></code></pre></div>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># master端 </span>
+<span class="token comment"># 主要操作就是打包本地的数据，使用xbstream传输到对端机器，然后使用ssh登录对端 并且接收</span>
+innobackupex  --user<span class="token operator">=</span>root --password<span class="token operator">=</span><span class="token string">"upyun123"</span> --port<span class="token operator">=</span><span class="token number">3303</span> --host<span class="token operator">=</span><span class="token number">10.0</span>.6.55 --slave-info --parallel<span class="token operator">=</span><span class="token number">16</span>  --stream<span class="token operator">=</span>xbstream ./ <span class="token operator"><span class="token file-descriptor important">2</span>></span>/data/xtrabackup_log.txt <span class="token operator">|</span> <span class="token function">pv</span> -q -L40m <span class="token operator">|</span> <span class="token function">ssh</span> lily@172.26.1.245 <span class="token string">" cat - |  xbstream -x -C /data/innobackup"</span></code></pre>
 <p>注：这里的 172.26.1.245 是远程机器的ip</p>
 <p>–slave-info： 备份目录下会多生成一个xtrabackup_slave_info文件，文件内容类似于:CHANGE MASTER TO MASTER_LOG_FILE=’’, MASTER_LOG_POS=0。<br>    这个参数适用的场景：假设有主库A和从库B，目前想再添加一台备库C，并让备库C以主库A为master；因为主库A是生产库，压力一般比较大，所以就在备库B上备份一个数据库，然后把这个备份拿到C服务器上，并导入到C库，接下来再在C服务器上执行change master的命令：其中master_host是A的ip,而master_log_file和master_log_pos就是这个xtrabackup_slave_info里面的值。 </p>
-<h4 id="备份恢复"><a href="#备份恢复" class="headerlink" title="备份恢复"></a>备份恢复</h4><div class="code-wrapper"><pre><code class="hljs bash">恢复（在远程机器172.26.1.245执行）
-1，拷贝master机器的/etc/my.cnf 文件，并修改server_id。
-2，将172.26.1.245做成172.26.1.3的从库， 从 /data/innobackup/xtrabackup_binlog_info 文件里面读取binlog和position信息。
-<span class="hljs-comment">#  cat /data/innobackup/xtrabackup_binlog_info </span>
-mysql-bin.000066 94839444
-mysql&gt; CHANGE MASTER TO MASTER_HOST=<span class="hljs-string">&#x27;172.26.1.3&#x27;</span>,MASTER_USER=<span class="hljs-string">&#x27;repl&#x27;</span>,MASTER_PASSWORD=<span class="hljs-string">&#x27;xxxxxx&#x27;</span>,MASTER_AUTO_POSITION=0,MASTER_LOG_FILE=<span class="hljs-string">&#x27;mysql-bin.000066&#x27;</span>,MASTER_LOG_POS=94839444; 
+<h4 id="备份恢复"><a href="#备份恢复" class="headerlink" title="备份恢复"></a>备份恢复</h4><pre class="language-bash" data-language="bash"><code class="language-bash">恢复（在远程机器172.26.1.245执行）
+<span class="token number">1</span>，拷贝master机器的/etc/my.cnf 文件，并修改server_id。
+<span class="token number">2</span>，将172.26.1.245做成172.26.1.3的从库， 从 /data/innobackup/xtrabackup_binlog_info 文件里面读取binlog和position信息。
+<span class="token comment">#  cat /data/innobackup/xtrabackup_binlog_info </span>
+mysql-bin.000066 <span class="token number">94839444</span>
+mysql<span class="token operator">></span> CHANGE MASTER TO <span class="token assign-left variable">MASTER_HOST</span><span class="token operator">=</span><span class="token string">'172.26.1.3'</span>,MASTER_USER<span class="token operator">=</span><span class="token string">'repl'</span>,MASTER_PASSWORD<span class="token operator">=</span><span class="token string">'xxxxxx'</span>,MASTER_AUTO_POSITION<span class="token operator">=</span><span class="token number">0</span>,MASTER_LOG_FILE<span class="token operator">=</span><span class="token string">'mysql-bin.000066'</span>,MASTER_LOG_POS<span class="token operator">=</span><span class="token number">94839444</span><span class="token punctuation">;</span> 
 
-mysql&gt; start slave;</code></pre></div>
+mysql<span class="token operator">></span> start slave<span class="token punctuation">;</span></code></pre>
 
 <h4 id="区别"><a href="#区别" class="headerlink" title="区别"></a>区别</h4><p>Xtrabackup备份时不能备份表结构、触发器等等，也不能智能区分.idb数据文件。另外innobackupex还不能完全支持增量备份，需要和xtrabackup结合起来实现全备的功能。</p>
 <h2 id="xtrabackup详解"><a href="#xtrabackup详解" class="headerlink" title="xtrabackup详解"></a>xtrabackup详解</h2><p>记录一下xtrabackup的备份流程</p>
-<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 先备份</span>
-innobackupex --user=hzj --password=upyun123 --port=3303 --host=10.0.6.55 ./
-cat /root/data/backup/2020-06-08_01-55-22/xtrabackup_checkpoints
-<span class="hljs-comment"># backup_type = full-backuped  # 这里提示backup 说明当前是备份的</span>
-<span class="hljs-comment"># from_lsn = 0</span>
-<span class="hljs-comment"># to_lsn = 6110542</span>
-<span class="hljs-comment"># last_lsn = 6110542</span>
-<span class="hljs-comment"># compact = 0</span>
-<span class="hljs-comment"># recover_binlog_info = 0</span>
-<span class="hljs-comment"># flushed_lsn = 12501828</span>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 先备份</span>
+innobackupex --user<span class="token operator">=</span>hzj --password<span class="token operator">=</span>upyun123 --port<span class="token operator">=</span><span class="token number">3303</span> --host<span class="token operator">=</span><span class="token number">10.0</span>.6.55 ./
+<span class="token function">cat</span> /root/data/backup/2020-06-08_01-55-22/xtrabackup_checkpoints
+<span class="token comment"># backup_type = full-backuped  # 这里提示backup 说明当前是备份的</span>
+<span class="token comment"># from_lsn = 0</span>
+<span class="token comment"># to_lsn = 6110542</span>
+<span class="token comment"># last_lsn = 6110542</span>
+<span class="token comment"># compact = 0</span>
+<span class="token comment"># recover_binlog_info = 0</span>
+<span class="token comment"># flushed_lsn = 12501828</span>
 
-<span class="hljs-comment"># 回滚 </span>
-<span class="hljs-comment"># 将全量备份后的内容拷贝到需要备份的从机器上进行备份</span>
-innobackupex --apply-log --use-memory=32M /root/data/backup/2020-06-08_01-55-22/
-<span class="hljs-comment"># 查看文件状态</span>
-more xtrabackup_checkpoints
-<span class="hljs-comment"># backup_type = full-prepared # 已经准备完成</span>
-<span class="hljs-comment"># from_lsn = 0</span>
-<span class="hljs-comment"># to_lsn = 2641979</span>
-<span class="hljs-comment"># last_lsn = 2641988</span>
-<span class="hljs-comment"># compact = 0</span>
-<span class="hljs-comment"># recover_binlog_info = 0</span>
-<span class="hljs-comment"># flushed_lsn = 12501828</span>
+<span class="token comment"># 回滚 </span>
+<span class="token comment"># 将全量备份后的内容拷贝到需要备份的从机器上进行备份</span>
+innobackupex --apply-log --use-memory<span class="token operator">=</span>32M /root/data/backup/2020-06-08_01-55-22/
+<span class="token comment"># 查看文件状态</span>
+<span class="token function">more</span> xtrabackup_checkpoints
+<span class="token comment"># backup_type = full-prepared # 已经准备完成</span>
+<span class="token comment"># from_lsn = 0</span>
+<span class="token comment"># to_lsn = 2641979</span>
+<span class="token comment"># last_lsn = 2641988</span>
+<span class="token comment"># compact = 0</span>
+<span class="token comment"># recover_binlog_info = 0</span>
+<span class="token comment"># flushed_lsn = 12501828</span>
 
-<span class="hljs-comment"># 备份</span>
+<span class="token comment"># 备份</span>
 innobackupex --copy-back /root/data/backup/2020-06-08_01-55-22/
-chown -R mysql.mysql /application/mysql/ <span class="hljs-comment"># 修改权限</span>
-<span class="hljs-comment"># 重启数据库</span>
-systemctl restart mysqld</code></pre></div>
+<span class="token function">chown</span> -R mysql.mysql /application/mysql/ <span class="token comment"># 修改权限</span>
+<span class="token comment"># 重启数据库</span>
+systemctl restart mysqld</code></pre>
 
 
 
-<h2 id="错误"><a href="#错误" class="headerlink" title="错误"></a>错误</h2><h3 id="docker-mysql"><a href="#docker-mysql" class="headerlink" title="docker mysql"></a>docker mysql</h3><div class="code-wrapper"><pre><code class="hljs bash">docker run -p 3306:3306 --name mysql-master -v /opt/docker_v/mysql/conf:./master.cnf -e MYSQL_ROOT_PASSWORD=upyun123 -itd mysql:5.7
-docker: Error response from daemon: invalid volume specification: <span class="hljs-string">&#x27;/opt/docker_v/mysql/conf:./master.cnf&#x27;</span>: invalid mount config <span class="hljs-keyword">for</span> <span class="hljs-built_in">type</span> <span class="hljs-string">&quot;bind&quot;</span>: invalid mount path: <span class="hljs-string">&#x27;./master.cnf&#x27;</span> mount path must be absolute.</code></pre></div>
+<h2 id="错误"><a href="#错误" class="headerlink" title="错误"></a>错误</h2><h3 id="docker-mysql"><a href="#docker-mysql" class="headerlink" title="docker mysql"></a>docker mysql</h3><pre class="language-bash" data-language="bash"><code class="language-bash">docker run -p <span class="token number">3306</span>:3306 --name mysql-master -v /opt/docker_v/mysql/conf:./master.cnf -e <span class="token assign-left variable">MYSQL_ROOT_PASSWORD</span><span class="token operator">=</span>upyun123 -itd mysql:5.7
+docker: Error response from daemon: invalid volume specification: <span class="token string">'/opt/docker_v/mysql/conf:./master.cnf'</span><span class="token builtin class-name">:</span> invalid <span class="token function">mount</span> config <span class="token keyword">for</span> <span class="token builtin class-name">type</span> <span class="token string">"bind"</span><span class="token builtin class-name">:</span> invalid <span class="token function">mount</span> path: <span class="token string">'./master.cnf'</span> <span class="token function">mount</span> path must be absolute.</code></pre>
 <p>这里挂在需要挂在绝对路径</p>
-<h3 id="innobackupex-命令出错"><a href="#innobackupex-命令出错" class="headerlink" title="innobackupex 命令出错"></a>innobackupex 命令出错</h3><div class="code-wrapper"><pre><code class="hljs bash">[root@db01 mysql]<span class="hljs-comment"># innobackupex --user=root --password=123456 --defaults-file=/application/mysql/my.cnf /data/mysql/backup/</span>
-xtrabackup: Error: --defaults-file must be specified first on the <span class="hljs-built_in">command</span> line
-[root@db01 mysql]<span class="hljs-comment"># innobackupex --defaults-file=/application/mysql/my.cnf --user=root --password=123456 /data/mysql/backup/</span>
-190817 09:07:47 innobackupex: Starting the backup operation</code></pre></div>
+<h3 id="innobackupex-命令出错"><a href="#innobackupex-命令出错" class="headerlink" title="innobackupex 命令出错"></a>innobackupex 命令出错</h3><pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>root@db01 mysql<span class="token punctuation">]</span><span class="token comment"># innobackupex --user=root --password=123456 --defaults-file=/application/mysql/my.cnf /data/mysql/backup/</span>
+xtrabackup: Error: --defaults-file must be specified first on the <span class="token builtin class-name">command</span> line
+<span class="token punctuation">[</span>root@db01 mysql<span class="token punctuation">]</span><span class="token comment"># innobackupex --defaults-file=/application/mysql/my.cnf --user=root --password=123456 /data/mysql/backup/</span>
+<span class="token number">190817</span> 09:07:47 innobackupex: Starting the backup operation</code></pre>
 
 <p>需要把–defaults-file 作为第一个参数</p>
 <h3 id="docker-mysql无法被innobackupex备份"><a href="#docker-mysql无法被innobackupex备份" class="headerlink" title="docker-mysql无法被innobackupex备份"></a>docker-mysql无法被innobackupex备份</h3><p>使用过程中出现这个错误，这里做下记录</p>
-<div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 如果mysql是挂在docker里面的 需要指定IP和端口 本机也需要</span>
-innobackup --user=root --password=123456 --host=10.0.6.55 --port=3303 ./db_backup/</code></pre></div>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 如果mysql是挂在docker里面的 需要指定IP和端口 本机也需要</span>
+innobackup --user<span class="token operator">=</span>root --password<span class="token operator">=</span><span class="token number">123456</span> --host<span class="token operator">=</span><span class="token number">10.0</span>.6.55 --port<span class="token operator">=</span><span class="token number">3303</span> ./db_backup/</code></pre>
 
 <h2 id="docker-mysql重启数据库"><a href="#docker-mysql重启数据库" class="headerlink" title="docker-mysql重启数据库"></a>docker-mysql重启数据库</h2><p>因为mysql的配置文件会根据需求去更改，所以最好把配置文件从本地挂载进去</p>
-<div class="code-wrapper"><pre><code class="hljs bash">docker run -p 3306:3306 --name mysql-master -v /root/hzj/hzj/mysql/master.cnf:/etc/mysql/conf.d/master.cnf -e MYSQL_ROOT_PASSWORD=upyun123 -itd mysql:5.7
+<pre class="language-bash" data-language="bash"><code class="language-bash">docker run -p <span class="token number">3306</span>:3306 --name mysql-master -v /root/hzj/hzj/mysql/master.cnf:/etc/mysql/conf.d/master.cnf -e <span class="token assign-left variable">MYSQL_ROOT_PASSWORD</span><span class="token operator">=</span>upyun123 -itd mysql:5.7
 
-&gt;c8328f40cfcb</code></pre></div>
+<span class="token operator">></span>c8328f40cfcb</code></pre>
 <p>修改配置文件重启数据库—&gt; 重启docekr容器</p>
-<div class="code-wrapper"><pre><code class="hljs bash">docker restart c8328f40cfcb</code></pre></div>
+<pre class="language-bash" data-language="bash"><code class="language-bash">docker restart c8328f40cfcb</code></pre>
 
-<h2 id="docker-mysql运行"><a href="#docker-mysql运行" class="headerlink" title="docker-mysql运行"></a>docker-mysql运行</h2><div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 挂在日志 数据和配置</span>
-docker run -p 3308:3306 --name mysql-slave \
--v /mydata/mysql-slave/<span class="hljs-built_in">log</span>:/var/<span class="hljs-built_in">log</span>/mysql \
--v /mydata/mysql-slave/data:/var/lib/mysql \
--v /mydata/mysql-slave/conf:/etc/mysql \
--e MYSQL_ROOT_PASSWORD=root  \
+<h2 id="docker-mysql运行"><a href="#docker-mysql运行" class="headerlink" title="docker-mysql运行"></a>docker-mysql运行</h2><pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 挂在日志 数据和配置</span>
+docker run -p <span class="token number">3308</span>:3306 --name mysql-slave <span class="token punctuation">\</span>
+-v /mydata/mysql-slave/log:/var/log/mysql <span class="token punctuation">\</span>
+-v /mydata/mysql-slave/data:/var/lib/mysql <span class="token punctuation">\</span>
+-v /mydata/mysql-slave/conf:/etc/mysql <span class="token punctuation">\</span>
+-e <span class="token assign-left variable">MYSQL_ROOT_PASSWORD</span><span class="token operator">=</span>root  <span class="token punctuation">\</span>
 -d mysql:5.7
-</code></pre></div>
+</code></pre>
 
 
-<h2 id="mysql-一键脚本"><a href="#mysql-一键脚本" class="headerlink" title="mysql 一键脚本"></a>mysql 一键脚本</h2><div class="code-wrapper"><pre><code class="hljs bash">
-ALTER USER <span class="hljs-string">&#x27;root&#x27;</span>@<span class="hljs-string">&#x27;localhost&#x27;</span> IDENTIFIED BY <span class="hljs-string">&#x27;upyun123&#x27;</span>;
-CREATE USER <span class="hljs-string">&#x27;hzj&#x27;</span>@<span class="hljs-string">&#x27;%&#x27;</span> IDENTIFIED WITH mysql_native_password BY <span class="hljs-string">&#x27;upyun123&#x27;</span>;
-GRANT ALL PRIVILEGES ON *.* TO <span class="hljs-string">&#x27;hzj&#x27;</span>@<span class="hljs-string">&#x27;%&#x27;</span>;
-create database datafordata  character <span class="hljs-built_in">set</span> utf8mb4;
-use datafordata;
-CREATE TABLE `t_temp` (
-	`id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT <span class="hljs-string">&#x27;主键ID&#x27;</span>,
-	`comment` varchar(10) NOT NULL DEFAULT <span class="hljs-string">&#x27;&#x27;</span> COMMENT <span class="hljs-string">&#x27;备注&#x27;</span>,
-	`create_time` bigint(20) NOT NULL ,
-	`update_time` bigint(20) NOT NULL ,
-	PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
-INSERT INTO `datafordata`.`t_temp` (`id`, `comment`, `create_time`, `update_time`) VALUES (<span class="hljs-string">&#x27;1&#x27;</span>, <span class="hljs-string">&#x27;helloworld&#x27;</span>, <span class="hljs-string">&#x27;1&#x27;</span>, <span class="hljs-string">&#x27;1&#x27;</span>);
-INSERT INTO `datafordata`.`t_temp` (`id`, `comment`, `create_time`, `update_time`) VALUES (<span class="hljs-string">&#x27;2&#x27;</span>, <span class="hljs-string">&#x27;helloworld&#x27;</span>, <span class="hljs-string">&#x27;1&#x27;</span>, <span class="hljs-string">&#x27;1&#x27;</span>);
-INSERT INTO `datafordata`.`t_temp` (`id`, `comment`, `create_time`, `update_time`) VALUES (<span class="hljs-string">&#x27;3&#x27;</span>, <span class="hljs-string">&#x27;helloworld&#x27;</span>, <span class="hljs-string">&#x27;1&#x27;</span>, <span class="hljs-string">&#x27;1&#x27;</span>);
-INSERT INTO `datafordata`.`t_temp` (`id`, `comment`, `create_time`, `update_time`) VALUES (<span class="hljs-string">&#x27;4&#x27;</span>, <span class="hljs-string">&#x27;helloworld&#x27;</span>, <span class="hljs-string">&#x27;1&#x27;</span>, <span class="hljs-string">&#x27;1&#x27;</span>);
-INSERT INTO `datafordata`.`t_temp` (`id`, `comment`, `create_time`, `update_time`) VALUES (<span class="hljs-string">&#x27;5&#x27;</span>, <span class="hljs-string">&#x27;helloworld&#x27;</span>, <span class="hljs-string">&#x27;1&#x27;</span>, <span class="hljs-string">&#x27;1&#x27;</span>);
-INSERT INTO `datafordata`.`t_temp` (`id`, `comment`, `create_time`, `update_time`) VALUES (<span class="hljs-string">&#x27;6&#x27;</span>, <span class="hljs-string">&#x27;helloworld&#x27;</span>, <span class="hljs-string">&#x27;1&#x27;</span>, <span class="hljs-string">&#x27;1&#x27;</span>);
-INSERT INTO `datafordata`.`t_temp` (`id`, `comment`, `create_time`, `update_time`) VALUES (<span class="hljs-string">&#x27;7&#x27;</span>, <span class="hljs-string">&#x27;helloworld&#x27;</span>, <span class="hljs-string">&#x27;1&#x27;</span>, <span class="hljs-string">&#x27;1&#x27;</span>);</code></pre></div>
+<h2 id="mysql-一键脚本"><a href="#mysql-一键脚本" class="headerlink" title="mysql 一键脚本"></a>mysql 一键脚本</h2><pre class="language-bash" data-language="bash"><code class="language-bash">
+ALTER <span class="token environment constant">USER</span> <span class="token string">'root'</span>@<span class="token string">'localhost'</span> IDENTIFIED BY <span class="token string">'upyun123'</span><span class="token punctuation">;</span>
+CREATE <span class="token environment constant">USER</span> <span class="token string">'hzj'</span>@<span class="token string">'%'</span> IDENTIFIED WITH mysql_native_password BY <span class="token string">'upyun123'</span><span class="token punctuation">;</span>
+GRANT ALL PRIVILEGES ON *.* TO <span class="token string">'hzj'</span>@<span class="token string">'%'</span><span class="token punctuation">;</span>
+create database datafordata  character <span class="token builtin class-name">set</span> utf8mb4<span class="token punctuation">;</span>
+use datafordata<span class="token punctuation">;</span>
+CREATE TABLE <span class="token variable"><span class="token variable">`</span>t_temp<span class="token variable">`</span></span> <span class="token punctuation">(</span>
+	<span class="token variable"><span class="token variable">`</span><span class="token function">id</span><span class="token variable">`</span></span> bigint<span class="token punctuation">(</span><span class="token number">20</span><span class="token punctuation">)</span> NOT NULL AUTO_INCREMENT COMMENT <span class="token string">'主键ID'</span>,
+	<span class="token variable"><span class="token variable">`</span>comment<span class="token variable">`</span></span> varchar<span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">)</span> NOT NULL DEFAULT <span class="token string">''</span> COMMENT <span class="token string">'备注'</span>,
+	<span class="token variable"><span class="token variable">`</span>create_time<span class="token variable">`</span></span> bigint<span class="token punctuation">(</span><span class="token number">20</span><span class="token punctuation">)</span> NOT NULL ,
+	<span class="token variable"><span class="token variable">`</span>update_time<span class="token variable">`</span></span> bigint<span class="token punctuation">(</span><span class="token number">20</span><span class="token punctuation">)</span> NOT NULL ,
+	PRIMARY KEY <span class="token punctuation">(</span><span class="token variable"><span class="token variable">`</span><span class="token function">id</span><span class="token variable">`</span></span><span class="token punctuation">)</span>
+<span class="token punctuation">)</span> <span class="token assign-left variable">ENGINE</span><span class="token operator">=</span>InnoDB <span class="token assign-left variable">AUTO_INCREMENT</span><span class="token operator">=</span><span class="token number">1</span> DEFAULT <span class="token assign-left variable">CHARSET</span><span class="token operator">=</span>utf8mb4<span class="token punctuation">;</span>
+INSERT INTO <span class="token variable"><span class="token variable">`</span>datafordata<span class="token variable">`</span></span><span class="token builtin class-name">.</span><span class="token variable"><span class="token variable">`</span>t_temp<span class="token variable">`</span></span> <span class="token punctuation">(</span><span class="token variable"><span class="token variable">`</span><span class="token function">id</span><span class="token variable">`</span></span>, <span class="token variable"><span class="token variable">`</span>comment<span class="token variable">`</span></span>, <span class="token variable"><span class="token variable">`</span>create_time<span class="token variable">`</span></span>, <span class="token variable"><span class="token variable">`</span>update_time<span class="token variable">`</span></span><span class="token punctuation">)</span> VALUES <span class="token punctuation">(</span><span class="token string">'1'</span>, <span class="token string">'helloworld'</span>, <span class="token string">'1'</span>, <span class="token string">'1'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+INSERT INTO <span class="token variable"><span class="token variable">`</span>datafordata<span class="token variable">`</span></span><span class="token builtin class-name">.</span><span class="token variable"><span class="token variable">`</span>t_temp<span class="token variable">`</span></span> <span class="token punctuation">(</span><span class="token variable"><span class="token variable">`</span><span class="token function">id</span><span class="token variable">`</span></span>, <span class="token variable"><span class="token variable">`</span>comment<span class="token variable">`</span></span>, <span class="token variable"><span class="token variable">`</span>create_time<span class="token variable">`</span></span>, <span class="token variable"><span class="token variable">`</span>update_time<span class="token variable">`</span></span><span class="token punctuation">)</span> VALUES <span class="token punctuation">(</span><span class="token string">'2'</span>, <span class="token string">'helloworld'</span>, <span class="token string">'1'</span>, <span class="token string">'1'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+INSERT INTO <span class="token variable"><span class="token variable">`</span>datafordata<span class="token variable">`</span></span><span class="token builtin class-name">.</span><span class="token variable"><span class="token variable">`</span>t_temp<span class="token variable">`</span></span> <span class="token punctuation">(</span><span class="token variable"><span class="token variable">`</span><span class="token function">id</span><span class="token variable">`</span></span>, <span class="token variable"><span class="token variable">`</span>comment<span class="token variable">`</span></span>, <span class="token variable"><span class="token variable">`</span>create_time<span class="token variable">`</span></span>, <span class="token variable"><span class="token variable">`</span>update_time<span class="token variable">`</span></span><span class="token punctuation">)</span> VALUES <span class="token punctuation">(</span><span class="token string">'3'</span>, <span class="token string">'helloworld'</span>, <span class="token string">'1'</span>, <span class="token string">'1'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+INSERT INTO <span class="token variable"><span class="token variable">`</span>datafordata<span class="token variable">`</span></span><span class="token builtin class-name">.</span><span class="token variable"><span class="token variable">`</span>t_temp<span class="token variable">`</span></span> <span class="token punctuation">(</span><span class="token variable"><span class="token variable">`</span><span class="token function">id</span><span class="token variable">`</span></span>, <span class="token variable"><span class="token variable">`</span>comment<span class="token variable">`</span></span>, <span class="token variable"><span class="token variable">`</span>create_time<span class="token variable">`</span></span>, <span class="token variable"><span class="token variable">`</span>update_time<span class="token variable">`</span></span><span class="token punctuation">)</span> VALUES <span class="token punctuation">(</span><span class="token string">'4'</span>, <span class="token string">'helloworld'</span>, <span class="token string">'1'</span>, <span class="token string">'1'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+INSERT INTO <span class="token variable"><span class="token variable">`</span>datafordata<span class="token variable">`</span></span><span class="token builtin class-name">.</span><span class="token variable"><span class="token variable">`</span>t_temp<span class="token variable">`</span></span> <span class="token punctuation">(</span><span class="token variable"><span class="token variable">`</span><span class="token function">id</span><span class="token variable">`</span></span>, <span class="token variable"><span class="token variable">`</span>comment<span class="token variable">`</span></span>, <span class="token variable"><span class="token variable">`</span>create_time<span class="token variable">`</span></span>, <span class="token variable"><span class="token variable">`</span>update_time<span class="token variable">`</span></span><span class="token punctuation">)</span> VALUES <span class="token punctuation">(</span><span class="token string">'5'</span>, <span class="token string">'helloworld'</span>, <span class="token string">'1'</span>, <span class="token string">'1'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+INSERT INTO <span class="token variable"><span class="token variable">`</span>datafordata<span class="token variable">`</span></span><span class="token builtin class-name">.</span><span class="token variable"><span class="token variable">`</span>t_temp<span class="token variable">`</span></span> <span class="token punctuation">(</span><span class="token variable"><span class="token variable">`</span><span class="token function">id</span><span class="token variable">`</span></span>, <span class="token variable"><span class="token variable">`</span>comment<span class="token variable">`</span></span>, <span class="token variable"><span class="token variable">`</span>create_time<span class="token variable">`</span></span>, <span class="token variable"><span class="token variable">`</span>update_time<span class="token variable">`</span></span><span class="token punctuation">)</span> VALUES <span class="token punctuation">(</span><span class="token string">'6'</span>, <span class="token string">'helloworld'</span>, <span class="token string">'1'</span>, <span class="token string">'1'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+INSERT INTO <span class="token variable"><span class="token variable">`</span>datafordata<span class="token variable">`</span></span><span class="token builtin class-name">.</span><span class="token variable"><span class="token variable">`</span>t_temp<span class="token variable">`</span></span> <span class="token punctuation">(</span><span class="token variable"><span class="token variable">`</span><span class="token function">id</span><span class="token variable">`</span></span>, <span class="token variable"><span class="token variable">`</span>comment<span class="token variable">`</span></span>, <span class="token variable"><span class="token variable">`</span>create_time<span class="token variable">`</span></span>, <span class="token variable"><span class="token variable">`</span>update_time<span class="token variable">`</span></span><span class="token punctuation">)</span> VALUES <span class="token punctuation">(</span><span class="token string">'7'</span>, <span class="token string">'helloworld'</span>, <span class="token string">'1'</span>, <span class="token string">'1'</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 
 <h2 id="extra"><a href="#extra" class="headerlink" title="extra"></a>extra</h2><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/clsn/p/8138015.html#auto-id-40">https://www.cnblogs.com/clsn/p/8138015.html#auto-id-40</a><br><a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000022440263">https://segmentfault.com/a/1190000022440263</a><br><a target="_blank" rel="noopener" href="https://www.cnblogs.com/clsn/p/8150036.html#auto-id-0">https://www.cnblogs.com/clsn/p/8150036.html#auto-id-0</a></p>
 
-            </div>
-            <hr>
-            <div>
-              <div class="post-metas mb-3">
-                
-                  <div class="post-meta mr-3">
-                    <i class="iconfont icon-category"></i>
-                    
-                      <a class="hover-with-bg" href="/categories/mysql/">mysql</a>
-                    
-                  </div>
-                
-                
-                  <div class="post-meta">
-                    <i class="iconfont icon-tags"></i>
-                    
-                      <a class="hover-with-bg" href="/tags/mysql/">mysql</a>
-                    
-                  </div>
-                
-              </div>
-              
-                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
-              
-              
-                <div class="post-prevnext">
-                  <article class="post-prev col-6">
-                    
-                    
-                      <a href="/2020/07/08/blog_back_new/fastapi/fastapi%E5%AE%9A%E6%97%B6%E5%99%A8%E5%AE%9E%E8%B7%B5/">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">fastapi定时器实践</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
-                  </article>
-                  <article class="post-next col-6">
-                    
-                    
-                      <a href="/2020/06/03/blog_back_new/fastapi/%E4%B8%9A%E5%8A%A1%E8%BF%81%E7%A7%BB%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/">
-                        <span class="hidden-mobile">业务迁移解决方案</span>
-                        <span class="visible-mobile">下一篇</span>
-                        <i class="iconfont icon-arrowright"></i>
-                      </a>
-                    
-                  </article>
-                </div>
-              
-            </div>
-
-            
-          </article>
-        </div>
-      </div>
-    </div>
-    
-      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
-        <div id="toc">
-  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
-  <div class="toc-body" id="toc-body"></div>
-</div>
-
-      </div>
-    
-  </div>
-</div>
-
-<!-- Custom -->
-
-
-    
-
-    
-      <a id="scroll-top-button" href="#" role="button">
-        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
-      </a>
-    
-
-    
-      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
-     aria-hidden="true">
-  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
-        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body mx-3">
-        <div class="md-form mb-5">
-          <input type="text" id="local-search-input" class="form-control validate">
-          <label data-error="x" data-success="v"
-                 for="local-search-input">关键词</label>
-        </div>
-        <div class="list-group" id="local-search-result"></div>
-      </div>
-    </div>
-  </div>
-</div>
-    
-
-    
-  </main>
-
-  <footer class="text-center mt-5 py-3">
-  <div class="footer-content">
-     <a rel="nofollow noopener"><span>Hzjsea</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
-  </div>
-  
-
-  
-
-  
-</footer>
-
-<!-- SCRIPTS -->
-
-  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
-  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
-
-  <script>
-    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
-    NProgress.start()
-    window.addEventListener('load', function() {
-      NProgress.done();
-    })
-  </script>
-
-
-<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
-<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
-<script  src="/js/debouncer.js" ></script>
-<script  src="/js/events.js" ></script>
-<script  src="/js/plugins.js" ></script>
-
-<!-- Plugins -->
-
-
-  
-    <script  src="/js/lazyload.js" ></script>
-  
-
-
-
-  
-
-
-
-  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
-
-
-
-  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
-
-
-
-  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
-
-
-
-  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
-
-
-
-
-
-
-  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
-  <script>
-    (function (window, document) {
-      var typing = Fluid.plugins.typing;
-      var title = document.getElementById('subtitle').title;
       
-      typing(title)
-      
-    })(window, document);
-  </script>
-
-
-
-  <script  src="/js/local-search.js" ></script>
-  <script>
-    (function () {
-      var path = "/local-search.xml";
-      var inputArea = document.querySelector("#local-search-input");
-      inputArea.onclick = function () {
-        searchFunc(path, 'local-search-input', 'local-search-result');
-        this.onclick = null
-      }
-    })()
-  </script>
+       <hr><span style="font-style: italic;color: gray;"> 转载请注明来源，欢迎对文章中的引用来源进行考证，欢迎指出任何有错误或不够清晰的表达。可以在下面评论区评论，也可以邮件至 hzjsea@gmail.com </span>
+    </div>
+</article>
 
 
 
@@ -892,15 +2682,153 @@ INSERT INTO `datafordata`.`t_temp` (`id`, `comment`, `create_time`, `update_time
 
 
 
+    </div>
+    <div class="copyright">
+        <p class="footer-entry">
+    ©2016-2021 hzjsea
+</p>
+<p class="footer-entry">Built with <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/yelog/hexo-theme-3-hexo" target="_blank">3-hexo</a> theme</p>
 
+    </div>
+    <div class="full-toc">
+        <button class="full" data-title="切换全屏 快捷键 s"><span class="min "></span></button>
+<a class="" id="rocket" ></a>
 
-
-
-
-<!-- 主题的启动项 保持在最底部 -->
-<script  src="/js/boot.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-
-
+    </div>
+</div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 
 </body>
+<script src="/js/jquery.pjax.js?v=1.1.0" ></script>
+
+<script src="/js/script.js?v=1.1.0" ></script>
+<script>
+    var img_resize = 'default';
+    function initArticle() {
+        /*渲染对应的表格样式*/
+        
+            $("#post .pjax table").addClass("green_title");
+        
+
+        /*渲染打赏样式*/
+        
+
+        /*高亮代码块行号*/
+        
+
+        /*访问数量*/
+        
+        $.getScript("//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js");
+        
+
+        /*代码高亮，行号对齐*/
+        $('.pre-numbering').css('line-height',$('.has-numbering').css('line-height'));
+
+        
+        
+    }
+
+    /*打赏页面隐藏与展示*/
+    
+
+</script>
+
+<!--加入行号的高亮代码块样式-->
+
+<!--自定义样式设置-->
+<style>
+    
+    
+    .nav {
+        width: 542px;
+    }
+    .nav.fullscreen {
+        margin-left: -542px;
+    }
+    .nav-left {
+        width: 120px;
+    }
+    
+    
+    @media screen and (max-width: 1468px) {
+        .nav {
+            width: 492px;
+        }
+        .nav.fullscreen {
+            margin-left: -492px;
+        }
+        .nav-left {
+            width: 100px;
+        }
+    }
+    
+    
+    @media screen and (max-width: 1024px) {
+        .nav {
+            width: 492px;
+            margin-left: -492px
+        }
+        .nav.fullscreen {
+            margin-left: 0;
+        }
+    }
+    
+    @media screen and (max-width: 426px) {
+        .nav {
+            width: 100%;
+        }
+        .nav-left {
+            width: 100%;
+        }
+    }
+    
+    
+    .nav-right .title-list nav a .post-title, .nav-right .title-list #local-search-result a .post-title {
+        color: #383636;
+    }
+    
+    
+    .nav-right .title-list nav a .post-date, .nav-right .title-list #local-search-result a .post-date {
+        color: #5e5e5f;
+    }
+    
+    
+    .nav-right nav a.hover, #local-search-result a.hover{
+        background-color: #e2e0e0;
+    }
+    
+    
+
+    /*列表样式*/
+    
+
+    /* 背景图样式 */
+    
+    
+
+
+    /*引用块样式*/
+    
+
+    /*文章列表背景图*/
+    
+
+    
+    #post .pjax article :not(pre) > code {
+        color: #24292e;
+        font-family: SFMono-Regular,Consolas,Liberation Mono,Menlo,Courier,monospace;
+        background-color: rgba(27,31,35,.05);
+        border-radius: 3px;
+        font-size: 85%;
+        margin: 0;
+        padding: .2em .4em;
+    }
+    
+</style>
+
+
+
+
+
+
+
 </html>
