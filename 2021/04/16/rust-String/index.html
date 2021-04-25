@@ -1,0 +1,949 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="hzjsea">
+  <meta name="keywords" content="">
+  <title>rust-String - hzjsea</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"www.baidu.com","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
+
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>hzjsea</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="rust-String">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-04-16 14:12" pubdate>
+        2021年4月16日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2.7k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      48
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">rust-String</h1>
+            
+            <div class="markdown-body">
+              <a id="more"></a>
+
+
+<h1 id="rust-String"><a href="#rust-String" class="headerlink" title="rust-String"></a>rust-String</h1><h2 id="关于assert-eq-是否能比较生命周期"><a href="#关于assert-eq-是否能比较生命周期" class="headerlink" title="关于assert_eq!是否能比较生命周期"></a>关于assert_eq!是否能比较生命周期</h2><p>答案是不能</p>
+<div class="code-wrapper"><pre><code class="hljs rust"><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>()&#123;
+    <span class="hljs-comment">// 无法对比生命周期的长度</span>
+    <span class="hljs-keyword">let</span> xx = <span class="hljs-built_in">String</span>::from(<span class="hljs-string">&quot;hello&quot;</span>);
+    &#123;
+        <span class="hljs-keyword">let</span> yy = <span class="hljs-built_in">String</span>::from(<span class="hljs-string">&quot;hello&quot;</span>);
+        <span class="hljs-built_in">assert_eq!</span>(xx,yy);
+    &#125;
+&#125;</code></pre></div>
+
+
+<h2 id="关于rust中-as-str-和-amp-str-的区别"><a href="#关于rust中-as-str-和-amp-str-的区别" class="headerlink" title="关于rust中 as_str 和 &amp;str 的区别"></a>关于rust中 as_str 和 &amp;str 的区别</h2><blockquote>
+<p>different between as_str and &amp;str<br>Not quite, a simple “foo” is a &amp;’static str,<br>but if you borrow a &amp;str from a String (e.g. s3.as_str() in your example),<br>the &amp;str will get a lifetime that is shorter than the liftetime of the String.</p>
+</blockquote>
+<p>这边有一个很有意思的点，这两个在编译器上看来，返回都是一个<code>&amp;str</code>的内容，但是有意思的是一个是<code>&amp;static</code>字符串字面量，另一个是引用，且涉及到生命周期的内容<br><img src="https://noback.upyun.com/2021-04-16-14-35-34.png!" srcset="/img/loading.gif"></p>
+<div class="code-wrapper"><pre><code class="hljs rust"><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>()&#123;
+    <span class="hljs-keyword">let</span> a_str = <span class="hljs-string">&quot;foo&quot;</span>; <span class="hljs-comment">// let a_str:&amp;&#x27;static = &quot;foo&quot;</span>
+    <span class="hljs-comment">// a_str&#x27;s lifetime is &amp;&#x27;static</span>
+
+    <span class="hljs-keyword">let</span> b_String = <span class="hljs-built_in">String</span>::from(<span class="hljs-string">&quot;foo&quot;</span>);
+    <span class="hljs-keyword">let</span> b_str = b_String.as_str();
+    <span class="hljs-comment">// b_str&#x27;s lifetime Current scope</span>
+&#125;</code></pre></div>
+
+<div style='font-size:20px;color:red'>Impot</div>
+
+<p>注意这里无法使用<code>String::from(&quot;xxx&quot;).as_str()</code>来创建字符串引用,因为<code>as_str</code>是要使用调用者本身的引用的，所有调用者本身的生命周期需要长于<code>as_str()</code>返回的值的生命周期</p>
+<p><code>as_str</code>源码</p>
+<div class="code-wrapper"><pre><code class="hljs rust"><span class="hljs-meta">#[inline]</span>
+<span class="hljs-meta">#[stable(feature = <span class="hljs-meta-string">&quot;string_as_str&quot;</span>, since = <span class="hljs-meta-string">&quot;1.7.0&quot;</span>)]</span>
+<span class="hljs-keyword">pub</span> <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">as_str</span></span>(&amp;<span class="hljs-keyword">self</span>) -&gt; &amp;<span class="hljs-built_in">str</span> &#123;
+    <span class="hljs-keyword">self</span>
+&#125;</code></pre></div>
+
+<div class="code-wrapper"><pre><code class="hljs rust"><span class="hljs-keyword">let</span> bb_str = <span class="hljs-string">&quot;xx&quot;</span>;
+<span class="hljs-keyword">let</span> b_str = <span class="hljs-built_in">String</span>::from(<span class="hljs-string">&quot;xx&quot;</span>).as_str();
+<span class="hljs-built_in">assert_eq!</span>(bb_str,b_str)
+<span class="hljs-comment">// 会报错，报错的内容是生命周期不够</span>
+<span class="hljs-comment">// temporary value dropped while borrowed</span>
+<span class="hljs-comment">// consider using a `let` binding to create a longer lived value</span>
+<span class="hljs-comment">// 上面的代码类似于</span>
+<span class="hljs-keyword">let</span> b_str = &#123;
+    <span class="hljs-keyword">let</span> __temp = <span class="hljs-built_in">String</span>::from(<span class="hljs-string">&quot;xx&quot;</span>)
+    __temp.as_str()
+&#125; <span class="hljs-comment">// drop __temp</span>
+
+<span class="hljs-comment">// 解决办法是使用let绑定一个长的生命周期</span>
+<span class="hljs-keyword">let</span> b_str = <span class="hljs-built_in">String</span>::from(<span class="hljs-string">&quot;xx&quot;</span>)
+<span class="hljs-keyword">let</span> bb_str = b_str.as_str();</code></pre></div>
+<p><img src="https://noback.upyun.com/2021-04-16-14-41-19.png!" srcset="/img/loading.gif"></p>
+<h2 id="rust-String-join-function"><a href="#rust-String-join-function" class="headerlink" title="rust String join function"></a>rust String join function</h2><h3 id="concat-collect-and-join"><a href="#concat-collect-and-join" class="headerlink" title="concat,collect and join"></a>concat,collect and join</h3><div style='font-size:25px;background:RGB(118,214,173)'>
+    chars.iter( ).collect::<String>( )
+</div>
+将迭代器中的内容拼接在一起
+
+<div class="code-wrapper"><pre><code class="hljs rust"><span class="hljs-comment">// vec Vec&lt;char&gt;</span>
+<span class="hljs-keyword">let</span> chars = <span class="hljs-built_in">vec!</span>[<span class="hljs-string">&#x27;a&#x27;</span>,<span class="hljs-string">&#x27;b&#x27;</span>,<span class="hljs-string">&#x27;c&#x27;</span>];
+<span class="hljs-keyword">let</span> string  = chars.iter().collect::&lt;<span class="hljs-built_in">String</span>&gt;();
+<span class="hljs-comment">// arrry [char;_]</span>
+<span class="hljs-keyword">let</span> chars = [<span class="hljs-string">&#x27;a&#x27;</span>, <span class="hljs-string">&#x27;b&#x27;</span>, <span class="hljs-string">&#x27;c&#x27;</span>];
+<span class="hljs-keyword">let</span> string = chars.iter().collect::&lt;<span class="hljs-built_in">String</span>&gt;();
+<span class="hljs-comment">// slice &amp;[char]</span>
+<span class="hljs-keyword">let</span> chars = <span class="hljs-built_in">vec!</span>[<span class="hljs-string">&#x27;a&#x27;</span>, <span class="hljs-string">&#x27;b&#x27;</span>, <span class="hljs-string">&#x27;c&#x27;</span>];
+<span class="hljs-keyword">let</span> slice_chars = &amp;chars[..];
+<span class="hljs-keyword">let</span> string = slice_chars.iter().collect::&lt;<span class="hljs-built_in">String</span>&gt;();</code></pre></div>
+
+<div style='font-size:25px;background:RGB(118,214,173)'>
+    strings.concat()
+</div>
+将数组中的内容拼接在一起
+
+<div class="code-wrapper"><pre><code class="hljs rust"><span class="hljs-comment">// [&amp;str;_]</span>
+<span class="hljs-keyword">let</span> chars = [<span class="hljs-string">&quot;a&quot;</span>,<span class="hljs-string">&quot;b&quot;</span>,<span class="hljs-string">&quot;c&quot;</span>];
+<span class="hljs-keyword">let</span> string = chars.concat();
+<span class="hljs-comment">// Vec&lt;&amp;str&gt;</span>
+<span class="hljs-keyword">let</span> chars = <span class="hljs-built_in">vec!</span>[<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-string">&quot;b&quot;</span>, <span class="hljs-string">&quot;c&quot;</span>];
+<span class="hljs-keyword">let</span> string = chars.concat();
+<span class="hljs-comment">// slice</span>
+<span class="hljs-keyword">let</span> chars = [<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-string">&quot;b&quot;</span>, <span class="hljs-string">&quot;c&quot;</span>];
+<span class="hljs-keyword">let</span> string = &amp;chars[..].concat();</code></pre></div>
+
+
+<div style='font-size:25px;background:RGB(118,214,173)'>
+    strings.join(separator)
+</div>
+合并并添加间隔符
+
+<div class="code-wrapper"><pre><code class="hljs rust"><span class="hljs-keyword">let</span> names = <span class="hljs-built_in">vec!</span>[<span class="hljs-string">&quot;firstName&quot;</span>,<span class="hljs-string">&quot;lastName&quot;</span>];
+<span class="hljs-keyword">let</span> string  = names.join(<span class="hljs-string">&quot;,&quot;</span>);
+
+<span class="hljs-keyword">let</span> names = [<span class="hljs-string">&quot;firstName&quot;</span>, <span class="hljs-string">&quot;lastName&quot;</span>];
+<span class="hljs-keyword">let</span> joined = names.join(<span class="hljs-string">&quot;, &quot;</span>);
+
+<span class="hljs-keyword">let</span> names = &amp;[<span class="hljs-string">&quot;firstName&quot;</span>,<span class="hljs-string">&quot;lastName&quot;</span>];
+<span class="hljs-keyword">let</span> string = names.join(<span class="hljs-string">&quot;,&quot;</span>);</code></pre></div>
+
+
+<h3 id="bytes-chars"><a href="#bytes-chars" class="headerlink" title="bytes, chars"></a>bytes, chars</h3><ul>
+<li>bytes 转成<code>Bytes</code> 迭代器</li>
+<li>chars 转成<code>Chars</code> 迭代器</li>
+<li>两个返回都是copy后的内容</li>
+</ul>
+<div class="code-wrapper"><pre><code class="hljs rust">    <span class="hljs-keyword">pub</span> <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">bytes</span></span>(&amp;<span class="hljs-keyword">self</span>) -&gt; Bytes&lt;<span class="hljs-symbol">&#x27;_</span>&gt; &#123;
+        Bytes(<span class="hljs-keyword">self</span>.as_bytes().iter().copied())
+    &#125;
+
+        <span class="hljs-keyword">pub</span> <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">chars</span></span>(&amp;<span class="hljs-keyword">self</span>) -&gt; Chars&lt;<span class="hljs-symbol">&#x27;_</span>&gt; &#123;
+        Chars &#123; iter: <span class="hljs-keyword">self</span>.as_bytes().iter() &#125;
+    &#125;
+<span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>()&#123;
+    
+    
+    <span class="hljs-keyword">let</span> s = <span class="hljs-built_in">String</span>::from(<span class="hljs-string">&quot;helloworld&quot;</span>);
+    <span class="hljs-keyword">let</span> s_vec:<span class="hljs-built_in">Vec</span>&lt;<span class="hljs-built_in">u8</span>&gt; = s.bytes().collect::&lt;<span class="hljs-built_in">Vec</span>&lt;<span class="hljs-built_in">u8</span>&gt;&gt;();
+
+    <span class="hljs-keyword">let</span> x:&amp;[<span class="hljs-built_in">u8</span>] = s.as_bytes();
+
+    
+    <span class="hljs-keyword">let</span> c:<span class="hljs-built_in">String</span> = <span class="hljs-built_in">String</span>::from(<span class="hljs-string">&quot;helloworld&quot;</span>);
+    <span class="hljs-keyword">let</span> c_ec:<span class="hljs-built_in">char</span> = c.chars().next().unwrap();
+    <span class="hljs-keyword">let</span> c_ec:<span class="hljs-built_in">Vec</span>&lt;<span class="hljs-built_in">char</span>&gt; = c.chars().collect::&lt;<span class="hljs-built_in">Vec</span>&lt;<span class="hljs-built_in">char</span>&gt;&gt;();
+&#125;</code></pre></div>
+
+
+
+<h3 id="as-bytes-and-from-utf8-from-utf8-lussy-into-bytes-as-bytes-mut"><a href="#as-bytes-and-from-utf8-from-utf8-lussy-into-bytes-as-bytes-mut" class="headerlink" title="as_bytes and  from_utf8, from_utf8_lussy, into_bytes , as_bytes_mut"></a>as_bytes and  from_utf8, from_utf8_lussy, into_bytes , as_bytes_mut</h3><ul>
+<li><code>as_bytes</code> 将字符串转换成bytes数组 -&gt; arrary<code>&amp;[u8]</code>  拷贝了一份</li>
+<li><code>as_bytes_mut</code> unsafe操作 转换成&amp;mut [u8]</li>
+<li><code>into_bytes</code> 将字符串转换成bytes数组 -&gt; <code>Vec&lt;u8&gt;</code> 直接转换了一份</li>
+<li><code>from_utf8</code> 将bytes转换成字符串</li>
+<li><code>from_utf8_lussy</code> 将bytes转换为字符串，可能会丢失</li>
+</ul>
+<div class="code-wrapper"><pre><code class="hljs rust">    <span class="hljs-keyword">pub</span> <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">as_bytes</span></span>(&amp;<span class="hljs-keyword">self</span>) -&gt; &amp;[<span class="hljs-built_in">u8</span>] &#123;
+        &amp;<span class="hljs-keyword">self</span>.vec
+    &#125;
+    <span class="hljs-keyword">pub</span> <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">into_bytes</span></span>(<span class="hljs-keyword">self</span>) -&gt; <span class="hljs-built_in">Vec</span>&lt;<span class="hljs-built_in">u8</span>&gt; &#123;
+        <span class="hljs-keyword">self</span>.vec
+    &#125;
+    <span class="hljs-keyword">pub</span> <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">from_utf8</span></span>(vec: <span class="hljs-built_in">Vec</span>&lt;<span class="hljs-built_in">u8</span>&gt;) -&gt; <span class="hljs-built_in">Result</span>&lt;<span class="hljs-built_in">String</span>, FromUtf8Error&gt; &#123;
+        <span class="hljs-keyword">match</span> <span class="hljs-built_in">str</span>::from_utf8(&amp;vec) &#123;
+            <span class="hljs-literal">Ok</span>(..) =&gt; <span class="hljs-literal">Ok</span>(<span class="hljs-built_in">String</span> &#123; vec &#125;),
+            <span class="hljs-literal">Err</span>(e) =&gt; <span class="hljs-literal">Err</span>(FromUtf8Error &#123; bytes: vec, error: e &#125;),
+        &#125;
+    &#125;
+    
+
+<span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>()&#123;
+
+    <span class="hljs-keyword">let</span> <span class="hljs-keyword">mut</span> s = <span class="hljs-built_in">String</span>::from(<span class="hljs-string">&quot;Hello&quot;</span>);
+    <span class="hljs-keyword">let</span> bytes = <span class="hljs-keyword">unsafe</span> &#123; s.as_bytes_mut() &#125;;
+
+    <span class="hljs-keyword">let</span> s:<span class="hljs-built_in">String</span> = <span class="hljs-built_in">String</span>::from(<span class="hljs-string">&quot;helloworld&quot;</span>);
+    <span class="hljs-keyword">let</span> bytes:&amp;[<span class="hljs-built_in">u8</span>] = s.as_bytes(); <span class="hljs-comment">// arrary</span>
+    <span class="hljs-comment">// use from_utf8 , must be vec</span>
+    <span class="hljs-comment">// let vv = bytes.to_vec()</span>
+    <span class="hljs-keyword">let</span> s = <span class="hljs-built_in">String</span>::from_utf8(bytes.to_vec()).ok().unwrap();
+    
+    <span class="hljs-keyword">let</span> s:<span class="hljs-built_in">String</span> =  <span class="hljs-built_in">String</span>::from(<span class="hljs-string">&quot;helloworld&quot;</span>);
+    <span class="hljs-keyword">let</span> bytes = s.into_bytes(); <span class="hljs-comment">// s move</span>
+&#125;</code></pre></div>
+
+<h3 id="as-str-and-as-mut-str"><a href="#as-str-and-as-mut-str" class="headerlink" title="as_str and as_mut_str"></a>as_str and as_mut_str</h3><ul>
+<li><code>as_str</code> 将字符串转变为字符串切片</li>
+<li><code>as_mut_str</code> 将字符串转变为可变字符串</li>
+</ul>
+<div class="code-wrapper"><pre><code class="hljs rust"><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>()&#123;
+    <span class="hljs-keyword">pub</span> <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">as_str</span></span>(&amp;<span class="hljs-keyword">self</span>) -&gt; &amp;<span class="hljs-built_in">str</span> &#123;
+        <span class="hljs-keyword">self</span>
+    &#125;
+    <span class="hljs-keyword">pub</span> <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">as_mut_str</span></span>(&amp;<span class="hljs-keyword">mut</span> <span class="hljs-keyword">self</span>) -&gt; &amp;<span class="hljs-keyword">mut</span> <span class="hljs-built_in">str</span> &#123;
+        <span class="hljs-keyword">self</span>
+    &#125;
+
+    <span class="hljs-keyword">let</span> ss = <span class="hljs-string">&quot;String&quot;</span>.to_owned();
+    <span class="hljs-keyword">let</span> s_str = ss.as_str();
+    <span class="hljs-keyword">let</span> <span class="hljs-keyword">mut</span> ss = <span class="hljs-string">&quot;String&quot;</span>.to_owned();
+    <span class="hljs-keyword">let</span> <span class="hljs-keyword">mut</span> s_str = ss.as_mut_str();
+    <span class="hljs-comment">//</span>
+    <span class="hljs-keyword">let</span> <span class="hljs-keyword">mut</span> ss  = <span class="hljs-string">&quot;String&quot;</span>.to_owned().as_mut_str(); <span class="hljs-comment">// error lifetime not discontent</span>
+    <span class="hljs-keyword">let</span> ss = <span class="hljs-string">&quot;String&quot;</span>.to_owned().as_str(); <span class="hljs-comment">// error lifetime not discontent</span>
+&#125;</code></pre></div>
+
+<h3 id="as-mut-vec"><a href="#as-mut-vec" class="headerlink" title="as_mut_vec"></a>as_mut_vec</h3><ul>
+<li><code>as_mut_vec</code> 将字符串转换成可变的集合</li>
+</ul>
+<div class="code-wrapper"><pre><code class="hljs rust"><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>()&#123;
+    <span class="hljs-keyword">let</span> <span class="hljs-keyword">mut</span> s = <span class="hljs-built_in">String</span>::from(<span class="hljs-string">&quot;hello&quot;</span>);
+    <span class="hljs-keyword">unsafe</span> &#123;
+        <span class="hljs-keyword">let</span> vec = s.as_mut_vec();
+        <span class="hljs-built_in">assert_eq!</span>(&amp;[<span class="hljs-number">104</span>, <span class="hljs-number">101</span>, <span class="hljs-number">108</span>, <span class="hljs-number">108</span>, <span class="hljs-number">111</span>][..], &amp;vec[..]);
+    &#125;
+&#125;</code></pre></div>
+
+<h3 id="len-is-empty-capacity-with-capacity-clear"><a href="#len-is-empty-capacity-with-capacity-clear" class="headerlink" title="len, is_empty, capacity, with_capacity, clear"></a>len, is_empty, capacity, with_capacity, clear</h3><div class="code-wrapper"><pre><code class="hljs rust"><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>()&#123;
+    <span class="hljs-keyword">let</span> a = <span class="hljs-built_in">String</span>::from(<span class="hljs-string">&quot;foo&quot;</span>);
+    <span class="hljs-keyword">let</span> len = a.len(); <span class="hljs-comment">// 获取长度</span>
+    <span class="hljs-keyword">let</span> is_empty = a.is_empty(); <span class="hljs-comment">// 是否为空</span>
+    <span class="hljs-keyword">let</span> capactity = a.capacity(); <span class="hljs-comment">// 获取容量</span>
+    <span class="hljs-keyword">let</span> aa = <span class="hljs-built_in">String</span>::with_capacity(<span class="hljs-number">10</span>); <span class="hljs-comment">// 初始化设置容量</span>
+    
+    <span class="hljs-keyword">let</span> <span class="hljs-keyword">mut</span> ss = <span class="hljs-built_in">String</span>::from(<span class="hljs-string">&quot;foo&quot;</span>);  
+    ss.clear(); <span class="hljs-comment">// 清空</span>
+    <span class="hljs-built_in">assert_eq!</span>(ss.len(),<span class="hljs-number">0</span>);
+&#125;</code></pre></div>
+<h3 id="drain-pop"><a href="#drain-pop" class="headerlink" title="drain pop"></a>drain pop</h3><ul>
+<li>pop 删除最后一个字符</li>
+<li>drain 删除字符串并返回</li>
+</ul>
+<div class="code-wrapper"><pre><code class="hljs rust">    <span class="hljs-keyword">pub</span> <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">pop</span></span>(&amp;<span class="hljs-keyword">mut</span> <span class="hljs-keyword">self</span>) -&gt; <span class="hljs-built_in">Option</span>&lt;<span class="hljs-built_in">char</span>&gt; &#123;
+        <span class="hljs-keyword">let</span> ch = <span class="hljs-keyword">self</span>.chars().rev().next()?;
+        <span class="hljs-keyword">let</span> newlen = <span class="hljs-keyword">self</span>.len() - ch.len_utf8();
+        <span class="hljs-keyword">unsafe</span> &#123;
+            <span class="hljs-keyword">self</span>.vec.set_len(newlen);
+        &#125;
+        <span class="hljs-literal">Some</span>(ch)
+    &#125;
+
+    <span class="hljs-keyword">pub</span> <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">drain</span></span>&lt;R&gt;(&amp;<span class="hljs-keyword">mut</span> <span class="hljs-keyword">self</span>, range: R) -&gt; Drain&lt;<span class="hljs-symbol">&#x27;_</span>&gt;
+    <span class="hljs-keyword">where</span>
+        R: RangeBounds&lt;<span class="hljs-built_in">usize</span>&gt;,
+    &#123;
+        <span class="hljs-comment">// Memory safety</span>
+        <span class="hljs-comment">//</span>
+        <span class="hljs-comment">// The String version of Drain does not have the memory safety issues</span>
+        <span class="hljs-comment">// of the vector version. The data is just plain bytes.</span>
+        <span class="hljs-comment">// Because the range removal happens in Drop, if the Drain iterator is leaked,</span>
+        <span class="hljs-comment">// the removal will not happen.</span>
+        <span class="hljs-keyword">let</span> Range &#123; start, end &#125; = slice::range(range, ..<span class="hljs-keyword">self</span>.len());
+        <span class="hljs-built_in">assert!</span>(<span class="hljs-keyword">self</span>.is_char_boundary(start));
+        <span class="hljs-built_in">assert!</span>(<span class="hljs-keyword">self</span>.is_char_boundary(end));
+
+        <span class="hljs-comment">// Take out two simultaneous borrows. The &amp;mut String won&#x27;t be accessed</span>
+        <span class="hljs-comment">// until iteration is over, in Drop.</span>
+        <span class="hljs-keyword">let</span> self_ptr = <span class="hljs-keyword">self</span> <span class="hljs-keyword">as</span> *<span class="hljs-keyword">mut</span> _;
+        <span class="hljs-comment">// SAFETY: `slice::range` and `is_char_boundary` do the appropriate bounds checks.</span>
+        <span class="hljs-keyword">let</span> chars_iter = <span class="hljs-keyword">unsafe</span> &#123; <span class="hljs-keyword">self</span>.get_unchecked(start..end) &#125;.chars();
+
+        Drain &#123; start, end, iter: chars_iter, string: self_ptr &#125;
+    &#125;
+
+
+<span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>()&#123;
+    <span class="hljs-keyword">let</span> <span class="hljs-keyword">mut</span> ss = <span class="hljs-built_in">String</span>::from(<span class="hljs-string">&quot;foobar&quot;</span>);
+    <span class="hljs-keyword">if</span> <span class="hljs-keyword">let</span> <span class="hljs-literal">Some</span>(value) = ss.pop()&#123;
+        <span class="hljs-built_in">assert_eq!</span>(<span class="hljs-string">&#x27;r&#x27;</span>,value)
+    &#125;
+
+    <span class="hljs-keyword">let</span> <span class="hljs-keyword">mut</span> ss = <span class="hljs-built_in">String</span>::from(<span class="hljs-string">&quot;facbar&quot;</span>);
+    <span class="hljs-keyword">let</span> x = ss
+                    .drain(<span class="hljs-number">1</span>..<span class="hljs-number">2</span>) <span class="hljs-comment">// iter  [1,2) // a</span>
+                    .collect::&lt;<span class="hljs-built_in">String</span>&gt;();
+    <span class="hljs-built_in">assert_eq!</span>(x,<span class="hljs-string">&quot;a&quot;</span>)
+&#125;</code></pre></div>
+
+<h3 id="insert-insert-str-remove"><a href="#insert-insert-str-remove" class="headerlink" title="insert, insert_str, remove"></a>insert, insert_str, remove</h3><ul>
+<li>insert</li>
+<li>insert_str</li>
+<li>remove</li>
+</ul>
+<div class="code-wrapper"><pre><code class="hljs rust"><span class="hljs-keyword">let</span> <span class="hljs-keyword">mut</span> ss = <span class="hljs-built_in">String</span>::from(<span class="hljs-string">&quot;xx&quot;</span>);
+ss.insert(<span class="hljs-number">0</span>, <span class="hljs-string">&#x27;x&#x27;</span>);
+<span class="hljs-built_in">assert_eq!</span>(ss,<span class="hljs-string">&quot;xxx&quot;</span>);
+
+<span class="hljs-keyword">let</span> <span class="hljs-keyword">mut</span> ss = <span class="hljs-built_in">String</span>::from(<span class="hljs-string">&quot;xx&quot;</span>);
+ss.insert_str(<span class="hljs-number">0</span>,<span class="hljs-string">&quot;xx&quot;</span>);
+<span class="hljs-built_in">assert_eq!</span>(ss,<span class="hljs-string">&quot;xxxx&quot;</span>)
+
+<span class="hljs-keyword">let</span> <span class="hljs-keyword">mut</span> s = <span class="hljs-built_in">String</span>::from(<span class="hljs-string">&quot;foo&quot;</span>);
+<span class="hljs-built_in">assert_eq!</span>(s.remove(<span class="hljs-number">0</span>), <span class="hljs-string">&#x27;f&#x27;</span>);</code></pre></div>
+
+
+<h3 id="into-boxed-str"><a href="#into-boxed-str" class="headerlink" title="into_boxed_str"></a>into_boxed_str</h3><p>将String转换成<code>Box&lt;str&gt;</code> ,并去掉<code>capacity</code></p>
+<div class="code-wrapper"><pre><code class="hljs rust">
+
+<span class="hljs-keyword">let</span> <span class="hljs-keyword">mut</span> value = <span class="hljs-built_in">String</span>::with_capacity(<span class="hljs-number">200</span>);
+value.insert_str(<span class="hljs-number">0</span>, <span class="hljs-string">&quot;xx&quot;</span>);
+<span class="hljs-built_in">assert_eq!</span>(value, <span class="hljs-string">&quot;xx&quot;</span>);
+<span class="hljs-built_in">assert_eq!</span>(value.capacity(),<span class="hljs-number">200</span>);
+
+<span class="hljs-keyword">let</span> value_2 = value.into_boxed_str(); <span class="hljs-comment">// no capacity</span></code></pre></div>
+
+<h3 id="push-push-str"><a href="#push-push-str" class="headerlink" title="push,push_str"></a>push,push_str</h3><ul>
+<li>push  从尾部添加一个字符</li>
+<li>push_str 从尾部添加一个字符串<div class="code-wrapper"><pre><code class="hljs rust">    <span class="hljs-keyword">pub</span> <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">push</span></span>(&amp;<span class="hljs-keyword">mut</span> <span class="hljs-keyword">self</span>, ch: <span class="hljs-built_in">char</span>) &#123;
+        <span class="hljs-keyword">match</span> ch.len_utf8() &#123;
+            <span class="hljs-number">1</span> =&gt; <span class="hljs-keyword">self</span>.vec.push(ch <span class="hljs-keyword">as</span> <span class="hljs-built_in">u8</span>),
+            _ =&gt; <span class="hljs-keyword">self</span>.vec.extend_from_slice(ch.encode_utf8(&amp;<span class="hljs-keyword">mut</span> [<span class="hljs-number">0</span>; <span class="hljs-number">4</span>]).as_bytes()),
+        &#125;
+    &#125;
+    <span class="hljs-keyword">pub</span> <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">push_str</span></span>(&amp;<span class="hljs-keyword">mut</span> <span class="hljs-keyword">self</span>, string: &amp;<span class="hljs-built_in">str</span>) &#123;
+        <span class="hljs-keyword">self</span>.vec.extend_from_slice(string.as_bytes())
+    &#125;
+
+<span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>()&#123;
+    <span class="hljs-keyword">let</span> <span class="hljs-keyword">mut</span> ss = <span class="hljs-built_in">String</span>::from(<span class="hljs-string">&quot;helloworld&quot;</span>);
+    ss.push(<span class="hljs-string">&#x27;c&#x27;</span>);
+    ss.push_str(<span class="hljs-string">&quot;cc&quot;</span>);
+    <span class="hljs-built_in">assert_eq!</span>(ss,<span class="hljs-string">&quot;helloworldccc&quot;</span>);
+&#125;</code></pre></div>
+
+</li>
+</ul>
+<h3 id="retain"><a href="#retain" class="headerlink" title="retain"></a>retain</h3><ul>
+<li>retain 保留过滤后的内容</li>
+</ul>
+<div class="code-wrapper"><pre><code class="hljs rust"><span class="hljs-keyword">let</span> <span class="hljs-keyword">mut</span> s = <span class="hljs-built_in">String</span>::from(<span class="hljs-string">&quot;f_o_ob_ar&quot;</span>);
+s.retain(|c| c != <span class="hljs-string">&#x27;_&#x27;</span>);
+<span class="hljs-built_in">assert_eq!</span>(s, <span class="hljs-string">&quot;foobar&quot;</span>);</code></pre></div>
+
+<h3 id="replace-replace-range-replacen"><a href="#replace-replace-range-replacen" class="headerlink" title="replace,replace_range,replacen"></a>replace,replace_range,replacen</h3><ul>
+<li>replace,  replace creates a new String, and copies the data from this string slice into it. 从调用者身上拷贝一份数据。并做替换操作</li>
+<li>replace_range 更换range范围内的数据</li>
+<li>replacen 和replace 类似， 无非是这个可以选择替换多次想要替换的内容</li>
+</ul>
+<div class="code-wrapper"><pre><code class="hljs rust">    <span class="hljs-keyword">pub</span> <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">replace</span></span>&lt;<span class="hljs-symbol">&#x27;a</span>, P: Pattern&lt;<span class="hljs-symbol">&#x27;a</span>&gt;&gt;(&amp;<span class="hljs-symbol">&#x27;a</span> <span class="hljs-keyword">self</span>, from: P, to: &amp;<span class="hljs-built_in">str</span>) -&gt; <span class="hljs-built_in">String</span> &#123;
+        <span class="hljs-keyword">let</span> <span class="hljs-keyword">mut</span> result = <span class="hljs-built_in">String</span>::new(); <span class="hljs-comment">// create a new String</span>
+        <span class="hljs-keyword">let</span> <span class="hljs-keyword">mut</span> last_end = <span class="hljs-number">0</span>; 
+        <span class="hljs-keyword">for</span> (start, part) <span class="hljs-keyword">in</span> <span class="hljs-keyword">self</span>.match_indices(from) &#123;
+            result.push_str(<span class="hljs-keyword">unsafe</span> &#123; <span class="hljs-keyword">self</span>.get_unchecked(last_end..start) &#125;);
+            result.push_str(to);
+            last_end = start + part.len();
+        &#125;
+        result.push_str(<span class="hljs-keyword">unsafe</span> &#123; <span class="hljs-keyword">self</span>.get_unchecked(last_end..<span class="hljs-keyword">self</span>.len()) &#125;);
+        result
+    &#125;
+    
+    <span class="hljs-keyword">pub</span> <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">replace_range</span></span>&lt;R&gt;(&amp;<span class="hljs-keyword">mut</span> <span class="hljs-keyword">self</span>, range: R, replace_with: &amp;<span class="hljs-built_in">str</span>)
+    <span class="hljs-keyword">where</span>
+        R: RangeBounds&lt;<span class="hljs-built_in">usize</span>&gt;,
+    &#123;
+        <span class="hljs-comment">// Memory safety</span>
+        <span class="hljs-comment">//</span>
+        <span class="hljs-comment">// Replace_range does not have the memory safety issues of a vector Splice.</span>
+        <span class="hljs-comment">// of the vector version. The data is just plain bytes.</span>
+
+        <span class="hljs-comment">// WARNING: Inlining this variable would be unsound (#81138)</span>
+        <span class="hljs-keyword">let</span> start = range.start_bound();
+        <span class="hljs-keyword">match</span> start &#123;
+            Included(&amp;n) =&gt; <span class="hljs-built_in">assert!</span>(<span class="hljs-keyword">self</span>.is_char_boundary(n)),
+            Excluded(&amp;n) =&gt; <span class="hljs-built_in">assert!</span>(<span class="hljs-keyword">self</span>.is_char_boundary(n + <span class="hljs-number">1</span>)),
+            Unbounded =&gt; &#123;&#125;
+        &#125;;
+        <span class="hljs-comment">// WARNING: Inlining this variable would be unsound (#81138)</span>
+        <span class="hljs-keyword">let</span> end = range.end_bound();
+        <span class="hljs-keyword">match</span> end &#123;
+            Included(&amp;n) =&gt; <span class="hljs-built_in">assert!</span>(<span class="hljs-keyword">self</span>.is_char_boundary(n + <span class="hljs-number">1</span>)),
+            Excluded(&amp;n) =&gt; <span class="hljs-built_in">assert!</span>(<span class="hljs-keyword">self</span>.is_char_boundary(n)),
+            Unbounded =&gt; &#123;&#125;
+        &#125;;
+
+        <span class="hljs-comment">// Using `range` again would be unsound (#81138)</span>
+        <span class="hljs-comment">// We assume the bounds reported by `range` remain the same, but</span>
+        <span class="hljs-comment">// an adversarial implementation could change between calls</span>
+        <span class="hljs-keyword">unsafe</span> &#123; <span class="hljs-keyword">self</span>.as_mut_vec() &#125;.splice((start, end), replace_with.bytes());
+    &#125;
+
+    <span class="hljs-keyword">pub</span> <span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">replacen</span></span>&lt;<span class="hljs-symbol">&#x27;a</span>, P: Pattern&lt;<span class="hljs-symbol">&#x27;a</span>&gt;&gt;(&amp;<span class="hljs-symbol">&#x27;a</span> <span class="hljs-keyword">self</span>, pat: P, to: &amp;<span class="hljs-built_in">str</span>, count: <span class="hljs-built_in">usize</span>) -&gt; <span class="hljs-built_in">String</span> &#123;
+        <span class="hljs-comment">// Hope to reduce the times of re-allocation</span>
+        <span class="hljs-keyword">let</span> <span class="hljs-keyword">mut</span> result = <span class="hljs-built_in">String</span>::with_capacity(<span class="hljs-number">32</span>);
+        <span class="hljs-keyword">let</span> <span class="hljs-keyword">mut</span> last_end = <span class="hljs-number">0</span>;
+        <span class="hljs-keyword">for</span> (start, part) <span class="hljs-keyword">in</span> <span class="hljs-keyword">self</span>.match_indices(pat).take(count) &#123;
+            result.push_str(<span class="hljs-keyword">unsafe</span> &#123; <span class="hljs-keyword">self</span>.get_unchecked(last_end..start) &#125;);
+            result.push_str(to);
+            last_end = start + part.len();
+        &#125;
+        result.push_str(<span class="hljs-keyword">unsafe</span> &#123; <span class="hljs-keyword">self</span>.get_unchecked(last_end..<span class="hljs-keyword">self</span>.len()) &#125;);
+        result
+    &#125;
+
+<span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>()&#123;
+    <span class="hljs-keyword">let</span> s = <span class="hljs-built_in">String</span>::from(<span class="hljs-string">&quot;helloworld&quot;</span>);
+    <span class="hljs-keyword">let</span> new_s  = s.replace(<span class="hljs-string">&quot;hello&quot;</span>, <span class="hljs-string">&quot;world&quot;</span>);
+    <span class="hljs-built_in">assert_eq!</span>(new_s,<span class="hljs-string">&quot;worldworld&quot;</span>);
+
+    <span class="hljs-keyword">let</span> <span class="hljs-keyword">mut</span> s = <span class="hljs-built_in">String</span>::from(<span class="hljs-string">&quot;helloworld&quot;</span>);
+    s.replace_range(<span class="hljs-number">0</span>..<span class="hljs-number">5</span>, <span class="hljs-string">&quot;world&quot;</span>);
+    <span class="hljs-built_in">assert_eq!</span>(<span class="hljs-string">&quot;worldworld&quot;</span>,s);
+
+    <span class="hljs-keyword">let</span> s = <span class="hljs-built_in">String</span>::from(<span class="hljs-string">&quot;worldworldworld&quot;</span>);
+    <span class="hljs-keyword">let</span> new_s = s.replacen(<span class="hljs-string">&quot;world&quot;</span>, <span class="hljs-string">&quot;hello&quot;</span>, <span class="hljs-number">3</span>);
+    <span class="hljs-built_in">assert_eq!</span>(new_s,<span class="hljs-string">&quot;hellohellohello&quot;</span>);
+&#125;</code></pre></div>
+
+<h3 id="split-split-off-truncate"><a href="#split-split-off-truncate" class="headerlink" title="split, split_off,truncate"></a>split, split_off,truncate</h3><ul>
+<li>split 切割成一个Split， 通过collect 转换成Vec</li>
+<li>split_off 将字符串切割成两份</li>
+<li>truncate 截断， 取前一部分</li>
+</ul>
+<div class="code-wrapper"><pre><code class="hljs rust"><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>()&#123;
+    <span class="hljs-keyword">let</span> <span class="hljs-keyword">mut</span> hello = <span class="hljs-built_in">String</span>::from(<span class="hljs-string">&quot;Hello, World!&quot;</span>);
+    <span class="hljs-keyword">let</span> world = hello.split_off(<span class="hljs-number">7</span>);
+    <span class="hljs-built_in">assert_eq!</span>(hello, <span class="hljs-string">&quot;Hello, &quot;</span>);
+    <span class="hljs-built_in">assert_eq!</span>(world, <span class="hljs-string">&quot;World!&quot;</span>);
+
+    <span class="hljs-keyword">let</span> <span class="hljs-keyword">mut</span> s = <span class="hljs-built_in">String</span>::from(<span class="hljs-string">&quot;hello&quot;</span>);
+    s.truncate(<span class="hljs-number">2</span>);
+    <span class="hljs-built_in">assert_eq!</span>(<span class="hljs-string">&quot;he&quot;</span>, s);
+
+    <span class="hljs-keyword">let</span> <span class="hljs-keyword">mut</span> s = <span class="hljs-built_in">String</span>::from(<span class="hljs-string">&quot;hello&quot;</span>);
+    s.truncate(<span class="hljs-number">2</span>);
+    <span class="hljs-built_in">assert_eq!</span>(<span class="hljs-string">&quot;he&quot;</span>, s);
+    <span class="hljs-keyword">let</span> new_s = &amp;s[..<span class="hljs-number">2</span>];
+    <span class="hljs-built_in">assert_eq!</span>(<span class="hljs-string">&quot;he&quot;</span>,new_s);
+&#125;</code></pre></div>
+
+<h3 id="as-ptr"><a href="#as-ptr" class="headerlink" title="as_ptr"></a>as_ptr</h3><ul>
+<li>as_ptr 获取指针</li>
+</ul>
+<div class="code-wrapper"><pre><code class="hljs rust"><span class="hljs-keyword">let</span> s = <span class="hljs-string">&quot;Hello&quot;</span>;
+<span class="hljs-keyword">let</span> ptr = s.as_ptr();</code></pre></div>
+
+<h3 id="contain-start-with-end-with"><a href="#contain-start-with-end-with" class="headerlink" title="contain,start_with,end_with"></a>contain,start_with,end_with</h3><div class="code-wrapper"><pre><code class="hljs rust"><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>()&#123;
+    <span class="hljs-keyword">let</span> bananas = <span class="hljs-string">&quot;bananas&quot;</span>;
+
+    <span class="hljs-built_in">assert!</span>(bananas.contains(<span class="hljs-string">&quot;nana&quot;</span>));
+    <span class="hljs-built_in">assert!</span>(!bananas.contains(<span class="hljs-string">&quot;apples&quot;</span>));
+
+    <span class="hljs-keyword">let</span> bananas = <span class="hljs-string">&quot;bananas&quot;</span>;
+
+    <span class="hljs-built_in">assert!</span>(bananas.starts_with(<span class="hljs-string">&quot;bana&quot;</span>));
+    <span class="hljs-built_in">assert!</span>(!bananas.starts_with(<span class="hljs-string">&quot;nana&quot;</span>));
+
+    <span class="hljs-keyword">let</span> bananas = <span class="hljs-string">&quot;bananas&quot;</span>;
+
+    <span class="hljs-built_in">assert!</span>(bananas.ends_with(<span class="hljs-string">&quot;anas&quot;</span>));
+    <span class="hljs-built_in">assert!</span>(!bananas.ends_with(<span class="hljs-string">&quot;nana&quot;</span>));
+&#125;
+</code></pre></div>
+
+<h3 id="find"><a href="#find" class="headerlink" title="find"></a>find</h3><ul>
+<li>find find keywards return index </li>
+</ul>
+<div class="code-wrapper"><pre><code class="hljs rust"><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>()&#123;
+    <span class="hljs-keyword">let</span> s = <span class="hljs-string">&quot;Löwe 老虎 Léopard Gepardi&quot;</span>;
+    <span class="hljs-built_in">assert_eq!</span>(s.find(<span class="hljs-string">&#x27;L&#x27;</span>), <span class="hljs-literal">Some</span>(<span class="hljs-number">0</span>));
+    <span class="hljs-built_in">assert_eq!</span>(s.find(<span class="hljs-string">&#x27;é&#x27;</span>), <span class="hljs-literal">Some</span>(<span class="hljs-number">14</span>));
+    <span class="hljs-built_in">assert_eq!</span>(s.find(<span class="hljs-string">&quot;pard&quot;</span>), <span class="hljs-literal">Some</span>(<span class="hljs-number">17</span>));
+
+    <span class="hljs-keyword">let</span> s = <span class="hljs-string">&quot;Löwe 老虎 Léopard&quot;</span>;
+    <span class="hljs-built_in">assert_eq!</span>(s.find(<span class="hljs-built_in">char</span>::is_whitespace), <span class="hljs-literal">Some</span>(<span class="hljs-number">5</span>));
+    <span class="hljs-built_in">assert_eq!</span>(s.find(<span class="hljs-built_in">char</span>::is_lowercase), <span class="hljs-literal">Some</span>(<span class="hljs-number">1</span>));
+    <span class="hljs-built_in">assert_eq!</span>(s.find(|c: <span class="hljs-built_in">char</span>| c.is_whitespace() || c.is_lowercase()), <span class="hljs-literal">Some</span>(<span class="hljs-number">1</span>));
+    <span class="hljs-built_in">assert_eq!</span>(s.find(|c: <span class="hljs-built_in">char</span>| (c &lt; <span class="hljs-string">&#x27;o&#x27;</span>) &amp;&amp; (c &gt; <span class="hljs-string">&#x27;a&#x27;</span>)), <span class="hljs-literal">Some</span>(<span class="hljs-number">4</span>));
+
+&#125;
+</code></pre></div>
+
+<p><a target="_blank" rel="noopener" href="https://doc.rust-lang.org/std/string/struct.String.html#method.contains">https://doc.rust-lang.org/std/string/struct.String.html#method.contains</a></p>
+<h3 id="get"><a href="#get" class="headerlink" title="get"></a>get</h3><div class="code-wrapper"><pre><code class="hljs rust"><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>()&#123;
+    <span class="hljs-keyword">let</span> s = <span class="hljs-built_in">String</span>::from(<span class="hljs-string">&quot;helloworld&quot;</span>);
+    <span class="hljs-keyword">let</span> new_s = s.get(<span class="hljs-number">1</span>..<span class="hljs-number">2</span>).unwrap();
+    <span class="hljs-built_in">assert_eq!</span>(<span class="hljs-string">&quot;e&quot;</span>,new_s);
+
+    <span class="hljs-keyword">let</span> <span class="hljs-keyword">mut</span> s = <span class="hljs-built_in">String</span>::from(<span class="hljs-string">&quot;helloworld&quot;</span>);
+    <span class="hljs-keyword">let</span> new_s = s.get_mut(<span class="hljs-number">0</span>..<span class="hljs-number">1</span>).unwrap();
+    <span class="hljs-built_in">assert_eq!</span>(<span class="hljs-string">&quot;h&quot;</span>,new_s);
+    <span class="hljs-built_in">println!</span>(<span class="hljs-string">&quot;&#123;:?&#125;&quot;</span>,s);
+&#125;</code></pre></div>
+
+<h3 id="is-ascii"><a href="#is-ascii" class="headerlink" title="is_ascii"></a>is_ascii</h3><div class="code-wrapper"><pre><code class="hljs rust"><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>()&#123;
+       <span class="hljs-comment">// check the string is ASCII range</span>
+    <span class="hljs-keyword">let</span> ascii = <span class="hljs-string">&quot;hello!\n&quot;</span>;
+    <span class="hljs-keyword">let</span> non_ascii = <span class="hljs-string">&quot;Grüße, Jürgen ❤&quot;</span>;
+
+    <span class="hljs-built_in">assert!</span>(ascii.is_ascii());
+    <span class="hljs-built_in">assert!</span>(!non_ascii.is_ascii()) 
+&#125;</code></pre></div>
+
+<h3 id="lines"><a href="#lines" class="headerlink" title="lines"></a>lines</h3><div class="code-wrapper"><pre><code class="hljs rust"><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>()&#123;
+    <span class="hljs-comment">// lines</span>
+    <span class="hljs-keyword">let</span> text = <span class="hljs-string">&quot;foo\r\nbar\n\nbaz\n&quot;</span>;
+    <span class="hljs-keyword">let</span> <span class="hljs-keyword">mut</span> lines = text.lines();
+    <span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> lines&#123;
+        <span class="hljs-built_in">println!</span>(<span class="hljs-string">&quot;&#123;&#125;&quot;</span>,line)
+    &#125;
+&#125;</code></pre></div>
+
+<h3 id="match"><a href="#match" class="headerlink" title="match"></a>match</h3><div class="code-wrapper"><pre><code class="hljs rust"><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>()&#123;
+    <span class="hljs-comment">// match</span>
+    <span class="hljs-comment">// 匹配内容 </span>
+    <span class="hljs-keyword">let</span> v: <span class="hljs-built_in">Vec</span>&lt;&amp;<span class="hljs-built_in">str</span>&gt; = <span class="hljs-string">&quot;abcXXXabcYYYabc&quot;</span>.matches(<span class="hljs-string">&quot;abc&quot;</span>).collect();
+    <span class="hljs-built_in">assert_eq!</span>(v, [<span class="hljs-string">&quot;abc&quot;</span>, <span class="hljs-string">&quot;abc&quot;</span>, <span class="hljs-string">&quot;abc&quot;</span>]);
+
+    <span class="hljs-keyword">let</span> v: <span class="hljs-built_in">Vec</span>&lt;&amp;<span class="hljs-built_in">str</span>&gt; = <span class="hljs-string">&quot;1abc2abc3&quot;</span>.matches(<span class="hljs-built_in">char</span>::is_numeric).collect();
+    <span class="hljs-built_in">assert_eq!</span>(v, [<span class="hljs-string">&quot;1&quot;</span>, <span class="hljs-string">&quot;2&quot;</span>, <span class="hljs-string">&quot;3&quot;</span>]);
+
+    <span class="hljs-comment">// 匹配后并反转vector</span>
+    <span class="hljs-keyword">let</span> v: <span class="hljs-built_in">Vec</span>&lt;&amp;<span class="hljs-built_in">str</span>&gt; = <span class="hljs-string">&quot;1abc2abc3&quot;</span>.rmatches(<span class="hljs-built_in">char</span>::is_numeric).collect();
+    <span class="hljs-built_in">assert_eq!</span>(v, [<span class="hljs-string">&quot;3&quot;</span>, <span class="hljs-string">&quot;2&quot;</span>, <span class="hljs-string">&quot;1&quot;</span>]);
+
+&#125;</code></pre></div>
+
+
+<h3 id="parse"><a href="#parse" class="headerlink" title="parse"></a>parse</h3><div class="code-wrapper"><pre><code class="hljs rust"><span class="hljs-function"><span class="hljs-keyword">fn</span> <span class="hljs-title">main</span></span>()&#123;
+        <span class="hljs-comment">// parse</span>
+    <span class="hljs-comment">// Parses this string slice into another type.</span>
+    <span class="hljs-keyword">let</span> v = <span class="hljs-string">&quot;xx&quot;</span>.parse::&lt;<span class="hljs-built_in">i32</span>&gt;();
+    <span class="hljs-keyword">let</span> vv = <span class="hljs-string">&quot;1&quot;</span>.parse::&lt;<span class="hljs-built_in">i32</span>&gt;();
+    <span class="hljs-keyword">if</span> <span class="hljs-keyword">let</span> <span class="hljs-literal">Ok</span>(value) = vv&#123;
+        <span class="hljs-built_in">assert_eq!</span>(<span class="hljs-number">1</span>,value)
+    &#125;
+&#125;
+
+</code></pre></div>
+
+<h3 id="split-trim"><a href="#split-trim" class="headerlink" title="split,trim"></a>split,trim</h3><p><a target="_blank" rel="noopener" href="https://doc.rust-lang.org/std/string/struct.String.html#method.replace">https://doc.rust-lang.org/std/string/struct.String.html#method.replace</a></p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/rust/">rust</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/rust/">rust</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/04/16/rust-self/">
+                        <span class="hidden-mobile">rust-self</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a rel="nofollow noopener"><span>Hzjsea</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+
+
+</body>
+</html>
