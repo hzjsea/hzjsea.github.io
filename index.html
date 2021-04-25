@@ -1,862 +1,376 @@
-
-
 <!DOCTYPE html>
-<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
-
-
-
+<html lang="en">
 <head>
-  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
-  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
-  <link rel="icon" type="image/png" href="/img/favicon.png">
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
-  
-    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
-  
-  <meta name="theme-color" content="#2f4154">
-  <meta name="description" content="">
-  <meta name="author" content="hzjsea">
-  <meta name="keywords" content="">
-  <title>hzjsea</title>
+    <meta charset="UTF-8">
+    <title>在网页底部养鱼</title>
+    <link rel="stylesheet" href="./style.css">
+    <style>
+        html, body{
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
 
-  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+.container{
+  width: 100%;
+  height: 50%;
+  transform: translateY(450px);
+  margin: 0;
+  padding: 0;
+  background-color: #FFFFFF;
+}
 
-
-
-<!-- 主题依赖的图标库，不要自行修改 -->
-
-<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
-
-
-
-<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
-
-
-<link  rel="stylesheet" href="/css/main.css" />
-
-<!-- 自定义样式保持在最底部 -->
-
-
-  <script id="fluid-configs">
-    var Fluid = window.Fluid || {};
-    var CONFIG = {"hostname":"www.baidu.com","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
-  </script>
-  <script  src="/js/utils.js" ></script>
-  <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
-
-
+    </style>
+</head>
 <body>
-  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header style="height: 100vh;">
-    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
-  <div class="container">
-    <a class="navbar-brand"
-       href="/">&nbsp;<strong>hzjsea</strong>&nbsp;</a>
-
-    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
-            data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <div class="animated-icon"><span></span><span></span><span></span></div>
-    </button>
-
-    <!-- Collapsible content -->
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav ml-auto text-center">
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/">
-                <i class="iconfont icon-home-fill"></i>
-                首页
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/archives/">
-                <i class="iconfont icon-archive-fill"></i>
-                归档
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/categories/">
-                <i class="iconfont icon-category-fill"></i>
-                分类
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/tags/">
-                <i class="iconfont icon-tags-fill"></i>
-                标签
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/about/">
-                <i class="iconfont icon-user-fill"></i>
-                关于
-              </a>
-            </li>
-          
-        
-        
-          <li class="nav-item" id="search-btn">
-            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
-                class="iconfont icon-search"></i>&nbsp;</a>
-          </li>
-        
-        
-          <li class="nav-item" id="color-toggle-btn">
-            <a class="nav-link" href="javascript:">&nbsp;<i
-                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
-          </li>
-        
-      </ul>
-    </div>
-  </div>
-</nav>
-
-    <div class="banner" id="banner" parallax=true
-         style="background: url('/img/default.png') no-repeat center center;
-           background-size: cover;">
-      <div class="full-bg-img">
-        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
-          <div class="page-header text-center fade-in-up">
-            <span class="h2" id="subtitle" title="Do have faith in what you’re doing.">
-              
-            </span>
-
-            
-          </div>
-
-          
-            <div class="scroll-down-bar">
-              <i class="iconfont icon-arrowdown"></i>
-            </div>
-          
-        </div>
-      </div>
-    </div>
-  </header>
-
-  <main>
-    
-      <div class="container nopadding-x-md">
-        <div class="py-5" id="board"
-          style=margin-top:0>
-          
-          <div class="container">
-            <div class="row">
-              <div class="col-12 col-md-10 m-auto">
-                
-
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2021/04/16/rust-String/">rust-String</a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2021/04/16/rust-String/">
-          
-          
-            
-          
-          
-
-
-rust-String关于assert_eq!是否能比较生命周期答案是不能
-fn main()&#123;
-    // 无法对比生命周期的长度
-    let xx = String::from(&quot;hello&quot;);
-    &#123;
-        let yy = String::from(&quot;hello&quot;);
-        assert_eq
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2021-04-16 14:12" pubdate>
-              2021-04-16
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-category"></i>
-            
-              <a href="/categories/rust/">rust</a>
-            
-          </div>
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/rust/">rust</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2021/04/16/rust-self/">rust-self</a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2021/04/16/rust-self/">
-          
-          
-            
-          
-          
-
-
-rust-selfrust中的self
-
-&amp;self: We’ve chosen &amp;self here for the same reason we used &amp;Rectangle in the function version: we don’t want to take ownership, and we just want to read the data in
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2021-04-16 11:05" pubdate>
-              2021-04-16
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-category"></i>
-            
-              <a href="/categories/rust/">rust</a>
-            
-          </div>
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/rust/">rust</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2021/04/08/Python%20container%20build/"></a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2021/04/08/Python%20container%20build/">
-          
-          
-            
-          
-          Python container build构建镜像需要确认的几个点
-
-镜像的初始状态 默认开放的端口等， 这样就不用在docker run 的时候再去声明端口
-需要挂载的文件 是在构建的时候就copy进去 还是在之后挂载进去
-docker只是一个单进程，是否需要supervisor 在单进程中托管多任务进度
-
-打个比方，比如python的一份环境文件 requirements.txt 最好的方式
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2021-04-08 14:48" pubdate>
-              2021-04-08
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2021/04/02/blog_back_new/mysql/mysql%20in%20action/">mysql in action</a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2021/04/02/blog_back_new/mysql/mysql%20in%20action/">
-          
-          
-            
-          
-          
-
-
-mysql in actionmysqldumphttps://www.cnblogs.com/emanlee/p/5410177.html
-
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2021-04-02 17:30" pubdate>
-              2021-04-02
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-category"></i>
-            
-              <a href="/categories/mysql/">mysql</a>
-            
-          </div>
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/mysql/">mysql</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2021/04/02/blog_back_new/mysql/mysql%20in%20docker/">mysql in docker</a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2021/04/02/blog_back_new/mysql/mysql%20in%20docker/">
-          
-          
-            
-          
-          
-
-
-mysql in docker分析mysql in docker 启动的脚本,也就是官方的mysql dockerfilehttps://www.cnblogs.com/ivictor/p/4832832.html
-docker run -p 12345:3306 –name mysql2 -v /conf/mysql/conf:/etc/mysql/conf.d -v /conf/mysq
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2021-04-02 17:15" pubdate>
-              2021-04-02
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2021/03/31/blog_back_new/%E5%B7%A5%E5%85%B7/curl/">curl</a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2021/03/31/blog_back_new/%E5%B7%A5%E5%85%B7/curl/">
-          
-          
-            
-          
-          
-
-
-curlcurl 是利用 URL 语法在命令行方式下工作的开源文件传输工具。它被广泛应用在 Unix、多种 Linux 发行版中，并且有 DOS 和 Win32、Win64 下的移植版本。在日常的开发和问题处理中，经常会使用 curl 命令来测试 http 接口
-
-常用转换https://curl.trillworks.com/#rustvscode rest client 插件postma
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2021-03-31 14:32" pubdate>
-              2021-03-31
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-category"></i>
-            
-              <a href="/categories/Tool/">Tool</a>
-            
-          </div>
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/curl/">curl</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2021/03/31/blog_back_new/%E5%B7%A5%E5%85%B7/vscode-rest-client/">vscode-rest-client</a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2021/03/31/blog_back_new/%E5%B7%A5%E5%85%B7/vscode-rest-client/">
-          
-          
-            
-          
-          
-
-
-vscode-rest-clientvscode中一个调试API的插件，蛮好用的，可以用来生成安装完插件之后，可以在文件中创建一个.http的文件，下面说几个特性
-
-使用三个井号###分割一个接口
-支持cURL和RFC 2616两种方式测试接口
-支持转换成多种语言的request方法
-支持转换成Curl方法
-支持文档注释
-支持自定义全局变量
-
-@test_url &#x3D; http:&#
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2021-03-31 14:17" pubdate>
-              2021-03-31
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-category"></i>
-            
-              <a href="/categories/Tool/">Tool</a>
-            
-          </div>
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/curl/">curl</a>
-            
-              <a href="/tags/vscode/">vscode</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2021/03/25/blog_back_new/vue/vue%E6%9D%82%E4%B8%83%E6%9D%82%E5%85%AB/">vue杂七杂八</a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2021/03/25/blog_back_new/vue/vue%E6%9D%82%E4%B8%83%E6%9D%82%E5%85%AB/">
-          
-          
-            
-          
-          
-
-
-vue杂七杂八记录一些vue中实用的方法
-v-for控制el-row以及el-col卡片的布局案例如下
-&lt;!DOCTYPE html&gt;
-&lt;html xmlns:border-radius=&quot;http://www.w3.org/1999/xhtml&quot; xmlns:margin=&quot;http://www.w3.org/1999/xhtml&quot;
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2021-03-25 11:03" pubdate>
-              2021-03-25
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-category"></i>
-            
-              <a href="/categories/vue/">vue</a>
-            
-          </div>
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/vue/">vue</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2021/03/22/blog_back_new/vim%E5%AE%89%E8%A3%85/">vim安装</a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2021/03/22/blog_back_new/vim%E5%AE%89%E8%A3%85/">
-          
-          
-            
-          
-          
-
-
-vim安装neovim初始化记录，方便创建开发环境，兼容rust
-
-如果有错误，看后面的修复
-
-neovim(vim)学习github-vim doc learn : https://github.com/wsdjeg/vim-galore-zh_cn慕课网 vim learn : https://www.imooc.com/learn/1129
-neovim安装
-基础环境安装
-
-
-ubun
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2021-03-22 11:28" pubdate>
-              2021-03-22
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-category"></i>
-            
-              <a href="/categories/vim/">vim</a>
-            
-          </div>
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/vim/">vim</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2021/03/19/blog_back_new/Rust/Rust%E6%A0%87%E5%87%86%E5%BA%93fs/">Rust标准库fs</a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2021/03/19/blog_back_new/Rust/Rust%E6%A0%87%E5%87%86%E5%BA%93fs/">
-          
-          
-            
-          
-          
-
-
-Rust标准库fsfn main() -&gt; std::io::Result&lt;()&gt;&#123;
-
-    // writer info to file
-    std::fs::write(&quot;xx.txt&quot;, &quot;xxx&quot;)?;
-    std::fs::write(&quot;yy.txt&quot;, &quot;yyy&quot;
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2021-03-19 16:30" pubdate>
-              2021-03-19
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-category"></i>
-            
-              <a href="/categories/rust/">rust</a>
-            
-          </div>
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/rust/">rust</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-
-
-  <nav aria-label="navigation">
-    <span class="pagination" id="pagination">
-      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/2/"><i class="iconfont icon-arrowright"></i></a>
-    </span>
-  </nav>
-  
-  <script>
-    for (ele of document.getElementById("pagination").getElementsByTagName("a")) {
-      ele.href += '#board';
-    }
-  </script>
-
-
-
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    
-
-    
-      <a id="scroll-top-button" href="#" role="button">
-        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
-      </a>
-    
-
-    
-      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
-     aria-hidden="true">
-  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
-        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body mx-3">
-        <div class="md-form mb-5">
-          <input type="text" id="local-search-input" class="form-control validate">
-          <label data-error="x" data-success="v"
-                 for="local-search-input">关键词</label>
-        </div>
-        <div class="list-group" id="local-search-result"></div>
-      </div>
-    </div>
-  </div>
-</div>
-    
-
-    
-  </main>
-
-  <footer class="text-center mt-5 py-3">
-  <div class="footer-content">
-     <a rel="nofollow noopener"><span>Hzjsea</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
-  </div>
-  
-
-  
-
-  
-</footer>
-
-<!-- SCRIPTS -->
-
-  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
-  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
-
-  <script>
-    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
-    NProgress.start()
-    window.addEventListener('load', function() {
-      NProgress.done();
-    })
-  </script>
-
-
-<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
-<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
-<script  src="/js/debouncer.js" ></script>
-<script  src="/js/events.js" ></script>
-<script  src="/js/plugins.js" ></script>
-
-<!-- Plugins -->
-
-
-  
-    <script  src="/js/lazyload.js" ></script>
-  
-
-
-
-  
-
-
-
-
-
-
-
-
-
-  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
-
-
-
-
-
-
-  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
-  <script>
-    (function (window, document) {
-      var typing = Fluid.plugins.typing;
-      var title = document.getElementById('subtitle').title;
-      
-      typing(title)
-      
-    })(window, document);
-  </script>
-
-
-
-  <script  src="/js/local-search.js" ></script>
-  <script>
-    (function () {
-      var path = "/local-search.xml";
-      var inputArea = document.querySelector("#local-search-input");
-      inputArea.onclick = function () {
-        searchFunc(path, 'local-search-input', 'local-search-result');
-        this.onclick = null
-      }
-    })()
-  </script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!-- 主题的启动项 保持在最底部 -->
-<script  src="/js/boot.js" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-
-
-
+<div id="fish-container" class="container"></div>
+
+<!-- partial -->
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js'></script><script src="./script.js"></script>
+<script >
+    // 使用到的参数
+var RENDERER = {
+	POINT_INTERVAL : 10,
+	FISH_COUNT : 2,
+	MAX_INTERVAL_COUNT : 40,
+	INIT_HEIGHT_RATE : 0.5,
+	THRESHOLD : 50,
+	
+	// 对整个页面的初始化
+	init : function(){
+		this.setParameters();
+		this.reconstructMethods();
+		this.setup();
+		this.bindEvent();
+		this.render();
+	},
+	// 对象的函数
+	setParameters : function(){
+		this.$window = $(window);
+		this.$container = $('#fish-container');
+		this.$canvas = $('<canvas />');
+		this.context = this.$canvas.appendTo(this.$container).get(0).getContext('2d');
+		this.points = [];
+		this.fishes = [];
+		this.watchIds = [];
+	},
+	createSurfacePoints : function(){
+		var count = Math.round(this.width / this.POINT_INTERVAL);
+		this.pointInterval = this.width / (count - 1);
+		this.points.push(new SURFACE_POINT(this, 0));
+		
+		for(var i = 1; i < count; i++){
+			var point = new SURFACE_POINT(this, i * this.pointInterval),
+				previous = this.points[i - 1];
+				
+			point.setPreviousPoint(previous);
+			previous.setNextPoint(point);
+			this.points.push(point);
+		}
+	},
+	reconstructMethods : function(){
+		this.watchWindowSize = this.watchWindowSize.bind(this);
+		this.jdugeToStopResize = this.jdugeToStopResize.bind(this);
+		this.startEpicenter = this.startEpicenter.bind(this);
+		this.moveEpicenter = this.moveEpicenter.bind(this);
+		this.reverseVertical = this.reverseVertical.bind(this);
+		this.render = this.render.bind(this);
+	},
+	setup : function(){
+		this.points.length = 0;
+		this.fishes.length = 0;
+		this.watchIds.length = 0;
+		this.intervalCount = this.MAX_INTERVAL_COUNT;
+		this.width = this.$container.width();
+		this.height = this.$container.height();
+		this.fishCount = this.FISH_COUNT * this.width / 500 * this.height / 500;
+		this.$canvas.attr({width : this.width, height : this.height});
+		this.reverse = false;
+		
+		this.fishes.push(new FISH(this));
+		this.createSurfacePoints();
+	},
+	watchWindowSize : function(){
+		this.clearTimer();
+		this.tmpWidth = this.$window.width();
+		this.tmpHeight = this.$window.height();
+		this.watchIds.push(setTimeout(this.jdugeToStopResize, this.WATCH_INTERVAL));
+	},
+	clearTimer : function(){
+		while(this.watchIds.length > 0){
+			clearTimeout(this.watchIds.pop());
+		}
+	},
+	jdugeToStopResize : function(){
+		var width = this.$window.width(),
+			height = this.$window.height(),
+			stopped = (width == this.tmpWidth && height == this.tmpHeight);
+			
+		this.tmpWidth = width;
+		this.tmpHeight = height;
+		
+		if(stopped){
+			this.setup();
+		}
+	},
+	bindEvent : function(){
+		this.$window.on('resize', this.watchWindowSize);
+		this.$container.on('mouseenter', this.startEpicenter);
+		this.$container.on('mousemove', this.moveEpicenter);
+		this.$container.on('click', this.reverseVertical);
+	},
+	getAxis : function(event){
+		var offset = this.$container.offset();
+		
+		return {
+			x : event.clientX - offset.left + this.$window.scrollLeft(),
+			y : event.clientY - offset.top + this.$window.scrollTop()
+		};
+	},
+	startEpicenter : function(event){
+		this.axis = this.getAxis(event);
+	},
+	moveEpicenter : function(event){
+		var axis = this.getAxis(event);
+		
+		if(!this.axis){
+			this.axis = axis;
+		}
+		this.generateEpicenter(axis.x, axis.y, axis.y - this.axis.y);
+		this.axis = axis;
+	},
+	generateEpicenter : function(x, y, velocity){
+		if(y < this.height / 2 - this.THRESHOLD || y > this.height / 2 + this.THRESHOLD){
+			return;
+		}
+		var index = Math.round(x / this.pointInterval);
+		
+		if(index < 0 || index >= this.points.length){
+			return;
+		}
+		this.points[index].interfere(y, velocity);
+	},
+	reverseVertical : function(){
+		this.reverse = !this.reverse;
+		
+		for(var i = 0, count = this.fishes.length; i < count; i++){
+			this.fishes[i].reverseVertical();
+		}
+	},
+	controlStatus : function(){
+		for(var i = 0, count = this.points.length; i < count; i++){
+			this.points[i].updateSelf();
+		}
+		for(var i = 0, count = this.points.length; i < count; i++){
+			this.points[i].updateNeighbors();
+		}
+		if(this.fishes.length < this.fishCount){
+			if(--this.intervalCount == 0){
+				this.intervalCount = this.MAX_INTERVAL_COUNT;
+				this.fishes.push(new FISH(this));
+			}
+		}
+	},
+	render : function(){
+		requestAnimationFrame(this.render);
+		this.controlStatus();
+		this.context.clearRect(0, 0, this.width, this.height);
+		this.context.fillStyle = 'hsl(0, 0%, 0%)';
+		
+		for(var i = 0, count = this.fishes.length; i < count; i++){
+			this.fishes[i].render(this.context);
+		}
+		this.context.save();
+		this.context.globalCompositeOperation = 'xor';
+		this.context.beginPath();
+		this.context.moveTo(0, this.reverse ? 0 : this.height);
+		
+		for(var i = 0, count = this.points.length; i < count; i++){
+			this.points[i].render(this.context);
+		}
+		this.context.lineTo(this.width, this.reverse ? 0 : this.height);
+		this.context.closePath();
+		this.context.fill();
+		this.context.restore();
+	}
+};
+var SURFACE_POINT = function(renderer, x){
+	this.renderer = renderer;
+	this.x = x;
+	this.init();
+};
+SURFACE_POINT.prototype = {
+	SPRING_CONSTANT : 0.03,
+	SPRING_FRICTION : 0.8,
+	WAVE_SPREAD : 0.3,
+	ACCELARATION_RATE : 0.01,
+	
+	init : function(){
+		this.initHeight = this.renderer.height * this.renderer.INIT_HEIGHT_RATE;
+		this.height = this.initHeight;
+		this.fy = 0;
+		this.force = {previous : 0, next : 0};
+	},
+	setPreviousPoint : function(previous){
+		this.previous = previous;
+	},
+	setNextPoint : function(next){
+		this.next = next;
+	},
+	interfere : function(y, velocity){
+		this.fy = this.renderer.height * this.ACCELARATION_RATE * ((this.renderer.height - this.height - y) >= 0 ? -1 : 1) * Math.abs(velocity);
+	},
+	updateSelf : function(){
+		this.fy += this.SPRING_CONSTANT * (this.initHeight - this.height);
+		this.fy *= this.SPRING_FRICTION;
+		this.height += this.fy;
+	},
+	updateNeighbors : function(){
+		if(this.previous){
+			this.force.previous = this.WAVE_SPREAD * (this.height - this.previous.height);
+		}
+		if(this.next){
+			this.force.next = this.WAVE_SPREAD * (this.height - this.next.height);
+		}
+	},
+	render : function(context){
+		if(this.previous){
+			this.previous.height += this.force.previous;
+			this.previous.fy += this.force.previous;
+		}
+		if(this.next){
+			this.next.height += this.force.next;
+			this.next.fy += this.force.next;
+		}
+		context.lineTo(this.x, this.renderer.height - this.height);
+	}
+};
+var FISH = function(renderer){
+	this.renderer = renderer;
+	this.init();
+};
+FISH.prototype = {
+	GRAVITY : 0.4,
+	
+	init : function(){
+		this.direction = Math.random() < 0.5;
+		this.x = this.direction ? (this.renderer.width + this.renderer.THRESHOLD) : -this.renderer.THRESHOLD;
+		this.previousY = this.y;
+		this.vx = this.getRandomValue(4, 10) * (this.direction ? -1 : 1);
+		
+		if(this.renderer.reverse){
+			this.y = this.getRandomValue(this.renderer.height * 1 / 10, this.renderer.height * 4 / 10);
+			this.vy = this.getRandomValue(2, 5);
+			this.ay = this.getRandomValue(0.05, 0.2);
+		}else{
+			this.y = this.getRandomValue(this.renderer.height * 6 / 10, this.renderer.height * 9 / 10);
+			this.vy = this.getRandomValue(-5, -2);
+			this.ay = this.getRandomValue(-0.2, -0.05);
+		}
+		this.isOut = false;
+		this.theta = 0;
+		this.phi = 0;
+	},
+	getRandomValue : function(min, max){
+		return min + (max - min) * Math.random();
+	},
+	reverseVertical : function(){
+		this.isOut = !this.isOut;
+		this.ay *= -1;
+	},
+	controlStatus : function(context){
+		this.previousY = this.y;
+		this.x += this.vx;
+		this.y += this.vy;
+		this.vy += this.ay;
+		
+		if(this.renderer.reverse){
+			if(this.y > this.renderer.height * this.renderer.INIT_HEIGHT_RATE){
+				this.vy -= this.GRAVITY;
+				this.isOut = true;
+			}else{
+				if(this.isOut){
+					this.ay = this.getRandomValue(0.05, 0.2);
+				}
+				this.isOut = false;
+			}
+		}else{
+			if(this.y < this.renderer.height * this.renderer.INIT_HEIGHT_RATE){
+				this.vy += this.GRAVITY;
+				this.isOut = true;
+			}else{
+				if(this.isOut){
+					this.ay = this.getRandomValue(-0.2, -0.05);
+				}
+				this.isOut = false;
+			}
+		}
+		if(!this.isOut){
+			this.theta += Math.PI / 20;
+			this.theta %= Math.PI * 2;
+			this.phi += Math.PI / 30;
+			this.phi %= Math.PI * 2;
+		}
+		this.renderer.generateEpicenter(this.x + (this.direction ? -1 : 1) * this.renderer.THRESHOLD, this.y, this.y - this.previousY);
+		
+		if(this.vx > 0 && this.x > this.renderer.width + this.renderer.THRESHOLD || this.vx < 0 && this.x < -this.renderer.THRESHOLD){
+			this.init();
+		}
+	},
+	render : function(context){
+		context.save();
+		context.translate(this.x, this.y);
+		context.rotate(Math.PI + Math.atan2(this.vy, this.vx));
+		context.scale(1, this.direction ? 1 : -1);
+		context.beginPath();
+		context.moveTo(-30, 0);
+		context.bezierCurveTo(-20, 15, 15, 10, 40, 0);
+		context.bezierCurveTo(15, -10, -20, -15, -30, 0);
+		context.fill();
+		
+		context.save();
+		context.translate(40, 0);
+		context.scale(0.9 + 0.2 * Math.sin(this.theta), 1);
+		context.beginPath();
+		context.moveTo(0, 0);
+		context.quadraticCurveTo(5, 10, 20, 8);
+		context.quadraticCurveTo(12, 5, 10, 0);
+		context.quadraticCurveTo(12, -5, 20, -8);
+		context.quadraticCurveTo(5, -10, 0, 0);
+		context.fill();
+		context.restore();
+		
+		context.save();
+		context.translate(-3, 0);
+		context.rotate((Math.PI / 3 + Math.PI / 10 * Math.sin(this.phi)) * (this.renderer.reverse ? -1 : 1));
+		
+		context.beginPath();
+		
+		if(this.renderer.reverse){
+			context.moveTo(5, 0);
+			context.bezierCurveTo(10, 10, 10, 30, 0, 40);
+			context.bezierCurveTo(-12, 25, -8, 10, 0, 0);
+		}else{
+			context.moveTo(-5, 0);
+			context.bezierCurveTo(-10, -10, -10, -30, 0, -40);
+			context.bezierCurveTo(12, -25, 8, -10, 0, 0);
+		}
+		context.closePath();
+		context.fill();
+		context.restore();
+		context.restore();
+		this.controlStatus(context);
+	}
+};
+
+$(function(){
+	RENDERER.init();
+});
+
+</script>
 </body>
+
+
 </html>
