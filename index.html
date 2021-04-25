@@ -1,272 +1,545 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>back</title>
-    <link rel="stylesheet" href="./style.css">
-</head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta charset="utf-8">
+	<title>"emosewA sI kniL"</title>
+		
+	<link rel="stylesheet" href="style.css">
+	<link rel="shortcut icon" href="favicon.ico">
+	<style>
+	    [touch-action="none"]{ -ms-touch-action: none; touch-action: none; }
+	    [touch-action="pan-x"]{ -ms-touch-action: pan-x; touch-action: pan-x; }
+	    [touch-action="pan-y"]{ -ms-touch-action: pan-y; touch-action: pan-y; }
+	    [touch-action="scroll"],[touch-action="pan-x pan-y"],[touch-action="pan-y pan-x"]{ -ms-touch-action: pan-x pan-y; touch-action: pan-x pan-y; }
+	</style>
+    <style>
+        * {
+	margin: 0;
+	padding: 0;
+	/* Goin' all DOS-y */
+	-webkit-font-smoothing: none;
+}
+
+body {
+	background: #111;
+	font: 16px/18px "Courier New", Courier, mono;
+	color: #fff;
+}
+
+div.wrap {
+	width: 900px;
+	margin: 100px auto 0;
+}
+
+a {
+	text-decoration: none;
+	color: #fff;
+}
+
+h1, h3 {
+	font: bold 20px/21px "Courier New", Courier, mono;
+	white-space: pre;
+	color: #999;
+}
+	h1 b {
+		color: #ddd;
+	}
+
+
+h3 b {
+	display: inline-block;
+	color: #fff;
+	width: 125px;
+}
+
+h3 span {
+	color: #aaa;
+	font-style: normal;
+}
+	h3 span.link:hover, a h3:hover span.link {
+		-webkit-animation: blink .75s linear infinite;
+		-moz-animation: blink .75s linear infinite;
+		-ms-animation: blink .75s linear infinite;
+		-o-animation: blink .75s linear infinite;
+		animation: blink .75s linear infinite;
+	}
+
+ul {
+	list-style: none;
+	margin-left: 30px;
+}
+
+@-webkit-keyframes blink {
+	0% {
+		background: #ddd;
+		color: #000;
+	}
+	50% {
+		background: #ddd;
+		color: #000;
+	}
+	50.01% {
+		background: transparent;
+		color: #aaa;
+	}
+	99.99% {
+		background: transparent;
+		color: #aaa;
+	}
+	100% {
+		background: #ddd;
+		color: #aaa;
+	}
+}
+
+@-moz-keyframes blink {
+   0% {
+   	background: #ddd;
+   	color: #000;
+   }
+   50% {
+   	background: #ddd;
+   	color: #000;
+   }
+   50.01% {
+   	background: transparent;
+   	color: #aaa;
+   }
+   99.99% {
+   	background: transparent;
+   	color: #aaa;
+   }
+   100% {
+   	background: #ddd;
+   	color: #aaa;
+   }
+}
+
+@-ms-keyframes blink {
+   0% {
+   	background: #ddd;
+   	color: #000;
+   }
+   50% {
+   	background: #ddd;
+   	color: #000;
+   }
+   50.01% {
+   	background: transparent;
+   	color: #aaa;
+   }
+   99.99% {
+   	background: transparent;
+   	color: #aaa;
+   }
+   100% {
+   	background: #ddd;
+   	color: #aaa;
+   }
+}
+
+@-o-keyframes blink {
+	0% {
+		background: #ddd;
+		color: #000;
+	}
+	50% {
+		background: #ddd;
+		color: #000;
+	}
+	50.01% {
+		background: transparent;
+		color: #aaa;
+	}
+	99.99% {
+		background: transparent;
+		color: #aaa;
+	}
+	100% {
+		background: #ddd;
+		color: #aaa;
+	}
+}
+
+@keyframes blink {
+  0% {
+  	background: #ddd;
+  	color: #000;
+  }
+  50% {
+  	background: #ddd;
+  	color: #000;
+  }
+  50.01% {
+  	background: transparent;
+  	color: #aaa;
+  }
+  99.99% {
+  	background: transparent;
+  	color: #aaa;
+  }
+  100% {
+  	background: #ddd;
+  	color: #aaa;
+  }
+}
+	</style>
+	
+
 <style>
-    html, body {
-    height: 100%;
-  }
-  body {
-    margin: 0;
-  }
-  
-  #canvas {
-    width: 100%;
-    height: 100%;
-  }
-</style>
-<body>
-<canvas id="canvas"></canvas>
-
-<!-- partial -->
-  <script src='https://cdnjs.cloudflare.com/ajax/libs/gsap/3.6.0/gsap.min.js'></script><script src="./script.js"></script>
-  <script >
-
-console.clear();
-console.log('');
-
-const config = {
-  src: 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/175711/open-peeps-sheet.png',
-  rows: 15,
-  cols: 7 };
-
-
-// 公用
-
-const randomRange = (min, max) => min + Math.random() * (max - min);
-
-const randomIndex = array => randomRange(0, array.length) | 0;
-
-const removeFromArray = (array, i) => array.splice(i, 1)[0];
-
-const removeItemFromArray = (array, item) => removeFromArray(array, array.indexOf(item));
-
-const removeRandomFromArray = array => removeFromArray(array, randomIndex(array));
-
-const getRandomFromArray = (array) =>
-array[randomIndex(array) | 0];
-
-
-
-const resetPeep = ({ stage, peep }) => {
-  const direction = Math.random() > 0.5 ? 1 : -1;
-
-  // 使用 ease 函数将随机值倾斜到较低的值
-  const offsetY = 100 - 250 * gsap.parseEase('power2.in')(Math.random());
-  const startY = stage.height - peep.height + offsetY;
-  let startX;
-  let endX;
-
-  if (direction === 1) {
-    startX = -peep.width;
-    endX = stage.width;
-    peep.scaleX = 1;
-  } else {
-    startX = stage.width + peep.width;
-    endX = 0;
-    peep.scaleX = -1;
-  }
-
-  peep.x = startX;
-  peep.y = startY;
-  peep.anchorY = startY;
-
-  return {
-    startX,
-    startY,
-    endX };
-
-};
-
-const normalWalk = ({ peep, props }) => {
-  const {
-    startX,
-    startY,
-    endX } =
-  props;
-
-  const xDuration = 10;
-  const yDuration = 0.25;
-
-  const tl = gsap.timeline();
-  tl.timeScale(randomRange(0.5, 1.5));
-  tl.to(peep, {
-    duration: xDuration,
-    x: endX,
-    ease: 'none' },
-  0);
-  tl.to(peep, {
-    duration: yDuration,
-    repeat: xDuration / yDuration,
-    yoyo: true,
-    y: startY - 10 },
-  0);
-
-  return tl;
-};
-
-const walks = [
-normalWalk];
-
-
-
-class Peep {
-  constructor({
-    image,
-    rect })
-  {
-    this.image = image;
-    this.setRect(rect);
-
-    this.x = 0;
-    this.y = 0;
-    this.anchorY = 0;
-    this.scaleX = 1;
-    this.walk = null;
-  }
-
-  setRect(rect) {
-    this.rect = rect;
-    this.width = rect[2];
-    this.height = rect[3];
-
-    this.drawArgs = [
-    this.image,
-    ...rect,
-    0, 0, this.width, this.height];
-
-  }
-
-  render(ctx) {
-    ctx.save();
-    ctx.translate(this.x, this.y);
-    ctx.scale(this.scaleX, 1);
-    ctx.drawImage(...this.drawArgs);
-    ctx.restore();
-  }}
-
-
-const img = document.createElement('img');
-img.onload = init;
-img.src = config.src;
-
-const canvas = document.querySelector('#canvas');
-const ctx = canvas.getContext('2d');
-
-const stage = {
-  width: 0,
-  height: 0 };
-
-
-const allPeeps = [];
-const availablePeeps = [];
-const crowd = [];
-
-function init() {
-  createPeeps();
-
-  // 调整大小-填充阶段
-  resize();
-
-  gsap.ticker.add(render);
-  window.addEventListener('resize', resize);
+		.running {
+  --color: #fff;
+  --duration: .7s;
+}
+.running .outer {
+  -webkit-animation: outer var(--duration) linear infinite;
+          animation: outer var(--duration) linear infinite;
+}
+.running .outer .body {
+  background: var(--color);
+  height: 15px;
+  width: 8px;
+  border-radius: 4px;
+  -webkit-transform-origin: 4px 11px;
+          transform-origin: 4px 11px;
+  position: relative;
+  -webkit-transform: rotate(32deg);
+          transform: rotate(32deg);
+  -webkit-animation: body var(--duration) linear infinite;
+          animation: body var(--duration) linear infinite;
+}
+.running .outer .body:before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 4px;
+  bottom: 16px;
+  left: 0;
+  position: absolute;
+  background: var(--color);
+}
+.running .outer .body .arm,
+.running .outer .body .arm:before,
+.running .outer .body .leg,
+.running .outer .body .leg:before {
+  content: '';
+  width: var(--w, 11px);
+  height: 4px;
+  top: var(--t, 0);
+  left: var(--l, 2px);
+  border-radius: 2px;
+  -webkit-transform-origin: 2px 2px;
+          transform-origin: 2px 2px;
+  position: absolute;
+  background: var(--c, var(--color));
+  -webkit-transform: rotate(var(--r, 0deg));
+          transform: rotate(var(--r, 0deg));
+  -webkit-animation: var(--name, arm-leg) var(--duration) linear infinite;
+          animation: var(--name, arm-leg) var(--duration) linear infinite;
+}
+.running .outer .body .arm:before {
+  --l: 7px;
+  --name: arm-b;
+}
+.running .outer .body .arm.front {
+  --r: 24deg;
+  --r-to: 164deg;
+}
+.running .outer .body .arm.front:before {
+  --r: -48deg;
+  --r-to: -36deg;
+}
+.running .outer .body .arm.behind {
+  --r: 164deg;
+  --r-to: 24deg;
+}
+.running .outer .body .arm.behind:before {
+  --r: -36deg;
+  --r-to: -48deg;
+}
+.running .outer .body .leg {
+  --w: 12px;
+  --t: 11px;
+}
+.running .outer .body .leg:before {
+  --t: 0;
+  --l: 8px;
+}
+.running .outer .body .leg.front {
+  --r: 10deg;
+  --r-to: 108deg;
+}
+.running .outer .body .leg.front:before {
+  --r: 18deg;
+  --r-to: 76deg;
+}
+.running .outer .body .leg.behind {
+  --r: 108deg;
+  --r-to: 10deg;
+  --c: none;
+}
+.running .outer .body .leg.behind:before {
+  --c: var(--color);
+  --r: 76deg;
+  --r-to: 18deg;
+}
+.running .outer .body .leg.behind:after {
+  content: '';
+  top: 0;
+  right: 0;
+  height: 4px;
+  width: 6px;
+  -webkit-clip-path: polygon(2px 0, 6px 0, 6px 4px, 0 4px);
+          clip-path: polygon(2px 0, 6px 0, 6px 4px, 0 4px);
+  border-radius: 0 2px 2px 0;
+  position: absolute;
+  background: var(--color);
 }
 
-function createPeeps() {
-  const {
-    rows,
-    cols } =
-  config;
-  const {
-    naturalWidth: width,
-    naturalHeight: height } =
-  img;
-  const total = rows * cols;
-  const rectWidth = width / rows;
-  const rectHeight = height / cols;
-
-  for (let i = 0; i < total; i++) {
-    allPeeps.push(new Peep({
-      image: img,
-      rect: [
-      i % rows * rectWidth,
-      (i / rows | 0) * rectHeight,
-      rectWidth,
-      rectHeight] }));
-
-
+@-webkit-keyframes outer {
+  50% {
+    -webkit-transform: translateY(0);
+            transform: translateY(0);
+  }
+  25%,
+    75% {
+    -webkit-transform: translateY(4px);
+            transform: translateY(4px);
   }
 }
 
-function resize() {
-  stage.width = canvas.clientWidth;
-  stage.height = canvas.clientHeight;
-  canvas.width = stage.width * devicePixelRatio;
-  canvas.height = stage.height * devicePixelRatio;
-
-  crowd.forEach(peep => {
-    peep.walk.kill();
-  });
-
-  crowd.length = 0;
-  availablePeeps.length = 0;
-  availablePeeps.push(...allPeeps);
-
-  initCrowd();
-}
-
-function initCrowd() {
-  while (availablePeeps.length) {
-    // 设置随机的两个进程
-    addPeepToCrowd().walk.progress(Math.random());
+@keyframes outer {
+  50% {
+    -webkit-transform: translateY(0);
+            transform: translateY(0);
+  }
+  25%,
+    75% {
+    -webkit-transform: translateY(4px);
+            transform: translateY(4px);
   }
 }
-
-function addPeepToCrowd() {
-  const peep = removeRandomFromArray(availablePeeps);
-  const walk = getRandomFromArray(walks)({
-    peep,
-    props: resetPeep({
-      peep,
-      stage }) }).
-
-  eventCallback('onComplete', () => {
-    removePeepFromCrowd(peep);
-    addPeepToCrowd();
-  });
-
-  peep.walk = walk;
-
-  crowd.push(peep);
-  crowd.sort((a, b) => a.anchorY - b.anchorY);
-
-  return peep;
+@-webkit-keyframes body {
+  50% {
+    -webkit-transform: rotate(16deg);
+            transform: rotate(16deg);
+  }
+  25%,
+    75% {
+    -webkit-transform: rotate(24deg);
+            transform: rotate(24deg);
+  }
+}
+@keyframes body {
+  50% {
+    -webkit-transform: rotate(16deg);
+            transform: rotate(16deg);
+  }
+  25%,
+    75% {
+    -webkit-transform: rotate(24deg);
+            transform: rotate(24deg);
+  }
+}
+@-webkit-keyframes arm-leg {
+  50% {
+    -webkit-transform: rotate(var(--r-to));
+            transform: rotate(var(--r-to));
+  }
+}
+@keyframes arm-leg {
+  50% {
+    -webkit-transform: rotate(var(--r-to));
+            transform: rotate(var(--r-to));
+  }
+}
+@-webkit-keyframes arm-b {
+  30%,
+    70% {
+    -webkit-transform: rotate(var(--r-to));
+            transform: rotate(var(--r-to));
+  }
+}
+@keyframes arm-b {
+  30%,
+    70% {
+    -webkit-transform: rotate(var(--r-to));
+            transform: rotate(var(--r-to));
+  }
+}
+.buttons {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.buttons button {
+  border: 0;
+  background: 0;
+  padding: 8px 16px;
+  margin: 0;
+  font-weight: 500;
+  font-size: 16px;
+  cursor: pointer;
+  outline: none;
+  -webkit-appearance: none;
+  color: var(--c, #8A91B4);
+  transition: color .3s, -webkit-transform .3s;
+  transition: color .3s, transform .3s;
+  transition: color .3s, transform .3s, -webkit-transform .3s;
+  -webkit-transform: scale(var(--s, 1));
+          transform: scale(var(--s, 1));
+}
+.buttons button:hover {
+  --c: #D1D6EE;
+}
+.buttons button:active {
+  --s: .9;
 }
 
-function removePeepFromCrowd(peep) {
-  removeItemFromArray(crowd, peep);
-  availablePeeps.push(peep);
+html {
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
 }
 
-function render() {
-  canvas.width = canvas.width;
-  ctx.save();
-  ctx.scale(devicePixelRatio, devicePixelRatio);
-
-  crowd.forEach(peep => {
-    peep.render(ctx);
-  });
-
-  ctx.restore();
+* {
+  box-sizing: inherit;
+}
+*:before, *:after {
+  box-sizing: inherit;
 }
 
-  </script>
 
-  
+body .running {
+  zoom: 1;
+  margin-top: -32px;
+}
+	</style>
+</head>
+	
+
+<body onselectstart="return false">
+
+<div class="wrap">
+
+<h1>/**
+ * <b>@name</b> hzjsea
+ * <b>@bio</b> hzjsea@blog.com
+ * <b>@mail</b> hzjsea@gmail.com
+ * <b>@hangouts&iMessage</b> hello game
+ * <b>@Telegram</b> hzjsea
+ */</h1>
+
+<br>
+<span id="showStr1"></span>
+<br>
+{	
+<ul>		
+	<li class="profile site">
+		<a href="http://blog.noback.top/" target="_blank">
+			<h3><b>blog:</b><span class="link">http://blog.noback.top/</span></h3>						
+		</a>
+	</li>
+
+	<li class="profile twitter">
+		<a href="http://localhost:4000/posts/9487367a/"target="_blank">
+			<h3><b>linux相关</b><span class="link">linux相关</span></h3>						
+			<h3><b>linux相关</b><span class="link">linux相关</span></h3>	
+			<h3><b>linux相关</b><span class="link">linux相关</span></h3>	
+			<h3><b>linux相关</b><span class="link">linux相关</span></h3>	
+			<h3><b>linux相关</b><span class="link">linux相关</span></h3>	
+		</a>
+	</li>
+
+	<li class="profile facebook">
+		<a href="//fb.tink.im" target="_blank">
+			<h3><b>facebook:</b><span class="link">facebook.com/tink.guo,</span></h3>						
+		</a>
+	</li> 
+
+	<li class="profile netease-music">
+		<a href="//music.tink.im" target="_blank">
+			<h3><b>music:</b><span class="link">music.163.com/user/home?id=1671430,</span></h3>						
+		</a>
+	</li>	
+	
+
+	<li class="profile weibo">
+		<a href="//weibo.tink.im" target="_blank">
+			<h3><b>weibo:</b><span class="link">weibo.com/208207567,</span></h3>						
+		</a>
+	</li>
+
+	<li class="profile instagram">
+		<a href="//ins.tink.im" target="_blank">
+			<h3><b>instagram:</b><span class="link">instagram.com/tink_923,</span></h3>						
+		</a>
+	</li>
+
+	<li class="profile douban">
+		<a href="//douban.tink.im" target="_blank">
+			<h3><b>douban:</b><span class="link">douban.com/people/goxofy,</span></h3>						
+		</a>
+	</li>
+
+	<li class="profile v2ex">
+		<a href="//v2ex.tink.im" target="_blank">
+			<h3><b>v2ex:</b><span class="link">v2ex.com/member/Tink,</span></h3>						
+		</a>
+	</li>
+
+	<li class="profile wishlist">
+		<a href="//wishlist.tink.im" target="_blank">
+			<h3><b>wishlist:</b><span class="link">amazon.cn/wishlist,</span></h3>						
+		</a>
+	</li>
+
+</ul>
+}
+<br>
+
+<div class="running" style="margin-top: 20px; --color:rgba(255, 255, 255, 0.3);">
+    <div class="outer" >
+        <div class="body">
+            <div class="arm behind"></div>
+            <div class="arm front"></div>
+            <div class="leg behind"></div>
+            <div class="leg front"></div>
+        </div>
+	</div>
+</div>
+
+<!-- <div class="buttons">
+    <button onclick="document.querySelector('.running').style.setProperty('--color', 'rgba(255, 255, 255, .3)')">opacity .3</button>
+    <button onclick="document.querySelector('.running').style.setProperty('--color', 'rgba(255, 255, 255, 1)')">opacity 1</button>
+    <button onclick="document.querySelector('.running').style.setProperty('--duration', '.5s')">duration .5</button>
+    <button onclick="document.querySelector('.running').style.setProperty('--duration', '1s')">duration 1</button>
+    <button onclick="document.querySelector('.running').style.setProperty('--duration', '.7s')">duration .7</button>
+</div> -->
+
+
+
+
+<!-- // 逐步打印 -->
+<!-- <span  style="margin-bottom: 20px;"><h1 id="showStr"></h1></span>
+<div style="display:none;font-size: 1000px;" id="string">
+</div>		
+
+<script type="text/javascript"> 
+    document.oncontextmenu=function(e){return false;} 
+	var index = 0;
+	var str = document.getElementById("string").innerHTML;
+	function type() {
+	if(index == str.length) {
+	index = 0;
+	}
+	document.getElementById("showStr1").innerText = str.substring(0, index++);
+	}
+	setInterval(type, 800); //通过定时器来让文字逐步显示
+	</script>
 </body>
-
-
-</html>
+</html> -->
