@@ -1,0 +1,155 @@
+# 交换机堆叠流程官方版
+#### 堆叠的流程
+<font color='red'>0.拔掉所有的堆叠线</font> 
+1.重置配置
+```bash
+reset saved-configuration
+reboot
+```
+2.配置堆叠
+Switch 1
+```bash
+system-view
+irf mac-address persistent timer
+irf auto-update enable
+undo irf link-delay
+# 设备编号默认为1,编号为1的作为主机，设置级别为32 最高为32
+irf member 1 priority 32
+
+# 关闭堆叠口
+interface range ten 1/0/49 to ten 1/0/50
+shutdown
+
+# 创建irf组，将关闭后的堆叠口加入到irf组
+irf-port 1/1
+port group interface ten 1/0/49
+port group interface ten 1/0/50
+
+# 开启堆叠口
+interface range ten 1/0/49 to ten 1/0/50
+undo shutdown
+
+# 激活irf配置
+irf-port-configuration active
+
+# 保存配置
+save force
+```
+
+进入第二台交换机进行配置，具体流程为修改成员id(需要重启) 创建irf组 将堆叠口加入到irf组中
+Switch 2
+```bash
+irf mac-address persistent timer
+irf auto-update enable
+undo irf link-delay
+
+# 修改irf成员id，并且注意priority级别要低于主机的级别,32为最高 1 位最小
+irf member 1 renumber 2 priority 1 
+# 保存重启，修改成员id需要重启
+save force
+quit
+reboot
+
+-------
+
+# 关闭堆叠口
+interface range ten 2/0/49 to ten 2/0/50
+shutdown
+
+# 创建堆叠组，将堆叠口加入到堆叠组中
+irf-port 2/2
+port group interface ten 2/0/49
+port group interface ten 2/0/50
+
+# 开启堆叠口
+interface range ten 2/0/49 to ten 2/0/50
+undo shutdown
+
+# 激活irf组
+irf-port-configuration active
+
+# 保存配置 
+save force
+```
+
+**当第二台交换机激活irf组之后，交换机并不会自动重启，这时候将堆叠线按照要求插上，交换机重启，重启之后查看是否配置成功**
+
+
+## 堆叠结果
+使用display cu查看当前的配置情况，会发现在两台Switch中都存在了对方以及自己的irf堆叠组
+```bash
+irf-port 1/1
+ port group interface Ten-GigabitEthernet1/0/49
+ port group interface Ten-GigabitEthernet1/0/50
+#
+irf-port 2/2
+ port group interface Ten-GigabitEthernet2/0/49
+ port group interface Ten-GigabitEthernet2/0/50
+#   
+```
+
+使用display irf查看当前irf堆叠的情况，会发现再member ID中已经存在了两台机器，并且两台机器的irf配置应该都如图统一。
+```bash
+MemberID    Role    Priority  CPU-Mac         Description
+  *1        Master  10        00e0-fc0f-8c02  ---
+  +2        Standby 1         00e0-fc0f-8c03  ---
+--------------------------------------------------
+ * indicates the device is the master.
+ + indicates the device through which the user logs in.
+
+ The bridge MAC of the IRF is: 70ba-ef73-4a5d
+ Auto upgrade                : yes
+ Mac persistent              : 6 min
+ Domain ID                   : 0
+```
+
+使用display interface brief会发现在其中任何一台交换机都可以看到所有的交换机的端口
+
+**另外你会发现主机和从机的交换机名字变成一样的了**
+
+
+
+
+
+
+
+## 额外操作
+注释信息
+undo info-center enable
+堆叠过程中，会修改板卡信息，比如number 1 renumber 2 将设备的编号从1改成2  这样设备的接口就会从1/0/1改成2/0/1 重置无效？ 如何重置？
+
+
+设置成员设备的描述信息
+irf member 1 desc text 
+
+自动升级
+如果堆叠的交换机版本不一致，则新加入的交换机将不能重启，这时候需要开启启动文件的自动加载功能
+irf auto-update enable
+
+irf链路延迟上报时间
+irf link-delay + inteval  默认位4s
+
+## irf的显示与维护
+dis irf 显示irf中所有成员设备的相关信息
+dis irf topology 查看irf的拓扑信息
+dis irf link 显示irf链路信息
+dis irf conf 显示irf配置信息
+dis irf-port load-sharing mode irf-port 1 显示irf链路的负载分担模式
+dis mad [verbose] 显示MAD配置信息
+
+h3c irf堆叠配置 http://www.h3c.com/cn/d_201206/747218_30005_0.htm#_Ref306371643
+
+
+## 交换机堆叠配置
+堆叠是一种将交换机处理能力叠加的技术。堆叠交换机，性能是交换机的性能和，端口也是所有交换机的总和。端口汇聚是把端口的带宽叠加，并能起到冗余备份的作用
+
+http://blog.sina.com.cn/s/blog_458d86080102vk9x.html
+https://zhiliao.h3c.com/questions/dispcont/27280
+https://cn.bing.com/search?q=The+device+is+not+in+the+current+IRF.&PC=U316&FORM=CHROMN
+https://docs.google.com/document/d/1jEBmlFBnQh6qdYrev5aM5LzeJIytY40y7bUytafvpLs/edit#heading=h.i1kyhwtxrom0
+
+
+
+
+## 交换机多种堆叠方式配置
+https://www.cnblogs.com/itfat/p/7904153.html
